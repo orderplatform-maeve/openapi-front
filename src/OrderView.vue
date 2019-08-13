@@ -11,8 +11,7 @@
     .foot-left
       .button(v-on:click="restart") 재시작
 
-</template>
-<script>
+</template> <script>
 import axios from 'axios';
 
 export default {
@@ -85,7 +84,7 @@ export default {
   },
   methods: {
     restart() {
-      window.location.reload();
+      window.location = '/';
     },
     reqOrders() {
       console.log('!!try reqOrders');
@@ -167,8 +166,8 @@ export default {
 #orderview {
   display:flex;
   flex-direction:column;
-  width:90vw;
-  height:90vh;
+  width:100vw;
+  height:100vh;
   position:relative;
   background-color:#242424;
   font-family: 'NanumSquare', sans-serif;

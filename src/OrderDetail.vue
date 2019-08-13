@@ -2,17 +2,18 @@
 #orderDetail(v-if="show")
   .background
   .container
+    .container-top 
+      .order-title
+        //.store_name {{order.store.name}}
+        .table-number {{order.table.name}}
+        .msg
+          span.title(v-if="order.products[0].code=='99999'") 호출이요
+          span.title(v-else-if="order.group.seq==1") 첫 주문이요
+          span.title(v-else) 주문이요
+        .commit {{order.commit.time ? '확인' : '미확인'}}
+        .time {{order.time | moment("A hh:mm:ss") }}
     .container-body
       .wrap-product-list
-        .order-title
-          //.store_name {{order.store.name}}
-          .table-number {{order.table.name}}
-          .msg
-            span.title(v-if="order.products[0].code=='99999'") 호출이요
-            span.title(v-else-if="order.group.seq==1") 첫 주문이요
-            span.title(v-else) 주문이요
-          .commit {{order.commit.time ? '확인' : '미확인'}}
-          .time {{order.time | moment("A hh:mm:ss") }}
         ul.product-list
           li.product-item(v-for="product in order.products")
             .count {{product.qty}}개
@@ -83,7 +84,6 @@ export default {
           this.closeOrder();
         } 
       }.bind(this), 1000);
-      
     },
     closeOrder() {
       clearInterval(this.interval);
@@ -143,10 +143,21 @@ export default {
     flex-grow:0 !important;
     background-color:rgba(0,0,0,0.9);
 
+    .container-top {
+      display:flex;
+      width:100%;
+      flex-shrink:0;
+      .order-title {
+        width:100%;
+        @include order-title;
+        margin-bottom:24px;
+      }
+    }
     .container-body {
       display:flex;
       flex-direction:row;
       flex-grow:1;
+      flex-shrink:1;
       width:100%;
       height: calc(80% - 60px);
 
@@ -155,10 +166,6 @@ export default {
         flex-direction:column;
         flex-grow:1;
 
-        .order-title {
-          @include order-title;
-          margin-bottom:24px;
-        }
         .product-list {
           display:flex;
           flex-direction:column;
@@ -169,9 +176,10 @@ export default {
           -webkit-overflow-scrolling: touch; 
     
           .product-item {
+            word-break:break-all;
             display:flex;
             flex-shrink:0;
-            align-items: center;
+            align-items: flex-start;
             margin-bottom:12px;
             font-size:48px;
             font-weight:900;
@@ -195,7 +203,7 @@ export default {
               height:48px;
               background-color:#ffffff;
               color:#000000;
-              font-size:32px;
+              font-size:24px;
               font-weight:900;
             }
           }
@@ -204,24 +212,29 @@ export default {
       .wrap-order-list {
         display:flex;
         flex-direction:column;
-        margin-left:24px;
+        //margin-left:24px;
         margin-bottom:24px;
-        flex-shrink:0;
+        flex-shrink:1;
+        flex-grow:1;
         padding-left:24px;
-        border-left:solid 1px #808080;
+        //border-left:solid 1px #808080;
+        max-width:40%;
 
         .title {
           display:flex;
           flex-shrink:0;
           align-items: center;
           justify-content: center;
-          height:60px;
-          font-size:24px;
+          height:40px;
+          font-size:20px;
           font-weight:700;
+          background-color:#ffffff;
+          color:#000000;
+          border-radius:100px;
         }
         .order-list {
           flex-grow:1;
-          font-size:24px;
+          font-size:20px;
           display:flex;
           flex-direction:column;
           margin:0;
@@ -233,11 +246,14 @@ export default {
          
           .order-item {
             display:flex;
-            margin:12px 0 0 0;
-            padding:0;
+            margin:0;
+            padding:8px 0;
+            font-size:20px;
+            align-items: flex-start;
 
             .name {
               flex-grow:1;
+              word-break:break-all;
             }
             .count {
               margin-left:12px;
@@ -253,7 +269,7 @@ export default {
     align-items: center;
     justify-content: center;
     width:100%;
-
+    flex-shrink:0;
     .msg {
       display:flex;
       align-items: center;
@@ -268,6 +284,7 @@ export default {
       justify-content: center;
       width:100%;
       .button {
+        margin:0;
         display:flex;
         flex-grow:1;
         align-items: center;
@@ -276,9 +293,9 @@ export default {
         border-radius:100px;
         font-size:32px;
         font-weight:900;
-        margin-left:12px;
         background-color:#ffffff;
         color:#202020;
+        margin-left:24px;
       }
       .button:first-child {
         margin-left:0;

@@ -216,17 +216,19 @@ export default {
     display:flex;
     flex-direction:column;
     margin:0;
-    padding:0 24px;
+    padding:0 12px;
     overflow:scroll;
     -webkit-overflow-scrolling: touch; 
 
     .order-item {
       @include order-title;
-      padding:12px 0;
+      padding:8px 0;
       border: {
-        bottom:solid 1px #808080;
         top:solid 1px #808080;
       }
+    }
+    .order-item:first-child {
+      border-top:none;
     }
     .order-item.commit {
       opacity:0.5;
