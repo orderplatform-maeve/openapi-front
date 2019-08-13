@@ -15,7 +15,6 @@
 import axios from 'axios';
 
 export default {
-  name: 'member',
   props: ['auth'],
   data() {
     return {

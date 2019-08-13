@@ -2,14 +2,14 @@
   #orderview
     .body
       router-view(v-bind:orders="orders" v-bind:auth="auth")
-    .foot-right
+    .foot-left
       router-link.button.button-red(v-if="auth.member" to="/logout") {{auth.member.name}} 로그아웃
       router-link.button.button-red(v-if="!auth.member" to="/member") 로그인 
+      .button(v-on:click="restart") 재시작
+    .foot-right
       router-link.button(v-if="storesLength>1" to="/store") 매장 보기
       //router-link.button(v-if="isSelectedStore()" to="/table") 테이블 보기
       router-link.button(v-if="isStore" to="/order") 주문 보기
-    .foot-left
-      .button(v-on:click="restart") 재시작
 
 </template> <script>
 import axios from 'axios';
@@ -167,7 +167,7 @@ export default {
   display:flex;
   flex-direction:column;
   width:100vw;
-  height:100vh;
+  height: calc(var(--vh, 1vh) * 100);
   position:relative;
   background-color:#242424;
   font-family: 'NanumSquare', sans-serif;
@@ -218,7 +218,6 @@ export default {
       }
     }
     > .body {
-      padding:24px 0;
     }
   }
 }

@@ -11,7 +11,7 @@ import Store from './Store.vue'
 import Table from './Table.vue'
 import Logout from './Logout.vue'
 import OrderList from './OrderList.vue'
-import Order from './OrderDetail.vue'
+import OrderDetail from './OrderDetail.vue'
 
 Vue.use(VueCookies);
 Vue.use(VueRouter);
@@ -27,7 +27,7 @@ Vue.use(new VueSocketIO({
 
 Vue.prototype.$eventBus = new Vue();
 
-Vue.component('order-detail', Order)
+Vue.component('order-detail', OrderDetail)
 
 /*
 new Vue({
@@ -38,7 +38,6 @@ new Vue({
 
 let routes = [{
   path: '/',
-  redirect: 'member',
   component: OrderView,
   children: [{
     path: 'member',

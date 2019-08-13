@@ -10,7 +10,8 @@
           span.title(v-if="order.products[0].code=='99999'") 호출이요
           span.title(v-else-if="order.group.seq==1") 첫 주문이요
           span.title(v-else) 주문이요
-        .commit {{order.commit.time ? '확인' : '미확인'}}
+        .first(v-if="order.group.seq==1") 첫 주문
+        .commit(:class="{commited:order.commit.time}") {{order.commit.time ? '확인' : '미확인'}}
         .time {{order.time | moment("A hh:mm:ss") }}
     .container-body
       .wrap-product-list
@@ -150,7 +151,7 @@ export default {
       .order-title {
         width:100%;
         @include order-title;
-        margin-bottom:24px;
+        margin-bottom:12px;
       }
     }
     .container-body {
@@ -179,7 +180,7 @@ export default {
             word-break:break-all;
             display:flex;
             flex-shrink:0;
-            align-items: flex-start;
+            align-items: center;
             margin-bottom:12px;
             font-size:48px;
             font-weight:900;
@@ -190,7 +191,6 @@ export default {
             }
             .count {
               margin-right:24px;
-              min-width:2em;
               text-align:right;
             }
             .first {

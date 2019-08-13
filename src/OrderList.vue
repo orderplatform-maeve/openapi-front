@@ -28,9 +28,9 @@
       .table-number {{order.table.name}}
       .msg
         span.title(v-if="order.products[0].code=='99999'") 호출이요
-        span.title(v-else-if="order.group.seq==1") 첫 주문이요
         span.title(v-else) 주문이요
-      .commit {{order.commit.time ? '확인' : '미확인'}}
+      .first(v-if="order.group.seq==1") 첫 주문
+      .commit(:class="{commited:order.commit.time}") {{order.commit.time ? '확인' : '미확인'}}
       .time {{order.time | moment("A hh:mm:ss") }}
 </template>
 <script>
@@ -94,6 +94,7 @@ export default {
       });
     },
     setViewMode(value) {
+      document.querySelector(".order-list").scrollTop = 0;
       this.viewMode = value;
     },
     setOrders(orders) {
@@ -159,6 +160,8 @@ export default {
       flex-grow:1;
       align-items: center;
       justify-content: center;
+      font-weight:900;
+      font-size:20px;
     }
     .tab-buttons {
       display:flex;
