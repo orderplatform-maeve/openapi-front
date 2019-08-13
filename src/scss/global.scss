@@ -1,0 +1,65 @@
+@mixin table-number {
+  display:flex;
+  align-items: center;
+  justify-content: center;
+  background-color:#ff0000 !important; 
+  border-radius:100px;
+  padding:0; 
+  height:60px;
+  color:#ffffff !important;
+  font-size:44px;
+  font-weight:700;
+  line-height:1em;
+  min-width:3em;
+}
+@mixin order-title {
+  display:flex;
+  height:60px;
+  flex-shrink:0;
+  color:#ffffff;
+  align-items: center;
+  font-size:32px;
+  font-weight:700;
+
+
+  .table-number {
+    @include table-number;
+    margin-right:12px;
+  } 
+  .msg {
+    display:flex;
+    align-items: center;
+
+    .title {
+    }
+    .hof {
+      margin-left:8px;
+      display:flex;
+      height:32px;
+      font-size:24px;
+      font-weight:900;
+      padding:0 8px;
+      border-radius: 100px;
+      align-items: center;
+      background-color:#ffffff;
+      color:#000000;
+    }
+  }
+  .commit {
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    height:40px;
+    min-width:4em;
+    border-radius:100px;
+    background-color:#ffffff;
+    color:#000000;
+    font-size:24px;
+    margin-left:12px;
+  
+  }
+  .time {
+    flex-grow:1;
+    text-align:right;
+  }
+}
