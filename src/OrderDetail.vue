@@ -154,8 +154,6 @@ export default {
         display:flex;
         flex-direction:column;
         flex-grow:1;
-        margin-bottom:24px;
-
 
         .order-title {
           @include order-title;
@@ -172,6 +170,7 @@ export default {
     
           .product-item {
             display:flex;
+            flex-shrink:0;
             align-items: center;
             margin-bottom:12px;
             font-size:48px;

@@ -121,6 +121,7 @@ ul.store-list {
     display:flex;
     align-items: center;
     flex-grow:1;
+    flex-shrink:0;
     margin:0px;
     padding:4px 24px;
     border-bottom:solid 1px #484848;
