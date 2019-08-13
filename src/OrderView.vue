@@ -1,13 +1,16 @@
 <template lang="pug">
-  #app
+  #orderview
     .body
       router-view(v-bind:orders="orders" v-bind:auth="auth")
-    .foot()
-      router-link.button.button-red(v-if="auth.member" to="/logout") 로그아웃
+    .foot-right
+      router-link.button.button-red(v-if="auth.member" to="/logout") {{auth.member.name}} 로그아웃
       router-link.button.button-red(v-if="!auth.member" to="/member") 로그인 
       router-link.button(v-if="storesLength>1" to="/store") 매장 보기
       //router-link.button(v-if="isSelectedStore()" to="/table") 테이블 보기
-      router-link.button(v-if="isStore" to="/orderview") 주문 보기
+      router-link.button(v-if="isStore" to="/order") 주문 보기
+    .foot-left
+      .button(v-on:click="restart") 재시작
+
 </template>
 <script>
 import axios from 'axios';
@@ -16,7 +19,6 @@ export default {
   data () {
     return {
       auth: {},
-      member: {},
       orders: [],
       storesLength: 0,
     }
@@ -61,12 +63,12 @@ export default {
         }
         this.reqOrders();
         this.$router.push({
-          name: 'orderview',
+          name: 'order',
         });
       }
     },
     restart: function() {
-      window.location.reload();
+      this.restart();
     },
   },
   computed: {
@@ -82,6 +84,9 @@ export default {
     },
   },
   methods: {
+    restart() {
+      window.location.reload();
+    },
     reqOrders() {
       console.log('!!try reqOrders');
       this.orders = []; 
@@ -145,37 +150,12 @@ export default {
     this.$eventBus.$on('setStoreLength', this.setStoreLength);
     this.$eventBus.$on('reqOrders', this.reqOrders);
 
-
     if (this.auth && this.auth.store && this.auth.store.code) {
       this.$eventBus.$emit('reqOrders'); 
+      this.$router.push({name: 'order'});
+    } else {
+      this.$router.push({name: 'member'});
     }
-    /*
-    if (!this.$cookies.isKey("auth")) {
-      this.$router.push('/member');
-    }
-
-    let auth = {};
-    try { 
-      auth = this.$cookies.get('auth');
-    } catch(e) {
-    }
-    if (auth && auth.member && auth.store && auth.table) {
-      let store_code = auth.store.code;
-      let req_data = {
-        store_code: store_code,
-      };
-      axios
-      .get('http://api.auth.order.orderhae.com/version', {params: req_data})
-      .then(function(res) {
-        if (res && res.data && res.data.version_url) {
-          location.href = res.data.version_url;
-        }
-      }.bind(this)).catch(function(err) {
-        console.log({err: err});
-      }).finally(function () {
-      });
-    }
-    */
   },
   beforeDestroy() {
     //this.sockets.unsubscribe('orderview');
@@ -184,12 +164,16 @@ export default {
 </script>
 
 <style lang="scss">
-#app {
+#orderview {
   display:flex;
   flex-direction:column;
-  height:100vh;
+  width:90vw;
+  height:90vh;
+  position:relative;
+  background-color:#242424;
+  font-family: 'NanumSquare', sans-serif;
 }
-#app > .body {
+#orderview > .body {
   display:flex;
   flex-grow:1;
   overflow:auto;
@@ -239,15 +223,22 @@ export default {
     }
   }
 }
-#app > .foot {
-  display:flex;
-  position:fixed;
-  bottom:0;
-  right:0;
-  
+#orderview {
+  > .foot-left {
+    display:flex;
+    position:absolute;
+    bottom:0;
+    left:0;
+  }
+  > .foot-right {
+    display:flex;
+    position:absolute;
+    bottom:0;
+    right:0;
+  }
   .button {
     display:flex;
-    margin: 0 12px 8px 0;
+    margin: 12px 6px;
     height:40px;
     padding:0 24px;
     font-size:16px;

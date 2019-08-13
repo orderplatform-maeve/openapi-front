@@ -5,7 +5,7 @@ import VueFilter from 'vue-filter';
 import VueSocketIO from 'vue-socket.io'
 import VueMoment from 'vue-moment'
 
-import App from './App.vue'
+import OrderView from './OrderView.vue'
 import Member from './Member.vue'
 import Store from './Store.vue'
 import Table from './Table.vue'
@@ -38,8 +38,8 @@ new Vue({
 
 let routes = [{
   path: '/',
-  redirect: '/member',
-  component: App,
+  redirect: 'member',
+  component: OrderView,
   children: [{
     path: 'member',
     name: 'member',
@@ -53,8 +53,8 @@ let routes = [{
     name: 'table',
     component: Table,
   }, {
-    path: 'orderview',
-    name: 'orderview',
+    path: 'order',
+    name: 'order',
     component: OrderList,
   }, {
     path: 'logout',

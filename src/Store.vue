@@ -10,7 +10,7 @@
             .amt {{store.amt | currency}}원
             .cnt {{store.cnt | currency}}개
           //.button.button-table(v-on:click='select(store, "table")') 테이블 보기
-          .button.button-order(v-on:click='selectStore(store, "orderview")') 주문 보기
+          .button.button-order(v-on:click='selectStore(store, "order")') 주문 보기
     //.bottom
       .button(v-on:click='logout') 로그아웃
 </template>
@@ -83,7 +83,7 @@ export default {
 
           if (this.stores.length == 1) {
             let store = this.stores[0];
-            this.selectStore(store, 'orderview');
+            this.selectStore(store, 'order');
           }
           this.$eventBus.$emit('setStoreLength', this.stores.length); 
 
