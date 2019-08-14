@@ -77,6 +77,8 @@ export default {
       }
       this.cumulative_products= cumulative_products;
 
+      clearInterval(this.interval);
+      this.seconds = 10;
       this.interval = setInterval(function(){
         this.seconds -= 1;
         console.log('seconds', this.seconds);
@@ -88,7 +90,6 @@ export default {
     },
     closeOrder() {
       clearInterval(this.interval);
-      this.seconds = 10;
       this.show = false;
       this.$eventBus.$emit('closeOrder'); 
     },

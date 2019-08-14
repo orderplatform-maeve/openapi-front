@@ -68,6 +68,7 @@ export default {
 <style lang="scss">
 .body { 
   form {
+    margin-top:24px;
     display:flex;
     flex-grow:1;
     flex-direction:column;

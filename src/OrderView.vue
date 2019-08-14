@@ -167,7 +167,7 @@ export default {
   display:flex;
   flex-direction:column;
   width:100vw;
-  height: calc(var(--vh, 1vh) * 100);
+  height: 100vh;
   position:relative;
   background-color:#242424;
   font-family: 'NanumSquare', sans-serif;
@@ -201,11 +201,11 @@ export default {
       }
     }
     > .bottom {
-        margin:-12px;
+        margin-top:24px;
 
       .button {
-        margin:12px;
         display:flex;
+        margin:0;
         flex-grow:1;
         align-items: center;
         justify-content: center;
@@ -247,6 +247,7 @@ export default {
     align-items: center;
     justify-content: center;
     text-decoration:none;
+    box-shadow: 0px 0px 12px -4px #000000;
   }
   .button-red {
     background-color:#ff0000;
