@@ -59,9 +59,6 @@ export default {
       document.querySelector(".order-list").scrollTop = 0;
       this.viewMode = value;
     },
-    setOrders(orders) {
-      this.orders = orders;
-    },
     newOrder(order) {
       this.scroll = false;
       this.$eventBus.$emit('newOrder', order); 

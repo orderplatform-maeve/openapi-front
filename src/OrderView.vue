@@ -26,7 +26,7 @@
           hr
           router-link.button(v-if="stores.length>1" to="/store") 매장 보기
           router-link.button.button-red(v-if="!auth.member" to="/member") 로그인 
-          router-link.button.button-red.button-member(v-if="auth.member" to="/logout")
+          .button.button-red.button-member(v-if="auth.member" v-on:click="logout")
             span.name {{auth.member.name}}
             span 로그아웃
     .foot.foot-left
@@ -63,6 +63,7 @@ export default {
     },
     resOrders: function(data) {
       console.log('resOrders', data);
+      console.table(data.items);
       //console.table(data);
       if (data.time) {
         this.time.start = data.time.start;
@@ -259,9 +260,10 @@ export default {
       }
     },
     logout() {
+      this.stores = [];
       this.auth.member = undefined
       this.saveAuth();
-      this.$router.push({name: 'member'});
+      //this.$router.push({name: 'member'});
     },
     isSelectedStore() {
       if (this.auth && this.auth.store) {
