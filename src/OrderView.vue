@@ -7,10 +7,10 @@
       .right
         .top
           .button(v-on:click="restart('/')") 새로고침
-          img.logo(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/logo/torder_color_white.png")
-          .store_name {{store.name}}
           .datetime {{time.now | moment("MM월DD일 HH시mm분") }}
-          router-link.button(v-if="isStore" to="/order") 주문 보기
+          img.logo(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/logo/torder_color_white.png")
+          .store_name(v-on:click="removeAuth") {{store.name}}
+          router-link.button(v-if="store.code" to="/order") 주문 보기
 
         .bottom
           .tab-group
@@ -121,11 +121,6 @@ export default {
   computed: {
     isMember() {
       if (this.auth && this.auth.member) {
-        return true;
-      }
-    },
-    isStore() {
-      if (this.auth && this.auth.store && this.auth.store.code) {
         return true;
       }
     },
@@ -257,8 +252,11 @@ export default {
       this.$cookies.set('auth',  auth, '1y', null, null);
     },
     removeAuth() {
-      this.$cookies.remove("auth", null, null);
-      this.auth = {};
+      if (confirm('매장을 떠나시겠습니까?')) {
+        this.auth = {};
+        this.$cookies.remove("auth", null, null);
+        this.restart('/');
+      }
     },
     logout() {
       this.auth.member = undefined
@@ -328,7 +326,7 @@ export default {
   overflow:scroll;
 
   .right {
-    width:160px;
+    width:200px;
     flex-shrink:0;
     flex-direction:column;
     display:flex;
@@ -371,6 +369,7 @@ export default {
       .logo {
         height:40px;
         margin-bottom:12px;
+        max-width:160px;
       }
       .button{
         margin-top:0!important;
@@ -393,11 +392,16 @@ export default {
         height:40px;
         border-radius:100px;
         background-color:#484848;
-        font-weight:100;
+        font-weight:400;
       }
     }
     .bottom{
       justify-content: flex-end;
+
+    .buttons {
+      display:flex;
+    }
+
     }
 
     @include tab-group;

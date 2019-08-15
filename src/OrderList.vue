@@ -115,7 +115,7 @@ export default {
     @include tab-group;
 
     .tab-button.datetime {
-      font-weight:100!important;
+      font-weight:400!important;
     }
   }
   .order-list {
@@ -133,7 +133,7 @@ export default {
       justify-content: center;
       flex-grow:1;
       font-size:32px;
-      font-weight:100;
+      font-weight:400;
       text-align:center;
     }
     .order-item {
