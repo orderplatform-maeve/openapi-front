@@ -2,27 +2,20 @@
 #orders
   order-detail(v-bind:orders="orders" v-bind:auth="auth")
   .top
-    .order-list-tab-buttons.tab-buttons
-      .order-list-tab-button.tab-button(v-on:click="setViewMode('a')" :class="{active: viewMode=='a'}")
-        | 모든 주문 보기
-        .count {{orders.length}}
-      .order-list-tab-button.tab-button(v-on:click="setViewMode('n')" :class="{active: viewMode=='n'}")
-        | 미확인 주문 보기
-        .count {{orders.length - commited_orders_count}}
-      .order-list-tab-button.tab-button(v-on:click="setViewMode('c')" :class="{active: viewMode=='c'}")
-        | 확인 주문 보기
-        .count {{commited_orders_count}}
     .tab-group
-      .tab-name 서비스
-      .tab-buttons
-        .tab-button(:class="{active:serviceStatus}" v-on:click="setServiceStatus(1)") 켜기
-        .tab-button(:class="{active:!serviceStatus}" v-on:click="setServiceStatus(0)") 끄기
-    .tab-group
-      .tab-name 주문
-      .tab-buttons
-        .tab-button(:class="{active:orderStatus}" v-on:click="setOrderStatus(1)") 켜기
-        .tab-button(:class="{active:!orderStatus}" v-on:click="setOrderStatus(0)") 끄기
+      .order-list-tab-buttons.tab-buttons
+        .tab-button.datetime {{time.start | moment("MM월DD일 HH시mm분") }} 부터
+        .order-list-tab-button.tab-button(v-on:click="setViewMode('a')" :class="{active: viewMode=='a'}")
+          | 모든 주문 보기
+          .count {{orders.length}}
+        .order-list-tab-button.tab-button(v-on:click="setViewMode('n')" :class="{active: viewMode=='n'}")
+          | 미확인 주문 보기
+          .count {{orders.length - commited_orders_count}}
+        .order-list-tab-button.tab-button(v-on:click="setViewMode('c')" :class="{active: viewMode=='c'}")
+          | 확인 주문 보기
+          .count {{commited_orders_count}}
   ul.order-list(:class="{'scroll-stop': !scroll}")
+    li.no-item(v-if="orders.length<1") 아직 주문이 없어요<br/>ㅠㅠ
     li.order-item.order-title(v-for="order in reverse_orders" :class="{commit: order.commit.time, 'call-staff': order.call_staff, 'first-order': order.first_order}" v-on:click="newOrder(order)" :id="order.code" v-if="viewMode=='a'||viewMode=='n'&&!order.commit.time||viewMode=='c'&&order.commit.time")
       //.store_name {{order.store.name}}
       .table-number {{order.table.name}}
@@ -37,14 +30,12 @@
 import axios from 'axios';
 
 export default {
-  props: ['auth', 'orders'],
+  props: ['auth', 'orders', 'time'],
   data () {
     return {
       scroll: true,
       eventListener: null,
       viewMode: 'a',
-      serviceStatus: 1,
-      orderStatus: 1,
     }
   },
   computed: {
@@ -64,35 +55,6 @@ export default {
     }
   },
   methods: {
-    setServiceStatus(value) {
-      this.serviceStatus = value;
-      let url = 'http://admin.torder.co.kr/store/shop_open';
-      if (!this.serviceStatus) {
-        url = 'http://admin.torder.co.kr/store/shop_close';
-      }
-      let fd = new FormData();
-      fd.append('store_code', this.auth.store.code);
-      axios
-      .post(url, fd)
-      .then(function(res) {
-        console.log(res);
-      });
-
-    },
-    setOrderStatus(value) {
-      this.orderStatus = value;
-      let url = 'http://admin.torder.co.kr/store/shop_open_order';
-      if (!this.orderStatus) {
-        url = 'http://admin.torder.co.kr/store/shop_close_order';
-      }
-      let fd = new FormData();
-      fd.append('store_code', this.auth.store.code);
-      axios
-      .post(url, fd)
-      .then(function(res) {
-        console.log(res);
-      });
-    },
     setViewMode(value) {
       document.querySelector(".order-list").scrollTop = 0;
       this.viewMode = value;
@@ -150,69 +112,10 @@ export default {
     padding:12px;
     font-size:16px;
 
-    .tab-group {
-      display:flex;
-      flex-grow:1;
-      height:40px;
-    }
-    .tab-name { 
-      display:flex;
-      flex-grow:1;
-      align-items: center;
-      justify-content: center;
-      font-weight:900;
-      font-size:20px;
-    }
-    .tab-buttons {
-      display:flex;
-      flex-grow:1;
-      margin:0px;
-      padding:0;
-      height:100%;
-      background-color:#000000;
-      border-radius:100px;
+    @include tab-group;
 
-      .tab-button {
-        display:flex;
-        height:100%;
-        flex-grow:1;
-        align-items: center;
-        justify-content: center;
-        font-weight:900;
-        background-color:#000000;
-        color:#ffffff;
-
-        .count {
-          margin-left:8px;
-          display:flex;
-          align-items: center;
-          justify-content: center;
-          height:28px;
-          padding:0 8px;
-          background-color:#ffffff;
-          color:#000000;
-          border-radius:100px;
-          font-size:20px;
-        }
-      }
-      .tab-button:first-child {
-        border-top-left-radius: 100px;
-        border-bottom-left-radius: 100px;
-      }
-      .tab-button:last-child {
-        border-top-right-radius: 100px;
-        border-bottom-right-radius: 100px;
-      }
-      .tab-button.active {
-        background-color:#fafafa;
-        color:#000000;
-        border-radius:100px;
-
-        .count {
-        background-color:#000000;
-        color:#fafafa;
-        }
-      }
+    .tab-button.datetime {
+      font-weight:100!important;
     }
   }
   .order-list {
@@ -221,13 +124,23 @@ export default {
     margin:0;
     padding:0 12px;
     overflow:scroll;
+    flex-grow:1;
     -webkit-overflow-scrolling: touch; 
 
+    .no-item {
+      display:flex;
+      align-items: center;
+      justify-content: center;
+      flex-grow:1;
+      font-size:32px;
+      font-weight:100;
+      text-align:center;
+    }
     .order-item {
       @include order-title;
       padding:8px 0;
       border: {
-        top:solid 1px #808080;
+        top:solid 1px #484848;
       }
     }
     .order-item:first-child {

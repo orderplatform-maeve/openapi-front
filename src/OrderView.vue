@@ -1,25 +1,54 @@
 <template lang="pug">
   #orderview
+    modal-confirm
     .body
-      router-view(v-bind:orders="orders" v-bind:auth="auth")
-    .foot-left
-      router-link.button.button-red(v-if="auth.member" to="/logout") {{auth.member.name}} 로그아웃
-      router-link.button.button-red(v-if="!auth.member" to="/member") 로그인 
-      .button(v-on:click="restart") 재시작
-    .foot-right
-      router-link.button(v-if="storesLength>1" to="/store") 매장 보기
-      //router-link.button(v-if="isSelectedStore()" to="/table") 테이블 보기
-      router-link.button(v-if="isStore" to="/order") 주문 보기
+      .left
+        router-view(v-bind:orders="orders" v-bind:auth="auth" v-bind:time="time" v-bind:stores="stores")
+      .right
+        .top
+          .button(v-on:click="restart('/')") 새로고침
+          img.logo(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/logo/torder_color_white.png")
+          .store_name {{store.name}}
+          .datetime {{time.now | moment("MM월DD일 HH시mm분") }}
+          router-link.button(v-if="isStore" to="/order") 주문 보기
 
-</template> <script>
+        .bottom
+          .tab-group
+            .tab-name 태블릿 화면
+            .tab-buttons
+              .tab-button(:class="{active:!store.serviceStatus}" v-on:click="setServiceStatus(0)") On
+              .tab-button(:class="{active:store.serviceStatus}" v-on:click="setServiceStatus(1)") Off
+          .tab-group
+            .tab-name 태블릿 주문
+            .tab-buttons
+              .tab-button(:class="{active:!store.orderStatus}" v-on:click="setOrderStatus(0)") On
+              .tab-button(:class="{active:store.orderStatus}" v-on:click="setOrderStatus(1)") Off
+          hr
+          router-link.button(v-if="stores.length>1" to="/store") 매장 보기
+          router-link.button.button-red(v-if="!auth.member" to="/member") 로그인 
+          router-link.button.button-red.button-member(v-if="auth.member" to="/logout")
+            span.name {{auth.member.name}}
+            span 로그아웃
+    .foot.foot-left
+    //.foot.foot-left
+      //router-link.button(v-if="isSelectedStore()" to="/table") 테이블 보기
+
+</template>
+<script>
 import axios from 'axios';
 
 export default {
   data () {
     return {
       auth: {},
+      stores: [],
+      store: {},
       orders: [],
-      storesLength: 0,
+      time: {
+        now: 0,
+        start: 0,
+        end: 0,
+      },
     }
   },
   sockets: {
@@ -28,16 +57,35 @@ export default {
       this.$socket.emit('whoAmI');
       console.log('socket connected');
     },
+    resStoreInfo(data) {
+      console.log('resStoreInfo', data);
+      this.store = data;
+    },
     resOrders: function(data) {
       console.log('resOrders', data);
-      this.orders = data; 
+      //console.table(data);
+      if (data.time) {
+        this.time.start = data.time.start;
+        this.time.end = data.time.end;
+      }
+      if (data.items) {
+        this.orders = data.items; 
+      }
       //this.$eventBus.$emit('setOrders',data); 
     },
-    resCommit: function(data) {
+    resCommitOrder: function(data) {
       console.log('resCommitOrder', data);
+      if (data && data.code && data.commit && data.commit.time) {
+        for (let order of this.orders) {
+          if (order.code == data.code) {
+            order.commit.time = data.commit.time;
+            break;
+          } 
+        }
+      }
     },
     orderview: function(data) {
-      console.log('orderview', data);
+      //console.log('orderview', data);
       if (this.auth && this.auth.store && this.auth.store.code) {
         if (this.auth.store.code != data.store.code) {
           return
@@ -66,8 +114,8 @@ export default {
         });
       }
     },
-    restart: function() {
-      this.restart();
+    restart: function(url) {
+      this.restart(url);
     },
   },
   computed: {
@@ -83,8 +131,102 @@ export default {
     },
   },
   methods: {
-    restart() {
-      window.location = '/';
+    setServiceStatus(value) {
+      if (value) { 
+        this.$eventBus.$emit('openConfirmModal', {
+          title: '태블릿 열기',
+          message: '모든 태블릿의 화면을 열어요',
+          confirm: function() {
+            let url = 'http://admin.torder.co.kr/store/shop_open';
+            let fd = new FormData();
+            fd.append('store_code', this.auth.store.code);
+            axios
+            .post(url, fd)
+            .then(function(res) {
+              console.log(res);
+              this.$eventBus.$emit('closeConfirmModal');
+              this.store.serviceStatus = value;
+            });
+          }.bind(this),
+        }); 
+      } else {
+        this.$eventBus.$emit('openConfirmModal', {
+          title: '태블릿 닫기',
+          message: '모든 태블릿의 화면을 닫아요',
+          confirm: function() {
+            let url = 'http://admin.torder.co.kr/store/shop_close';
+            let fd = new FormData();
+            fd.append('store_code', this.auth.store.code);
+            axios
+            .post(url, fd)
+            .then(function(res) {
+              console.log(res);
+              this.$eventBus.$emit('closeConfirmModal');
+              this.store.serviceStatus = value;
+            });
+          }.bind(this),
+        }); 
+      }
+
+      /*
+      let url = 'http://admin.torder.co.kr/store/shop_open';
+      if (!this.serviceStatus) {
+        url = 'http://admin.torder.co.kr/store/shop_close';
+      }
+      let fd = new FormData();
+      fd.append('store_code', this.auth.store.code);
+      axios
+      .post(url, fd)
+      .then(function(res) {
+        console.log(res);
+      });
+      */
+    },
+    setOrderStatus(value) {
+      if (!value) { 
+        this.$eventBus.$emit('openConfirmModal', {
+          title: '주문 받기',
+          message: '태블릿에서 주문을 받아요',
+          confirm: function() {
+            let url = 'http://admin.torder.co.kr/store/shop_close_order';
+            let fd = new FormData();
+            fd.append('store_code', this.auth.store.code);
+            axios
+            .post(url, fd)
+            .then(function(res) {
+              console.log(res);
+              this.$eventBus.$emit('closeConfirmModal');
+              this.store.orderStatus = value;
+            });
+          }.bind(this),
+        }); 
+      } else {
+        this.$eventBus.$emit('openConfirmModal', {
+          title: '주문 중단',
+          message: '태블릿을 메뉴판으로만 사용하고 주문은 안돼요',
+          confirm: function() {
+            let url = 'http://admin.torder.co.kr/store/shop_close_order';
+            let fd = new FormData();
+            fd.append('store_code', this.auth.store.code);
+            axios
+            .post(url, fd)
+            .then(function(res) {
+              console.log(res);
+              this.$eventBus.$emit('closeConfirmModal');
+              this.store.orderStatus = value;
+            });
+
+          }.bind(this),
+        }); 
+      }
+      /*
+      */
+    },
+    restart(url) {
+      if (!url) {
+        url = '/';
+      }
+      window.location = url;
     },
     reqOrders() {
       console.log('!!try reqOrders');
@@ -92,11 +234,11 @@ export default {
       if (this.auth && this.auth.store && this.auth.store.code) {
         let reqData = {store_code: this.auth.store.code};
         console.log('reqOrders', reqData);
+        this.$socket.emit('reqStoreInfo', reqData);
         this.$socket.emit('reqOrders', reqData);
       }
     },
     setStoreLength(length) {
-      this.storesLength = length;
     },
     loadAuth() {
       let auth = {};
@@ -142,11 +284,14 @@ export default {
     */
   },
   created() {
+    setInterval(function(){
+      this.time.now = Date();
+    }.bind(this), 1000);
+
     this.loadAuth();
     this.$eventBus.$on('logout', this.logout);
     this.$eventBus.$on('saveAuth', this.saveAuth); 
     this.$eventBus.$on('removeAuth', this.removeAuth); 
-    this.$eventBus.$on('setStoreLength', this.setStoreLength);
     this.$eventBus.$on('reqOrders', this.reqOrders);
 
     if (this.auth && this.auth.store && this.auth.store.code) {
@@ -161,63 +306,182 @@ export default {
   },
 }
 </script>
-
 <style lang="scss">
+@import "./scss/global.scss";
 #orderview {
   display:flex;
   flex-direction:column;
   width:100vw;
   height: 100vh;
   position:relative;
-  background-color:#242424;
+  background-color:#000000;
   font-family: 'NanumSquare', sans-serif;
+}
+#orderview > .top {
+  display:flex;
+  flex-direction:row;
+  padding:12px;
 }
 #orderview > .body {
   display:flex;
   flex-grow:1;
-  overflow:auto;
+  overflow:scroll;
 
-  .container {
-    display:flex;
+  .right {
+    width:160px;
+    flex-shrink:0;
     flex-direction:column;
+    display:flex;
     padding:12px;
-    flex-grow:1;
+    overflow:auto;
+    background-color:#121212;
 
-    > * {
-      display:flex;
+    hr {
+      border-color:#606060;
     }
-    > .top {
+    .button {
       display:flex;
       align-items: center;
       justify-content: center;
-      border-bottom:solid 1px #ffffff;
-      padding-bottom:12px;
-      .title {
+      margin-top:12px;
+      height:40px;
+      width:100%;
+      border-radius:100px;
+      background-color:#ffffff;
+      color:#000000;
+      font-weight:900;
+      text-decoration:none;
+      .name {
+        font-size:12px;
+      }
+    }
+    .button-member {
+      flex-direction:column;
+    }
+    .button-red {
+      background-color:#ff0000;
+      color:#ffffff;
+    }
+    .top {
+      display:flex;
+      flex-direction:column;
+      align-items: center;
+      justify-content: flex-start;
+      flex-grow:1;
+      .logo {
+        height:40px;
+        margin-bottom:12px;
+      }
+      .button{
+        margin-top:0!important;
+        margin-bottom:12px;
+      }
+      .store_name {
+        margin-bottom:12px;
+        font-size:16px;
+        font-weight:900;
+        word-break:keep-all;
+        text-align:center;
+      }
+      .datetime {
+        margin-bottom:12px;
+        display:flex;
+        flex-direction:column;
+        align-items: center;
+        justify-content: center;
+        width:100%;
+        height:40px;
+        border-radius:100px;
+        background-color:#484848;
+        font-weight:100;
+      }
+    }
+    .bottom{
+      justify-content: flex-end;
+    }
+
+    @include tab-group;
+
+    .tab-group {
+      flex-direction:column;
+      margin-top:0px;
+      flex-grow:0;
+      .tab-name { 
+        display:flex;
+        height:40px;
+        padding:0 24px;
+        font-size:16px;
+        font-weight:900;
+        border-radius:200px;
+        background-color:#121212;
+        color:#ffffff;
+        align-items: center;
+        justify-content: center;
+        text-decoration:none;
+      }
+    }
+    > .button {
+      display:flex;
+      margin-top:40px;
+      height:40px;
+      padding:0 24px;
+      font-size:16px;
+      font-weight:900;
+      border-radius:200px;
+      background-color:#eaeaea; 
+      color:#000000;
+      align-items: center;
+      justify-content: center;
+      text-decoration:none;
+      box-shadow: 0px 0px 12px -4px #000000;
+    }
+
+  }
+  .left {
+    flex-grow:1;
+    display:flex;
+    overflow:auto;
+    .container {
+      display:flex;
+      flex-direction:column;
+      padding:12px;
+      flex-grow:1;
+
+      > * {
+        display:flex;
+      }
+      > .top {
+
         display:flex;
         align-items: center;
         justify-content: center;
-        font-size:24px;
-        font-weight:900;
+        border-bottom:solid 1px #ffffff;
+        padding-bottom:12px;
+        .title {
+          display:flex;
+          align-items: center;
+          justify-content: center;
+          font-size:24px;
+          font-weight:900;
+        }
       }
-    }
-    > .bottom {
+      > .bottom {
         margin-top:24px;
 
-      .button {
-        display:flex;
-        margin:0;
-        flex-grow:1;
-        align-items: center;
-        justify-content: center;
-        height:60px;
-        background-color:#ff0000;
-        color:#ffffff;
-        border-radius:100px;
-        font-size:20px;
-        font-weight:900;
+        .button {
+          display:flex;
+          margin:0;
+          flex-grow:1;
+          align-items: center;
+          justify-content: center;
+          height:60px;
+          background-color:#ff0000;
+          color:#ffffff;
+          border-radius:100px;
+          font-size:20px;
+          font-weight:900;
+        }
       }
-    }
-    > .body {
     }
   }
 }
@@ -230,28 +494,26 @@ export default {
   }
   > .foot-right {
     display:flex;
-    position:absolute;
+    position:fixed;
     bottom:0;
     right:0;
   }
-  .button {
-    display:flex;
-    margin: 12px 6px;
-    height:40px;
-    padding:0 24px;
-    font-size:16px;
-    font-weight:900;
-    border-radius:200px;
-    background-color:#eaeaea; 
-    color:#000000;
-    align-items: center;
-    justify-content: center;
-    text-decoration:none;
-    box-shadow: 0px 0px 12px -4px #000000;
-  }
-  .button-red {
-    background-color:#ff0000;
-    color:#ffffff;
+  > .foot {
+    .button {
+      display:flex;
+      margin: 12px 6px;
+      height:40px;
+      padding:0 24px;
+      font-size:16px;
+      font-weight:900;
+      border-radius:200px;
+      background-color:#eaeaea; 
+      color:#000000;
+      align-items: center;
+      justify-content: center;
+      text-decoration:none;
+      box-shadow: 0px 0px 12px -4px #000000;
+    }
   }
 }
 

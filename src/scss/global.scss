@@ -1,3 +1,70 @@
+@mixin tab-group {
+  .tab-group {
+    display:flex;
+    flex-grow:1;
+
+    .tab-name { 
+      display:flex;
+      align-items: center;
+      justify-content: center;
+      font-weight:400;
+      font-size:20px;
+      height:40px;
+    }
+    .tab-buttons {
+      display:flex;
+      margin:0px;
+      padding:0;
+      height:40px;
+      background-color:#484848;
+      border-radius:100px;
+      flex-grow:1;
+
+      .tab-button {
+        display:flex;
+        height:100%;
+        flex-grow:1;
+        align-items: center;
+        justify-content: center;
+        font-weight:900;
+        background-color:#484848;
+        color:#ffffff;
+
+        .count {
+          margin-left:8px;
+          display:flex;
+          align-items: center;
+          justify-content: center;
+          height:28px;
+          padding:0 8px;
+          background-color:#ffffff;
+          color:#000000;
+          border-radius:100px;
+          font-size:20px;
+        }
+      }
+      .tab-button:first-child {
+        border-top-left-radius: 100px;
+        border-bottom-left-radius: 100px;
+      }
+      .tab-button:last-child {
+        border-top-right-radius: 100px;
+        border-bottom-right-radius: 100px;
+      }
+      .tab-button.active {
+        background-color:#fafafa;
+        color:#000000;
+        border-radius:100px;
+
+        .count {
+        background-color:#000000;
+        color:#fafafa;
+        }
+      }
+    }
+
+  }
+}
 @mixin table-number {
   display:flex;
   align-items: center;

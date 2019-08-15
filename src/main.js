@@ -12,22 +12,21 @@ import Table from './Table.vue'
 import Logout from './Logout.vue'
 import OrderList from './OrderList.vue'
 import OrderDetail from './OrderDetail.vue'
+import ModalConfirm from './ConfirmModal.vue'
 
 Vue.use(VueCookies);
 Vue.use(VueRouter);
 Vue.use(VueFilter); 
 Vue.use(VueMoment);
-
 Vue.use(new VueSocketIO({
-    debug: true,
-    //connection: 'http://socketio.order.orderhae.com',
-    connection: 'http://1.socketio.order.orderhae.com',
-    //options: { path: "/my-app/" } //Optional options
+    //debug: true,
+    connection: 'http://1.socketio.orderview.torder.co.kr',
 }))
 
 Vue.prototype.$eventBus = new Vue();
 
 Vue.component('order-detail', OrderDetail)
+Vue.component('modal-confirm', ModalConfirm)
 
 /*
 new Vue({

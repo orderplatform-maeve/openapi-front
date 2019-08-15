@@ -18,10 +18,9 @@
 import axios from 'axios';
 
 export default {
-  props: ['auth'],
+  props: ['auth', 'stores'],
   data() {
     return {
-      stores: [],
     };
   },
   filters: {
@@ -63,13 +62,10 @@ export default {
       })
       .then(function(res) {
         if (res.data) {
-          this.stores = [];
           for (let item of res.data.store_data) {
             let store = {
               code: item.shop_code,
               name: item.shop_name,
-              amt: 0,
-              cnt: 0,
             }
             if (item.current_order) {
               store.amt = item.current_order.amt;
@@ -85,7 +81,6 @@ export default {
             let store = this.stores[0];
             this.selectStore(store, 'order');
           }
-          this.$eventBus.$emit('setStoreLength', this.stores.length); 
 
         } else {
           alert('매장이 없습니다.');

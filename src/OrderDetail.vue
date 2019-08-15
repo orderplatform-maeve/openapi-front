@@ -20,9 +20,9 @@
             .count {{product.qty}}개
             .name {{product.name}}
             .first(v-if="product.first") 첫 주문
-      .wrap-order-list(v-if="Object.keys(cumulative_products).length")
+      .wrap-c-product-list(v-if="Object.keys(cumulative_products).length")
         .title 이전주문내역
-        ul.order-list
+        ul.c-product-list
           li.order-item(v-for="product in cumulative_products")
             .name {{product.name}}
             .count {{product.qty}}개
@@ -84,7 +84,7 @@ export default {
         console.log('seconds', this.seconds);
 
         if(this.seconds < 1) {
-          this.closeOrder();
+          //this.closeOrder();
         } 
       }.bind(this), 1000);
     },
@@ -161,7 +161,7 @@ export default {
       flex-grow:1;
       flex-shrink:1;
       width:100%;
-      height: calc(80% - 60px);
+      overflow:scroll;
 
       .wrap-product-list {
         display:flex;
@@ -210,11 +210,11 @@ export default {
           }
         }
       }
-      .wrap-order-list {
+      .wrap-c-product-list {
         display:flex;
         flex-direction:column;
         //margin-left:24px;
-        margin-bottom:24px;
+        //margin-bottom:24px;
         flex-shrink:1;
         flex-grow:1;
         padding-left:24px;
@@ -233,7 +233,7 @@ export default {
           color:#000000;
           border-radius:100px;
         }
-        .order-list {
+        .c-product-list {
           flex-grow:1;
           font-size:20px;
           display:flex;
@@ -251,6 +251,9 @@ export default {
             padding:8px 0;
             font-size:20px;
             align-items: flex-start;
+            border {
+              bottom:solid 1px #484848;
+            }
 
             .name {
               flex-grow:1;
