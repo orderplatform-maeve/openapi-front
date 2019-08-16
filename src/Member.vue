@@ -41,6 +41,7 @@ export default {
 
             this.auth.member = member;
             this.$eventBus.$emit('saveAuth'); 
+            this.$eventBus.$emit('setStores') 
             
             this.$router.push({
               name: 'store',

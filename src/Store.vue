@@ -53,50 +53,12 @@ export default {
         return;
       }
 
-      let req_data = {
-        member_code: this.auth.member.code,
-      };
-      axios
-      .get('http://api.auth.order.orderhae.com/stores', {
-        params: req_data
-      })
-      .then(function(res) {
-        if (res.data) {
-          for (let item of res.data.store_data) {
-            let store = {
-              code: item.shop_code,
-              name: item.shop_name,
-            }
-            if (item.current_order) {
-              store.amt = item.current_order.amt;
-              store.cnt = item.current_order.cnt;
-            }
-            this.stores.push(store);
-          }
-          this.stores.sort((a, b) => {
-            return a.name - b.name;
-          });
-
-          if (this.stores.length == 1) {
-            let store = this.stores[0];
-            this.selectStore(store, 'order');
-          }
-
-        } else {
-          alert('매장이 없습니다.');
-        }
-      }.bind(this)).catch(function(err) {
-        alert('매장 정보를 가져오지 못하였습니다.');
-        console.log({err: err});
-      }).finally(function () {
-      });
     },
   },
   beforeMount() {
     this.check(); 
   },
   created() {
-    this.getStores();
   },
   mounted() {
   },
