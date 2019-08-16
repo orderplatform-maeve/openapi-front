@@ -13,6 +13,8 @@
           router-link.button(v-if="store.code" to="/order") 주문 보기
 
         .bottom
+          .button(v-if="!flag_restarting_clients" v-on:click="restartClients()") 타블렛 새로고침
+          .button.active(v-if="flag_restarting_clients" ) 타블렛 새로고침 중
           .tab-group
             .tab-name 태블릿 화면
             .tab-buttons
@@ -49,6 +51,7 @@ export default {
         start: 0,
         end: 0,
       },
+      flag_restarting_clients: 0,
     }
   },
   sockets: {
@@ -84,6 +87,11 @@ export default {
           } 
         }
       }
+    },
+    resRestartClients: function(data) {
+      console.log('resRestartClients', data);
+      alert(data.count + '대의 태블렛에 새로고침을 요청 했습니다.');
+      this.flag_restarting_clients = 0;
     },
     orderview: function(data) {
       //console.log('orderview', data);
@@ -127,6 +135,16 @@ export default {
     },
   },
   methods: {
+    restartClients() {
+      if(this.auth.store && this.auth.store.code) {
+      } else {
+        return;
+      }
+      let reqData = {store_code: this.auth.store.code};
+      this.flag_restarting_clients = 1;
+      console.log('reqRestartClients', reqData);
+      this.$socket.emit('reqRestartClients', reqData);
+    },
     setServiceStatus(value) {
       if (value) { 
         this.$eventBus.$emit('openConfirmModal', {
@@ -355,6 +373,10 @@ export default {
         font-size:12px;
       }
     }
+    .button.active {
+      background-color:#484848;
+      color:#eaeaea;
+    }
     .button-member {
       flex-direction:column;
     }
@@ -400,10 +422,9 @@ export default {
     .bottom{
       justify-content: flex-end;
 
-    .buttons {
-      display:flex;
-    }
-
+      .buttons {
+        display:flex;
+      }
     }
 
     @include tab-group;
