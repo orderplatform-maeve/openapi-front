@@ -14,8 +14,8 @@
 
         .bottom
           hr
-          .button(v-if="!flag_restarting_clients" v-on:click="restartClients()") 타블렛 새로고침
-          .button.active(v-if="flag_restarting_clients" ) 타블렛 새로고침 중
+          .button(v-if="!flag_restarting_clients" v-on:click="restartClients()") 태블릿 새로고침
+          .button.active(v-if="flag_restarting_clients" ) 태블릿 새로고침 중
           .tab-group
             .tab-name 태블릿 화면
             .tab-buttons
