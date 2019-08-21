@@ -7,7 +7,8 @@
       .right
         .top
           .button(v-on:click="restart('/')") 새로고침
-          .datetime {{time.now | moment("MM월DD일 HH시mm분") }}
+          .datetime
+            span {{time.now | moment("MM월DD일 HH시mm분") }}
           img.logo(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/logo/torder_color_white.png")
           .store_name(v-on:click="removeAuth") {{store.name}}
           router-link.button(v-if="store.code" to="/order") 주문 보기
@@ -38,9 +39,25 @@
 
 </template>
 <script>
+import Vue from 'vue'
+import Vuex from 'vuex'
 import axios from 'axios';
 
+Vue.use(Vuex)
+
+const store = new Vuex.Store({
+  state: {
+    count: 0
+  },
+  mutations: {
+    increment (state) {
+      state.count++
+    }
+  }
+})
+
 export default {
+  store,
   data () {
     return {
       auth: {},
@@ -53,6 +70,11 @@ export default {
         end: 0,
       },
       flag_restarting_clients: 0,
+    }
+  },
+  filters: {
+    won(x) {
+     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '원';
     }
   },
   sockets: {
@@ -133,6 +155,20 @@ export default {
       if (this.auth && this.auth.member) {
         return true;
       }
+    },
+    ordersCount() {
+      let result = {
+        price: 0,
+        count: 0,
+      };
+      for (let order of this.orders) {
+        console.log('order', order);
+        for (let product of order.products) {
+          result.price += product.price;
+        }
+        result.count += 1; 
+      }
+      return result;
     },
   },
   methods: {
@@ -356,13 +392,17 @@ export default {
     this.$eventBus.$on('saveAuth', this.saveAuth); 
     this.$eventBus.$on('removeAuth', this.removeAuth); 
     this.$eventBus.$on('reqOrders', this.reqOrders);
-    this.$eventBus.$on('setStores', this.setStores);
+    //this.$eventBus.$on('setStores', this.setStores);
 
     if (this.auth && this.auth.store && this.auth.store.code) {
       this.$eventBus.$emit('reqOrders'); 
       this.$router.push({name: 'order'});
     } else {
       this.$router.push({name: 'member'});
+    }
+
+    if(this.auth.member && this.auth.member.code) {
+      this.setStores();
     }
   },
   beforeDestroy() {

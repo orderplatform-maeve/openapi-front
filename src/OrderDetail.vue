@@ -23,9 +23,9 @@
       .wrap-c-product-list(v-if="Object.keys(cumulative_products).length")
         .title 이전주문내역
         ul.c-product-list
-          li.order-item(v-for="product in cumulative_products")
-            .name {{product.name}}
-            .count {{product.qty}}개
+          li.order-item(v-for="c_product in cumulative_products")
+            .name {{c_product.name}}
+            .count {{c_product.qty}}개
     .container-foot
       .msg {{seconds}}초 후 닫혀요.
       .buttons
