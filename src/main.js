@@ -25,20 +25,9 @@ import ModalConfirm from './ConfirmModal.vue'
 
 
 Vue.use(new VueSocketIO({
-    //debug: true,
+    debug: true,
     connection: 'http://1.socketio.orderview.torder.co.kr',
 }))
-const store = new Vuex.Store({
-  state: {
-    count: 0
-  },
-  mutations: {
-    increment (state) {
-      state.count++
-    }
-  }
-});
-
 Vue.component('order-detail', OrderDetail)
 Vue.component('modal-confirm', ModalConfirm)
 
@@ -52,7 +41,6 @@ new Vue({
 let routes = [{
   path: '/',
   component: OrderView,
-  store,
   children: [{
     path: 'member',
     name: 'member',

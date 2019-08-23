@@ -119,7 +119,7 @@ export default {
       alert(data.count + '대의 태블렛에 새로고침을 요청 했습니다.');
       this.flag_restarting_clients = 0;
     },
-    orderview: function(data) {
+    newOrder: function(data) {
       if (this.auth && this.auth.store && this.auth.store.code) {
         if (this.auth.store.code != data.store.code) {
           return
@@ -127,7 +127,6 @@ export default {
       } else {
         return 
       }
-     
       console.log('!orderview', data); 
       this.orders.push(data);
       this.$eventBus.$emit('newOrder',data); 
@@ -143,8 +142,8 @@ export default {
             code: data.store_code,
           } 
           console.log(this.auth.store);
+          this.reqOrders();
         }
-        this.reqOrders();
         this.$router.push({
           name: 'order',
         });
@@ -401,7 +400,7 @@ export default {
     }
   },
   beforeDestroy() {
-    //this.sockets.unsubscribe('orderview');
+    this.sockets.unsubscribe('orderview');
   },
 }
 </script>
