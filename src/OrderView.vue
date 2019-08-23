@@ -9,7 +9,7 @@
           .button(v-on:click="restart('/')") 새로고침
           .datetime
             span {{time.now | moment("MM월DD일 HH시mm분") }}
-            span.price 약 {{ordersCount.price | won }}
+            //span.price 약 {{ordersCount.price | won }}
           img.logo(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/logo/torder_color_white.png")
           .store_name(v-on:click="removeAuth") {{store.name}}
           router-link.button(v-if="store.code" to="/order") 주문 보기
@@ -89,15 +89,17 @@ export default {
       this.store = data;
     },
     resOrders: function(data) {
-      console.log('resOrders', data);
+      console.log('!!!resOrders', data);
       console.table(data.items);
       //console.table(data);
       if (data.time) {
         this.time.start = data.time.start;
         this.time.end = data.time.end;
       }
-      if (data.items) {
-        this.orders = data.items; 
+      if (data.items.length) {
+        for (let item of data.items) {
+          this.orders.push(item);
+        }
       }
       //this.$eventBus.$emit('setOrders',data); 
     },
@@ -118,7 +120,6 @@ export default {
       this.flag_restarting_clients = 0;
     },
     orderview: function(data) {
-      //console.log('orderview', data);
       if (this.auth && this.auth.store && this.auth.store.code) {
         if (this.auth.store.code != data.store.code) {
           return
@@ -126,6 +127,8 @@ export default {
       } else {
         return 
       }
+     
+      console.log('!orderview', data); 
       this.orders.push(data);
       this.$eventBus.$emit('newOrder',data); 
     },
@@ -163,7 +166,6 @@ export default {
         count: 0,
       };
       for (let order of this.orders) {
-        console.log('order', order);
         for (let product of order.products) {
           result.price += product.price;
         }
@@ -325,7 +327,7 @@ export default {
       window.location = url;
     },
     reqOrders() {
-      console.log('!!try reqOrders');
+      console.log('!!!!!!!!!!try reqOrders');
       this.orders = []; 
       if (this.auth && this.auth.store && this.auth.store.code) {
         let reqData = {store_code: this.auth.store.code};
@@ -374,14 +376,6 @@ export default {
     },
   },
   beforeCreate() {
-    /*
-    this.sockets.subscribe('orderview', (data) => {
-      //this.msg = data.message;
-      console.log('orderview', data);
-      //this.$eventBus.$emit('newOrder',data); 
-        
-    });
-    */
   },
   created() {
     setInterval(function(){

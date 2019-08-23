@@ -56,8 +56,7 @@ export default {
       this.closeOrder(); 
     },
     newOrder(order) {
-      console.log('newOrder', order);
-
+      console.log('!newOrder', order);
       this.order = order;
       this.show = true;
 
@@ -95,11 +94,12 @@ export default {
     },
   },
   created() {
+    console.log('created newOrder');
+    this.$eventBus.$off("newOrder");
     this.$eventBus.$on('newOrder', this.newOrder); 
     //this.$eventBus.$on('openOrder', this.openOrder); 
   },
   beforeDestroy() {
-    this.$eventBus.$off("newOrder");
     //this.$eventBus.$off("openOrder");
   },
 }

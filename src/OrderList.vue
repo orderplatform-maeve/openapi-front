@@ -60,6 +60,7 @@ export default {
       this.viewMode = value;
     },
     newOrder(order) {
+      console.log('method newOrder');
       this.scroll = false;
       this.$eventBus.$emit('newOrder', order); 
     },

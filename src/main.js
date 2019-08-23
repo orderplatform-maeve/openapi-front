@@ -6,6 +6,7 @@ import VueFilter from 'vue-filter';
 import VueSocketIO from 'vue-socket.io'
 import VueMoment from 'vue-moment'
 
+Vue.prototype.$eventBus = new Vue();
 
 Vue.use(Vuex)
 Vue.use(VueCookies);
@@ -22,6 +23,7 @@ import OrderList from './OrderList.vue'
 import OrderDetail from './OrderDetail.vue'
 import ModalConfirm from './ConfirmModal.vue'
 
+
 Vue.use(new VueSocketIO({
     //debug: true,
     connection: 'http://1.socketio.orderview.torder.co.kr',
@@ -35,9 +37,7 @@ const store = new Vuex.Store({
       state.count++
     }
   }
-})
-
-Vue.prototype.$eventBus = new Vue();
+});
 
 Vue.component('order-detail', OrderDetail)
 Vue.component('modal-confirm', ModalConfirm)
