@@ -9,6 +9,7 @@
           .button(v-on:click="restart('/')") 새로고침
           .datetime
             span {{time.now | moment("MM월DD일 HH시mm분") }}
+            span.price 약 {{ordersCount.price | won }}
           img.logo(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/logo/torder_color_white.png")
           .store_name(v-on:click="removeAuth") {{store.name}}
           router-link.button(v-if="store.code" to="/order") 주문 보기
@@ -229,23 +230,6 @@ export default {
     setServiceStatus(value) {
       if (value) { 
         this.$eventBus.$emit('openConfirmModal', {
-          title: '태블릿 열기',
-          message: '모든 태블릿의 화면을 열어요',
-          confirm: function() {
-            let url = 'http://admin.torder.co.kr/store/shop_open';
-            let fd = new FormData();
-            fd.append('store_code', this.auth.store.code);
-            axios
-            .post(url, fd)
-            .then(function(res) {
-              console.log(res);
-              this.$eventBus.$emit('closeConfirmModal');
-              this.store.serviceStatus = value;
-            });
-          }.bind(this),
-        }); 
-      } else {
-        this.$eventBus.$emit('openConfirmModal', {
           title: '태블릿 닫기',
           message: '모든 태블릿의 화면을 닫아요',
           confirm: function() {
@@ -258,7 +242,24 @@ export default {
               console.log(res);
               this.$eventBus.$emit('closeConfirmModal');
               this.store.serviceStatus = value;
-            });
+            }.bind(this));
+          }.bind(this),
+        }); 
+      } else {
+        this.$eventBus.$emit('openConfirmModal', {
+          title: '태블릿 열기',
+          message: '모든 태블릿의 화면을 열어요',
+          confirm: function() {
+            let url = 'http://admin.torder.co.kr/store/shop_open';
+            let fd = new FormData();
+            fd.append('store_code', this.auth.store.code);
+            axios
+            .post(url, fd)
+            .then(function(res) {
+              console.log(res);
+              this.$eventBus.$emit('closeConfirmModal');
+              this.store.serviceStatus = value;
+            }.bind(this));
           }.bind(this),
         }); 
       }
@@ -283,7 +284,7 @@ export default {
           title: '주문 받기',
           message: '태블릿에서 주문을 받아요',
           confirm: function() {
-            let url = 'http://admin.torder.co.kr/store/shop_close_order';
+            let url = 'http://admin.torder.co.kr/store/shop_open_order';
             let fd = new FormData();
             fd.append('store_code', this.auth.store.code);
             axios
@@ -292,7 +293,7 @@ export default {
               console.log(res);
               this.$eventBus.$emit('closeConfirmModal');
               this.store.orderStatus = value;
-            });
+            }.bind(this));
           }.bind(this),
         }); 
       } else {
@@ -309,7 +310,7 @@ export default {
               console.log(res);
               this.$eventBus.$emit('closeConfirmModal');
               this.store.orderStatus = value;
-            });
+            }.bind(this));
 
           }.bind(this),
         }); 
@@ -392,7 +393,7 @@ export default {
     this.$eventBus.$on('saveAuth', this.saveAuth); 
     this.$eventBus.$on('removeAuth', this.removeAuth); 
     this.$eventBus.$on('reqOrders', this.reqOrders);
-    //this.$eventBus.$on('setStores', this.setStores);
+    this.$eventBus.$on('setStores', this.setStores);
 
     if (this.auth && this.auth.store && this.auth.store.code) {
       this.$eventBus.$emit('reqOrders'); 
@@ -503,6 +504,11 @@ export default {
         border-radius:100px;
         background-color:#484848;
         font-weight:400;
+
+        .price {
+          font-size:12px;
+          font-weight:900;
+        }
       }
     }
     .bottom{
@@ -629,5 +635,4 @@ export default {
     }
   }
 }
-
 </style>
