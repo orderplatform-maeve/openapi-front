@@ -39,7 +39,7 @@ export default {
   props: ['auth', 'orders'],
   data () {
     return {
-      cumulative_products: [],
+      cumulative_products: {},
       order: {},
       show: false,
       interval: undefined,
@@ -62,14 +62,24 @@ export default {
 
       let code_group = this.order.group.code;
       let code_order = this.order.code;
+      let time_current_order = this.order.time;
       let cumulative_products = {};
+
       for (let order of this.orders) {
-        if (order.group.code == code_group && order.code != code_order) {
+        if (order.group.code == code_group && order.time < time_current_order) {
           for (let product of order.products) {
+            console.log('product', product.code, product.name, product.qty, product);
+
             if (cumulative_products[product.code]) {
               cumulative_products[product.code].qty += product.qty;
             } else {
-              cumulative_products[product.code] = product;
+              cumulative_products[product.code] = {
+                code: product.code, 
+                price: product.price,
+                name: product.name,
+                first: product.first,
+                qty: product.qty,
+              };
             }
           }
         }
