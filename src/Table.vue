@@ -1,26 +1,27 @@
 <template lang="pug">
-.container
+#tables
   .top
-    .title
-      .name {{store.name}} {{store.order_amt | currency}}원 {{store.order_cnt}}개
-      .table {{current_amt | currency}}원
-  .body
-    ul.table-list
-      li.table-item(v-for="table in tables" :data-number="table.number" )
-        .name(:class="{'active':table.total_price}") {{table.name}}
-        .total-price {{table.total_price | currency}}원
+    .button(v-if="!flag_restaring" v-on:click="restartAllClient()") 태블릿 전체 새로고침
+    .button.button-dark(v-if="flag_restaring" v-on:click="cancelRestart()") 태블릿 새로고침 취소
+  ul.table-list
+    li.table-item(v-for="table in tables" :data-number="table.number" )
+      .table-number(v-on:click="openMenuBoard()") {{table.name}}
+      .wrap-clients
+        .client-count {{table.client_count}}
+        .client(v-for="client in table.clients" :class="{preparing:client.status=='preparing'}") t
 </template>
 <script>
 import axios from 'axios';
 
+function timeout(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 export default {
   data() {
     return {
-      store: {
-        order_cnt: 0,
-        order_amt: 0,
-      },
-      tables: [],
+      timeouts: [],
+      flag_restaring: false,
     }
   },
   filters: {
@@ -30,143 +31,162 @@ export default {
     }
   },
   computed: {
-    current_amt() {
-      let amt = 0;
-      for (let table of this.tables ) {
-       amt += table.total_price;
-      }
-      return amt;
-    }
+    tables() {
+      return this.$store.getters.tables;
+    } 
   },
   methods: {
-    select(table) {
-      let auth = this.$cookies.get('auth');
-      auth.table = {
-        number: table.number,
-        name: table.name,
-      };
-      //this.$cookies.set('auth',  auth, '1y', null, ".orderhae.com");
-      this.$cookies.set('auth',  auth, '1y', null, null);
-      location.href="http://order.orderhae.com";
+    openMenuBoard() {
+      this.$eventBus.$emit('openMenuBoard');
     },
-    getTablesInfo() {
-      let store_code = this.store.code;
-      let req_data = {
-        store_code: store_code,
-      };
-      axios
-      .get('http://api.auth.order.orderhae.com/tables', {params: req_data})
-      .then(function(res) {
-        console.log({res: res});
-        if (res.data) {
-          this.tables = [];
-          for (let item of res.data.tables) {
-            this.tables.push({
-              number: item.Tablet_number,
-              name: item.Tablet_name,
-              total_price: item.total_price,
-            });
+    restartAllClient() {
+      this.flag_restaring = true;
+      console.log('restart all client');
+
+      let clients = this.$store.getters.clients;
+
+      let count = 0;
+      for (let myid in clients) {
+        let client = clients[myid];
+
+        let timeout = setTimeout(function() {
+          console.log(myid, client);
+
+          client.tablet_number
+          //rn this.$store.getters.tables;
+
+          let data = {
+            type_msg: 'restart',
+            myid: myid,
           }
-          this.tables.sort((a, b) => {
-            return a.name - b.name;
-          });
-
-          this.store.order_cnt  = res.data.store.T_order_store_tablet_order_cnt;
-          //this.data.store.order_date = res.data.store.T_order_store_order_date;
-          this.store.order_amt  = res.data.store.T_order_store_tablet_amt;
-        }
-      }.bind(this)).catch(function(err) {
-        //alert('테이블 정보를 가져오지 못하였습니다.');
-        console.log({err: err});
-      }).finally(function () {
-      });
-    },
-    check() {
-      let auth = {};
-      try { 
-        auth = this.$cookies.get('auth');
-      } catch(e) {
+          this.$socket.emit('reqRestartClient', data);
+        }.bind(this), count * 3000);
+        this.timeouts.push(timeout);
+        count += 1;
       }
-
-      if (auth && auth.member) {
-      } else {
-        this.$router.push('/member');
-      }
-      if (auth && auth.store) {
-      } else {
-        this.$router.push('/store');
-      }
-      this.store = auth.store;
+      let timeout = setTimeout(function() {
+        this.flag_restaring = false;
+      }.bind(this), count * 3000);
+      this.timeouts.push(timeout);
+      
+      //let reqData = {store_code: this.auth.store.code};
+      //this.flag_restarting_clients = 1;
+      //console.log('reqRestartClients', reqData);
+      //this.$socket.emit('reqRestartClients', reqData);
     },
-    selectStore() {
-      this.$router.push('/store');
-    },
-    logout() {
-      this.$eventBus.$emit('logout');
+    cancelRestart() {
+      for (let timeout of this.timeouts) {
+        clearTimeout(timeout);
+      }
+      this.timeouts = [];
+      this.flag_restaring = false;
     },
   },
   beforeMount() {
-    this.check(); 
-    ;
   },
   mounted() {
-    this.getTablesInfo();
+  },
+  beforeDestroy() {
+    this.cancelRestart();
   },
 }
 </script>
 <style lang="scss">
-.top {
-  .title {
-    display:flex;
-    flex-grow:1;
-    .name {
-      display:flex;
-      flex-grow:1;
-    }
-  }
-}
-ul.table-list {
+@import "./scss/global.scss";
+#tables {
   display:flex;
-  flex-wrap:wrap;
-  margin:-12px;
-  padding:0;
-  list-style:none;
+  flex-direction:column;
+  width:100%;
 
-  li.table-item {
+  .top {
     display:flex;
-    flex-direction:column;
-    align-items: center;
-    justify-content: center;
-    flex-grow:1;
-    margin:12px;
+    padding:12px;
 
-    .name {
+    .button {
       display:flex;
       align-items: center;
       justify-content: center;
-      border:solid 2px #ffffff;
-      border-radius:200px;
-      font-size:20px;
-      font-weight:700;
-      min-width:3em;
+      margin:0px;
+      padding:0;
+      height:40px;
+      background-color:#fafafa;
+      color:#000000;
+      border-radius:100px;
+      flex-grow:1;
+      font-weight:900;
     }
-    .name:after {
-      content:'';
-      display:block;
-      padding-top:100%;
-    }
-    .name.active {
-      color:#ffffff;
-      background-color:#ff0000;
-      border-color:#ff0000;
-    }
-    .total-price {
-      margin-top:4px;
-      padding-top:4px;
-      border-top:solid 2px #ffffff;
+    .button.button-dark {
+      background-color:#484848;
       color:#ffffff;
     }
   }
-}
+  .table-list {
+    display:flex;
+    flex-wrap:wrap;
+    margin:0;
+    padding:0 12px;
+    overflow:scroll;
+    flex-grow:1;
+    -webkit-overflow-scrolling: touch; 
 
+    .table-item {
+      display:flex;
+      flex-direction:column;
+      align-items: center;
+      justify-content: flex-start;
+      flex-grow:1;
+      margin:0;
+      padding:8px 4px;
+
+      .table-number {
+        @include table-number;
+        background-color:#848484!important;
+        position:relative;
+      } 
+      .table-number.disconnected {
+        background-color:#484848!important;
+      }
+      .table-number.preparing {
+        background-color:#ff8400!important;
+      }
+
+      .wrap-clients {
+        display:flex;
+        z-index:10;
+        padding-top:8px;
+
+        .client-count {
+          display:flex;
+          align-items: center;
+          justify-content: center;
+          color:#ffffff;
+          border-radius:100px;
+          font-size:28px; 
+          font-weight:900;
+          border-radius:4px;
+          width:1.2em;
+          height:1.4em;
+        }
+
+        .client {
+          display:flex;
+          align-items: center;
+          justify-content: center;
+          background-color:#fafafa;
+          color:#ff0000;
+          font-size:28px;
+          font-weight:900;
+          border-radius:4px;
+          width:1.2em;
+          height:1.4em;
+          box-shadow: 0 0 4px 0 #000000;
+          margin: 0 -1px;
+        }
+        .client.preparing {
+          color:#000000;
+        }
+      }
+    }
+  }
+}
 </style>

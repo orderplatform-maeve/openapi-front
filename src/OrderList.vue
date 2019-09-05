@@ -1,6 +1,5 @@
 <template lang="pug">
 #orders
-  order-detail(v-bind:orders="orders" v-bind:auth="auth")
   .top
     .tab-group
       .order-list-tab-buttons.tab-buttons

@@ -1,6 +1,8 @@
 <template lang="pug">
   #orderview
+    menu-board
     modal-confirm
+    order-detail(v-bind:orders="orders" v-bind:auth="auth")
     .body
       .left
         router-view(v-bind:orders="orders" v-bind:auth="auth" v-bind:time="time" v-bind:stores="stores")
@@ -13,11 +15,12 @@
           img.logo(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/logo/torder_color_white.png")
           .store_name(v-on:click="removeAuth") {{store.name}}
           router-link.button(v-if="store.code" to="/order") 주문 보기
+          router-link.button(v-if="store.code" to="/table") 테이블 보기
 
         .bottom
           hr
-          .button(v-if="!flag_restarting_clients" v-on:click="restartClients()") 태블릿 새로고침
-          .button.active(v-if="flag_restarting_clients" ) 태블릿 새로고침 중
+          //.button(v-if="!flag_restarting_clients" v-on:click="restartClients()") 태블릿 새로고침
+          //.button.active(v-if="flag_restarting_clients" ) 태블릿 새로고침 중
           .tab-group
             .tab-name 태블릿 화면
             .tab-buttons
@@ -48,13 +51,93 @@ Vue.use(Vuex)
 
 const store = new Vuex.Store({
   state: {
-    count: 0
+    tables: {},
+    clients: {},
+    categorys: {},
+    products: {},
   },
   mutations: {
-    increment (state) {
-      state.count++
-    }
-  }
+    SET_TABLES: (state, tables) => {
+      for (let key in tables) {
+        tables[key].client_count = 0;
+      }
+      Vue.set(state, 'tables', tables);
+    },
+    SET_CLIENT: (state, client) => {
+
+      let items = state.tables;
+      if (items[client.tablet_number]) {
+        if (client.action == 'inc') {
+          items[client.tablet_number].client_count += 1;
+        } else if (client.action == 'dec') {
+          items[client.tablet_number].client_count -= 1;
+        }
+      }
+      Vue.set(state, 'tables', items);
+    },
+    SET_CLIENTS: (state, clients) => {
+      let tables = state.tables;
+      for (let key in tables) {
+        let table = tables[key]
+        table.client_count = 0;
+        table.clients = [];
+      }
+
+      for (let myid in clients) {
+        let client = clients[myid];
+        if (tables[client.tablet_number]) {
+          let table = tables[client.tablet_number];
+          table.client_count += 1;
+          table.clients.push(client);
+        }
+      }
+      Vue.set(state, 'clients', clients);
+      Vue.set(state, 'tables', tables);
+    },
+    SET_CATEGORYS: (state, categorys) => {
+      Vue.set(state, 'categorys', categorys);
+    },
+    SET_PRODUCTS: (state, products) => {
+      Vue.set(state, 'products', products);
+    },
+  },
+  actions: {
+    initTables: (context, tables) => {
+      context.commit('SET_TABLES', tables);
+    },
+    setClient: (context, client) => {
+      context.commit('SET_CLIENT', client);
+    },
+    setClients: (context, clients) => {
+      context.commit('SET_CLIENTS', clients);
+    },
+    setCategorys: (context, categorys) => {
+      context.commit('SET_CATEGORYS', categorys);
+    },
+    setProducts: (context, products) => {
+      context.commit('SET_PRODUCTS', products);
+    },
+  },
+  getters: {
+    tables: (state) => {
+      return state.tables;
+    },
+    table: (state, tablet_number) => {
+      return state.tables[tablet_number];
+    },
+    clients: (state) => {
+      return state.clients;
+    },
+    client: (state, myid) => {
+      return state.clients[myid];
+    },
+    categorys: (state) => {
+      return state.categorys;
+    },
+    products: (state) => {
+      return state.products;
+    },
+  },
 })
 
 export default {
@@ -88,9 +171,25 @@ export default {
       console.log('resStoreInfo', data);
       this.store = data;
     },
+    resClients(data) {
+      //console.table(data);
+      let clients = {};
+      for (let client of data) {
+        clients[client.myid] = client;
+      }
+      this.$store.dispatch('setClients', clients);
+    },
+    resTablesInfo(data) {
+      let items = {};
+      for (let table of data) {
+        items[table.code] = table;
+      }
+      this.$store.dispatch('initTables', items);
+      this.$socket.emit('reqClients', {store_code: this.auth.store.code});
+    },
     resOrders: function(data) {
       console.log('!!!resOrders', data);
-      console.table(data.items);
+      //console.table(data.items);
       //console.table(data);
       if (data.time) {
         this.time.start = data.time.start;
@@ -113,6 +212,34 @@ export default {
           } 
         }
       }
+    },
+    resCategorys: function(data) {
+      //console.log('resCategorys', data);
+      let categorys = {};
+      for (let category of data) {
+        let code = category['T_order_store_menu_code']; 
+        category.T_order_store_menu_depth = JSON.parse(category.T_order_store_menu_depth);
+        categorys[code] = category;
+      }
+      this.$store.dispatch('setCategorys', categorys);
+    },
+    resProducts: function(data) {
+      console.log('resProducts', data);
+      let products = {};
+      for (let product of data) {
+        let code = product['T_order_store_good_code']; 
+        //console.log(product.T_order_store_good_category);
+
+        product.T_order_store_good_category = JSON.parse(product.T_order_store_good_category);
+
+
+        if (!product.T_order_store_good_category) {
+          product.T_order_store_good_category = [];
+        }
+        //console.log(product.T_order_store_good_category);
+        products[code] = product;
+      }
+      this.$store.dispatch('setProducts', products);
     },
     resRestartClients: function(data) {
       console.log('resRestartClients', data);
@@ -144,13 +271,22 @@ export default {
           console.log(this.auth.store);
           this.reqOrders();
         }
+        /*
         this.$router.push({
           name: 'order',
         });
+        */
       }
     },
     restart: function(url) {
       this.restart(url);
+    },
+    updateClient: function(data) {
+      console.log('updateClient', data);
+      if (data.store_code == this.auth.store.code) {
+        this.$socket.emit('reqClients', {store_code: this.auth.store.code});
+        //this.$store.dispatch('setClient', data);
+      }
     },
   },
   computed: {
@@ -333,6 +469,14 @@ export default {
         console.log('reqOrders', reqData);
         this.$socket.emit('reqStoreInfo', reqData);
         this.$socket.emit('reqOrders', reqData);
+        this.$socket.emit('reqTablesInfo', reqData);
+        this.$socket.emit('reqCategorys', {
+          store_code: this.auth.store.code,
+        });
+        this.$socket.emit('reqProducts', {
+          store_code: this.auth.store.code,
+        });
+
       }
     },
     setStoreLength(length) {
@@ -390,7 +534,15 @@ export default {
 
     if (this.auth && this.auth.store && this.auth.store.code) {
       this.$eventBus.$emit('reqOrders'); 
-      this.$router.push({name: 'order'});
+
+      this.$socket.emit('reqCategorys', {
+        store_code: this.auth.store.code,
+      });
+      this.$socket.emit('reqProducts', {
+        store_code: this.auth.store.code,
+      });
+
+      //this.$router.push({name: 'order'});
     } else {
       this.$router.push({name: 'member'});
     }

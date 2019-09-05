@@ -22,14 +22,15 @@ import Logout from './Logout.vue'
 import OrderList from './OrderList.vue'
 import OrderDetail from './OrderDetail.vue'
 import ModalConfirm from './ConfirmModal.vue'
-
+import MenuBoard from './MenuBoard.vue'
 
 Vue.use(new VueSocketIO({
     debug: true,
     connection: 'http://1.socketio.orderview.torder.co.kr',
 }))
-Vue.component('order-detail', OrderDetail)
-Vue.component('modal-confirm', ModalConfirm)
+Vue.component('order-detail', OrderDetail);
+Vue.component('modal-confirm', ModalConfirm);
+Vue.component('menu-board', MenuBoard);
 
 /*
 new Vue({

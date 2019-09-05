@@ -66,6 +66,10 @@ export default {
       let cumulative_products = {};
 
       for (let order of this.orders) {
+        if (order.group.code == code_group) {
+          console.log(time_current_order);
+          console.log('match', order);
+        }
         if (order.group.code == code_group && order.time < time_current_order) {
           for (let product of order.products) {
             console.log('product', product.code, product.name, product.qty, product);
