@@ -39,10 +39,10 @@ export default {
     orders() {
       let orders = {};
       for (let order of this.table.orders) {
-        if (orders[order.good.code]) {
-          orders[order.good.code].qty += order.qty;
+        if (orders[order.good.id]) {
+          orders[order.good.id].qty += order.qty;
         } else {
-          orders[order.good.code] = {
+          orders[order.good.id] = {
             code_product: order.good.code,
             name_product:order.good.name,
             price_product: order.good.price,
