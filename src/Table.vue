@@ -5,7 +5,9 @@
     .button.button-dark(v-if="flag_restaring" v-on:click="cancelRestart()") 태블릿 새로고침 취소
   ul.table-list
     li.table-item(v-for="table in tables" :data-number="table.number" )
-      .table-number(v-on:click="openMenuBoard()") {{table.name}}
+      .wrap-info
+        .price-amt {{table.price_amt}}원
+      .table-number(v-on:click="openMenuBoard(table)" :class="{'empty-table':table.price_amt<1}") {{table.name}}
       .wrap-clients
         .client-count {{table.client_count}}
         .client(v-for="client in table.clients" :class="{preparing:client.status=='preparing'}") t
@@ -36,8 +38,12 @@ export default {
     } 
   },
   methods: {
-    openMenuBoard() {
-      this.$eventBus.$emit('openMenuBoard');
+    openMenuBoard(table) {
+      if (table.price_amt) {
+        this.$eventBus.$emit('openTableOrders', table);
+      } else {
+        this.$eventBus.$emit('openMenuBoard', table);
+      } 
     },
     restartAllClient() {
       this.flag_restaring = true;
@@ -140,16 +146,23 @@ export default {
 
       .table-number {
         @include table-number;
-        background-color:#848484!important;
         position:relative;
       } 
+      .table-number.empty-table {
+        background-color:#484848!important;
+      }
       .table-number.disconnected {
         background-color:#484848!important;
       }
       .table-number.preparing {
         background-color:#ff8400!important;
       }
-
+      .wrap-info {
+        .price-amt {
+          font-weight:900;
+          font-size:20px;
+        }
+      }
       .wrap-clients {
         display:flex;
         z-index:10;

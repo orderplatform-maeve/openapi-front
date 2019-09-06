@@ -2,9 +2,13 @@
 #menuBoard(v-if="show")
   .background(v-on:click="close")
   .container
-    //.top
-      .title 주문하기
-      .title-cart {{select_products_length}}가지 {{select_products_qty}}개 {{select_products_price}}원
+    .top
+      .wrap
+        .table-number {{table.name}}
+      .wrap
+        .title 주문하기
+      .buttons
+        .button(v-on:click="openTableOrders(table)") 주문내역보기
     .body
       .left
         ul.list-category.first
@@ -30,15 +34,18 @@
     .foot
       .buttons
         .button(v-on:click="close") 닫기
-        .button.button-submit()
+        .button.button-red(v-on:click="submit")
           .info {{select_products_length}}가지 {{select_products_qty}}개 {{select_products_price}}원
           .text 주문하기
 </template>
 <script>
+import axios from 'axios';
+
 export default {
   data() {
     return {
       show: false,
+      table: {},
       first_category: undefined,
       first_category_code: undefined,
       second_category: undefined,
@@ -69,6 +76,44 @@ export default {
     }
   },
   methods: {
+    submit() {
+      let auth = this.$store.getters.auth;
+      let store_shop_code = auth.store.code;
+      let tablet_number = this.table.code;
+      let store_good_code = [];
+      let store_good_qty = [];
+
+      //console.log(this.table);
+      //console.log('auth', auth);
+      
+
+      let frm = new FormData();
+      frm.set('store_shop_code', store_shop_code);
+      frm.set('tablet_number', tablet_number);
+      for (let code in this.select_products) {
+        let item = this.select_products[code];
+        let code = item.product.T_order_store_good_code;
+        let qty = item.qty;
+
+        store_good_code.push(code);
+        store_good_qty.push(qty);
+        frm.append('store_good_code[]', code);
+        frm.append('store_good_qty[]', qty);
+      }
+      axios
+      .post('http://rest.torder.co.kr/shop/order', frm)
+      .then(function(res) {
+        console.log(res);
+        this.close();
+      }.bind(this)).catch(function(err) {
+        console.log({err: err});
+      }).finally(function () {
+      });
+    },
+    openTableOrders(table) {
+      this.$eventBus.$emit('openTableOrders', table);
+      this.close();
+    },
     plusQtyProduct(select_product) {
       select_product.qty += 1;
       this.updateCart();
@@ -128,6 +173,17 @@ export default {
 
       this.select_products_qty = qty;
       this.select_products_price = price;
+
+      let keys = Object.keys(this.select_products).sort(function(a, b) {
+        return this.select_products[b].time - this.select_products[a].time;
+
+      }.bind(this));
+
+      this.select_products_sorted = [];
+      for (let code of keys) {
+        this.select_products_sorted.push(this.select_products[code])
+      }
+
     },
     selectProduct(product) {
       let code = product.T_order_store_good_code;
@@ -146,21 +202,13 @@ export default {
         //this.set(this.select_products[code], 'qty', 1);
       } 
 
-      let keys = Object.keys(this.select_products).sort(function(a, b) {
-        return this.select_products[b].time - this.select_products[a].time;
-
-      }.bind(this));
-
-      this.select_products_sorted = [];
-      for (let code of keys) {
-        this.select_products_sorted.push(this.select_products[code])
-      }
 
       this.updateCart();
       this.show_select_products = false;
       this.show_select_products = true;
     },
-    open() {
+    open(table) {
+      this.table = table;
       for (let code in this.$store.getters.categorys) {
         let category = this.$store.getters.categorys[code];
 
@@ -212,99 +260,16 @@ export default {
 }
 </script>
 <style lang="scss">
+@import "./scss/global.scss";
 #menuBoard {
-  position:fixed;
-  top:0;
-  left:0;
-  display:flex;
-  align-items: center;
-  justify-content: center;
-  
-  width:100%;
-  height:100%;
-  z-index:201;
-
-  > .background {
-    position:absolute;
-    top:0;
-    left:0;
-    display:flex;
-    width:100%;
-    height:100%;
-    z-index:102;
-    background-color:rgba(0,0,0,0.8);
-  }
-  > .container {
-    display:flex;
-    flex-direction:column;
-    align-items: center;
-    justify-content: center;
-    width:90%;
-    height:80%;
-    z-index:103;
-    flex-grow:0 !important;
-
+  @include modal;
+  .container {
     > .top {
-      display:flex;
-      flex-shrink:0;
-      flex-grow:0 !important;
-      border-top-left-radius:24px;
-      border-top-right-radius:24px;
-      background-color:#ffffff;
-      width:100%;
-
-      .title {
-        display:flex;
-        padding:24px;
-        color:#202020;
-        font-weight:900;
-        font-size:24px;
-        flex-grow:1;
-        align-items: center;
-        justify-content: center;
-      }
-      .title-cart {
-        display:flex;
-        padding:24px;
-        color:#202020;
-        font-weight:900;
-        font-size:24px;
-        align-items: center;
-        justify-content: center;
-        width:30%
-      }
-      .button {
-        display:flex;
-        background-color:#202020;
-        align-items: center;
-        justify-content: center;
-        color:#ffffff;
-        border-radius:100px;
-        padding:0 24px;
-        margin:12px 24px;
-        font-weight:900;
-        font-size:24px;
-      }
-      .button-close {
-      }
     }
     > .body {
-      display:flex;
-      flex-shrink:1;
-      flex-grow:1;
-      width:100%;
-      background-color:#ffffff;
-      overflow:scroll;
-      border-top: solid 1px #eaeaea;
-      border-bottom: solid 1px #eaeaea;
-      border-top-left-radius:24px;
-      border-top-right-radius:24px;
-      
       > .left {
-        display:flex;
         width:70%;
         overflow:scroll;
-        padding-left:24px;
 
         .list-category {
           display:flex;
@@ -312,7 +277,7 @@ export default {
           flex-shrink:0;
           flex-direction:column;
           margin:0;
-          padding:24px 0 0 0;
+          padding:0;
           overflow:scroll;
         
           .item-category {
@@ -325,7 +290,7 @@ export default {
             color:#ffffff;
             font-size:20px;
             font-weight:900;
-            border-radius:100px;
+            border-radius:24px;
             margin:4px;
             word-break:keep-all;
           }
@@ -340,7 +305,7 @@ export default {
           flex-grow:1;
           flex-direction:column;
           margin:0;
-          padding:24px 0 0 0;
+          padding:0;
           overflow:scroll;
 
           .item-product {
@@ -351,7 +316,7 @@ export default {
             color:#ffffff;
             font-size:20px;
             padding:12px 24px;
-            border-radius:100px;
+            border-radius:24px;
             margin:4px;
 
             .name {
@@ -372,13 +337,7 @@ export default {
         } 
       }
       > .right {
-        display:flex;
-        flex-direction:column;
-        padding:0 24px 0 24px;
-        overflow:scroll;
-        color:#202020;
         width:30%;
-
         h2 {
           margin:4px;
         }
@@ -387,8 +346,10 @@ export default {
           display:flex;
           flex-direction:column;
           margin:0;
-          padding:24px 0 0 0;
+          padding:0;
+          width:100%;
           word-break:keep-all;
+          overflow:scroll;
 
           .select-product-item {
             display:flex;
@@ -397,8 +358,8 @@ export default {
             padding:4px 0;
             border-top:solid 1px #eaeaea;
             font-weight:900;
-            font-size:20px;
-            margin: 0 -8px;
+            font-size:16px;
+            margin: 0;
 
             > .button {
               display:flex;
@@ -440,7 +401,7 @@ export default {
                 justify-content: space-between;
                 margin-top:4px;
                 padding-top:4px;
-                font-size:0.8em;
+                font-size:1em;
 
                 .price {
                 }
@@ -452,51 +413,6 @@ export default {
           .select-product-item:first-child {
             border-top:none;
           }
-        }
-      }
-    }
-    > .foot {
-      display:flex;
-      width:100%;
-      flex-shrink:0;
-      flex-grow:0 !important;
-      border-bottom-left-radius:24px;
-      border-bottom-right-radius:24px;
-      background-color:#ffffff;
-
-      .buttons {
-        display:flex;
-        align-items: center;
-        justify-content: center;
-        width:100%;
-        padding:24px;
-
-        .button {
-          margin:0;
-          display:flex;
-          flex-grow:1;
-          align-items: center;
-          justify-content: center;
-          height:80px;
-          border-radius:100px;
-          font-size:32px;
-          font-weight:900;
-          background-color:#202020;
-          color:#ffffff;
-          margin-left:24px;
-        }
-        .button:first-child {
-          margin-left:0;
-        }
-        .button-submit {
-          display:flex;
-          flex-grow:1;
-          background-color:#ff0000;
-          justify-content: center;
-         
-          .info {
-            margin-right:12px;
-          } 
         }
       }
     }

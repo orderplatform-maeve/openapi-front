@@ -2,6 +2,7 @@
   #orderview
     menu-board
     modal-confirm
+    modal-table-orders
     order-detail(v-bind:orders="orders" v-bind:auth="auth")
     .body
       .left
@@ -16,6 +17,7 @@
           .store_name(v-on:click="removeAuth") {{store.name}}
           router-link.button(v-if="store.code" to="/order") 주문 보기
           router-link.button(v-if="store.code" to="/table") 테이블 보기
+          //router-link.button(v-if="store.code && ['AA221111','AA221123'].includes(store.code)" to="/table") 테이블 보기
 
         .bottom
           hr
@@ -55,16 +57,21 @@ const store = new Vuex.Store({
     clients: {},
     categorys: {},
     products: {},
+    pos: {},
+    auth: {},
   },
   mutations: {
+    SET_AUTH: (state, auth) => {
+      Vue.set(state, 'auth', auth);
+    },
     SET_TABLES: (state, tables) => {
       for (let key in tables) {
         tables[key].client_count = 0;
+        tables[key].price_amt = 0;
       }
       Vue.set(state, 'tables', tables);
     },
     SET_CLIENT: (state, client) => {
-
       let items = state.tables;
       if (items[client.tablet_number]) {
         if (client.action == 'inc') {
@@ -82,7 +89,6 @@ const store = new Vuex.Store({
         table.client_count = 0;
         table.clients = [];
       }
-
       for (let myid in clients) {
         let client = clients[myid];
         if (tables[client.tablet_number]) {
@@ -100,10 +106,54 @@ const store = new Vuex.Store({
     SET_PRODUCTS: (state, products) => {
       Vue.set(state, 'products', products);
     },
+    SET_POS: (state, data) => {
+      Vue.set(state, 'pos', data);
+    },
+    MATCH_TABLES_POS: (state) => {
+      let tables = state.tables;
+      let pos = state.pos;
+      if (Object.keys(tables).length && Object.keys(pos).length) {
+        for (let key in tables) {
+          let table = tables[key];
+          let code_pos = table.code_pos;
+
+          if (pos[code_pos]) {
+            let item = pos[code_pos];
+            let price_amt = 0;
+            let qty_amt = 0;
+            for (let order of item.orders) {
+              price_amt += order.good.price;
+              //order.good.name;
+              //order.good.id;
+              qty_amt += order.qty;
+            }
+            table.qty_amt = qty_amt;
+            table.price_amt = price_amt;
+            table.orders = item.orders;
+          }
+          /* 
+          console.log(item.id, tables[code_pos_table]);
+          if (tables[code_pos_table]) {
+            console.log(price_amt);
+            tables[code_pos_table].price_amt = price_amt;
+          }
+          */
+        }
+      }
+      Vue.set(state, 'tables', tables);
+    },
   },
   actions: {
-    initTables: (context, tables) => {
+    setAuth: (context, auth) => {
+      context.commit('SET_AUTH', auth);
+    },
+    setTables: (context, tables) => {
       context.commit('SET_TABLES', tables);
+      context.commit('MATCH_TABLES_POS');
+    },
+    setPos: (context, data) => {
+      context.commit('SET_POS', data);
+      context.commit('MATCH_TABLES_POS');
     },
     setClient: (context, client) => {
       context.commit('SET_CLIENT', client);
@@ -119,6 +169,9 @@ const store = new Vuex.Store({
     },
   },
   getters: {
+    auth: (state) => {
+      return state.auth;
+    },
     tables: (state) => {
       return state.tables;
     },
@@ -136,6 +189,9 @@ const store = new Vuex.Store({
     },
     products: (state) => {
       return state.products;
+    },
+    pos: (state) => {
+      return state.pos;
     },
   },
 })
@@ -172,7 +228,6 @@ export default {
       this.store = data;
     },
     resClients(data) {
-      //console.table(data);
       let clients = {};
       for (let client of data) {
         clients[client.myid] = client;
@@ -184,8 +239,18 @@ export default {
       for (let table of data) {
         items[table.code] = table;
       }
-      this.$store.dispatch('initTables', items);
+      this.$store.dispatch('setTables', items);
       this.$socket.emit('reqClients', {store_code: this.auth.store.code});
+    },
+    resPos: function(data) {
+      console.log('!!!!!!!!!!!!!!!resPos', data);
+      if (data && data.storeCode && data.storeCode == this.auth.store.code) {
+        let pos_tables = {}
+        for (let item of data.data) {
+          pos_tables[item.id] = item;
+        }
+        this.$store.dispatch('setPos', pos_tables);
+      }
     },
     resOrders: function(data) {
       console.log('!!!resOrders', data);
@@ -269,7 +334,7 @@ export default {
             code: data.store_code,
           } 
           console.log(this.auth.store);
-          this.reqOrders();
+          this.initStore();
         }
         /*
         this.$router.push({
@@ -461,9 +526,23 @@ export default {
       }
       window.location = url;
     },
+    initStore() {
+      console.log('!!!!!!!!!! try init store');
+      if (this.auth && this.auth.store && this.auth.store.code) {
+        let reqData = {store_code: this.auth.store.code};
+        this.orders = [];
+        console.log('reqOrders', reqData);
+
+        this.$socket.emit('reqStoreInfo', reqData);
+        this.$socket.emit('reqOrders', reqData);
+        this.$socket.emit('reqTablesInfo', reqData);
+        this.$socket.emit('reqPos', reqData);
+        this.$socket.emit('reqCategorys', reqData);
+        this.$socket.emit('reqProducts', reqData);
+      }
+    },
     reqOrders() {
       console.log('!!!!!!!!!!try reqOrders');
-      this.orders = []; 
       if (this.auth && this.auth.store && this.auth.store.code) {
         let reqData = {store_code: this.auth.store.code};
         console.log('reqOrders', reqData);
@@ -476,7 +555,6 @@ export default {
         this.$socket.emit('reqProducts', {
           store_code: this.auth.store.code,
         });
-
       }
     },
     setStoreLength(length) {
@@ -491,11 +569,13 @@ export default {
         auth = {};
       }
       this.auth = auth;
+      this.$store.dispatch('setAuth', auth);
     },
     saveAuth() {
       let auth = this.auth;
       console.log('saveAuth', auth);
       this.$cookies.set('auth',  auth, '1y', null, null);
+      this.$store.dispatch('setAuth', auth);
     },
     removeAuth() {
       if (confirm('매장을 떠나시겠습니까?')) {
@@ -529,10 +609,13 @@ export default {
     this.$eventBus.$on('logout', this.logout);
     this.$eventBus.$on('saveAuth', this.saveAuth); 
     this.$eventBus.$on('removeAuth', this.removeAuth); 
-    this.$eventBus.$on('reqOrders', this.reqOrders);
+    this.$eventBus.$on('reqOrders', this.initStore);
     this.$eventBus.$on('setStores', this.setStores);
 
     if (this.auth && this.auth.store && this.auth.store.code) {
+      this.initStore();
+
+      /*
       this.$eventBus.$emit('reqOrders'); 
 
       this.$socket.emit('reqCategorys', {
@@ -541,6 +624,7 @@ export default {
       this.$socket.emit('reqProducts', {
         store_code: this.auth.store.code,
       });
+      */
 
       //this.$router.push({name: 'order'});
     } else {

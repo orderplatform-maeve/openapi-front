@@ -307,9 +307,9 @@ export default {
         flex-grow:1;
         align-items: center;
         justify-content: center;
-        height:80px;
+        height:60px;
         border-radius:100px;
-        font-size:32px;
+        font-size:24px;
         font-weight:900;
         background-color:#ffffff;
         color:#202020;

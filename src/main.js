@@ -23,6 +23,7 @@ import OrderList from './OrderList.vue'
 import OrderDetail from './OrderDetail.vue'
 import ModalConfirm from './ConfirmModal.vue'
 import MenuBoard from './MenuBoard.vue'
+import TableOrders from './TableOrders.vue'
 
 Vue.use(new VueSocketIO({
     debug: true,
@@ -30,6 +31,7 @@ Vue.use(new VueSocketIO({
 }))
 Vue.component('order-detail', OrderDetail);
 Vue.component('modal-confirm', ModalConfirm);
+Vue.component('modal-table-orders', TableOrders);
 Vue.component('menu-board', MenuBoard);
 
 /*
