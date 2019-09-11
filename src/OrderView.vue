@@ -122,7 +122,7 @@ const store = new Vuex.Store({
             let price_amt = 0;
             let qty_amt = 0;
             for (let order of item.orders) {
-              price_amt += order.good.price;
+              price_amt += parseInt(order.good.price);
               //order.good.name;
               //order.good.id;
               qty_amt += order.qty;
