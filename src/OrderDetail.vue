@@ -8,9 +8,9 @@
         .table-number {{order.table.name}}
         .msg
           span.title(v-if="order.products[0].code=='99999'") 호출이요
-          span.title(v-else-if="order.group.seq==1") 첫 주문이요
+          span.title(v-else-if="order.products[0].code=='88888'") 셋팅완료
           span.title(v-else) 주문이요
-        .first(v-if="order.group.seq==1") 첫 주문
+        .first(v-if="order.products[0].code!='88888'&&order.group.seq==1") 첫 주문
         .commit(:class="{commited:order.commit.time}") {{order.commit.time ? '확인' : '미확인'}}
         .time {{order.time | moment("A hh:mm:ss") }}
     .container-body
