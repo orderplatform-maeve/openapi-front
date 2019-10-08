@@ -65,14 +65,30 @@ export default {
       let time_current_order = this.order.time;
       let cumulative_products = {};
 
+      let tmp_prev_seq = 0;
+
+      //console.log('select', this.order.code);
+      if (this.order.group.seq > 1) {
+        for (let order of this.orders) {
+          if (this.order.table.code == order.table.code && order.time < time_current_order) {
+            if (tmp_prev_seq > 0 && tmp_prev_seq < order.group.seq) {
+              break
+            }
+
+            //console.log('match', this.order.table.code, order.table.code, order.group.seq, order.group.code);
+            tmp_prev_seq = order.group.seq;
+          }
+        }
+      }
+
       for (let order of this.orders) {
         if (order.group.code == code_group) {
-          console.log(time_current_order);
-          console.log('match', order);
+          //console.log(time_current_order);
+          //console.log('match', order);
         }
         if (order.group.code == code_group && order.time < time_current_order) {
           for (let product of order.products) {
-            console.log('product', product.code, product.name, product.qty, product);
+            //console.log('product', product.code, product.name, product.qty, product);
 
             if (cumulative_products[product.code]) {
               cumulative_products[product.code].qty += product.qty;
