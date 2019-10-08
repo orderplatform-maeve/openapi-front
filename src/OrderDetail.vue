@@ -75,12 +75,30 @@ export default {
               break
             }
 
+            for (let product of order.products) {
+              //console.log('product', product.code, product.name, product.qty, product);
+
+              if (cumulative_products[product.code]) {
+                cumulative_products[product.code].qty += product.qty;
+              } else {
+                cumulative_products[product.code] = {
+                  code: product.code, 
+                  price: product.price,
+                  name: product.name,
+                  first: product.first,
+                  qty: product.qty,
+                };
+              }
+            }
+
+
             //console.log('match', this.order.table.code, order.table.code, order.group.seq, order.group.code);
             tmp_prev_seq = order.group.seq;
           }
         }
       }
 
+      /*
       for (let order of this.orders) {
         if (order.group.code == code_group) {
           //console.log(time_current_order);
@@ -104,6 +122,7 @@ export default {
           }
         }
       }
+      */
       this.cumulative_products= cumulative_products;
 
       clearInterval(this.interval);
