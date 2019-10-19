@@ -16,7 +16,7 @@
           img.logo(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/logo/torder_color_white.png")
           .store_name(v-on:click="removeAuth") {{store.name}}
           router-link.button(v-if="store.code" to="/order") 주문 보기
-          router-link.button(v-if="store.code" to="/table") 테이블 보기
+          router-link.button(v-if="store.code" to="/table") 테이블 보기<br/>(베타 서비스)
           //router-link.button(v-if="store.code && ['AA221111','AA221123','TOD_FBK_002'].includes(store.code)" to="/table") 테이블 보기
 
         .bottom
