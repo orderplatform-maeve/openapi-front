@@ -414,7 +414,7 @@ export default {
           alert('매장이 없습니다.');
         }
       }.bind(this)).catch(function(err) {
-        alert('매장 정보를 가져오지 못하였습니다.');
+        //alert('매장 정보를 가져오지 못하였습니다.');
         console.log({err: err});
       }).finally(function () {
       });
