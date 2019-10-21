@@ -20,12 +20,23 @@
             .count {{product.qty}}개
             .name {{product.name}}
             .first(v-if="product.first") 첫 주문
+            ul.option-list(v-if="product.options")
+              li.option-item(v-for="option in product.options")
+                span + 
+                .count {{option.qty}}개
+                .name  {{option.name}}
       .wrap-c-product-list(v-if="Object.keys(cumulative_products).length")
         .title 이전주문내역
         ul.c-product-list
           li.order-item(v-for="c_product in cumulative_products")
             .name {{c_product.name}}
             .count {{c_product.qty}}개
+            ul.option-list(v-if="c_product.options")
+              li.option-item(v-for="option in c_product.options")
+                span + 
+                .count {{option.qty}}개
+                .name  {{option.name}}
+
     .container-foot
       .msg {{seconds}}초 후 닫혀요.
       .buttons
@@ -57,6 +68,7 @@ export default {
     },
     newOrder(order) {
       console.log('!newOrder', order);
+
       this.order = order;
       this.show = true;
 
@@ -76,53 +88,38 @@ export default {
             }
 
             for (let product of order.products) {
-              //console.log('product', product.code, product.name, product.qty, product);
+              let tmp_code = [];
+              tmp_code.push(product.code);
 
-              if (cumulative_products[product.code]) {
-                cumulative_products[product.code].qty += product.qty;
+              if (product.hasOwnProperty('options')) {
+                for(let option of product.options) {
+                  tmp_code.push([option.code, option.qty].join(':'));
+                }
+              }
+              product.new_code = tmp_code.join('-');
+
+              console.log('!!!!new_code', product.new_code);
+
+              if (cumulative_products[product.new_code]) {
+                cumulative_products[product.new_code].qty += product.qty;
               } else {
-                cumulative_products[product.code] = {
+                cumulative_products[product.new_code] = {
                   code: product.code, 
                   price: product.price,
                   name: product.name,
+                  options: product.options,
                   first: product.first,
                   qty: product.qty,
                 };
               }
             }
 
-            //console.log('match', this.order.table.code, order.table.code, order.group.seq, order.group.code);
             tmp_prev_seq = order.group.seq;
           }
         }
       }
 
-      /*
-      for (let order of this.orders) {
-        if (order.group.code == code_group) {
-          //console.log(time_current_order);
-          //console.log('match', order);
-        }
-        if (order.group.code == code_group && order.time < time_current_order) {
-          for (let product of order.products) {
-            //console.log('product', product.code, product.name, product.qty, product);
-
-            if (cumulative_products[product.code]) {
-              cumulative_products[product.code].qty += product.qty;
-            } else {
-              cumulative_products[product.code] = {
-                code: product.code, 
-                price: product.price,
-                name: product.name,
-                first: product.first,
-                qty: product.qty,
-              };
-            }
-          }
-        }
-      }
-      */
-      this.cumulative_products= cumulative_products;
+      this.cumulative_products = cumulative_products;
 
       clearInterval(this.interval);
       this.seconds = 10;
@@ -226,13 +223,29 @@ export default {
           -webkit-overflow-scrolling: touch; 
     
           .product-item {
-            word-break:break-all;
             display:flex;
             flex-shrink:0;
+            flex-direction: row;
+            flex-wrap: wrap;
+            word-break:break-all;
             align-items: center;
             margin-bottom:12px;
             font-size:48px;
             font-weight:900;
+
+            .option-list {
+              display:flex;
+              flex-direction:column;
+              margin:0;
+              padding:0;
+              font-size:0.8em;
+              width:100%;
+
+              .option-item {
+                display:flex;
+                margin-left:88px;
+              }
+            }
 
             .msg {
             }
@@ -295,13 +308,30 @@ export default {
          
           .order-item {
             display:flex;
+            flex-direction: row;
+            flex-wrap: wrap;
             margin:0;
             padding:8px 0;
             font-size:20px;
             align-items: flex-start;
+
             border {
               bottom:solid 1px #484848;
             }
+
+            .option-list {
+              display:flex;
+              flex-direction:column;
+              margin:0;
+              padding:0;
+              font-size:0.8em;
+              width:100%;
+
+              .option-item {
+                display:flex;
+              }
+            }
+
 
             .name {
               flex-grow:1;
