@@ -71,7 +71,7 @@ export default {
       if (this.order.group.seq > 1) {
         for (let order of this.orders) {
           if (this.order.table.code == order.table.code && order.time < time_current_order) {
-            if (tmp_prev_seq > 0 && tmp_prev_seq < order.group.seq) {
+            if (tmp_prev_seq > 0 && tmp_prev_seq <= order.group.seq) {
               break
             }
 
@@ -90,7 +90,6 @@ export default {
                 };
               }
             }
-
 
             //console.log('match', this.order.table.code, order.table.code, order.group.seq, order.group.code);
             tmp_prev_seq = order.group.seq;
