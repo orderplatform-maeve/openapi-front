@@ -22,7 +22,7 @@
             .first(v-if="product.first") 첫 주문
             ul.option-list(v-if="product.options")
               li.option-item(v-for="option in product.options")
-                span + 
+                span +
                 .count {{option.qty}}개
                 .name  {{option.name}}
       .wrap-c-product-list(v-if="Object.keys(cumulative_products).length")
@@ -33,7 +33,7 @@
             .count {{c_product.qty}}개
             ul.option-list(v-if="c_product.options")
               li.option-item(v-for="option in c_product.options")
-                span + 
+                span +
                 .count {{option.qty}}개
                 .name  {{option.name}}
 
