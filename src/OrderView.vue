@@ -263,6 +263,7 @@ export default {
       if (data.items.length) {
         for (let item of data.items) {
           this.orders.push(item);
+          console.log(item);
         }
       }
       //this.$eventBus.$emit('setOrders',data); 
