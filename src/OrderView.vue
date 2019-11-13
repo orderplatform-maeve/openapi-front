@@ -276,8 +276,9 @@ export default {
           }
           //console.log('prev_product_codes', prev_product_codes);
           for (let product of item.products) {
-            if (!(product.code in prev_product_codes)) {
+            if (prev_product_codes.indexOf(product.code)) {
               //console.log('first', product); 
+              item.first = 0;
             }
           }
 
