@@ -260,29 +260,11 @@ export default {
         this.time.start = data.time.start;
         this.time.end = data.time.end;
       }
+
       if (data.items.length) {
         for (let item of data.items) {
+          item.first = false;
 
-          let prev_product_codes = [];
-          let prev_orders = this.orders.filter(order => order.code_group == item.code_group)
-          for (let prev_order of prev_orders) {
-            for (let prev_product of prev_order.products) {
-              //console.log('prev_product.code', prev_product.code);
-              //console.log(prev_product.code in prev_product_codes);
-              if (!(prev_product.code in prev_product_codes)) {
-                prev_product_codes.push(prev_product.code);
-              }
-            }
-          }
-          //console.log('prev_product_codes', prev_product_codes);
-          for (let product of item.products) {
-            if (prev_product_codes.indexOf(product.code)) {
-              //console.log('first', product); 
-              item.first = 0;
-            }
-          }
-
-          item.first = 1;
 
           this.orders.push(item);
         }
@@ -345,25 +327,6 @@ export default {
 
       let item = data;
 
-      let prev_product_codes = [];
-      let prev_orders = this.orders.filter(order => order.code_group == item.code_group)
-      for (let prev_order of prev_orders) {
-        for (let prev_product of prev_order.products) {
-          //console.log('prev_product.code', prev_product.code);
-          //console.log(prev_product.code in prev_product_codes);
-          if (!(prev_product.code in prev_product_codes)) {
-            prev_product_codes.push(prev_product.code);
-          }
-        }
-      }
-      //console.log('prev_product_codes', prev_product_codes);
-      for (let product of item.products) {
-        if (!(product.code in prev_product_codes)) {
-          //console.log('first', product); 
-        }
-      }
-
-      item.first = 1;
 
       this.orders.push(data);
       this.$eventBus.$emit('newOrder',data); 

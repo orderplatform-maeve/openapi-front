@@ -23,7 +23,7 @@
         span.title(v-else-if="order.products[0].code=='88888'") 셋팅완료
         span.title(v-else) 주문이요
       .visit(v-if="order.products[0].code!='88888'&&order.group.seq==1") 입장
-      .first(v-if="order.first==1") 첫 주문
+      .first(v-if="order.first") 첫 주문
       .commit(:class="{commited:order.commit.time}") {{order.commit.time ? '확인' : '미확인'}}
       .time {{order.time | moment("A hh:mm:ss") }}
 </template>
