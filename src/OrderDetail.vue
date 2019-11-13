@@ -19,7 +19,7 @@
           li.product-item(v-for="product in order.products")
             .count {{product.qty}}개
             .name {{product.name}}
-            .first(v-if="!(product.code in Object.keys(cumulative_products))") 첫 주문
+            .first(v-if="Object.keys(cumulative_products).indexOf(product.code) < 0") 첫 주문
             ul.option-list(v-if="product.options")
               li.option-item(v-for="option in product.options")
                 span +
