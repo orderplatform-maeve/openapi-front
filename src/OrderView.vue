@@ -342,6 +342,8 @@ export default {
       }
       console.log('!orderview', data); 
 
+      let item = data;
+
       let prev_product_codes = [];
       let prev_orders = this.orders.filter(order => order.code_group == item.code_group)
       for (let prev_order of prev_orders) {
