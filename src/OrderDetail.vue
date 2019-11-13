@@ -19,7 +19,7 @@
           li.product-item(v-for="product in order.products")
             .count {{product.qty}}개
             .name {{product.name}}
-            .first(v-if="product.first") 첫 주문
+            .first(v-if="!(product.code in Object.keys(cumulative_products))") 첫 주문
             ul.option-list(v-if="product.options")
               li.option-item(v-for="option in product.options")
                 span +
@@ -119,8 +119,7 @@ export default {
         }
       }
 
-      this.cumulative_products = cumulative_products;
-
+      this.cumulative_products = cumulative_products; 
       clearInterval(this.interval);
       this.seconds = 10;
       this.interval = setInterval(function(){
