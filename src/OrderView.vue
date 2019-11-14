@@ -450,13 +450,15 @@ export default {
             tmp_prev_seq = orderTmp.group.seq;
           }
         }
-        for(let product of order.products) {
-          if (Object.keys(cumulative_products).indexOf(product.code) < 0) {
-            product.first = true;
-            order.first = true;
-          } else {
-            product.first = false;
-          }
+      }
+
+      order.first = false;
+      for(let product of order.products) {
+        if (Object.keys(cumulative_products).indexOf(product.code) < 0) {
+          product.first = true;
+          order.first = true;
+        } else {
+          product.first = false;
         }
       }
       order.cumulative_products = cumulative_products; 
