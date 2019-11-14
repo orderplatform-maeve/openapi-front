@@ -261,12 +261,25 @@ export default {
         this.time.end = data.time.end;
       }
 
+      
       if (data.items.length) {
-        for (let item of data.items) {
-          item.first = false;
+        let items = data.items;
 
 
+        for (let item of items) {
+          //console.log('!time', item.time);
           this.orders.push(item);
+        }
+      }
+
+      if (!data.LastEvaluatedKey) {
+        this.orders.sort(function(a, b) {
+          return b.time - a.time;
+        });
+
+        for (let index = this.orders.length - 1 ; index > -1 ; index--) {
+          let order  = this.orders[index];
+          this.cumulativeProducts(order);
         }
       }
       //this.$eventBus.$emit('setOrders',data); 
@@ -315,21 +328,33 @@ export default {
       alert(data.count + '대의 태블렛에 새로고침을 요청 했습니다.');
       this.flag_restarting_clients = 0;
     },
-    newOrder: function(data) {
+    newOrder: function(order) {
       if (this.auth && this.auth.store && this.auth.store.code) {
-        if (this.auth.store.code != data.store.code) {
+        if (this.auth.store.code != order.store.code) {
           return
         }
       } else {
         return 
       }
-      console.log('!orderview', data); 
+      console.log('!orderview', order); 
 
-      let item = data;
+      this.orders.push(order);
+      this.orders.sort(function(a, b) {
+        return b.time - a.time;
+      });
 
+      this.cumulativeProducts(order);
 
-      this.orders.push(data);
-      this.$eventBus.$emit('newOrder',data); 
+      for(let product of order.products) {
+        if (Object.keys(order.cumulative_products).indexOf(product.code) < 0) {
+          product.first = true;
+          order.first = true;
+        } else {
+          product.first = false;
+        }
+      }
+
+      this.$eventBus.$emit('newOrder',order); 
     },
     youAre: function(data) {
       console.log('youAre', data, data.store_code); 
@@ -383,6 +408,61 @@ export default {
     },
   },
   methods: {
+    cumulativeProducts: function(order) {
+      let code_group = order.group.code;
+      let code_order = order.code;
+      let time_current_order = order.time;
+      let cumulative_products = {};
+      let tmp_prev_seq = 0;
+
+      if (order.group.seq > 1) {
+        for (let orderTmp of this.orders) {
+          if (order.table.code == orderTmp.table.code && orderTmp.time < order.time) {
+            if (tmp_prev_seq > 0 && tmp_prev_seq <= orderTmp.group.seq) {
+              break
+            }
+
+            for (let product of orderTmp.products) {
+              let tmp_code = [];
+              tmp_code.push(product.code);
+
+              if (product.hasOwnProperty('options')) {
+                for(let option of product.options) {
+                  tmp_code.push([option.code, option.qty].join(':'));
+                }
+              }
+              product.new_code = tmp_code.join('-');
+
+              if (cumulative_products[product.new_code]) {
+                cumulative_products[product.new_code].qty += product.qty;
+              } else {
+                cumulative_products[product.new_code] = {
+                  code: product.code, 
+                  price: product.price,
+                  name: product.name,
+                  options: product.options,
+                  first: product.first,
+                  qty: product.qty,
+                };
+              }
+            }
+
+            tmp_prev_seq = orderTmp.group.seq;
+          }
+        }
+        for(let product of order.products) {
+          if (Object.keys(cumulative_products).indexOf(product.code) < 0) {
+            product.first = true;
+            order.first = true;
+          } else {
+            product.first = false;
+          }
+        }
+      }
+      order.cumulative_products = cumulative_products; 
+
+      return order;
+    },
     setStores() {
       if(this.auth.member && this.auth.member.code) {
       } else {

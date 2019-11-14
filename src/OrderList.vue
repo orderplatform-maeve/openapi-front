@@ -15,7 +15,7 @@
           .count {{commited_orders_count}}
   ul.order-list(:class="{'scroll-stop': !scroll}")
     li.no-item(v-if="orders.length<1") 아직 주문이 없어요<br/>ㅠㅠ
-    li.order-item.order-title(v-for="order in reverse_orders" :class="{commit: order.commit.time, 'call-staff': order.call_staff, 'first-order': order.first_order}" v-on:click="newOrder(order)" :id="order.code" v-if="viewMode=='a'||viewMode=='n'&&!order.commit.time||viewMode=='c'&&order.commit.time")
+    li.order-item.order-title(v-for="order in orders" :class="{commit: order.commit.time, 'call-staff': order.call_staff, 'first-order': order.first_order}" v-on:click="newOrder(order)" :id="order.code" v-if="viewMode=='a'||viewMode=='n'&&!order.commit.time||viewMode=='c'&&order.commit.time")
       //.store_name {{order.store.name}}
       .table-number {{order.table.name}}
       .msg
@@ -41,9 +41,6 @@ export default {
   },
   computed: {
     reverse_orders() {
-      return this.orders.sort(function(a,b){
-        return b.time - a.time;
-			})
     },
     commited_orders_count() {
       let count = 0;
@@ -119,12 +116,13 @@ export default {
   }
   .order-list {
     display:flex;
-    flex-direction:column;
+    flex-direction: column;
     margin:0;
     padding:0 12px;
     overflow:scroll;
     flex-grow:1;
     -webkit-overflow-scrolling: touch; 
+    /*transform: rotate(180deg);*/
 
     .no-item {
       display:flex;
@@ -138,9 +136,11 @@ export default {
     .order-item {
       @include order-title;
       padding:8px 0;
+      flex: 0 0 auto;
       border: {
         top:solid 1px #484848;
       }
+      /*transform: rotate(-180deg);*/
     }
     .order-item:first-child {
       border-top:none;

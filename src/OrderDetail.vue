@@ -19,16 +19,16 @@
           li.product-item(v-for="product in order.products")
             .count {{product.qty}}개
             .name {{product.name}}
-            .first(v-if="Object.keys(cumulative_products).indexOf(product.code) < 0") 첫 주문
+            .first(v-if="product.first") 첫 주문
             ul.option-list(v-if="product.options")
               li.option-item(v-for="option in product.options")
                 span +
                 .count {{option.qty}}개
                 .name  {{option.name}}
-      .wrap-c-product-list(v-if="Object.keys(cumulative_products).length")
+      .wrap-c-product-list(v-if="Object.keys(order.cumulative_products).length")
         .title 이전주문내역
         ul.c-product-list
-          li.order-item(v-for="c_product in cumulative_products")
+          li.order-item(v-for="c_product in order.cumulative_products")
             .name {{c_product.name}}
             .count {{c_product.qty}}개
             ul.option-list(v-if="c_product.options")
@@ -72,6 +72,7 @@ export default {
       this.order = order;
       this.show = true;
 
+      /*
       let code_group = this.order.group.code;
       let code_order = this.order.code;
       let time_current_order = this.order.time;
@@ -120,6 +121,8 @@ export default {
       }
 
       this.cumulative_products = cumulative_products; 
+      */
+
       clearInterval(this.interval);
       this.seconds = 10;
       this.interval = setInterval(function(){
