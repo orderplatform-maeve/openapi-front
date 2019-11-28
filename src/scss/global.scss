@@ -228,19 +228,22 @@
 @mixin order-title {
   display:flex;
   flex-shrink:0;
+  align-items: stretch;
   color:#ffffff;
-  align-items: center;
   font-size:32px;
   font-weight:700;
 
 
+  > * {
+    display:flex;
+    align-items: center;
+    justify-content: center;
+  }
   .table-number {
     @include table-number;
     margin-right:12px;
   } 
   .msg {
-    display:flex;
-    align-items: center;
 
     .title {
     }
@@ -257,41 +260,26 @@
       color:#000000;
     }
   }
-  .visit {
-    display:flex;
-    align-items: center;
-    justify-content: center;
-    height:40px;
-    min-width:4em;
+  .icon {
+    margin-left:12px; 
     border-radius:100px;
     background-color:#ffffff;
     color:#000000;
-    font-size:24px;
-    margin-left:12px; 
+    margin:8px 0 8px  8px;
+    font-size:0.8em;
+    padding:0 12px;
+  }
+  .visit {
   }
   .first {
-    display:flex;
-    align-items: center;
-    justify-content: center;
-    height:40px;
-    min-width:4em;
-    border-radius:100px;
-    background-color:#ffffff;
-    color:#000000;
-    font-size:24px;
-    margin-left:12px; 
   }
   .commit {
-    display:flex;
-    align-items: center;
-    justify-content: center;
-    height:40px;
     min-width:4em;
     border-radius:100px;
     background-color:#ffffff;
     color:#000000;
     font-size:24px;
-    margin-left:auto; 
+    margin-left:auto;
     margin-right:12px;
   }
   .commit.commited {

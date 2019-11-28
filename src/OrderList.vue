@@ -6,14 +6,26 @@
         .tab-button.datetime {{time.start | moment("MM월DD일 HH시mm분") }} 부터
         .order-list-tab-button.tab-button(v-on:click="setViewMode('a')" :class="{active: viewMode=='a'}")
           | 모든 주문 보기
-          .count {{orders.length}}
+          .count {{lengthOrders}}
         .order-list-tab-button.tab-button(v-on:click="setViewMode('n')" :class="{active: viewMode=='n'}")
           | 미확인 주문 보기
-          .count {{orders.length - commited_orders_count}}
+          .count {{lengthOrders - lengthCommitedOrders}}
         .order-list-tab-button.tab-button(v-on:click="setViewMode('c')" :class="{active: viewMode=='c'}")
           | 확인 주문 보기
-          .count {{commited_orders_count}}
-  ul.order-list(:class="{'scroll-stop': !scroll}")
+          .count {{lengthCommitedOrders}}
+
+  ul.order-list
+    li.order-item(v-for="order in sortedOrders" :class="{commit: order.commit}" v-on:click="view(order)" v-if="viewMode=='a'||viewMode=='n'&&!order.commit||viewMode=='c'&&order.commit" )
+      .table-number {{order.T_order_order_tablet_number}}
+      .msg
+        span.title() 주문이요
+  
+      //.visit(v-if="order.products[0].code!='88888'&&order.group.seq==1") 입장
+      .icon.visit(v-if="order.is_tablet_first_order") 입장
+      .icon.first(v-if="order.is_first_order") 첫 주문
+      .commit(:class="{commited:order.commit}") {{order.commit ? '확인' : '미확인'}}
+      .time {{order.order_time}} 
+  //ul.order-list(:class="{'scroll-stop': !scroll}")
     li.no-item(v-if="orders.length<1") 아직 주문이 없어요<br/>ㅠㅠ
     li.order-item.order-title(v-for="order in orders" :class="{commit: order.commit.time, 'call-staff': order.call_staff, 'first-order': order.first_order}" v-on:click="newOrder(order)" :id="order.code" v-if="viewMode=='a'||viewMode=='n'&&!order.commit.time||viewMode=='c'&&order.commit.time")
       //.store_name {{order.store.name}}
@@ -40,7 +52,14 @@ export default {
     }
   },
   computed: {
-    reverse_orders() {
+    sortedOrders() {
+      return this.$store.getters.sortedOrders;
+    },
+    lengthOrders() {
+      return this.$store.getters.lengthOrders;
+    },
+    lengthCommitedOrders() {
+      return this.$store.getters.lengthCommitedOrders;
     },
     commited_orders_count() {
       let count = 0;
@@ -56,6 +75,9 @@ export default {
     setViewMode(value) {
       document.querySelector(".order-list").scrollTop = 0;
       this.viewMode = value;
+    },
+    view(order) {
+      this.$store.dispatch('setOrder', order)
     },
     newOrder(order) {
       console.log('method newOrder');

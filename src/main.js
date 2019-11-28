@@ -1,5 +1,4 @@
 import Vue from 'vue'
-import Vuex from 'vuex'
 import VueRouter from 'vue-router'
 import VueCookies from 'vue-cookies'
 import VueFilter from 'vue-filter';
@@ -8,7 +7,6 @@ import VueMoment from 'vue-moment'
 
 Vue.prototype.$eventBus = new Vue();
 
-Vue.use(Vuex)
 Vue.use(VueCookies);
 Vue.use(VueRouter);
 Vue.use(VueFilter); 
@@ -21,6 +19,7 @@ import Table from './Table.vue'
 import Logout from './Logout.vue'
 import OrderList from './OrderList.vue'
 import OrderDetail from './OrderDetail.vue'
+import Order from './Order.vue'
 import ModalConfirm from './ConfirmModal.vue'
 import MenuBoard from './MenuBoard.vue'
 import TableOrders from './TableOrders.vue'
@@ -30,6 +29,7 @@ Vue.use(new VueSocketIO({
     connection: 'http://1.socketio.orderview.torder.co.kr',
 }))
 Vue.component('order-detail', OrderDetail);
+Vue.component('order', Order);
 Vue.component('modal-confirm', ModalConfirm);
 Vue.component('modal-table-orders', TableOrders);
 Vue.component('menu-board', MenuBoard);

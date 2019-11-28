@@ -4,6 +4,7 @@
     modal-confirm
     modal-table-orders
     order-detail(v-bind:orders="orders" v-bind:auth="auth")
+    order(v-if="order")
     .body
       .left
         router-view(v-bind:orders="orders" v-bind:auth="auth" v-bind:time="time" v-bind:stores="stores")
@@ -16,7 +17,7 @@
           img.logo(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/logo/torder_color_white.png")
           .store_name(v-on:click="removeAuth") {{store.name}}
           router-link.button(v-if="store.code" to="/order") 주문 보기
-          router-link.button(v-if="store.code" to="/table") 테이블 보기<br/>(베타 서비스)
+          router-link.button(v-if="store.code" to="/table") 테이블 보기<br/>(테스트)
           //router-link.button(v-if="store.code && ['AA221111','AA221123','TOD_FBK_002'].includes(store.code)" to="/table") 테이블 보기
 
         .bottom
@@ -46,155 +47,8 @@
 </template>
 <script>
 import Vue from 'vue'
-import Vuex from 'vuex'
 import axios from 'axios';
-
-Vue.use(Vuex)
-
-const store = new Vuex.Store({
-  state: {
-    tables: {},
-    clients: {},
-    categorys: {},
-    products: {},
-    pos: {},
-    auth: {},
-  },
-  mutations: {
-    SET_AUTH: (state, auth) => {
-      Vue.set(state, 'auth', auth);
-    },
-    SET_TABLES: (state, tables) => {
-      for (let key in tables) {
-        tables[key].client_count = 0;
-        tables[key].price_amt = 0;
-      }
-      Vue.set(state, 'tables', tables);
-    },
-    SET_CLIENT: (state, client) => {
-      let items = state.tables;
-      if (items[client.tablet_number]) {
-        if (client.action == 'inc') {
-          items[client.tablet_number].client_count += 1;
-        } else if (client.action == 'dec') {
-          items[client.tablet_number].client_count -= 1;
-        }
-      }
-      Vue.set(state, 'tables', items);
-    },
-    SET_CLIENTS: (state, clients) => {
-      let tables = state.tables;
-      for (let key in tables) {
-        let table = tables[key]
-        table.client_count = 0;
-        table.clients = [];
-      }
-      for (let myid in clients) {
-        let client = clients[myid];
-        if (tables[client.tablet_number]) {
-          let table = tables[client.tablet_number];
-          table.client_count += 1;
-          table.clients.push(client);
-        }
-      }
-      Vue.set(state, 'clients', clients);
-      Vue.set(state, 'tables', tables);
-    },
-    SET_CATEGORYS: (state, categorys) => {
-      Vue.set(state, 'categorys', categorys);
-    },
-    SET_PRODUCTS: (state, products) => {
-      Vue.set(state, 'products', products);
-    },
-    SET_POS: (state, data) => {
-      Vue.set(state, 'pos', data);
-    },
-    MATCH_TABLES_POS: (state) => {
-      let tables = state.tables;
-      let pos = state.pos;
-      if (Object.keys(tables).length && Object.keys(pos).length) {
-        for (let key in tables) {
-          let table = tables[key];
-          let code_pos = table.code_pos;
-
-          if (pos[code_pos]) {
-            let item = pos[code_pos];
-            let price_amt = 0;
-            let qty_amt = 0;
-            for (let order of item.orders) {
-              price_amt += parseInt(order.good.price);
-              //order.good.name;
-              //order.good.id;
-              qty_amt += order.qty;
-            }
-            table.qty_amt = qty_amt;
-            table.price_amt = price_amt;
-            table.orders = item.orders;
-          }
-          /* 
-          console.log(item.id, tables[code_pos_table]);
-          if (tables[code_pos_table]) {
-            console.log(price_amt);
-            tables[code_pos_table].price_amt = price_amt;
-          }
-          */
-        }
-      }
-      Vue.set(state, 'tables', tables);
-    },
-  },
-  actions: {
-    setAuth: (context, auth) => {
-      context.commit('SET_AUTH', auth);
-    },
-    setTables: (context, tables) => {
-      context.commit('SET_TABLES', tables);
-      context.commit('MATCH_TABLES_POS');
-    },
-    setPos: (context, data) => {
-      context.commit('SET_POS', data);
-      context.commit('MATCH_TABLES_POS');
-    },
-    setClient: (context, client) => {
-      context.commit('SET_CLIENT', client);
-    },
-    setClients: (context, clients) => {
-      context.commit('SET_CLIENTS', clients);
-    },
-    setCategorys: (context, categorys) => {
-      context.commit('SET_CATEGORYS', categorys);
-    },
-    setProducts: (context, products) => {
-      context.commit('SET_PRODUCTS', products);
-    },
-  },
-  getters: {
-    auth: (state) => {
-      return state.auth;
-    },
-    tables: (state) => {
-      return state.tables;
-    },
-    table: (state, tablet_number) => {
-      return state.tables[tablet_number];
-    },
-    clients: (state) => {
-      return state.clients;
-    },
-    client: (state, myid) => {
-      return state.clients[myid];
-    },
-    categorys: (state) => {
-      return state.categorys;
-    },
-    products: (state) => {
-      return state.products;
-    },
-    pos: (state) => {
-      return state.pos;
-    },
-  },
-})
+import { store } from './store/store'; 
 
 export default {
   store,
@@ -354,7 +208,7 @@ export default {
         }
       }
 
-      this.$eventBus.$emit('newOrder',order); 
+      //this.$eventBus.$emit('newOrder',order); 
     },
     youAre: function(data) {
       console.log('youAre', data, data.store_code); 
@@ -386,8 +240,19 @@ export default {
         //this.$store.dispatch('setClient', data);
       }
     },
+    orderlog: function(data) {
+      console.log('orderlog', data);
+      if (this.$store.state.auth.store.code == data.shop_code) {
+        console.log('mine!');
+        this.$store.dispatch('pushOrder', data);
+        this.$store.dispatch('setOrder', data);
+      }
+    },
   },
   computed: {
+    order() {
+      return Boolean(this.$store.getters.order);
+    },
     isMember() {
       if (this.auth && this.auth.member) {
         return true;
