@@ -17,6 +17,17 @@ export const store = new Vuex.Store({
   },
   mutations: {
     SET_ORDER: (state, order) => {
+      /*
+      order.total_peoples = 2;
+      order.people_json = [
+        { name: '남자', count: 1},
+        { name: '여자', count: 1},
+      ];
+      for (let info of order.order_info) {
+        info.memo_show = true;
+        info.memo = 'test';
+      }
+      */
       Vue.set(state, 'order', order);
     },
     UNSET_ORDER: (state) => {
@@ -31,7 +42,9 @@ export const store = new Vuex.Store({
 
       let url = 'http://demo.torder.co.kr/logs/Today_redis_data';
       let fd = new FormData();
-      fd.append('shop_code', auth.store.code);
+      if (auth && auth.store && auth.store.code) {
+        fd.append('shop_code', auth.store.code);
+      }
 
       axios
         .post(url, fd)
@@ -133,6 +146,8 @@ export const store = new Vuex.Store({
         .then(function(res) {
           if (res.data.result) {
             payload.order.commit = true;
+            
+            context.commit('UNSET_ORDER');
           }
         });
     },
@@ -176,7 +191,7 @@ export const store = new Vuex.Store({
       return state.order;
     },
     sortedOrders: (state) => {
-      return state.orders.sort((a, b) =>  a.order_time - b.order_time);
+      return state.orders.sort((a, b) =>  b.timestamp - a.timestamp);
     }, 
     lengthOrders: (state) => {
       return state.orders.length;

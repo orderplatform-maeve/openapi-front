@@ -14,13 +14,16 @@
           | 확인 주문 보기
           .count {{lengthCommitedOrders}}
 
-  ul.order-list
+  ul.order-list()
     li.order-item(v-for="order in sortedOrders" :class="{commit: order.commit}" v-on:click="view(order)" v-if="viewMode=='a'||viewMode=='n'&&!order.commit||viewMode=='c'&&order.commit" )
-      .table-number {{order.T_order_order_tablet_number}}
+      .table-number(:class="{call: order.order_info[0].good_code=='99999', setting: order.order_info[0].good_code=='88888'}") {{order.T_order_order_tablet_number}}
       .msg
-        span.title() 주문이요
+        span.title(v-if="order.order_info[0].good_code=='99999'") 호출이요
+        span.title(v-else-if="order.order_info[0].good_code=='88888'") 셋팅완료
+        span.title(v-else) 주문이요
   
       //.visit(v-if="order.products[0].code!='88888'&&order.group.seq==1") 입장
+      .icon.people_total_count(v-if="order.total_peoples > 0") {{order.total_peoples}}명
       .icon.visit(v-if="order.is_tablet_first_order") 입장
       .icon.first(v-if="order.is_first_order") 첫 주문
       .commit(:class="{commited:order.commit}") {{order.commit ? '확인' : '미확인'}}

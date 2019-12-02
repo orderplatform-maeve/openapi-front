@@ -235,9 +235,11 @@ export default {
     },
     updateClient: function(data) {
       console.log('updateClient', data);
-      if (data.store_code == this.auth.store.code) {
-        this.$socket.emit('reqClients', {store_code: this.auth.store.code});
-        //this.$store.dispatch('setClient', data);
+      if (this.auth && this.auth.store) { 
+        if (data.store_code == this.auth.store.code) {
+          this.$socket.emit('reqClients', {store_code: this.auth.store.code});
+          //this.$store.dispatch('setClient', data);
+        }
       }
     },
     orderlog: function(data) {

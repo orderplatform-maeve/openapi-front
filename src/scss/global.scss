@@ -215,9 +215,9 @@
   display:flex;
   align-items: center;
   justify-content: center;
-  background-color:#ff0000 !important; 
+  background-color:#ff0000; 
   border-radius:100px;
-  padding:0; 
+  padding:0 12px; 
   height:60px;
   color:#ffffff !important;
   font-size:44px;
@@ -290,4 +290,11 @@
   .time {
     text-align:right;
   }
+}
+
+.table-number.call {
+  background-color:#00f !important;
+}
+.table-number.setting {
+  background-color:#0f0 !important;
 }

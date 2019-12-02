@@ -5,11 +5,13 @@
     .container-top 
       .order-title
         //.store_name {{order.store.name}}
-        .table-number {{order.T_order_order_tablet_number}}
+        .table-number(:class="{call: order.order_info[0].good_code=='99999', setting: order.order_info[0].good_code=='88888'}") {{order.T_order_order_tablet_number}}
         .msg
           //span.title(v-if="order.products[0].code=='99999'") 호출이요
           //span.title(v-else-if="order.products[0].code=='88888'") 셋팅완료
-          span.title 주문이요
+          span.title(v-if="order.order_info[0].good_code=='99999'") 호출이요
+          span.title(v-else-if="order.order_info[0].good_code=='88888'") 셋팅완료
+          span.title(v-else) 주문이요
         //.visit(v-if="order.products[0].code!='88888'&&order.group.seq==1") 입장
         .icon.visit(v-if="order.is_tablet_first_order") 입장
         .icon.first(v-if="order.is_first_order") 첫 주문
@@ -17,30 +19,37 @@
         //.time {{order.time | moment("A hh:mm:ss") }}
         .time {{order.order_time}} 
     .container-body
-      .wrap-product-list
-        ul.product-list
-          li.product-item(v-for="product in order.order_info")
-            .count {{product.good_qty}}개
-            .name {{product.good_name}}
-            .memo(v-if="product.memo_show") {{product.memo}}
-            //.first(v-if="product.first") 첫 주문
-            ul.option-list(v-if="product.option")
-              li.option-item(v-for="option in product.option")
-                span +
-                .count {{option.good_qty}}개
-                .name  {{option.display_name}}
-      .wrap-c-product-list()
-        .title 이전주문내역
-        ul.c-product-list
-          li.order-item(v-for="c_product in order.total_orders")
-            .name {{c_product.display_name}}
-            .count {{c_product.order_qty}}개
-            ul.option-list(v-if="c_product.option")
-              li.option-item(v-for="option in c_product.option")
-                span +
-                .count {{option.order_qty}}개
-                .name  {{option.display_name}}
-
+      .left
+        .wrap-people-list
+          .people_total_count(v-if="order.total_peoples > 0") {{order.total_peoples}}명
+          ul.people-list
+            li.people-item(v-for="people in order.people_json")
+              .count {{people.count}}명
+              .name {{people.name}}
+        .wrap-product-list
+          ul.product-list
+            li.product-item(v-for="product in order.order_info")
+              .count {{product.good_qty}}개
+              .name {{product.good_name}}
+              .memo(v-if="product.memo_show") {{product.memo}}
+              //.first(v-if="product.first") 첫 주문
+              ul.option-list(v-if="product.option")
+                li.option-item(v-for="option in product.option")
+                  span +
+                  .count {{option.good_qty}}개
+                  .name  {{option.display_name}}
+      .right
+        .wrap-c-product-list()
+          .title 이전주문내역
+          ul.c-product-list
+            li.order-item(v-for="c_product in order.total_orders")
+              .name {{c_product.display_name}}
+              .count {{c_product.order_qty}}개
+              ul.option-list(v-if="c_product.option")
+                li.option-item(v-for="option in c_product.option")
+                  span +
+                  .count {{option.order_qty}}개
+                  .name  {{option.display_name}}
     .container-foot
       .msg {{seconds}}초 후 닫혀요.
       .buttons
@@ -81,6 +90,9 @@ export default {
       } 
     }.bind(this), 1000);
   },
+  beforeDestroy() {
+    this.closeOrder();
+  }, 
 }
 </script>
 <style lang="scss">
@@ -141,149 +153,205 @@ export default {
       width:100%;
       overflow:scroll;
 
-      .wrap-product-list {
+      .left {
         display:flex;
         flex-direction:column;
         flex-grow:1;
 
-        .product-list {
+        .wrap-people-list {
           display:flex;
-          flex-direction:column;
-          word-break: keep-all;
-          margin:0;
-          padding:0;
-          overflow:scroll;
-          -webkit-overflow-scrolling: touch; 
-    
-          .product-item {
+          font-size:36px;
+          font-weight:900;
+          margin-bottom:12px;
+
+      
+          .people_total_count {
             display:flex;
-            flex-shrink:0;
-            flex-direction: row;
-            flex-wrap: wrap;
-            align-items: stretch;
-            word-break:break-all;
-            margin-bottom:12px;
-            font-size:48px;
-            font-weight:900;
+            align-items: center;
+            justify-content: center;
+            border-radius: 100px;
+            background-color: #ffffff;
+            color: #000000;
+            padding: 8px 12px;
+            line-height:1em;
+          }
+          .people-list {
+            margin:0;
+            padding:0;
+            display:flex;
 
-
-            .option-list {
-              display:flex;
-              flex-direction:column;
-              margin:0;
-              padding:0;
-              font-size:0.8em;
-              width:100%;
-
-              .option-item {
-                display:flex;
-                margin-left:88px;
-              }
-            }
-
-            .msg {
-            }
-            .name {
-            }
-            .memo {
-              display:flex;
-              align-items: center;
-              border-radius:100px;
-              border:solid 3px #ffffff;
-              padding:0 12px;
-              font-size:0.6em;
-              margin-left:12px;
-            }
-            .count {
-              margin-right:24px;
-              text-align:right;
-            }
-            .first {
-              margin-left:12px;
+            .people-item {
               display:flex;
               align-items: center;
               justify-content: center;
-              padding:0 24px;
-              border-radius:100px;
-              height:48px;
-              background-color:#ffffff;
-              color:#000000;
-              font-size:24px;
-              font-weight:900;
+              margin:0;
+              padding:0;
+              display:flex;
+              margin-left:12px;
+              padding-left:12px;
+              border-left: solid 1px #444444;
+              font-size:0.8em;
+              .count {
+                margin-right:8px;
+              }
+            }
+            .people-item:first-child {
+              border:none;
             }
           }
         }
-      }
-      .wrap-c-product-list {
-        display:flex;
-        flex-direction:column;
-        //margin-left:24px;
-        //margin-bottom:24px;
-        flex-shrink:1;
-        flex-grow:1;
-        padding-left:24px;
-        //border-left:solid 1px #808080;
-        max-width:40%;
 
-        .title {
-          display:flex;
-          flex-shrink:0;
-          align-items: center;
-          justify-content: center;
-          height:40px;
-          font-size:20px;
-          font-weight:700;
-          background-color:#ffffff;
-          color:#000000;
-          border-radius:100px;
-        }
-        .c-product-list {
-          flex-grow:1;
-          font-size:20px;
+
+        .wrap-product-list {
           display:flex;
           flex-direction:column;
-          margin:0;
-          padding:0;
-          list-style:none;
-          word-break: keep-all;
-          overflow:scroll;
-          -webkit-overflow-scrolling: touch; 
-         
-          .order-item {
+          flex-grow:1;
+
+          .product-list {
             display:flex;
-            flex-direction: row;
-            flex-wrap: wrap;
+            flex-direction:column;
+            word-break: keep-all;
             margin:0;
-            padding:8px 0;
-            font-size:20px;
-            align-items: flex-start;
-
-            border {
-              bottom:solid 1px #484848;
-            }
-
-            .option-list {
+            padding:0;
+            overflow:scroll;
+            -webkit-overflow-scrolling: touch; 
+      
+            .product-item {
               display:flex;
-              flex-direction:column;
-              margin:0;
-              padding:0;
-              font-size:0.8em;
-              width:100%;
+              flex-shrink:0;
+              flex-direction: row;
+              flex-wrap: wrap;
+              align-items: stretch;
+              word-break:break-all;
+              margin-bottom:12px;
+              font-size:48px;
+              font-weight:900;
 
-              .option-item {
+
+              .option-list {
                 display:flex;
+                flex-direction:column;
+                margin:0;
+                padding:0;
+                font-size:0.8em;
+                width:100%;
+
+                .option-item {
+                  display:flex;
+                  margin-left:88px;
+                }
+              }
+
+              .msg {
+              }
+              .name {
+              }
+              .memo {
+                display:flex;
+                align-items: center;
+                border-radius:100px;
+                border:solid 3px #ffffff;
+                padding:0 12px;
+                font-size:0.6em;
+                margin-left:12px;
+              }
+              .count {
+                margin-right:24px;
+                text-align:right;
+              }
+              .first {
+                margin-left:12px;
+                display:flex;
+                align-items: center;
+                justify-content: center;
+                padding:0 24px;
+                border-radius:100px;
+                height:48px;
+                background-color:#ffffff;
+                color:#000000;
+                font-size:24px;
+                font-weight:900;
               }
             }
+          }
+        }
+
+      }
+      .right {
+        display:flex;
+        flex-direction:column;
+        flex-grow:1;
+
+        .wrap-c-product-list {
+          display:flex;
+          flex-direction:column;
+          //margin-left:24px;
+          //margin-bottom:24px;
+          flex-shrink:1;
+          flex-grow:1;
+          padding-left:24px;
+          //border-left:solid 1px #808080;
+
+          .title {
+            display:flex;
+            flex-shrink:0;
+            align-items: center;
+            justify-content: center;
+            height:40px;
+            font-size:20px;
+            font-weight:700;
+            background-color:#ffffff;
+            color:#000000;
+            border-radius:100px;
+          }
+          .c-product-list {
+            flex-grow:1;
+            font-size:20px;
+            display:flex;
+            flex-direction:column;
+            margin:0;
+            padding:0;
+            list-style:none;
+            word-break: keep-all;
+            overflow:scroll;
+            -webkit-overflow-scrolling: touch; 
+           
+            .order-item {
+              display:flex;
+              flex-direction: row;
+              flex-wrap: wrap;
+              margin:0;
+              padding:8px 0;
+              font-size:20px;
+              align-items: flex-start;
+
+              border {
+                bottom:solid 1px #484848;
+              }
+
+              .option-list {
+                display:flex;
+                flex-direction:column;
+                margin:0;
+                padding:0;
+                font-size:0.8em;
+                width:100%;
+
+                .option-item {
+                  display:flex;
+                }
+              }
 
 
-            .name {
-              flex-grow:1;
-              word-break:break-all;
-            }
-            .count {
-              margin-left:12px;
-            }
-          } 
+              .name {
+                flex-grow:1;
+                word-break:break-all;
+              }
+              .count {
+                margin-left:12px;
+              }
+            } 
+          }
         }
       }
     }
