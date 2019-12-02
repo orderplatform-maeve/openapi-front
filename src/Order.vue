@@ -6,6 +6,7 @@
       .order-title
         //.store_name {{order.store.name}}
         .table-number(:class="{call: order.order_info[0].good_code=='99999', setting: order.order_info[0].good_code=='88888'}") {{order.T_order_order_tablet_number}}
+        .people_total_count(v-if="order.total_peoples > 0") {{order.total_peoples}}명
         .msg
           //span.title(v-if="order.products[0].code=='99999'") 호출이요
           //span.title(v-else-if="order.products[0].code=='88888'") 셋팅완료
@@ -21,9 +22,8 @@
     .container-body
       .left
         .wrap-people-list
-          .people_total_count(v-if="order.total_peoples > 0") {{order.total_peoples}}명
           ul.people-list
-            li.people-item(v-for="people in order.people_json")
+            li.people-item(v-for="people in order.people_json" v-if="people.count > 0")
               .count {{people.count}}명
               .name {{people.name}}
         .wrap-product-list
@@ -86,7 +86,7 @@ export default {
       this.seconds -= 1;
 
       if(this.seconds < 1) {
-        this.closeOrder();
+        //this.closeOrder();
       } 
     }.bind(this), 1000);
   },
@@ -160,10 +160,10 @@ export default {
 
         .wrap-people-list {
           display:flex;
+          height:48px;
+          margin-bottom:12px;
           font-size:36px;
           font-weight:900;
-          margin-bottom:12px;
-
       
           .people_total_count {
             display:flex;
@@ -172,13 +172,13 @@ export default {
             border-radius: 100px;
             background-color: #ffffff;
             color: #000000;
-            padding: 8px 12px;
-            line-height:1em;
+            padding: 0 12px;
           }
           .people-list {
             margin:0;
             padding:0;
             display:flex;
+            font-size:32px;
 
             .people-item {
               display:flex;
@@ -187,10 +187,9 @@ export default {
               margin:0;
               padding:0;
               display:flex;
-              margin-left:12px;
-              padding-left:12px;
+              margin-right:12px;
+              padding-right:12px;
               border-left: solid 1px #444444;
-              font-size:0.8em;
               .count {
                 margin-right:8px;
               }
