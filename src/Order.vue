@@ -86,7 +86,7 @@ export default {
       this.seconds -= 1;
 
       if(this.seconds < 1) {
-        //this.closeOrder();
+        this.closeOrder();
       } 
     }.bind(this), 1000);
   },
