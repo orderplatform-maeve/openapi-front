@@ -12,7 +12,7 @@
         .top
           .button(v-on:click="restart('/')") 새로고침
           .datetime
-            span {{time.now | moment("MM월DD일 HH시mm분") }}
+            span {{time.now | moment("MM.DD HH:mm") }}
             //span.price 약 {{ordersCount.price | won }}
           img.logo(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/logo/torder_color_white.png")
           .store_name(v-on:click="removeAuth") {{store.name}}
@@ -619,7 +619,7 @@ export default {
   overflow:scroll;
 
   .right {
-    width:200px;
+    width:120px;
     flex-shrink:0;
     flex-direction:column;
     display:flex;
@@ -645,6 +645,7 @@ export default {
       .name {
         font-size:12px;
       }
+      text-align:center;
     }
     .button.active {
       background-color:#484848;
@@ -674,7 +675,7 @@ export default {
       }
       .store_name {
         margin-bottom:12px;
-        font-size:16px;
+        font-size:12px;
         font-weight:900;
         word-break:keep-all;
         text-align:center;
@@ -715,7 +716,7 @@ export default {
         display:flex;
         height:40px;
         padding:0 24px;
-        font-size:16px;
+        font-size:12px;
         font-weight:900;
         border-radius:200px;
         background-color:#121212;

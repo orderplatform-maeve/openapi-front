@@ -3,15 +3,15 @@
   .top
     .tab-group
       .order-list-tab-buttons.tab-buttons
-        .tab-button.datetime {{time.start | moment("MM월DD일 HH시mm분") }} 부터
+        //.tab-button.datetime {{time.start | moment("MM월DD일 HH시mm분") }} 부터
         .order-list-tab-button.tab-button(v-on:click="setViewMode('a')" :class="{active: viewMode=='a'}")
-          | 모든 주문 보기
+          | 모든 주문
           .count {{lengthOrders}}
         .order-list-tab-button.tab-button(v-on:click="setViewMode('n')" :class="{active: viewMode=='n'}")
-          | 미확인 주문 보기
+          | 미확인 주문
           .count {{lengthOrders - lengthCommitedOrders}}
         .order-list-tab-button.tab-button(v-on:click="setViewMode('c')" :class="{active: viewMode=='c'}")
-          | 확인 주문 보기
+          | 확인 주문
           .count {{lengthCommitedOrders}}
 
   ul.order-list()
@@ -26,8 +26,9 @@
         .icon.first(v-if="order.is_first_order") 첫 주문
   
       //.visit(v-if="order.products[0].code!='88888'&&order.group.seq==1") 입장
-      .commit(:class="{commited:order.commit}") {{order.commit ? '확인' : '미확인'}}
-      .time {{order.order_time}} 
+      .msg-time
+        .commit(:class="{commited:order.commit}") {{order.commit ? '확인' : '미확인'}}
+        .time {{order.order_time}} 
   //ul.order-list(:class="{'scroll-stop': !scroll}")
     li.no-item(v-if="orders.length<1") 아직 주문이 없어요<br/>ㅠㅠ
     li.order-item.order-title(v-for="order in orders" :class="{commit: order.commit.time, 'call-staff': order.call_staff, 'first-order': order.first_order}" v-on:click="newOrder(order)" :id="order.code" v-if="viewMode=='a'||viewMode=='n'&&!order.commit.time||viewMode=='c'&&order.commit.time")

@@ -16,9 +16,10 @@
           .icon.visit(v-if="order.is_tablet_first_order") 입장
           .icon.first(v-if="order.is_first_order") 첫 주문
         //.visit(v-if="order.products[0].code!='88888'&&order.group.seq==1") 입장
-        .commit(:class="{commited:order.commit}") {{order.commit ? '확인' : '미확인'}}
-        //.time {{order.time | moment("A hh:mm:ss") }}
-        .time {{order.order_time}} 
+        .msg-time
+          .commit(:class="{commited:order.commit}") {{order.commit ? '확인' : '미확인'}}
+          //.time {{order.time | moment("A hh:mm:ss") }}
+          .time {{order.order_time}} 
     .container-body
       .left
         .wrap-people-list
