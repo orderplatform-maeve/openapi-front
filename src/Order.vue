@@ -291,6 +291,7 @@ export default {
           flex-grow:1;
           padding-left:24px;
           //border-left:solid 1px #808080;
+          min-width:200px;
 
           .title {
             display:flex;
