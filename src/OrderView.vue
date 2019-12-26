@@ -247,6 +247,8 @@ export default {
       if (this.$store.state.auth.store.code == data.shop_code) {
         console.log('mine!');
         this.$store.dispatch('pushOrder', data);
+
+        this.audio.play()
         this.$store.dispatch('setOrder', data);
       }
     },
@@ -568,6 +570,8 @@ export default {
     this.$eventBus.$on('removeAuth', this.removeAuth); 
     this.$eventBus.$on('reqOrders', this.initStore);
     this.$eventBus.$on('setStores', this.setStores);
+
+    this.audio = new Audio('http://demo.admin.torder.co.kr/public/wav/order_sound.wav');
 
     if (this.auth && this.auth.store && this.auth.store.code) {
       this.initStore();
