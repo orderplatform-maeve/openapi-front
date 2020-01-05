@@ -45,6 +45,9 @@ let routes = [{
   path: '/',
   component: OrderView,
   children: [{
+    path: '/',
+    redirect: 'order',
+  }, {
     path: 'member',
     name: 'member',
     component: Member,
