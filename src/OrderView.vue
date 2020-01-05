@@ -252,6 +252,11 @@ export default {
         this.$store.dispatch('setOrder', data);
       }
     },
+    syncCommitOrder: function(data) {
+      if (this.$store.state.auth.store.code == data.shop_code) {
+        this.$store.commit('syncCommitOrder', data);  
+      }
+    },
   },
   computed: {
     order() {

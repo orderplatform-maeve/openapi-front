@@ -133,6 +133,14 @@ export const store = new Vuex.Store({
       }
       Vue.set(state, 'tables', tables);
     },
+    syncCommitOrder(state, data) {
+      console.log('syncCommitOrder', {data});
+      let order = state.orders.find((i) => {
+        return i.order_view_key == data.order_view_key;
+      });
+      order.commit = true;
+      console.log('syncCommitOrder', {order});
+    },
   },
   actions: {
     commitOrder: (context, payload) => {
@@ -149,7 +157,7 @@ export const store = new Vuex.Store({
             
             context.commit('UNSET_ORDER');
           }
-        });
+        }.bind(this));
     },
     initOrders: (context) => {
     },
