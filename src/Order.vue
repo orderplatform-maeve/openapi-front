@@ -20,6 +20,7 @@
           .commit(:class="{commited:order.commit}") {{order.commit ? '확인' : '미확인'}}
           //.time {{order.time | moment("A hh:mm:ss") }}
           .time {{order.order_time}} 
+      .button.button-close(v-on:click="closeOrder") 닫기
     .container-body
       .left
         .wrap-people-list
@@ -55,7 +56,6 @@
       .msg {{seconds}}초 후 닫혀요.
       .buttons
         .button.button-commit(v-on:click="commitOrder(order)") 확인
-        .button.button(v-on:click="closeOrder") 닫기
 </template>
 <script>
 export default {
@@ -143,9 +143,22 @@ export default {
       width:100%;
       flex-shrink:0;
       .order-title {
-        width:100%;
+        flex-grow:1;
         @include order-title;
         margin-bottom:12px;
+      }
+      .button-close {
+        margin-left:12px;
+        display:flex;
+        align-items: center;
+        justify-content: center;
+        padding:0 36px;
+        font-size:24px;
+        height:60px;
+        background-color:#ffffff;
+        color:#202020;
+        border-radius:100px;
+        flex-shrink:0;
       }
     }
     .container-body {
@@ -385,7 +398,7 @@ export default {
         flex-grow:1;
         align-items: center;
         justify-content: center;
-        height:60px;
+        height:80px;
         border-radius:100px;
         font-size:24px;
         font-weight:900;
