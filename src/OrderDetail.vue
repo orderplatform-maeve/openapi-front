@@ -2,7 +2,7 @@
 #orderDetail(v-if="show")
   .background
   .container
-    .container-top 
+    .container-top
       .order-title
         //.store_name {{order.store.name}}
         .table-number {{order.table.name}}
@@ -44,35 +44,42 @@
         .button.button(v-on:click="closeOrder") 닫기
 </template>
 <script>
-import axios from 'axios';
-
-export default {
-  props: ['auth', 'orders'],
-  data () {
-    return {
-      cumulative_products: {},
-      order: {},
-      show: false,
-      interval: undefined,
-      seconds: 10,
-    }
-  },
-  methods: {
-    commitOrder(order) {
-      order.commit.time = parseInt(Date.now()/1000);
-      console.log('commit order', order);
-
-      this.$socket.emit('reqCommitOrder', order);
-
-      this.closeOrder(); 
+  export default {
+    props: ['auth', 'orders'],
+    data () {
+      return {
+        cumulative_products: {},
+        order: {},
+        show: false,
+        interval: undefined,
+        seconds: 10,
+      };
     },
-    newOrder(order) {
-      console.log('!newOrder', order);
+    created() {
+      // console.log('created newOrder');
+      this.$eventBus.$off("newOrder");
+      this.$eventBus.$on('newOrder', this.newOrder);
+    //this.$eventBus.$on('openOrder', this.openOrder);
+    },
+    beforeDestroy() {
+    //this.$eventBus.$off("openOrder");
+    },
+    methods: {
+      commitOrder(order) {
+        order.commit.time = parseInt(Date.now()/1000);
+        console.log('commit order', order);
 
-      this.order = order;
-      this.show = true;
+        this.$socket.emit('reqCommitOrder', order);
 
-      /*
+        this.closeOrder();
+      },
+      newOrder(order) {
+        console.log('!newOrder', order);
+
+        this.order = order;
+        this.show = true;
+
+        /*
       let code_group = this.order.group.code;
       let code_order = this.order.code;
       let time_current_order = this.order.time;
@@ -105,7 +112,7 @@ export default {
                 cumulative_products[product.new_code].qty += product.qty;
               } else {
                 cumulative_products[product.new_code] = {
-                  code: product.code, 
+                  code: product.code,
                   price: product.price,
                   name: product.name,
                   options: product.options,
@@ -120,36 +127,27 @@ export default {
         }
       }
 
-      this.cumulative_products = cumulative_products; 
+      this.cumulative_products = cumulative_products;
       */
 
-      clearInterval(this.interval);
-      this.seconds = 10;
-      this.interval = setInterval(function(){
-        this.seconds -= 1;
-        console.log('seconds', this.seconds);
+        clearInterval(this.interval);
+        this.seconds = 10;
+        this.interval = setInterval(function(){
+          this.seconds -= 1;
+          console.log('seconds', this.seconds);
 
-        if(this.seconds < 1) {
-          this.closeOrder();
-        } 
-      }.bind(this), 1000);
+          if(this.seconds < 1) {
+            this.closeOrder();
+          }
+        }.bind(this), 1000);
+      },
+      closeOrder() {
+        clearInterval(this.interval);
+        this.show = false;
+        this.$eventBus.$emit('closeOrder');
+      },
     },
-    closeOrder() {
-      clearInterval(this.interval);
-      this.show = false;
-      this.$eventBus.$emit('closeOrder'); 
-    },
-  },
-  created() {
-    console.log('created newOrder');
-    this.$eventBus.$off("newOrder");
-    this.$eventBus.$on('newOrder', this.newOrder); 
-    //this.$eventBus.$on('openOrder', this.openOrder); 
-  },
-  beforeDestroy() {
-    //this.$eventBus.$off("openOrder");
-  },
-}
+  };
 
 </script>
 <style lang="scss">
@@ -162,7 +160,7 @@ export default {
   display:flex;
   align-items: center;
   justify-content: center;
-  
+
   width:100%;
   height:100%;
   z-index:101;
@@ -222,8 +220,8 @@ export default {
           margin:0;
           padding:0;
           overflow:scroll;
-          -webkit-overflow-scrolling: touch; 
-    
+          -webkit-overflow-scrolling: touch;
+
           .product-item {
             display:flex;
             flex-shrink:0;
@@ -306,8 +304,8 @@ export default {
           list-style:none;
           word-break: keep-all;
           overflow:scroll;
-          -webkit-overflow-scrolling: touch; 
-         
+          -webkit-overflow-scrolling: touch;
+
           .order-item {
             display:flex;
             flex-direction: row;
@@ -342,7 +340,7 @@ export default {
             .count {
               margin-left:12px;
             }
-          } 
+          }
         }
       }
     }

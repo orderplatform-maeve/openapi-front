@@ -13,7 +13,6 @@
           .button(v-on:click="restart('/')") 새로고침
           .datetime
             span {{time.now | moment("MM.DD HH:mm") }}
-            //span.price 약 {{ordersCount.price | won }}
           img.logo(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/logo/torder_color_white.png")
           .store_name(v-on:click="removeAuth") {{store.name}}
           router-link.button(v-if="store.code" to="/order") 주문 보기
@@ -64,184 +63,184 @@
     };
   }
 
-  export default {
-    store,
-    filters,
-    data,
-    sockets: {
-      connect: function () {
-        this.$socket.emit('in', {});
-        this.$socket.emit("whoAmI");
-        // console.log('socket connected', this.$socket.emit);
-      },
-      resStoreInfo(data) {
-        console.log('resStoreInfo', data);
-        this.store = data;
-      },
-      resClients(data) {
-        let clients = {};
-        for (let client of data) {
-          clients[client.myid] = client;
+  const sockets = {
+    connect: function () {
+      console.log('socket connected');
+    },
+    resStoreInfo(data) {
+      console.log('resStoreInfo', data);
+      this.store = data;
+    },
+    resClients(data) {
+      let clients = {};
+      for (let client of data) {
+        clients[client.myid] = client;
+      }
+      this.$store.dispatch('setClients', clients);
+    },
+    resTablesInfo(data) {
+      let items = {};
+      for (let table of data) {
+        items[table.code] = table;
+      }
+      this.$store.dispatch('setTables', items);
+      this.$socket.emit('reqClients', {store_code: this.auth.store.code});
+    },
+    resPos: function(data) {
+      // console.log('!!!!!!!!!!!!!!!resPos', data);
+      if (data && data.storeCode && data.storeCode == this.auth.store.code) {
+        let pos_tables = {};
+        for (let item of data.data) {
+          pos_tables[item.id] = item;
         }
-        this.$store.dispatch('setClients', clients);
-      },
-      resTablesInfo(data) {
-        let items = {};
-        for (let table of data) {
-          items[table.code] = table;
-        }
-        this.$store.dispatch('setTables', items);
-        this.$socket.emit('reqClients', {store_code: this.auth.store.code});
-      },
-      resPos: function(data) {
-        console.log('!!!!!!!!!!!!!!!resPos', data);
-        if (data && data.storeCode && data.storeCode == this.auth.store.code) {
-          let pos_tables = {};
-          for (let item of data.data) {
-            pos_tables[item.id] = item;
-          }
-          this.$store.dispatch('setPos', pos_tables);
-        }
-      },
-      resOrders: function(data) {
-        console.log('!!!resOrders', data);
-        if (data.time) {
-          this.time.start = data.time.start;
-          this.time.end = data.time.end;
-        }
+        this.$store.dispatch('setPos', pos_tables);
+      }
+    },
+    resOrders: function(data) {
+      console.log('!!!resOrders', data);
+      if (data.time) {
+        this.time.start = data.time.start;
+        this.time.end = data.time.end;
+      }
 
-        if (data.items.length) {
-          let items = data.items;
+      if (data.items.length) {
+        let items = data.items;
 
 
-          for (let item of items) {
-            //console.log('!time', item.time);
-            this.orders.push(item);
-          }
+        for (let item of items) {
+          //console.log('!time', item.time);
+          this.orders.push(item);
         }
+      }
 
-        if (!data.LastEvaluatedKey) {
-          this.orders.sort(function(a, b) {
-            return b.time - a.time;
-          });
-
-          for (let index = this.orders.length - 1 ; index > -1 ; index--) {
-            let order  = this.orders[index];
-            this.cumulativeProducts(order);
-          }
-        }
-      },
-      resCommitOrder: function(data) {
-        console.log('resCommitOrder', data);
-        if (data && data.code && data.commit && data.commit.time) {
-          for (let order of this.orders) {
-            if (order.code == data.code) {
-              order.commit.time = data.commit.time;
-              break;
-            }
-          }
-        }
-      },
-      resCategorys: function(data) {
-        let categorys = {};
-        for (let category of data) {
-          let code = category['T_order_store_menu_code'];
-          category.T_order_store_menu_depth = JSON.parse(category.T_order_store_menu_depth);
-          categorys[code] = category;
-        }
-        this.$store.dispatch('setCategorys', categorys);
-      },
-      resProducts: function(data) {
-        // console.log('resProducts', data);
-        let products = {};
-        for (let product of data) {
-          let code = product['T_order_store_good_code'];
-          //console.log(product.T_order_store_good_category);
-
-          product.T_order_store_good_category = JSON.parse(product.T_order_store_good_category);
-
-
-          if (!product.T_order_store_good_category) {
-            product.T_order_store_good_category = [];
-          }
-          //console.log(product.T_order_store_good_category);
-          products[code] = product;
-        }
-        this.$store.dispatch('setProducts', products);
-      },
-      resRestartClients: function(data) {
-        console.log('resRestartClients', data);
-        alert(data.count + '대의 태블렛에 새로고침을 요청 했습니다.');
-        this.flag_restarting_clients = 0;
-      },
-      newOrder: function(order) {
-        if (this.auth && this.auth.store && this.auth.store.code) {
-          if (this.auth.store.code != order.store.code) {
-            return;
-          }
-        } else {
-          return;
-        }
-        console.log('!orderview', order);
-
-        this.orders.push(order);
+      if (!data.LastEvaluatedKey) {
         this.orders.sort(function(a, b) {
           return b.time - a.time;
         });
 
-        this.cumulativeProducts(order);
-
-        for(let product of order.products) {
-          if (Object.keys(order.cumulative_products).indexOf(product.code) < 0) {
-            product.first = true;
-            order.first = true;
-          } else {
-            product.first = false;
-          }
+        for (let index = this.orders.length - 1 ; index > -1 ; index--) {
+          let order  = this.orders[index];
+          this.cumulativeProducts(order);
         }
-      },
-      youAre: function(data) {
-        console.log('youAre', data, data.store_code);
-
-        if(data.store_code) {
-          if (!this.auth.store) {
-            console.log('set store_code', data.store_code);
-            this.auth.store = {
-              name: '',
-              code: data.store_code,
-            };
-            console.log(this.auth.store);
-            this.initStore();
-          }
-        }
-      },
-      restart: function(url) {
-        this.restart(url);
-      },
-      updateClient: function(data) {
-        // console.log('updateClient', data);
-        if (this.auth && this.auth.store) {
-          if (data.store_code == this.auth.store.code) {
-            this.$socket.emit('reqClients', {store_code: this.auth.store.code});
-          }
-        }
-      },
-      orderlog: function(data) {
-        console.log('orderlog', data);
-        if (this.$store.state.auth.store.code == data.shop_code) {
-          console.log('mine!');
-          this.$store.dispatch('pushOrder', data);
-
-          this.audio.play();
-          this.$store.dispatch('setOrder', data);
-        }
-      },
-      syncCommitOrder: function(data) {
-        if (this.$store.state.auth.store.code == data.shop_code) {
-          this.$store.commit('syncCommitOrder', data);
-        }
-      },
+      }
     },
+    resCommitOrder: function(data) {
+      console.log('resCommitOrder', data);
+      if (data && data.code && data.commit && data.commit.time) {
+        for (let order of this.orders) {
+          if (order.code == data.code) {
+            order.commit.time = data.commit.time;
+            break;
+          }
+        }
+      }
+    },
+    resCategorys: function(data) {
+      let categorys = {};
+      for (let category of data) {
+        let code = category['T_order_store_menu_code'];
+        category.T_order_store_menu_depth = JSON.parse(category.T_order_store_menu_depth);
+        categorys[code] = category;
+      }
+      this.$store.dispatch('setCategorys', categorys);
+    },
+    resProducts: function(data) {
+      // console.log('resProducts', data);
+      let products = {};
+      for (let product of data) {
+        let code = product['T_order_store_good_code'];
+        //console.log(product.T_order_store_good_category);
+
+        product.T_order_store_good_category = JSON.parse(product.T_order_store_good_category);
+
+
+        if (!product.T_order_store_good_category) {
+          product.T_order_store_good_category = [];
+        }
+        //console.log(product.T_order_store_good_category);
+        products[code] = product;
+      }
+      this.$store.dispatch('setProducts', products);
+    },
+    resRestartClients: function(data) {
+      console.log('resRestartClients', data);
+      alert(data.count + '대의 태블렛에 새로고침을 요청 했습니다.');
+      this.flag_restarting_clients = 0;
+    },
+    newOrder: function(order) {
+      if (this.auth && this.auth.store && this.auth.store.code) {
+        if (this.auth.store.code != order.store.code) {
+          return;
+        }
+      } else {
+        return;
+      }
+      console.log('!orderview', order);
+
+      this.orders.push(order);
+      this.orders.sort(function(a, b) {
+        return b.time - a.time;
+      });
+
+      this.cumulativeProducts(order);
+
+      for(let product of order.products) {
+        if (Object.keys(order.cumulative_products).indexOf(product.code) < 0) {
+          product.first = true;
+          order.first = true;
+        } else {
+          product.first = false;
+        }
+      }
+    },
+    youAre: function(data) {
+      console.log('youAre', data, data.store_code);
+
+      if(data.store_code) {
+        if (!this.auth.store) {
+          console.log('set store_code', data.store_code);
+          this.auth.store = {
+            name: '',
+            code: data.store_code,
+          };
+          console.log(this.auth.store);
+          this.initStore();
+        }
+      }
+    },
+    restart: function(url) {
+      this.restart(url);
+    },
+    updateClient: function(data) {
+      // console.log('updateClient', data);
+      if (this.auth && this.auth.store) {
+        if (data.store_code == this.auth.store.code) {
+          this.$socket.emit('reqClients', {store_code: this.auth.store.code});
+        }
+      }
+    },
+    orderlog: function(data) {
+      // console.log('orderlog', data);
+      if (this.$store.state.auth.store.code == data.shop_code) {
+        // console.log('mine!');
+        this.$store.dispatch('pushOrder', data);
+
+        this.audio.play();
+        this.$store.dispatch('setOrder', data);
+      }
+    },
+    syncCommitOrder: function(data) {
+      if (this.$store.state.auth.store.code == data.shop_code) {
+        this.$store.commit('syncCommitOrder', data);
+      }
+    },
+  };
+
+  export default {
+    store,
+    filters,
+    data,
+    sockets,
     computed: {
       order() {
         return Boolean(this.$store.getters.order);
@@ -267,6 +266,8 @@
       },
     },
     created() {
+      console.log('created');
+
       setInterval(function(){
         this.time.now = Date();
       }.bind(this), 1000);
@@ -486,7 +487,7 @@
         if (this.auth && this.auth.store && this.auth.store.code) {
           let reqData = {store_code: this.auth.store.code};
           this.orders = [];
-          console.log('reqOrders', reqData);
+          // console.log('reqOrders', reqData);
 
           this.$socket.emit('reqStoreInfo', reqData);
           this.$socket.emit('reqOrders', reqData);

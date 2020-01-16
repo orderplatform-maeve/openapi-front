@@ -1,6 +1,6 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
-import axios from 'axios'
+import Vue from 'vue';
+import Vuex from 'vuex';
+import axios from 'axios';
 
 Vue.use(Vuex);
 
@@ -76,7 +76,7 @@ export const store = new Vuex.Store({
     SET_CLIENTS: (state, clients) => {
       let tables = state.tables;
       for (let key in tables) {
-        let table = tables[key]
+        let table = tables[key];
         table.client_count = 0;
         table.clients = [];
       }
@@ -122,7 +122,7 @@ export const store = new Vuex.Store({
             table.price_amt = price_amt;
             table.orders = item.orders;
           }
-          /* 
+          /*
           console.log(item.id, tables[code_pos_table]);
           if (tables[code_pos_table]) {
             console.log(price_amt);
@@ -154,7 +154,7 @@ export const store = new Vuex.Store({
         .then(function(res) {
           if (res.data.result) {
             payload.order.commit = true;
-            
+
             context.commit('UNSET_ORDER');
           }
         }.bind(this));
@@ -200,7 +200,7 @@ export const store = new Vuex.Store({
     },
     sortedOrders: (state) => {
       return state.orders.sort((a, b) =>  b.timestamp - a.timestamp);
-    }, 
+    },
     lengthOrders: (state) => {
       return state.orders.length;
     },
@@ -232,4 +232,4 @@ export const store = new Vuex.Store({
       return state.pos;
     },
   },
-})
+});
