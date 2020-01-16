@@ -1,9 +1,9 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
-import VueCookies from 'vue-cookies'
+import Vue from 'vue';
+import VueRouter from 'vue-router';
+import VueCookies from 'vue-cookies';
 import VueFilter from 'vue-filter';
-import VueSocketIO from 'vue-socket.io'
-import VueMoment from 'vue-moment'
+import VueSocketIO from 'vue-socket.io';
+import VueMoment from 'vue-moment';
 
 Vue.prototype.$eventBus = new Vue();
 
@@ -12,22 +12,22 @@ Vue.use(VueRouter);
 Vue.use(VueFilter);
 Vue.use(VueMoment);
 
-import OrderView from './OrderView.vue'
-import Member from './Member.vue'
-import Store from './Store.vue'
-import Table from './Table.vue'
-import Logout from './Logout.vue'
-import OrderList from './OrderList.vue'
-import OrderDetail from './OrderDetail.vue'
-import Order from './Order.vue'
-import ModalConfirm from './ConfirmModal.vue'
-import MenuBoard from './MenuBoard.vue'
-import TableOrders from './TableOrders.vue'
+import OrderView from './OrderView.vue';
+import Member from './Member.vue';
+import Store from './Store.vue';
+import Table from './Table.vue';
+import Logout from './Logout.vue';
+import OrderList from './OrderList.vue';
+import OrderDetail from './OrderDetail.vue';
+import Order from './Order.vue';
+import ModalConfirm from './ConfirmModal.vue';
+import MenuBoard from './MenuBoard.vue';
+import TableOrders from './TableOrders.vue';
 
 Vue.use(new VueSocketIO({
-    debug: true,
-    connection: 'http://1.socketio.orderview.torder.co.kr',
-}))
+  debug: false,
+  connection: 'http://1.socketio.orderview.torder.co.kr',
+}));
 Vue.component('order-detail', OrderDetail);
 Vue.component('order', Order);
 Vue.component('modal-confirm', ModalConfirm);
@@ -64,9 +64,8 @@ let routes = [{
 }];
 
 let router = new VueRouter({
-  //mode: 'history',
-  scrollBehavior:() => ({y:0}),
-  routes: routes,
+  scrollBehavior:() => ({ y:0 }),
+  routes,
 });
 
 new Vue({

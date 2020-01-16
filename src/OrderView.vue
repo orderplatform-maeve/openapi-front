@@ -18,12 +18,9 @@
           .store_name(v-on:click="removeAuth") {{store.name}}
           router-link.button(v-if="store.code" to="/order") 주문 보기
           router-link.button(v-if="store.code" to="/table") 테이블 보기<br/>(테스트)
-          //router-link.button(v-if="store.code && ['AA221111','AA221123','TOD_FBK_002'].includes(store.code)" to="/table") 테이블 보기
 
         .bottom
           hr
-          //.button(v-if="!flag_restarting_clients" v-on:click="restartClients()") 태블릿 새로고침
-          //.button.active(v-if="flag_restarting_clients" ) 태블릿 새로고침 중
           .tab-group
             .tab-name 태블릿 화면
             .tab-buttons
@@ -41,42 +38,41 @@
             span.name {{auth.member.name}}
             span 로그아웃
     .foot.foot-left
-    // .foot.foot-left
-    // router-link.button(v-if="isSelectedStore()" to="/table") 테이블 보기
-
 </template>
 
 <script>
-  import Vue from 'vue';
   import axios from 'axios';
   import { store } from './store/store';
+  import { won } from './utils/regularExpressions';
+
+  const filters = {
+    won,
+  };
+
+  function data() {
+    return {
+      auth: {},
+      stores: [],
+      store: {},
+      orders: [],
+      flag_restarting_clients: 0,
+      time: {
+        now: 0,
+        start: 0,
+        end: 0,
+      },
+    };
+  }
 
   export default {
     store,
-    filters: {
-      won(x) {
-        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '원';
-      }
-    },
-    data () {
-      return {
-        auth: {},
-        stores: [],
-        store: {},
-        orders: [],
-        time: {
-          now: 0,
-          start: 0,
-          end: 0,
-        },
-        flag_restarting_clients: 0,
-      };
-    },
+    filters,
+    data,
     sockets: {
       connect: function () {
         this.$socket.emit('in', {});
         this.$socket.emit("whoAmI");
-        console.log('socket connected');
+        // console.log('socket connected', this.$socket.emit);
       },
       resStoreInfo(data) {
         console.log('resStoreInfo', data);
@@ -109,8 +105,6 @@
       },
       resOrders: function(data) {
         console.log('!!!resOrders', data);
-        //console.table(data.items);
-        //console.table(data);
         if (data.time) {
           this.time.start = data.time.start;
           this.time.end = data.time.end;
@@ -136,7 +130,6 @@
             this.cumulativeProducts(order);
           }
         }
-      //this.$eventBus.$emit('setOrders',data);
       },
       resCommitOrder: function(data) {
         console.log('resCommitOrder', data);
@@ -150,7 +143,6 @@
         }
       },
       resCategorys: function(data) {
-        //console.log('resCategorys', data);
         let categorys = {};
         for (let category of data) {
           let code = category['T_order_store_menu_code'];
@@ -160,7 +152,7 @@
         this.$store.dispatch('setCategorys', categorys);
       },
       resProducts: function(data) {
-        console.log('resProducts', data);
+        // console.log('resProducts', data);
         let products = {};
         for (let product of data) {
           let code = product['T_order_store_good_code'];
@@ -207,8 +199,6 @@
             product.first = false;
           }
         }
-
-      //this.$eventBus.$emit('newOrder',order);
       },
       youAre: function(data) {
         console.log('youAre', data, data.store_code);
@@ -223,22 +213,16 @@
             console.log(this.auth.store);
             this.initStore();
           }
-        /*
-        this.$router.push({
-          name: 'order',
-        });
-        */
         }
       },
       restart: function(url) {
         this.restart(url);
       },
       updateClient: function(data) {
-        console.log('updateClient', data);
+        // console.log('updateClient', data);
         if (this.auth && this.auth.store) {
           if (data.store_code == this.auth.store.code) {
             this.$socket.emit('reqClients', {store_code: this.auth.store.code});
-          //this.$store.dispatch('setClient', data);
           }
         }
       },
@@ -266,6 +250,7 @@
         if (this.auth && this.auth.member) {
           return true;
         }
+        return false;
       },
       ordersCount() {
         let result = {
@@ -280,8 +265,6 @@
         }
         return result;
       },
-    },
-    beforeCreate() {
     },
     created() {
       setInterval(function(){
@@ -299,19 +282,6 @@
 
       if (this.auth && this.auth.store && this.auth.store.code) {
         this.initStore();
-
-      /*
-      this.$eventBus.$emit('reqOrders');
-
-      this.$socket.emit('reqCategorys', {
-        store_code: this.auth.store.code,
-      });
-      this.$socket.emit('reqProducts', {
-        store_code: this.auth.store.code,
-      });
-      */
-
-      //this.$router.push({name: 'order'});
       } else {
         this.$router.push({name: 'member'});
       }
@@ -325,9 +295,6 @@
     },
     methods: {
       cumulativeProducts: function(order) {
-        let code_group = order.group.code;
-        let code_order = order.code;
-        let time_current_order = order.time;
         let cumulative_products = {};
         let tmp_prev_seq = 0;
 
@@ -382,8 +349,7 @@
         return order;
       },
       setStores() {
-        if(this.auth.member && this.auth.member.code) {
-        } else {
+        if(!(this.auth.member && this.auth.member.code)) {
           return;
         }
         let req_data = {
@@ -426,8 +392,7 @@
           });
       },
       restartClients() {
-        if(this.auth.store && this.auth.store.code) {
-        } else {
+        if(!(this.auth.store && this.auth.store.code)) {
           return;
         }
         let reqData = {store_code: this.auth.store.code};
@@ -471,20 +436,6 @@
             }.bind(this),
           });
         }
-
-      /*
-      let url = 'http://admin.torder.co.kr/store/shop_open';
-      if (!this.serviceStatus) {
-        url = 'http://admin.torder.co.kr/store/shop_close';
-      }
-      let fd = new FormData();
-      fd.append('store_code', this.auth.store.code);
-      axios
-      .post(url, fd)
-      .then(function(res) {
-        console.log(res);
-      });
-      */
       },
       setOrderStatus(value) {
         if (!value) {
@@ -523,8 +474,6 @@
             }.bind(this),
           });
         }
-      /*
-      */
       },
       restart(url) {
         if (!url) {
@@ -563,8 +512,6 @@
           });
         }
       },
-      setStoreLength(length) {
-      },
       loadAuth() {
         let auth = {};
         try {
@@ -595,14 +542,11 @@
         this.stores = [];
         this.auth.member = undefined;
         this.saveAuth();
-      //this.$router.push({name: 'member'});
       },
       isSelectedStore() {
         if (this.auth && this.auth.store) {
           return true;
         }
-      },
-      pushOrder(order) {
       },
     },
   };
