@@ -26,6 +26,41 @@
     "last 2 versions",
     "not ie <= 8"
   ],
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/recommended",
+      "eslint:recommended"
+    ],
+    "rules": {
+      "no-console": "off",
+      "vue/script-indent": [
+        "error",
+        2,
+        {
+          "baseIndent": 1
+        }
+      ],
+      "vue/html-indent": [
+        "error",
+        2,
+        {
+          "attribute": 1,
+          "baseIndent": 1,
+          "closeBracket": 0,
+          "alignAttributesVertically": true,
+          "ignores": []
+        }
+      ],
+      "semi": [
+        2,
+        "always"
+      ]
+    }
+  },
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
@@ -33,6 +68,8 @@
     "babel-preset-stage-3": "^6.24.1",
     "cross-env": "^5.0.5",
     "css-loader": "^0.28.7",
+    "eslint": "^6.8.0",
+    "eslint-plugin-vue": "^6.1.2",
     "file-loader": "^1.1.4",
     "node-sass": "^4.5.3",
     "sass-loader": "^6.0.6",

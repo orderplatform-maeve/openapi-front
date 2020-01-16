@@ -9,7 +9,7 @@ Vue.prototype.$eventBus = new Vue();
 
 Vue.use(VueCookies);
 Vue.use(VueRouter);
-Vue.use(VueFilter); 
+Vue.use(VueFilter);
 Vue.use(VueMoment);
 
 import OrderView from './OrderView.vue'
@@ -33,13 +33,6 @@ Vue.component('order', Order);
 Vue.component('modal-confirm', ModalConfirm);
 Vue.component('modal-table-orders', TableOrders);
 Vue.component('menu-board', MenuBoard);
-
-/*
-new Vue({
-  //el: '#order',
-  render: h => h(Order)
-})
-*/
 
 let routes = [{
   path: '/',
