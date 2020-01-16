@@ -79,57 +79,6 @@
         this.order = order;
         this.show = true;
 
-        /*
-      let code_group = this.order.group.code;
-      let code_order = this.order.code;
-      let time_current_order = this.order.time;
-      let cumulative_products = {};
-
-      let tmp_prev_seq = 0;
-
-      //console.log('select', this.order.code);
-      if (this.order.group.seq > 1) {
-        for (let order of this.orders) {
-          if (this.order.table.code == order.table.code && order.time < time_current_order) {
-            if (tmp_prev_seq > 0 && tmp_prev_seq <= order.group.seq) {
-              break
-            }
-
-            for (let product of order.products) {
-              let tmp_code = [];
-              tmp_code.push(product.code);
-
-              if (product.hasOwnProperty('options')) {
-                for(let option of product.options) {
-                  tmp_code.push([option.code, option.qty].join(':'));
-                }
-              }
-              product.new_code = tmp_code.join('-');
-
-              console.log('!!!!new_code', product.new_code);
-
-              if (cumulative_products[product.new_code]) {
-                cumulative_products[product.new_code].qty += product.qty;
-              } else {
-                cumulative_products[product.new_code] = {
-                  code: product.code,
-                  price: product.price,
-                  name: product.name,
-                  options: product.options,
-                  first: product.first,
-                  qty: product.qty,
-                };
-              }
-            }
-
-            tmp_prev_seq = order.group.seq;
-          }
-        }
-      }
-
-      this.cumulative_products = cumulative_products;
-      */
-
         clearInterval(this.interval);
         this.seconds = 10;
         this.interval = setInterval(function(){

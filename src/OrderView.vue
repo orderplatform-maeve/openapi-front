@@ -67,8 +67,9 @@
     connect: function () {
       console.log('socket connected');
     },
+    // where is caller?
     resStoreInfo(data) {
-      console.log('resStoreInfo', data);
+      console.log('resStoreInfo');
       this.store = data;
     },
     resClients(data) {
@@ -97,7 +98,7 @@
       }
     },
     resOrders: function(data) {
-      console.log('!!!resOrders', data);
+      console.log('!!!resOrders');
       if (data.time) {
         this.time.start = data.time.start;
         this.time.end = data.time.end;

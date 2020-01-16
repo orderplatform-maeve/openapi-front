@@ -34,7 +34,7 @@ Vue.component('modal-confirm', ModalConfirm);
 Vue.component('modal-table-orders', TableOrders);
 Vue.component('menu-board', MenuBoard);
 
-let routes = [{
+const routes = [{
   path: '/',
   component: OrderView,
   children: [{
