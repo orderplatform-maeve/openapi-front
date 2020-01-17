@@ -14,29 +14,30 @@
         .client(v-for="client in table.clients" :class="{preparing:client.status=='preparing'}") t
 </template>
 <script>
-import axios from 'axios';
-
-function timeout(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 export default {
+  filters: {
+    currency(value) {
+      if (!value) return '0';
+      return value.toFixed(0).replace(/(\d)(?=(\d{3})+(?:\.\d+)?$)/g, "$1,");
+    }
+  },
   data() {
     return {
       timeouts: [],
       flag_restaring: false,
-    }
-  },
-  filters: {
-    currency(value) {
-      if (!value) return '0'
-      return value.toFixed(0).replace(/(\d)(?=(\d{3})+(?:\.\d+)?$)/g, "$1,");
-    }
+    };
   },
   computed: {
     tables() {
       return this.$store.getters.tables;
-    } 
+    }
+  },
+  beforeMount() {
+  },
+  mounted() {
+  },
+  beforeDestroy() {
+    this.cancelRestart();
   },
   methods: {
     openMenuBoard(table) {
@@ -44,7 +45,7 @@ export default {
         this.$eventBus.$emit('openTableOrders', table);
       } else {
         this.$eventBus.$emit('openMenuBoard', table);
-      } 
+      }
     },
     restartAllClient() {
       this.flag_restaring = true;
@@ -59,13 +60,13 @@ export default {
         let timeout = setTimeout(function() {
           console.log(myid, client);
 
-          client.tablet_number
+          client.tablet_number;
           //rn this.$store.getters.tables;
 
           let data = {
             type_msg: 'restart',
             myid: myid,
-          }
+          };
           this.$socket.emit('reqRestartClient', data);
         }.bind(this), count * 3000);
         this.timeouts.push(timeout);
@@ -75,7 +76,7 @@ export default {
         this.flag_restaring = false;
       }.bind(this), count * 3000);
       this.timeouts.push(timeout);
-      
+
       //let reqData = {store_code: this.auth.store.code};
       //this.flag_restarting_clients = 1;
       //console.log('reqRestartClients', reqData);
@@ -89,17 +90,10 @@ export default {
       this.flag_restaring = false;
     },
   },
-  beforeMount() {
-  },
-  mounted() {
-  },
-  beforeDestroy() {
-    this.cancelRestart();
-  },
-}
+};
 </script>
 <style lang="scss">
-@import "./scss/global.scss";
+@import "../../scss/global.scss";
 #tables {
   display:flex;
   flex-direction:column;
@@ -134,7 +128,7 @@ export default {
     padding:0 12px;
     overflow:scroll;
     flex-grow:1;
-    -webkit-overflow-scrolling: touch; 
+    -webkit-overflow-scrolling: touch;
 
     .table-item {
       display:flex;
@@ -148,7 +142,7 @@ export default {
       .table-number {
         @include table-number;
         position:relative;
-      } 
+      }
       .table-number.empty-table {
         background-color:#484848!important;
       }
@@ -175,7 +169,7 @@ export default {
           justify-content: center;
           color:#ffffff;
           border-radius:100px;
-          font-size:28px; 
+          font-size:28px;
           font-weight:900;
           border-radius:4px;
           width:1.2em;

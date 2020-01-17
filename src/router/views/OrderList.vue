@@ -29,45 +29,45 @@
 </template>
 <script>
 
-  export default {
-    props: ['auth', 'orders', 'time'],
-    data () {
-      return {
-        scroll: true,
-        eventListener: null,
-        viewMode: 'a',
-      };
+export default {
+  props: ['auth', 'orders', 'time'],
+  data () {
+    return {
+      scroll: true,
+      eventListener: null,
+      viewMode: 'a',
+    };
+  },
+  computed: {
+    sortedOrders() {
+      return this.$store.getters.sortedOrders;
     },
-    computed: {
-      sortedOrders() {
-        return this.$store.getters.sortedOrders;
-      },
-      lengthOrders() {
-        return this.$store.getters.lengthOrders;
-      },
-      lengthCommitedOrders() {
-        return this.$store.getters.lengthCommitedOrders;
-      },
-      commited_orders_count() {
-        let count = 0;
-        for (let order of this.orders) {
-          if (order.commit.time) {
-            count += 1;
-          }
+    lengthOrders() {
+      return this.$store.getters.lengthOrders;
+    },
+    lengthCommitedOrders() {
+      return this.$store.getters.lengthCommitedOrders;
+    },
+    commited_orders_count() {
+      let count = 0;
+      for (let order of this.orders) {
+        if (order.commit.time) {
+          count += 1;
         }
-        return count;
       }
-    },
-    beforeCreate() {
-    },
-    created() {
-      let auth = this.auth;
-      if (auth && auth.store) {
-      } else {
-        this.$router.push('/store');
-      }
-      this.$eventBus.$off('closeOrder');
-      this.$eventBus.$on('closeOrder', this.closeOrder);
+      return count;
+    }
+  },
+  beforeCreate() {
+  },
+  created() {
+    let auth = this.auth;
+    if (auth && auth.store) {
+    } else {
+      this.$router.push('/store');
+    }
+    this.$eventBus.$off('closeOrder');
+    this.$eventBus.$on('closeOrder', this.closeOrder);
     //this.$eventBus.$on('setOrders', this.setOrders);
 
     //this.getOrders();
@@ -77,34 +77,34 @@
     this.eventListener = new EventSource('http://view.torder.co.kr/psync.php?shop_code='+this.auth.store.code);
     this.eventListener.addEventListener('message', this.message, false);
     */
-    },
-    beforeDestroy() {
+  },
+  beforeDestroy() {
     /*
     this.eventListener.removeEventListener('message', this.message);
     this.eventListener.close();
     */
+  },
+  methods: {
+    setViewMode(value) {
+      document.querySelector(".order-list").scrollTop = 0;
+      this.viewMode = value;
     },
-    methods: {
-      setViewMode(value) {
-        document.querySelector(".order-list").scrollTop = 0;
-        this.viewMode = value;
-      },
-      view(order) {
-        this.$store.dispatch('setOrder', order);
-      },
-      newOrder(order) {
-        console.log('method newOrder');
-        this.scroll = false;
-        this.$eventBus.$emit('newOrder', order);
-      },
-      closeOrder(order) {
-        this.scroll = true;
-      },
-    }
-  };
+    view(order) {
+      this.$store.dispatch('setOrder', order);
+    },
+    newOrder(order) {
+      console.log('method newOrder');
+      this.scroll = false;
+      this.$eventBus.$emit('newOrder', order);
+    },
+    closeOrder(order) {
+      this.scroll = true;
+    },
+  }
+};
 </script>
 <style lang="scss">
-@import "./scss/global.scss";
+@import "../../scss/global.scss";
 #orders {
   display:flex;
   flex-direction:column;

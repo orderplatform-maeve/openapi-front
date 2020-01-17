@@ -1,5 +1,31 @@
-var path = require('path')
-var webpack = require('webpack')
+var path = require('path');
+var webpack = require('webpack');
+
+const aliases = {
+  '@': '.',
+  '@src': 'src',
+  '@router': 'src/router',
+  '@views': 'src/router/views',
+  '@layouts': 'src/router/layouts',
+  '@components': 'src/components',
+  '@assets': 'src/assets',
+  '@utils': 'src/utils',
+  '@store': 'src/store',
+  '@scss': 'src/scss',
+};
+
+function resolveSrc(_path) {
+  return path.resolve(__dirname, _path);
+}
+
+const pAlias = {};
+
+for (const alias in aliases) {
+  const aliasTo = aliases[alias];
+  pAlias[alias] = resolveSrc(aliasTo);
+}
+
+console.log('pAlias', pAlias);
 
 module.exports = {
   entry: './src/main.js',
@@ -71,7 +97,8 @@ module.exports = {
   },
   resolve: {
     alias: {
-      'vue$': 'vue/dist/vue.esm.js'
+      'vue$': 'vue/dist/vue.esm.js',
+      ...pAlias
     },
     extensions: ['*', '.js', '.vue', '.json']
   },
@@ -85,10 +112,10 @@ module.exports = {
     hints: false
   },
   devtool: '#eval-source-map'
-}
+};
 
 if (process.env.NODE_ENV === 'production') {
-  module.exports.devtool = '#source-map'
+  module.exports.devtool = '#source-map';
   // http://vue-loader.vuejs.org/en/workflow/production.html
   module.exports.plugins = (module.exports.plugins || []).concat([
     new webpack.DefinePlugin({
@@ -107,5 +134,5 @@ if (process.env.NODE_ENV === 'production') {
     new webpack.LoaderOptionsPlugin({
       minimize: true
     })
-  ])
+  ]);
 }

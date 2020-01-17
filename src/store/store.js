@@ -159,8 +159,6 @@ export const store = new Vuex.Store({
           }
         }.bind(this));
     },
-    initOrders: (context) => {
-    },
     setOrder: (context, order) => {
       context.commit('SET_ORDER', order);
     },
