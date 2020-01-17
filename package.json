@@ -38,10 +38,7 @@
       "no-console": "off",
       "vue/script-indent": [
         "error",
-        2,
-        {
-          "baseIndent": 1
-        }
+        2
       ],
       "vue/html-indent": [
         "error",
@@ -57,7 +54,8 @@
       "semi": [
         2,
         "always"
-      ]
+      ],
+      "indent": ["error", 2]
     }
   },
   "devDependencies": {

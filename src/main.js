@@ -5,13 +5,6 @@ import VueFilter from 'vue-filter';
 import VueSocketIO from 'vue-socket.io';
 import VueMoment from 'vue-moment';
 
-Vue.prototype.$eventBus = new Vue();
-
-Vue.use(VueCookies);
-Vue.use(VueRouter);
-Vue.use(VueFilter);
-Vue.use(VueMoment);
-
 import OrderView from './OrderView.vue';
 import Member from './Member.vue';
 import Store from './Store.vue';
@@ -23,6 +16,13 @@ import Order from './Order.vue';
 import ModalConfirm from './ConfirmModal.vue';
 import MenuBoard from './MenuBoard.vue';
 import TableOrders from './TableOrders.vue';
+
+Vue.prototype.$eventBus = new Vue();
+
+Vue.use(VueCookies);
+Vue.use(VueRouter);
+Vue.use(VueFilter);
+Vue.use(VueMoment);
 
 Vue.use(new VueSocketIO({
   debug: false,
@@ -64,7 +64,7 @@ const routes = [{
 }];
 
 let router = new VueRouter({
-  scrollBehavior:() => ({ y:0 }),
+  scrollBehavior:() => ({ y: 0 }),
   routes,
 });
 
