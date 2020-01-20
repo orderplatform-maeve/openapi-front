@@ -4,11 +4,9 @@
     modal-confirm
     modal-table-orders
     order-detail(v-bind:orders="orders" v-bind:auth="auth")
-    order(v-if="order")
     .body
       .left
-        span {{ shop.name }}
-        //- router-view(v-bind:orders="orders" v-bind:auth="auth" v-bind:time="time" v-bind:stores="stores")
+        router-view(v-bind:orders="orders" v-bind:auth="auth" v-bind:time="time" v-bind:stores="stores")
       .right
         .top
           .button(v-on:click="restart('/')") 새로고침
@@ -16,7 +14,6 @@
             span {{time.now | moment("MM.DD HH:mm") }}
           img.logo(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/logo/torder_color_white.png")
           .store_name(v-on:click="removeAuth") {{store.name}}
-          span {{ shop.name }}
           router-link.button(v-if="store.code" to="/order") 주문 보기
           router-link.button(v-if="store.code" to="/table") 테이블 보기<br/>(테스트)
         .bottom
@@ -56,23 +53,16 @@ export default {
         start: 0,
         end: 0,
       },
-      shop: {
-        name: '111',
-      },
     };
   },
-  // store,
+  store,
   created() {
     this.time.now = Date();
     this.loadAuth();
-    this.shop.code = true;
-    this.shop.name = 'dd';
   },
 
   mounted() {
     this.initStore();
-    // this.store.code = true;
-    // this.store.name = 'dd';
   },
 
   methods: {
@@ -99,7 +89,13 @@ export default {
 
         this.$socket.emit('reqStoreInfo', reqData);
       }
-    }
+    },
+    removeAuth() {
+
+    },
+    logout() {
+
+    },
   },
 
   sockets: {
