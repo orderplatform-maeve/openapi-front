@@ -25,24 +25,20 @@ export const store = new Vuex.Store({
     PUSH_ORDER: (state, order) => {
       state.orders.push(order);
     },
-    SET_AUTH: (state, auth) => {
-      Vue.set(state, 'auth', auth);
-      Vue.set(state, 'orders', []);
+    SET_AUTH: (state, payload) => {
+      const {
+        auth,
+        data,
+      } = payload;
 
-      let url = 'http://demo.torder.co.kr/logs/Today_redis_data';
-      let fd = new FormData();
-      if (auth && auth.store && auth.store.code) {
-        fd.append('shop_code', auth.store.code);
+      const orders = [];
+
+      for (let item of data) {
+        orders.push(JSON.parse(item.json_data));
       }
 
-      axios
-        .post(url, fd)
-        .then(function(res) {
-
-          for (let data of res.data) {
-            state.orders.push(JSON.parse(data.json_data));
-          }
-        }.bind(this));
+      Vue.set(state, 'auth', auth);
+      Vue.set(state, 'orders', orders);
     },
     SET_TABLES: (state, tables) => {
       for (let key in tables) {
@@ -148,8 +144,21 @@ export const store = new Vuex.Store({
     pushOrder: (context, order) => {
       context.commit('PUSH_ORDER', order);
     },
-    setAuth: (context, auth) => {
-      context.commit('SET_AUTH', auth);
+    setAuth: ({commit}, auth) => {
+      let url = 'http://demo.torder.co.kr/logs/Today_redis_data';
+      let fd = new FormData();
+      if (auth && auth.store && auth.store.code) {
+        fd.append('shop_code', auth.store.code);
+      }
+
+      return axios
+        .post(url, fd)
+        .then(function(res) {
+          commit('SET_AUTH', {
+            auth,
+            data: res.data,
+          });
+        }.bind(this));
     },
     setTables: (context, tables) => {
       context.commit('SET_TABLES', tables);
