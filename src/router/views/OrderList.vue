@@ -58,31 +58,13 @@ export default {
       return count;
     }
   },
-  beforeCreate() {
-  },
   created() {
     let auth = this.auth;
-    if (auth && auth.store) {
-    } else {
+    if (!(auth && auth.store)) {
       this.$router.push('/store');
     }
     this.$eventBus.$off('closeOrder');
     this.$eventBus.$on('closeOrder', this.closeOrder);
-    //this.$eventBus.$on('setOrders', this.setOrders);
-
-    //this.getOrders();
-
-    /*
-    this.eventListener = null;
-    this.eventListener = new EventSource('http://view.torder.co.kr/psync.php?shop_code='+this.auth.store.code);
-    this.eventListener.addEventListener('message', this.message, false);
-    */
-  },
-  beforeDestroy() {
-    /*
-    this.eventListener.removeEventListener('message', this.message);
-    this.eventListener.close();
-    */
   },
   methods: {
     setViewMode(value) {
@@ -97,7 +79,7 @@ export default {
       this.scroll = false;
       this.$eventBus.$emit('newOrder', order);
     },
-    closeOrder(order) {
+    closeOrder() {
       this.scroll = true;
     },
   }
