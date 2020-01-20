@@ -44,7 +44,7 @@ export default {
   data() {
     return {
       auth: {},
-      stores: [], // 매장 목록들
+      // stores: [], // 매장 목록들
       store: {}, // RLB 가게 정보
       orders: [],
       flag_restarting_clients: 0,
@@ -56,9 +56,17 @@ export default {
     };
   },
   store,
+
+  computed: {
+    stores() {
+      return this.$store.getters.stores;
+    },
+  },
+
   created() {
     this.time.now = Date();
     this.loadAuth();
+    this.setStores();
   },
 
   mounted() {
@@ -71,6 +79,7 @@ export default {
       try {
         // %7B%22store%22%3A%7B%22code%22%3A%22AA221111%22%2C%22name%22%3A%22%EC%B2%AD%EB%8B%B4%EC%9D%B4%EC%83%81(%EA%B5%AC%EB%A1%9C%EB%94%94%EC%A7%80%ED%84%B8%EC%A0%90)%22%2C%22amt%22%3Anull%2C%22cnt%22%3A1%7D%2C%22member%22%3A%7B%22code%22%3A%22torder%22%2C%22name%22%3A%22%ED%8B%B0%EC%98%A4%EB%8D%94(%EB%A7%88%EC%8A%A4%ED%84%B0)%22%7D%7D
         auth = this.$cookies.get('auth');
+        console.log('auth', auth);
       } catch(e) {
         console.log(e);
       }
@@ -78,6 +87,8 @@ export default {
         auth = {};
       }
       this.auth = auth;
+
+
       this.$store.dispatch('setAuth', auth);
     },
     initStore() {
@@ -89,6 +100,16 @@ export default {
 
         this.$socket.emit('reqStoreInfo', reqData);
       }
+    },
+    setStores() {
+      if(!(this.auth.member && this.auth.member.code)) {
+        return;
+      }
+      let params = {
+        member_code: this.auth.member.code,
+      };
+
+      this.$store.dispatch('setStores', params);
     },
     removeAuth() {
 

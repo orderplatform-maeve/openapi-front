@@ -13,7 +13,19 @@ export const store = new Vuex.Store({
     categorys: {},
     products: {},
     pos: {},
-    auth: {},
+    auth: {
+      member: {
+        code: '',
+        name: '',
+      },
+      store: {
+        amt: null,
+        cnt: 0,
+        code: '',
+        name: '',
+      },
+    },
+    stores: [],
   },
   mutations: {
     SET_ORDER: (state, order) => {
@@ -39,6 +51,9 @@ export const store = new Vuex.Store({
 
       Vue.set(state, 'auth', auth);
       Vue.set(state, 'orders', orders);
+    },
+    SET_STORES: (state, stores) => {
+      Vue.set(state, 'stores', stores);
     },
     SET_TABLES: (state, tables) => {
       for (let key in tables) {
@@ -160,6 +175,33 @@ export const store = new Vuex.Store({
           });
         }.bind(this));
     },
+    setStores: ({ commit }, params) => {
+      return axios
+        .get('http://api.auth.order.orderhae.com/stores', {
+          params,
+        })
+        .then(function(res) {
+          if (res.data) {
+            const stores = [];
+            for (let item of res.data.store_data) {
+              let store = {
+                code: item.shop_code,
+                name: item.shop_name,
+              };
+              if (item.current_order) {
+                store.amt = item.current_order.amt;
+                store.cnt = item.current_order.cnt;
+              }
+              stores.push(store);
+            }
+            commit('SET_STORES', stores);
+          } else {
+            alert('매장이 없습니다.');
+          }
+        }.bind(this)).catch(function(err) {
+          console.log({err: err});
+        });
+    },
     setTables: (context, tables) => {
       context.commit('SET_TABLES', tables);
       context.commit('MATCH_TABLES_POS');
@@ -218,5 +260,8 @@ export const store = new Vuex.Store({
     pos: (state) => {
       return state.pos;
     },
+    stores: (state) => {
+      return state.stores.sort((a, b) =>a.name - b.name);
+    }
   },
 });
