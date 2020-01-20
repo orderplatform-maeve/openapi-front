@@ -12,6 +12,7 @@ const aliases = {
   '@utils': 'src/utils',
   '@store': 'src/store',
   '@scss': 'src/scss',
+  '@config': 'src/config',
 };
 
 function resolveSrc(_path) {

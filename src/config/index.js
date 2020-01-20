@@ -1,1 +1,1 @@
-export { default as socketIO } from './socket.config';
+export { default as socketConfig } from './socket.config';

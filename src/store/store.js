@@ -17,17 +17,6 @@ export const store = new Vuex.Store({
   },
   mutations: {
     SET_ORDER: (state, order) => {
-      /*
-      order.total_peoples = 2;
-      order.people_json = [
-        { name: '남자', count: 1},
-        { name: '여자', count: 1},
-      ];
-      for (let info of order.order_info) {
-        info.memo_show = true;
-        info.memo = 'test';
-      }
-      */
       Vue.set(state, 'order', order);
     },
     UNSET_ORDER: (state) => {
@@ -114,21 +103,12 @@ export const store = new Vuex.Store({
             let qty_amt = 0;
             for (let order of item.orders) {
               price_amt += parseInt(order.good.price);
-              //order.good.name;
-              //order.good.id;
               qty_amt += order.qty;
             }
             table.qty_amt = qty_amt;
             table.price_amt = price_amt;
             table.orders = item.orders;
           }
-          /*
-          console.log(item.id, tables[code_pos_table]);
-          if (tables[code_pos_table]) {
-            console.log(price_amt);
-            tables[code_pos_table].price_amt = price_amt;
-          }
-          */
         }
       }
       Vue.set(state, 'tables', tables);

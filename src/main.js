@@ -12,6 +12,7 @@ import MenuBoard from './MenuBoard.vue';
 import TableOrders from './TableOrders.vue';
 
 import router from '@router';
+import { socketConfig } from '@config';
 
 Vue.prototype.$eventBus = new Vue();
 
@@ -20,10 +21,7 @@ Vue.use(VueRouter);
 Vue.use(VueFilter);
 Vue.use(VueMoment);
 
-Vue.use(new VueSocketIO({
-  debug: false,
-  connection: 'http://1.socketio.orderview.torder.co.kr',
-}));
+Vue.use(new VueSocketIO(socketConfig));
 
 Vue.component('order-detail', OrderDetail);
 Vue.component('order', Order);
