@@ -26,8 +26,6 @@ for (const alias in aliases) {
   pAlias[alias] = resolveSrc(aliasTo);
 }
 
-console.log('pAlias', pAlias);
-
 module.exports = {
   entry: './src/main.js',
   output: {
@@ -108,7 +106,12 @@ module.exports = {
     noInfo: true,
     overlay: true,
     disableHostCheck: true,
+    open: true,
+    hot: true
   },
+  plugins: [
+    new webpack.HotModuleReplacementPlugin()
+  ],
   performance: {
     hints: false
   },
