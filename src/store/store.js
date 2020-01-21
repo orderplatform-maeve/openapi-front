@@ -4,7 +4,7 @@ import axios from 'axios';
 
 Vue.use(Vuex);
 
-export const store = new Vuex.Store({
+const store = new Vuex.Store({
   state: {
     order: undefined,
     orders: [],
@@ -322,3 +322,5 @@ export const store = new Vuex.Store({
     }
   },
 });
+
+export default store;

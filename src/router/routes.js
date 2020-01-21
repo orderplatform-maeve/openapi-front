@@ -14,26 +14,37 @@ const routes = [{
   children: [{
     path: paths.root,
     redirect: paths.order,
-  }, {
+    meta: { requiresAuth: false },
+  },
+  {
     path: paths.login,
     name: paths.login,
     component: Login,
-  }, {
+    meta: { requiresAuth: false },
+  },
+  {
     path: paths.store,
     name: paths.store,
     component: Store,
-  }, {
+    meta: { requiresAuth: true },
+  },
+  {
     path: paths.table,
     name: paths.table,
     component: Table,
-  }, {
+    meta: { requiresAuth: true },
+  },
+  {
     path: paths.order,
     name: paths.order,
     component: OrderList,
-  }, {
+    meta: { requiresAuth: true },
+  },
+  {
     path: paths.logout,
     name: paths.logout,
     component: Logout,
+    meta: { requiresAuth: true },
   }]
 }];
 
