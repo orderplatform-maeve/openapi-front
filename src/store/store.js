@@ -175,6 +175,57 @@ export const store = new Vuex.Store({
           });
         }.bind(this));
     },
+    async login ({ dispatch }, payload) {
+      try {
+        const { id, pw } = payload;
+
+        const url = 'http://api.auth.order.orderhae.com/login';
+
+        const params = {
+          id,
+          pw,
+        };
+
+        const res = await axios.post(url, params);
+
+        const data = res.data[0];
+
+        if (res.data.length) {
+          const member = {
+            code: data['T_order_id'],
+            name: data['T_order_member_name'],
+          };
+
+          const parseStore = JSON.parse(data['T_order_member_store_data']);
+
+          const store = {
+            amt: null,
+            cnt: 1,
+            code: parseStore[0].store_info,
+            name: '',
+          };
+
+          const auth = {
+            member,
+            store,
+          };
+
+          console.log('auth', auth);
+
+          Vue.$cookies.set('auth',  auth, '1y', null, null);
+
+          await dispatch('setAuth', auth);
+
+          return true;
+        } else {
+          alert('아이디와 비밀번호를 입력해주세요');
+          return false;
+        }
+      } catch (error) {
+        console.log(error);
+        return false;
+      }
+    },
     setStores: ({ commit }, params) => {
       return axios
         .get('http://api.auth.order.orderhae.com/stores', {

@@ -1,6 +1,6 @@
 import OrderView from '@layouts/OrderView.vue';
 
-import Member from '@views/Member.vue';
+import Login from '@views/Login.vue';
 import Store from '@views/Store.vue';
 import Table from '@views/Table.vue';
 import Logout from '@views/Logout.vue';
@@ -15,9 +15,9 @@ const routes = [{
     path: paths.root,
     redirect: paths.order,
   }, {
-    path: paths.member,
-    name: paths.member,
-    component: Member,
+    path: paths.login,
+    name: paths.login,
+    component: Login,
   }, {
     path: paths.store,
     name: paths.store,

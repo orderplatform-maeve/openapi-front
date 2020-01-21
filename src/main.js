@@ -5,6 +5,8 @@ import VueFilter from 'vue-filter';
 import VueSocketIO from 'vue-socket.io';
 import VueMoment from 'vue-moment';
 
+import "@babel/polyfill";
+
 import OrderDetail from './OrderDetail.vue';
 import Order from './Order.vue';
 import ModalConfirm from './ConfirmModal.vue';

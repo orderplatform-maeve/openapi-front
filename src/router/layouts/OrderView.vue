@@ -3,7 +3,7 @@
     menu-board
     modal-confirm
     modal-table-orders
-    order-detail(v-bind:orders="orders" v-bind:auth="auth")
+    order(v-if="order")
     .body
       .left
         router-view(v-bind:orders="orders" v-bind:auth="auth" v-bind:time="time" v-bind:stores="stores")
@@ -13,7 +13,7 @@
           .datetime
             span {{time.now | moment("MM.DD HH:mm") }}
           img.logo(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/logo/torder_color_white.png")
-          .store_name(v-on:click="removeAuth") {{store.name}}
+          .store_name {{store.name}}
           router-link.button(v-if="store.code" to="/order") 주문 보기
           router-link.button(v-if="store.code" to="/table") 테이블 보기<br/>(테스트)
         .bottom
@@ -29,8 +29,8 @@
               .tab-button(:class="{active:!store.orderStatus}" v-on:click="setOrderStatus(0)") On
               .tab-button(:class="{active:store.orderStatus}" v-on:click="setOrderStatus(1)") Off
           hr
-          router-link.button(v-if="stores.length>1" to="/store") 매장 보기
-          router-link.button.button-red(v-if="!auth.member" to="/member") 로그인
+          router-link.button(v-if="stores.length > 1" to="/store") 매장 보기
+          router-link.button.button-red(v-if="!auth.member" to="/login") 로그인
           .button.button-red.button-member(v-if="auth.member" v-on:click="logout")
             span.name {{auth.member.name}}
             span 로그아웃
@@ -44,7 +44,6 @@ export default {
   data() {
     return {
       auth: {},
-      // stores: [], // 매장 목록들
       store: {}, // RLB 가게 정보
       orders: [],
       flag_restarting_clients: 0,
@@ -58,6 +57,9 @@ export default {
   store,
 
   computed: {
+    order() {
+      return Boolean(this.$store.getters.order);
+    },
     stores() {
       return this.$store.getters.stores;
     },
@@ -65,12 +67,9 @@ export default {
 
   created() {
     this.time.now = Date();
-    this.loadAuth();
-    this.setStores();
-  },
-
-  mounted() {
-    this.initStore();
+    // this.loadAuth();
+    // this.setStores();
+    // this.initStore();
   },
 
   methods: {
@@ -87,8 +86,6 @@ export default {
         auth = {};
       }
       this.auth = auth;
-
-
       this.$store.dispatch('setAuth', auth);
     },
     initStore() {
@@ -110,9 +107,6 @@ export default {
       };
 
       this.$store.dispatch('setStores', params);
-    },
-    removeAuth() {
-
     },
     logout() {
 

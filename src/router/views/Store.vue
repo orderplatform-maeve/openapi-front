@@ -18,31 +18,38 @@
 import axios from 'axios';
 
 export default {
+  filters: {
+    currency(value) {
+      if (!value) return '0';
+      return value.toFixed(0).replace(/(\d)(?=(\d{3})+(?:\.\d+)?$)/g, "$1,");
+    }
+  },
   props: ['auth', 'stores'],
   data() {
     return {
     };
   },
-  filters: {
-    currency(value) {
-      if (!value) return '0'
-      return value.toFixed(0).replace(/(\d)(?=(\d{3})+(?:\.\d+)?$)/g, "$1,");
-    }
+  beforeMount() {
+    this.check();
+  },
+  created() {
+  },
+  mounted() {
   },
   methods: {
     check() {
       let auth = this.auth;
       if (auth && auth.member) {
       } else {
-        this.$router.push('/member');
+        this.$router.push('/login');
       }
     },
     selectStore(store, type) {
       console.log('selectStore', store, type);
       this.auth.store = store;
       console.log(this.auth);
-      this.$eventBus.$emit('saveAuth'); 
-      this.$eventBus.$emit('reqOrders'); 
+      this.$eventBus.$emit('saveAuth');
+      this.$eventBus.$emit('reqOrders');
       this.$router.push({
         name: type,
       });
@@ -55,14 +62,7 @@ export default {
 
     },
   },
-  beforeMount() {
-    this.check(); 
-  },
-  created() {
-  },
-  mounted() {
-  },
-}
+};
 </script>
 <style lang="scss">
 ul.store-list {
@@ -104,7 +104,7 @@ ul.store-list {
       justify-content: center;
       padding:0 24px;
       background-color:#fafafa;
-      height:48px; 
+      height:48px;
       border-radius:200px;
       color:#000000;
       font-size:16px;

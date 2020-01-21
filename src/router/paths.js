@@ -1,6 +1,6 @@
 export default {
   root: '/',
-  member: 'member',
+  login: 'login',
   store: 'store',
   table: 'table',
   order: 'order',
