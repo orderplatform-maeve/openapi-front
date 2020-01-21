@@ -102,7 +102,8 @@ export default {
       if(!(this.auth.member && this.auth.member.code)) {
         return;
       }
-      let params = {
+
+      const params = {
         member_code: this.auth.member.code,
       };
 

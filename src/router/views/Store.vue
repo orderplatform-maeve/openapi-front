@@ -30,7 +30,7 @@ export default {
     };
   },
   beforeMount() {
-    this.check();
+    // this.check();
   },
   created() {
   },
@@ -39,8 +39,8 @@ export default {
   methods: {
     check() {
       let auth = this.auth;
-      if (auth && auth.member) {
-      } else {
+      if (!(auth && auth.member)) {
+        console.log('check auth', auth);
         this.$router.push('/login');
       }
     },

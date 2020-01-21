@@ -47,6 +47,7 @@ export default {
         console.log('response', response);
 
         if (response) {
+          console.log('move store page');
           this.$router.push('/store');
         }
         // this.$store.dispatch('login', payload);

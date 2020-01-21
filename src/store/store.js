@@ -216,6 +216,12 @@ export const store = new Vuex.Store({
 
           await dispatch('setAuth', auth);
 
+          let params = {
+            member_code: auth.member.code,
+          };
+
+          await dispatch('setStores', params);
+
           return true;
         } else {
           alert('아이디와 비밀번호를 입력해주세요');
