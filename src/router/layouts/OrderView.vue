@@ -40,8 +40,6 @@
 <script>
 import store from '@store/store';
 
-const isTest = true;
-
 export default {
   data() {
     return {
@@ -72,37 +70,9 @@ export default {
     this.loadAuth();
     this.setStores();
     this.initStore();
-    // if (isTest) {
-    //   this.devInitialized();
-    // }
   },
 
   methods: {
-    devInitialized() {
-      try {
-        const auth = this.$cookies.get('auth');
-
-        if(!(auth && auth.member && auth.member.code)) {
-          return;
-        }
-
-        this.$store.dispatch('setAuth', auth);
-
-        const params = {
-          member_code: auth.member.code,
-        };
-
-        this.$store.dispatch('setStores', params);
-
-        const reqData = {store_code: auth.store.code};
-        this.orders = [];
-
-        this.$socket.emit('reqStoreInfo', reqData);
-
-      } catch (error) {
-        console.log(error);
-      }
-    },
     loadAuth() {
       let auth = {};
       try {
@@ -122,8 +92,6 @@ export default {
       if (this.auth && this.auth.store && this.auth.store.code) {
         let reqData = {store_code: this.auth.store.code};
         this.orders = [];
-
-        console.log('init store');
 
         this.$socket.emit('reqStoreInfo', reqData);
       }
@@ -145,9 +113,6 @@ export default {
   },
 
   sockets: {
-    connect: () => {
-      console.log('socket connected');
-    },
     resStoreInfo(data) {
       console.log('resStoreInfo', data);
       this.store = data;

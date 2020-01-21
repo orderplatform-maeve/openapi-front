@@ -81,6 +81,7 @@ export default {
   }
 };
 </script>
+
 <style lang="scss">
 @import "../../scss/global.scss";
 #orders {
@@ -109,7 +110,6 @@ export default {
     overflow:scroll;
     flex-grow:1;
     -webkit-overflow-scrolling: touch;
-    /*transform: rotate(180deg);*/
 
     .no-item {
       display:flex;
@@ -127,7 +127,6 @@ export default {
       border: {
         top:solid 1px #484848;
       }
-      /*transform: rotate(-180deg);*/
     }
     .order-item:first-child {
       border-top:none;
@@ -141,5 +140,4 @@ export default {
     -webkit-overflow-scrolling: auto !important;
   }
 }
-
 </style>
