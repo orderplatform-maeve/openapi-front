@@ -22,12 +22,6 @@ export default {
       pw: '',
     };
   },
-  // created() {
-  //   const auth = this.$cookies.get('auth');
-  //   if (auth && auth.member) {
-  //     this.$router.push({name: 'store'});
-  //   }
-  // },
   methods: {
     ...mapActions([
       'login',
@@ -44,14 +38,9 @@ export default {
         };
         const response = await this.login(payload);
 
-        console.log('response', response);
-
         if (response) {
-          console.log('move store page');
           this.$router.push('/store');
         }
-        // this.$store.dispatch('login', payload);
-        // .then(() => this.$router.push('/store'));
       }
     },
   }

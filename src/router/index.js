@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
+
 import routes from './routes';
 import paths from './paths';
 
@@ -26,6 +27,10 @@ router.beforeEach((to, from, next) => {
       next(paths.login);
     }
   } else {
+    console.log('to', to);
+    if (to.path.path === paths.login) {
+      next(false);
+    }
     next();
   }
 });

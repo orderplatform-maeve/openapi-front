@@ -13,36 +13,37 @@ const routes = [{
   component: OrderView,
   children: [{
     path: paths.root,
+    name: paths.root.replace('/',''),
     redirect: paths.order,
-    meta: { requiresAuth: false },
+    meta: { requiresAuth: true },
   },
   {
     path: paths.login,
-    name: paths.login,
+    name: paths.login.replace('/',''),
     component: Login,
     meta: { requiresAuth: false },
   },
   {
     path: paths.store,
-    name: paths.store,
+    name: paths.store.replace('/',''),
     component: Store,
     meta: { requiresAuth: true },
   },
   {
     path: paths.table,
-    name: paths.table,
+    name: paths.table.replace('/',''),
     component: Table,
     meta: { requiresAuth: true },
   },
   {
     path: paths.order,
-    name: paths.order,
+    name: paths.order.replace('/',''),
     component: OrderList,
     meta: { requiresAuth: true },
   },
   {
     path: paths.logout,
-    name: paths.logout,
+    name: paths.logout.replace('/',''),
     component: Logout,
     meta: { requiresAuth: true },
   }]
