@@ -198,10 +198,12 @@ const store = new Vuex.Store({
 
           const parseStore = JSON.parse(data['T_order_member_store_data']);
 
+          // console.log('parseStore', parseStore[0]);
+
           const store = {
             amt: null,
             cnt: 1,
-            code: parseStore[0].store_info,
+            code: parseStore[0].store_info[0].store_id,
             name: '',
           };
 

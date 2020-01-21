@@ -59,10 +59,6 @@ export default {
     }
   },
   created() {
-    let auth = this.auth;
-    if (!(auth && auth.store)) {
-      this.$router.push('/store');
-    }
     this.$eventBus.$off('closeOrder');
     this.$eventBus.$on('closeOrder', this.closeOrder);
   },

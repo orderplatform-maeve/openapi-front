@@ -27,7 +27,6 @@ router.beforeEach((to, from, next) => {
       next(paths.login);
     }
   } else {
-    console.log('to', to);
     if (to.path.path === paths.login) {
       next(false);
     }

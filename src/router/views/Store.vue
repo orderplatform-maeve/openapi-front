@@ -6,16 +6,9 @@
       ul.store-list
         li.store-item(v-for="store in stores" :data-number="store.code")
           .name {{store.name}}
-          //.order
-            .amt {{store.amt | currency}}원
-            .cnt {{store.cnt | currency}}개
-          //.button.button-table(v-on:click='select(store, "table")') 테이블 보기
           .button.button-order(v-on:click='selectStore(store, "order")') 주문 보기
-    //.bottom
-      .button(v-on:click='logout') 로그아웃
 </template>
 <script>
-import axios from 'axios';
 
 export default {
   filters: {
@@ -25,45 +18,19 @@ export default {
     }
   },
   props: ['auth', 'stores'],
-  data() {
-    return {
-    };
-  },
-  beforeMount() {
-    // this.check();
-  },
-  created() {
-  },
-  mounted() {
-  },
   methods: {
-    check() {
-      let auth = this.auth;
-      if (!(auth && auth.member)) {
-        console.log('check auth', auth);
-        this.$router.push('/login');
-      }
-    },
     selectStore(store, type) {
       console.log('selectStore', store, type);
       this.auth.store = store;
       console.log(this.auth);
       this.$eventBus.$emit('saveAuth');
       this.$eventBus.$emit('reqOrders');
-      this.$router.push({
-        name: type,
-      });
-    },
-    getStores() {
-      if (this.auth && this.auth.member) {
-      } else {
-        return;
-      }
-
+      this.$router.push({ name: type });
     },
   },
 };
 </script>
+
 <style lang="scss">
 ul.store-list {
   display:flex;

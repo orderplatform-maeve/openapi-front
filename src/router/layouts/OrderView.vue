@@ -40,6 +40,8 @@
 <script>
 import store from '@store/store';
 
+const isTest = true;
+
 export default {
   data() {
     return {
@@ -67,12 +69,40 @@ export default {
 
   created() {
     this.time.now = Date();
-    // this.loadAuth();
-    // this.setStores();
-    // this.initStore();
+    this.loadAuth();
+    this.setStores();
+    this.initStore();
+    // if (isTest) {
+    //   this.devInitialized();
+    // }
   },
 
   methods: {
+    devInitialized() {
+      try {
+        const auth = this.$cookies.get('auth');
+
+        if(!(auth && auth.member && auth.member.code)) {
+          return;
+        }
+
+        this.$store.dispatch('setAuth', auth);
+
+        const params = {
+          member_code: auth.member.code,
+        };
+
+        this.$store.dispatch('setStores', params);
+
+        const reqData = {store_code: auth.store.code};
+        this.orders = [];
+
+        this.$socket.emit('reqStoreInfo', reqData);
+
+      } catch (error) {
+        console.log(error);
+      }
+    },
     loadAuth() {
       let auth = {};
       try {
