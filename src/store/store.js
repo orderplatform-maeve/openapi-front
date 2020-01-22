@@ -33,22 +33,22 @@ const socket = {
   },
   actions: {
     SOCKET_resStoreInfo(context, message) {
-      console.log('SOCKET_resStoreInfo', context, message);
+      // console.log('SOCKET_resStoreInfo', context, message);
     },
     SOCKET_resTablesInfo(context, message) {
-      console.log('SOCKET_resTablesInfo', context, message);
+      // console.log('SOCKET_resTablesInfo', context, message);
     },
     SOCKET_resPos(context, message) {
-      console.log('SOCKET_resPos', context, message);
+      // console.log('SOCKET_resPos', context, message);
     },
     SOCKET_resCategorys(context, message) {
-      console.log('SOCKET_resCategorys', context, message);
+      // console.log('SOCKET_resCategorys', context, message);
     },
     SOCKET_resProducts(context, message) {
-      console.log('SOCKET_resProducts', context, message);
+      // console.log('SOCKET_resProducts', context, message);
     },
     SOCKET_resClients(context, message) {
-      console.log('SOCKET_resClients', context, message);
+      // console.log('SOCKET_resClients', context, message);
     },
   },
 };

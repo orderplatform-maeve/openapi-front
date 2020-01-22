@@ -15,40 +15,15 @@
 
 <script>
 export default {
-  data() {
-    return {
-      show: false,
-      title: '',
-      message: '',
-    };
-  },
-  methods: {
-    confirm() {
-      console.log('confirm!');
+  props: {
+    show: {
+      type: Boolean,
+      default: false,
     },
-    open(args) {
-      if (args.hasOwnProperty('title')) {
-        this.title = args.title;
-      } else {
-        this.title = '';
-      }
-      if (args.hasOwnProperty('message')) {
-        this.message = args.message;
-      }else {
-        this.message= '';
-      }
-      if (args.hasOwnProperty('confirm')) {
-        this.confirm = args.confirm;
-      } else {
-        this.confirm = function() {
-          console.log('no confirm function');
-        };
-      }
-      this.show = true;
-    },
-    close() {
-      this.show = false;
-    },
+    title: String,
+    message: String,
+    confirm: Function,
+    close: Function,
   },
 };
 </script>
