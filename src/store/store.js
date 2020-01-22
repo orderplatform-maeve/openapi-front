@@ -26,6 +26,7 @@ const store = new Vuex.Store({
       },
     },
     stores: [],
+    store: {},
   },
   mutations: {
     SET_ORDER: (state, order) => {
@@ -132,8 +133,14 @@ const store = new Vuex.Store({
       order.commit = true;
       console.log('syncCommitOrder', {order});
     },
+    SOCKET_resStoreInfo(state, data) {
+      Vue.set(state, 'store', data);
+    },
   },
   actions: {
+    SOCKET_resStoreInfo(context, message) {
+      console.log('SOCKET_resStoreInfo', context, message);
+    },
     commitOrder: (context, payload) => {
       let url = 'http://demo.torder.co.kr/logs/commit_orderView_data';
       let fd = new FormData();
@@ -319,6 +326,7 @@ const store = new Vuex.Store({
     pos: (state) => {
       return state.pos;
     },
+    store: (state) => state.store,
     stores: (state) => {
       return state.stores.sort((a, b) =>a.name - b.name);
     }

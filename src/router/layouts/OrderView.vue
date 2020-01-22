@@ -44,7 +44,6 @@ export default {
   data() {
     return {
       auth: {},
-      store: {}, // RLB 가게 정보
       orders: [],
       flag_restarting_clients: 0,
       time: {
@@ -63,6 +62,9 @@ export default {
     stores() {
       return this.$store.getters.stores;
     },
+    store() {
+      return this.$store.getters.store;
+    }
   },
 
   created() {
@@ -109,13 +111,6 @@ export default {
     },
     logout() {
 
-    },
-  },
-
-  sockets: {
-    resStoreInfo(data) {
-      console.log('resStoreInfo', data);
-      this.store = data;
     },
   },
 };

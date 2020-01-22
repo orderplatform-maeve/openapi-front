@@ -16,7 +16,7 @@ import TableOrders from './TableOrders.vue';
 import router from '@router';
 import { socketConfig } from '@config';
 
-Vue.prototype.$eventBus = new Vue();
+// Vue.prototype.$eventBus = new Vue();
 
 Vue.use(VueCookies);
 Vue.use(VueRouter);
