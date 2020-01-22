@@ -25,7 +25,7 @@ import MenuBoard from './MenuBoard.vue'
 import TableOrders from './TableOrders.vue'
 
 Vue.use(new VueSocketIO({
-    debug: true,
+    debug: false,
     connection: 'http://1.socketio.orderview.torder.co.kr',
 }))
 Vue.component('order-detail', OrderDetail);

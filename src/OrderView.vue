@@ -37,6 +37,7 @@
           hr
           router-link.button(v-if="stores.length>1" to="/store") 매장 보기
           router-link.button.button-red(v-if="!auth.member" to="/member") 로그인 
+          .version 1.0.3
           .button.button-red.button-member(v-if="auth.member" v-on:click="logout")
             span.name {{auth.member.name}}
             span 로그아웃
@@ -75,10 +76,10 @@ export default {
     connect: function () {
       this.$socket.emit('in', {});
       this.$socket.emit('whoAmI');
-      console.log('socket connected');
+      //console.log('socket connected');
     },
     resStoreInfo(data) {
-      console.log('resStoreInfo', data);
+      //console.log('resStoreInfo', data);
       this.store = data;
     },
     resClients(data) {
@@ -97,7 +98,7 @@ export default {
       this.$socket.emit('reqClients', {store_code: this.auth.store.code});
     },
     resPos: function(data) {
-      console.log('!!!!!!!!!!!!!!!resPos', data);
+      //console.log('!!!!!!!!!!!!!!!resPos', data);
       if (data && data.storeCode && this.auth.store && data.storeCode == this.auth.store.code) {
         let pos_tables = {}
         for (let item of data.data) {
@@ -107,7 +108,7 @@ export default {
       }
     },
     resOrders: function(data) {
-      console.log('!!!resOrders', data);
+      //console.log('!!!resOrders', data);
       //console.table(data.items);
       //console.table(data);
       if (data.time) {
@@ -139,7 +140,7 @@ export default {
       //this.$eventBus.$emit('setOrders',data); 
     },
     resCommitOrder: function(data) {
-      console.log('resCommitOrder', data);
+      //console.log('resCommitOrder', data);
       if (data && data.code && data.commit && data.commit.time) {
         for (let order of this.orders) {
           if (order.code == data.code) {
@@ -160,7 +161,7 @@ export default {
       this.$store.dispatch('setCategorys', categorys);
     },
     resProducts: function(data) {
-      console.log('resProducts', data);
+      //console.log('resProducts', data);
       let products = {};
       for (let product of data) {
         let code = product['T_order_store_good_code']; 
@@ -178,7 +179,7 @@ export default {
       this.$store.dispatch('setProducts', products);
     },
     resRestartClients: function(data) {
-      console.log('resRestartClients', data);
+      //console.log('resRestartClients', data);
       alert(data.count + '대의 태블렛에 새로고침을 요청 했습니다.');
       this.flag_restarting_clients = 0;
     },
@@ -190,7 +191,7 @@ export default {
       } else {
         return 
       }
-      console.log('!orderview', order); 
+      //console.log('!orderview', order); 
 
       this.orders.push(order);
       this.orders.sort(function(a, b) {
@@ -211,16 +212,16 @@ export default {
       //this.$eventBus.$emit('newOrder',order); 
     },
     youAre: function(data) {
-      console.log('youAre', data, data.store_code); 
+      //console.log('youAre', data, data.store_code); 
 
       if(data.store_code) {
         if (!this.auth.store) {
-          console.log('set store_code', data.store_code);
+          //console.log('set store_code', data.store_code);
           this.auth.store = {
             name: '',
             code: data.store_code,
           } 
-          console.log(this.auth.store);
+          //console.log(this.auth.store);
           this.initStore();
         }
         /*
@@ -234,7 +235,7 @@ export default {
       this.restart(url);
     },
     updateClient: function(data) {
-      console.log('updateClient', data);
+      //console.log('updateClient', data);
       if (this.auth && this.auth.store) { 
         if (data.store_code == this.auth.store.code) {
           this.$socket.emit('reqClients', {store_code: this.auth.store.code});
@@ -243,9 +244,9 @@ export default {
       }
     },
     orderlog: function(data) {
-      console.log('orderlog', data);
+      //console.log('orderlog', data);
       if (this.$store.state.auth.store && this.$store.state.auth.store.code == data.shop_code) {
-        console.log('mine!');
+        //console.log('mine!');
         this.$store.dispatch('pushOrder', data);
 
         this.audio.play()
@@ -379,7 +380,7 @@ export default {
         }
       }.bind(this)).catch(function(err) {
         //alert('매장 정보를 가져오지 못하였습니다.');
-        console.log({err: err});
+        //console.log({err: err});
       }).finally(function () {
       });
     },
@@ -390,7 +391,7 @@ export default {
       }
       let reqData = {store_code: this.auth.store.code};
       this.flag_restarting_clients = 1;
-      console.log('reqRestartClients', reqData);
+      //console.log('reqRestartClients', reqData);
       this.$socket.emit('reqRestartClients', reqData);
     },
     setServiceStatus(value) {
@@ -405,7 +406,7 @@ export default {
             axios
             .post(url, fd)
             .then(function(res) {
-              console.log(res);
+              //console.log(res);
               this.$eventBus.$emit('closeConfirmModal');
               this.store.serviceStatus = value;
             }.bind(this));
@@ -422,7 +423,7 @@ export default {
             axios
             .post(url, fd)
             .then(function(res) {
-              console.log(res);
+              //console.log(res);
               this.$eventBus.$emit('closeConfirmModal');
               this.store.serviceStatus = value;
             }.bind(this));
@@ -456,7 +457,7 @@ export default {
             axios
             .post(url, fd)
             .then(function(res) {
-              console.log(res);
+              //console.log(res);
               this.$eventBus.$emit('closeConfirmModal');
               this.store.orderStatus = value;
             }.bind(this));
@@ -473,7 +474,7 @@ export default {
             axios
             .post(url, fd)
             .then(function(res) {
-              console.log(res);
+              //console.log(res);
               this.$eventBus.$emit('closeConfirmModal');
               this.store.orderStatus = value;
             }.bind(this));
@@ -491,11 +492,11 @@ export default {
       window.location = url;
     },
     initStore() {
-      console.log('!!!!!!!!!! try init store');
+      //console.log('!!!!!!!!!! try init store');
       if (this.auth && this.auth.store && this.auth.store.code) {
         let reqData = {store_code: this.auth.store.code};
         this.orders = [];
-        console.log('reqOrders', reqData);
+        //console.log('reqOrders', reqData);
 
         this.$socket.emit('reqStoreInfo', reqData);
         this.$socket.emit('reqOrders', reqData);
@@ -506,10 +507,10 @@ export default {
       }
     },
     reqOrders() {
-      console.log('!!!!!!!!!!try reqOrders');
+      //console.log('!!!!!!!!!!try reqOrders');
       if (this.auth && this.auth.store && this.auth.store.code) {
         let reqData = {store_code: this.auth.store.code};
-        console.log('reqOrders', reqData);
+        //console.log('reqOrders', reqData);
         this.$socket.emit('reqStoreInfo', reqData);
         this.$socket.emit('reqOrders', reqData);
         this.$socket.emit('reqTablesInfo', reqData);
@@ -537,7 +538,7 @@ export default {
     },
     saveAuth() {
       let auth = this.auth;
-      console.log('saveAuth', auth);
+      //console.log('saveAuth', auth);
       this.$cookies.set('auth',  auth, '1y', null, null);
       this.$store.dispatch('setAuth', auth);
     },
