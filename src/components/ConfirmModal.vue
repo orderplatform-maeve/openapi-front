@@ -12,6 +12,7 @@
         .button.button-commit(v-on:click="confirm") 확인
         .button.button(v-on:click="close") 닫기
 </template>
+
 <script>
 export default {
   data() {
@@ -19,7 +20,7 @@ export default {
       show: false,
       title: '',
       message: '',
-    }
+    };
   },
   methods: {
     confirm() {
@@ -41,7 +42,7 @@ export default {
       } else {
         this.confirm = function() {
           console.log('no confirm function');
-        }
+        };
       }
       this.show = true;
     },
@@ -49,14 +50,9 @@ export default {
       this.show = false;
     },
   },
-  created() {
-    this.$eventBus.$off('openConfirmModal');
-    this.$eventBus.$on('openConfirmModal', this.open); 
-    this.$eventBus.$off('closeConfirmModal');
-    this.$eventBus.$on('closeConfirmModal', this.close); 
-  },
-}
+};
 </script>
+
 <style lang="scss">
 #ModalConfirm {
   position:fixed;
@@ -65,7 +61,7 @@ export default {
   display:flex;
   align-items: center;
   justify-content: center;
-  
+
   width:100%;
   height:100%;
   z-index:201;

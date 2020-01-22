@@ -22,9 +22,6 @@ export default {
     selectStore(store, type) {
       console.log('selectStore', store, type);
       this.auth.store = store;
-      console.log(this.auth);
-      this.$eventBus.$emit('saveAuth');
-      this.$eventBus.$emit('reqOrders');
       this.$router.push({ name: type });
     },
   },

@@ -1,6 +1,5 @@
 <template lang="pug">
   #orderview
-    menu-board
     modal-confirm
     modal-table-orders
     order(v-if="order")
@@ -41,6 +40,7 @@
 import store from '@store/store';
 
 export default {
+  store,
   data() {
     return {
       auth: {},
@@ -53,7 +53,6 @@ export default {
       },
     };
   },
-  store,
 
   computed: {
     order() {
@@ -67,11 +66,21 @@ export default {
     }
   },
 
+  /**
+  * TODO:
+  * - 절차 적으로 실행되게 수정 필요
+  */
   created() {
     this.time.now = Date();
     this.loadAuth();
     this.setStores();
     this.initStore();
+  },
+
+  sockets: {
+    // resClients(data) {
+    //   console.log(data, 'ddddd');
+    // }
   },
 
   methods: {
@@ -92,10 +101,15 @@ export default {
     },
     initStore() {
       if (this.auth && this.auth.store && this.auth.store.code) {
-        let reqData = {store_code: this.auth.store.code};
+        let reqData = { store_code: this.auth.store.code };
         this.orders = [];
 
         this.$socket.emit('reqStoreInfo', reqData);
+        this.$socket.emit('reqTablesInfo', reqData);
+        this.$socket.emit('reqPos', reqData);
+        this.$socket.emit('reqCategorys', reqData);
+        this.$socket.emit('reqProducts', reqData);
+        this.$socket.emit('reqClients', reqData);
       }
     },
     setStores() {

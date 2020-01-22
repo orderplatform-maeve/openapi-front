@@ -4,6 +4,55 @@ import axios from 'axios';
 
 Vue.use(Vuex);
 
+/**
+* TODO:
+* - 추후 소켓 부분 모듈화 예정
+* ISSUE:
+* - vue-socket.io 내 emitter.js에서 분리된 vuex 모듈 config 코드가 없음 커스텀 작업 필요
+*/
+const socket = {
+  mutations: {
+    SOCKET_resStoreInfo(state, data) {
+      Vue.set(state, 'store', data);
+    },
+    SOCKET_resTablesInfo(state, data) {
+      Vue.set(state, 'tables', data);
+    },
+    SOCKET_resPos(state, data) {
+      Vue.set(state, 'pos', data);
+    },
+    SOCKET_resCategorys(state, data) {
+      Vue.set(state, 'categorys', data);
+    },
+    SOCKET_resProducts(state, data) {
+      Vue.set(state, 'products', data);
+    },
+    SOCKET_resClients(state, data) {
+      Vue.set(state, 'clients', data);
+    },
+  },
+  actions: {
+    SOCKET_resStoreInfo(context, message) {
+      console.log('SOCKET_resStoreInfo', context, message);
+    },
+    SOCKET_resTablesInfo(context, message) {
+      console.log('SOCKET_resTablesInfo', context, message);
+    },
+    SOCKET_resPos(context, message) {
+      console.log('SOCKET_resPos', context, message);
+    },
+    SOCKET_resCategorys(context, message) {
+      console.log('SOCKET_resCategorys', context, message);
+    },
+    SOCKET_resProducts(context, message) {
+      console.log('SOCKET_resProducts', context, message);
+    },
+    SOCKET_resClients(context, message) {
+      console.log('SOCKET_resClients', context, message);
+    },
+  },
+};
+
 const store = new Vuex.Store({
   state: {
     order: undefined,
@@ -101,30 +150,6 @@ const store = new Vuex.Store({
     SET_POS: (state, data) => {
       Vue.set(state, 'pos', data);
     },
-    MATCH_TABLES_POS: (state) => {
-      let tables = state.tables;
-      let pos = state.pos;
-      if (Object.keys(tables).length && Object.keys(pos).length) {
-        for (let key in tables) {
-          let table = tables[key];
-          let code_pos = table.code_pos;
-
-          if (pos[code_pos]) {
-            let item = pos[code_pos];
-            let price_amt = 0;
-            let qty_amt = 0;
-            for (let order of item.orders) {
-              price_amt += parseInt(order.good.price);
-              qty_amt += order.qty;
-            }
-            table.qty_amt = qty_amt;
-            table.price_amt = price_amt;
-            table.orders = item.orders;
-          }
-        }
-      }
-      Vue.set(state, 'tables', tables);
-    },
     syncCommitOrder(state, data) {
       console.log('syncCommitOrder', {data});
       let order = state.orders.find((i) => {
@@ -133,14 +158,9 @@ const store = new Vuex.Store({
       order.commit = true;
       console.log('syncCommitOrder', {order});
     },
-    SOCKET_resStoreInfo(state, data) {
-      Vue.set(state, 'store', data);
-    },
+    ...socket.mutations,
   },
   actions: {
-    SOCKET_resStoreInfo(context, message) {
-      console.log('SOCKET_resStoreInfo', context, message);
-    },
     commitOrder: (context, payload) => {
       let url = 'http://demo.torder.co.kr/logs/commit_orderView_data';
       let fd = new FormData();
@@ -205,8 +225,6 @@ const store = new Vuex.Store({
 
           const parseStore = JSON.parse(data['T_order_member_store_data']);
 
-          // console.log('parseStore', parseStore[0]);
-
           const store = {
             amt: null,
             cnt: 1,
@@ -270,17 +288,12 @@ const store = new Vuex.Store({
     },
     setTables: (context, tables) => {
       context.commit('SET_TABLES', tables);
-      context.commit('MATCH_TABLES_POS');
     },
     setPos: (context, data) => {
       context.commit('SET_POS', data);
-      context.commit('MATCH_TABLES_POS');
     },
     setClient: (context, client) => {
       context.commit('SET_CLIENT', client);
-    },
-    setClients: (context, clients) => {
-      context.commit('SET_CLIENTS', clients);
     },
     setCategorys: (context, categorys) => {
       context.commit('SET_CATEGORYS', categorys);
@@ -288,6 +301,7 @@ const store = new Vuex.Store({
     setProducts: (context, products) => {
       context.commit('SET_PRODUCTS', products);
     },
+    ...socket.actions,
   },
   getters: {
     order: (state) => {
@@ -318,12 +332,43 @@ const store = new Vuex.Store({
       return state.clients[myid];
     },
     categorys: (state) => {
-      return state.categorys;
+      const { categorys } = state;
+
+      let result = {};
+      for (let category of categorys) {
+        const code = category['T_order_store_menu_code'];
+        category.T_order_store_menu_depth = JSON.parse(category.T_order_store_menu_depth);
+        result[code] = category;
+      }
+
+      return result;
     },
     products: (state) => {
-      return state.products;
+      const { products } = state;
+
+      let result = {};
+      for (let product of products) {
+        let code = product['T_order_store_good_code'];
+        product.T_order_store_good_category = JSON.parse(product.T_order_store_good_category);
+        if (!product.T_order_store_good_category) {
+          product.T_order_store_good_category = [];
+        }
+        result[code] = product;
+      }
+
+      return result;
     },
     pos: (state) => {
+      const { pos, auth } = state;
+
+      if (pos && pos.storeCode && pos.storeCode === auth.store.code) {
+        let pos_tables = {};
+        for (let item of pos.data) {
+          pos_tables[item.id] = item;
+        }
+        return pos_tables;
+      }
+
       return state.pos;
     },
     store: (state) => state.store,
