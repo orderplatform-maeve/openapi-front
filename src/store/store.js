@@ -105,59 +105,6 @@ const store = new Vuex.Store({
     SET_STORES: (state, stores) => {
       Vue.set(state, 'stores', stores);
     },
-    SET_TABLES: (state, tables) => {
-      for (let key in tables) {
-        tables[key].client_count = 0;
-        tables[key].price_amt = 0;
-      }
-      Vue.set(state, 'tables', tables);
-    },
-    SET_CLIENT: (state, client) => {
-      let items = state.tables;
-      if (items[client.tablet_number]) {
-        if (client.action == 'inc') {
-          items[client.tablet_number].client_count += 1;
-        } else if (client.action == 'dec') {
-          items[client.tablet_number].client_count -= 1;
-        }
-      }
-      Vue.set(state, 'tables', items);
-    },
-    SET_CLIENTS: (state, clients) => {
-      let tables = state.tables;
-      for (let key in tables) {
-        let table = tables[key];
-        table.client_count = 0;
-        table.clients = [];
-      }
-      for (let myid in clients) {
-        let client = clients[myid];
-        if (tables[client.tablet_number]) {
-          let table = tables[client.tablet_number];
-          table.client_count += 1;
-          table.clients.push(client);
-        }
-      }
-      Vue.set(state, 'clients', clients);
-      Vue.set(state, 'tables', tables);
-    },
-    SET_CATEGORYS: (state, categorys) => {
-      Vue.set(state, 'categorys', categorys);
-    },
-    SET_PRODUCTS: (state, products) => {
-      Vue.set(state, 'products', products);
-    },
-    SET_POS: (state, data) => {
-      Vue.set(state, 'pos', data);
-    },
-    syncCommitOrder(state, data) {
-      console.log('syncCommitOrder', {data});
-      let order = state.orders.find((i) => {
-        return i.order_view_key == data.order_view_key;
-      });
-      order.commit = true;
-      console.log('syncCommitOrder', {order});
-    },
     ...socket.mutations,
   },
   actions: {
@@ -285,21 +232,6 @@ const store = new Vuex.Store({
         }.bind(this)).catch(function(err) {
           console.log({err: err});
         });
-    },
-    setTables: (context, tables) => {
-      context.commit('SET_TABLES', tables);
-    },
-    setPos: (context, data) => {
-      context.commit('SET_POS', data);
-    },
-    setClient: (context, client) => {
-      context.commit('SET_CLIENT', client);
-    },
-    setCategorys: (context, categorys) => {
-      context.commit('SET_CATEGORYS', categorys);
-    },
-    setProducts: (context, products) => {
-      context.commit('SET_PRODUCTS', products);
     },
     ...socket.actions,
   },
