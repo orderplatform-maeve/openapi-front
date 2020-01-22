@@ -98,7 +98,7 @@ export default {
     },
     resPos: function(data) {
       console.log('!!!!!!!!!!!!!!!resPos', data);
-      if (data && data.storeCode && data.storeCode == this.auth.store.code) {
+      if (data && data.storeCode && this.auth.store && data.storeCode == this.auth.store.code) {
         let pos_tables = {}
         for (let item of data.data) {
           pos_tables[item.id] = item;
@@ -244,7 +244,7 @@ export default {
     },
     orderlog: function(data) {
       console.log('orderlog', data);
-      if (this.$store.state.auth.store.code == data.shop_code) {
+      if (this.$store.state.auth.store && this.$store.state.auth.store.code == data.shop_code) {
         console.log('mine!');
         this.$store.dispatch('pushOrder', data);
 
@@ -253,7 +253,7 @@ export default {
       }
     },
     syncCommitOrder: function(data) {
-      if (this.$store.state.auth.store.code == data.shop_code) {
+      if (this.$store.state.auth.store && this.$store.state.auth.store.code == data.shop_code) {
         this.$store.commit('syncCommitOrder', data);  
       }
     },
