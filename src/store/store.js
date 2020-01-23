@@ -30,8 +30,10 @@ const socket = {
     SOCKET_resClients(state, data) {
       Vue.set(state, 'clients', data);
     },
-    SOCKET_orderlog(state, data) {
-      Vue.set(state, 'order', data);
+    SOCKET_orderlog(state, order) {
+      if (state.auth.store.code === order.shop_code) {
+        Vue.set(state, 'order', order);
+      }
     },
   },
   actions: {
@@ -241,6 +243,36 @@ const store = new Vuex.Store({
         }.bind(this)).catch(function(err) {
           console.log({err: err});
         });
+    },
+    async setOpenTablet(context, params) {
+      try {
+        const url = 'http://admin.torder.co.kr/store/shop_open';
+        const response = await axios(url, params);
+
+        if (response) {
+          return true;
+        }
+
+        return false;
+      } catch (error) {
+        console.log(error);
+        return false;
+      }
+    },
+    async setCloseTablet(context, params) {
+      try {
+        const url = 'http://admin.torder.co.kr/store/shop_close';
+        const response = await axios(url, params);
+
+        if (response) {
+          return true;
+        }
+
+        return false;
+      } catch (error) {
+        console.log(error);
+        return false;
+      }
     },
     ...socket.actions,
   },

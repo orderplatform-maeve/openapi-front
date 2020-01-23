@@ -1,16 +1,15 @@
-import OrderView from '@layouts/OrderView.vue';
+import Layout from '@layouts/Layout.vue';
 
 import Login from '@views/Login.vue';
 import Store from '@views/Store.vue';
 import Table from '@views/Table.vue';
-import Logout from '@views/Logout.vue';
 import OrderList from '@views/OrderList.vue';
 
 import paths from './paths';
 
 const routes = [{
   path: paths.root,
-  component: OrderView,
+  component: Layout,
   children: [{
     path: paths.root,
     name: paths.root.replace('/',''),
@@ -39,12 +38,6 @@ const routes = [{
     path: paths.order,
     name: paths.order.replace('/',''),
     component: OrderList,
-    meta: { requiresAuth: true },
-  },
-  {
-    path: paths.logout,
-    name: paths.logout.replace('/',''),
-    component: Logout,
     meta: { requiresAuth: true },
   }]
 }];

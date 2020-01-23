@@ -4,5 +4,4 @@ export default {
   store: '/store',
   table: '/table',
   order: '/order',
-  logout: '/logout',
 };

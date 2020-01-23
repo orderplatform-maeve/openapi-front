@@ -47,6 +47,8 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex';
+
 import store from '@store/store';
 
 export default {
@@ -98,6 +100,10 @@ export default {
   },
 
   methods: {
+    ...mapActions([
+      'setOpenTablet',
+      'setCloseTablet',
+    ]),
     loadAuth() {
       let auth = {};
       try {
@@ -149,15 +155,25 @@ export default {
     closeConfirmModal() {
       this.confirmModal.show = false;
     },
-    reqOpenTablet() {
-      let url = 'http://admin.torder.co.kr/store/shop_open';
+    async reqOpenTablet() {
       const fd = new FormData();
       fd.append('store_code', this.auth.store.code);
+
+      const response = await this.setOpenTablet(fd);
+
+      if (response) {
+        this.store.serviceStatus = 0;
+      }
     },
-    reqCloseTablet() {
-      let url = 'http://admin.torder.co.kr/store/shop_close';
+    async reqCloseTablet() {
       const fd = new FormData();
       fd.append('store_code', this.auth.store.code);
+
+      const response = await this.setCloseTablet(fd);
+
+      if (response) {
+        this.store.serviceStatus = 1;
+      }
     },
     openServiceStatus() {
       this.confirmModal.show = true;
