@@ -22,7 +22,7 @@
           .datetime
             span {{time.now | moment("MM.DD HH:mm") }}
           img.logo(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/logo/torder_color_white.png")
-          .store_name {{store.name}}
+          .store_name {{auth.store.name}}
           router-link.button(v-if="store.code" to="/order") 주문 보기
           router-link.button(v-if="store.code" to="/table") 테이블 보기<br/>(테스트)
         .bottom
@@ -127,7 +127,7 @@ export default {
     },
     initStore() {
       if (this.auth && this.auth.store && this.auth.store.code) {
-        let reqData = { store_code: this.auth.store.code };
+        const reqData = { store_code: this.auth.store.code };
         this.orders = [];
 
         this.$socket.emit('reqStoreInfo', reqData);

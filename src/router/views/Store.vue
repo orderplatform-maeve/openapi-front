@@ -17,12 +17,35 @@ export default {
       return value.toFixed(0).replace(/(\d)(?=(\d{3})+(?:\.\d+)?$)/g, "$1,");
     }
   },
-  props: ['auth', 'stores'],
+  props: {
+    auth: {
+      type: Object,
+      default() {
+        return {
+          member: {},
+          store: {},
+        };
+      },
+    },
+    stores: {
+      type: Array,
+      default() {
+        return [];
+      },
+    },
+  },
   methods: {
     selectStore(store, type) {
       console.log('selectStore', store, type);
       this.auth.store = store;
+      console.log(this.auth.store.name);
+      this.$cookies.set('auth', this.auth, '1y', null, null);
+      this.$store.dispatch('setAuth', this.auth);
       this.$router.push({ name: type });
+
+      const reqData = { store_code: this.auth.store.code };
+
+      this.$socket.emit('reqStoreInfo', reqData);
     },
   },
 };
