@@ -35,8 +35,8 @@
           .tab-group
             .tab-name 태블릿 주문
             .tab-buttons
-              .tab-button(:class="{active:!store.orderStatus}" @click="setOrderStatus(0)") On
-              .tab-button(:class="{active:store.orderStatus}" @click="setOrderStatus(1)") Off
+              .tab-button(:class="{active:!store.orderStatus}" @click="agreeOrder()") On
+              .tab-button(:class="{active:store.orderStatus}" @click="rejectOrder()") Off
           hr
           router-link.button(v-if="stores.length > 1" to="/store") 매장 보기
           router-link.button.button-red(v-if="!auth.member" to="/login") 로그인
@@ -103,6 +103,8 @@ export default {
     ...mapActions([
       'setOpenTablet',
       'setCloseTablet',
+      'setAgreeOrder',
+      'setRejectOrder',
     ]),
     loadAuth() {
       let auth = {};
@@ -175,6 +177,26 @@ export default {
         this.store.serviceStatus = 1;
       }
     },
+    async reqAgreeOrder() {
+      const fd = new FormData();
+      fd.append('store_code', this.auth.store.code);
+
+      const response = await this.setAgreeOrder(fd);
+
+      if (response) {
+        this.store.serviceStatus = 0;
+      }
+    },
+    async reqRejectOrder() {
+      const fd = new FormData();
+      fd.append('store_code', this.auth.store.code);
+
+      const response = await this.setRejectOrder(fd);
+
+      if (response) {
+        this.store.serviceStatus = 1;
+      }
+    },
     openTabletScreen() {
       this.confirmModal.show = true;
       this.confirmModal.close = this.closeConfirmModal;
@@ -188,6 +210,20 @@ export default {
       this.confirmModal.title = '태블릿 닫기';
       this.confirmModal.message = '모든 태블릿의 화면을 닫아요';
       this.confirmModal.confirm = this.reqCloseTablet;
+    },
+    agreeOrder() {
+      this.confirmModal.show = true;
+      this.confirmModal.close = this.closeConfirmModal;
+      this.confirmModal.title = '주문 받기';
+      this.confirmModal.message = '태블릿에서 주문을 받아요';
+      this.confirmModal.confirm = this.reqAgreeOrder;
+    },
+    rejectOrder() {
+      this.confirmModal.show = true;
+      this.confirmModal.close = this.closeConfirmModal;
+      this.confirmModal.title = '주문 중단';
+      this.confirmModal.message = '태블릿을 메뉴판으로만 사용하고 주문은 안돼요';
+      this.confirmModal.confirm = this.reqRejectOrder;
     },
   },
 };
