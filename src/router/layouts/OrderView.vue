@@ -1,6 +1,6 @@
 <template lang="pug">
   #orderview
-    modal-confirm
+    modal-confirm(v-bind:show="confirmModal.show" v-bind:close="confirmModal.close")
     modal-table-orders
     order(v-if="order")
     .body
@@ -20,8 +20,8 @@
           .tab-group
             .tab-name 태블릿 화면
             .tab-buttons
-              .tab-button(:class="{active:!store.serviceStatus}" v-on:click="setServiceStatus(0)") On
-              .tab-button(:class="{active:store.serviceStatus}" v-on:click="setServiceStatus(1)") Off
+              .tab-button(:class="{active:!store.serviceStatus}" v-on:click="openServiceStatus()") On
+              .tab-button(:class="{active:store.serviceStatus}" v-on:click="closeServiceStatus()") Off
           .tab-group
             .tab-name 태블릿 주문
             .tab-buttons
@@ -51,6 +51,11 @@ export default {
         start: 0,
         end: 0,
       },
+      audio: null,
+      confirmModal: {
+        show: false,
+        close: () => {},
+      },
     };
   },
 
@@ -75,11 +80,19 @@ export default {
     this.loadAuth();
     this.setStores();
     this.initStore();
+
+    this.audio = new Audio('http://demo.admin.torder.co.kr/public/wav/order_sound.wav');
   },
 
   sockets: {
-    // resClients(data) {
-    //   console.log(data, 'ddddd');
+    // orderlog(data) {
+    //   // console.log(data, 'orderlog!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+    //   if (this.$store.state.auth.store.code === data.shop_code) {
+    //     console.log('mine!');
+    //     this.$store.dispatch('pushOrder', data);
+    //     this.audio.play();
+    //     this.$store.dispatch('setOrder', data);
+    //   }
     // }
   },
 
@@ -126,6 +139,23 @@ export default {
     logout() {
 
     },
+    restart(url) {
+      if (!url) {
+        url = '/';
+      }
+      window.location = url;
+    },
+    closeConfirmModal() {
+      this.confirmModal.show = false;
+    },
+    openServiceStatus() {
+      console.log(this.store.serviceStatus);
+      this.confirmModal.show = true;
+      this.confirmModal.close = this.closeConfirmModal;
+    },
+    // closeServiceStatus() {
+    //   this.confirmModal.show = true;
+    // },
   },
 };
 </script>
