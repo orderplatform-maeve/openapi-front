@@ -88,25 +88,13 @@ export default {
   * - 절차 적으로 실행되게 수정 필요
   */
   created() {
-    this.time.now = Date();
     this.loadAuth();
     this.setStores();
     this.initStore();
-
-    this.audio = new Audio('http://demo.admin.torder.co.kr/public/wav/order_sound.wav');
   },
 
-  sockets: {
-    orderlog(data) {
-      console.log('orderlog', this.order);
-      console.log(this.$store.state.auth.store.code, data.shop_code);
-
-      if (this.$store.state.auth.store.code === data.shop_code) {
-        this.$store.dispatch('pushOrder', data);
-        this.audio.play();
-        this.$store.dispatch('setOrder', data);
-      }
-    },
+  mounted() {
+    this.time.now = Date();
   },
 
   methods: {

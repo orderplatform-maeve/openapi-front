@@ -30,6 +30,9 @@ const socket = {
     SOCKET_resClients(state, data) {
       Vue.set(state, 'clients', data);
     },
+    SOCKET_orderlog(state, data) {
+      Vue.set(state, 'order', data);
+    },
   },
   actions: {
     SOCKET_resStoreInfo(context, message) {
@@ -49,6 +52,12 @@ const socket = {
     },
     SOCKET_resClients(context, message) {
       // console.log('SOCKET_resClients', context, message);
+    },
+    SOCKET_orderlog({ commit, state }, order) {
+      console.log('SOCKET_orderlog', state.auth.store.code, order.shop_code);
+      if (state.auth.store.code === order.shop_code) {
+        commit('PUSH_ORDER', order);
+      }
     },
   },
 };
