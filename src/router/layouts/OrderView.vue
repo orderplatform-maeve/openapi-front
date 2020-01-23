@@ -1,11 +1,21 @@
 <template lang="pug">
   #orderview
-    modal-confirm(v-bind:show="confirmModal.show" v-bind:close="confirmModal.close")
+    modal-confirm(
+      v-bind:show="confirmModal.show"
+      v-bind:close="confirmModal.close"
+      v-bind:title="confirmModal.title"
+      v-bind:message="confirmModal.message"
+    )
     modal-table-orders
     order(v-if="order")
     .body
       .left
-        router-view(v-bind:orders="orders" v-bind:auth="auth" v-bind:time="time" v-bind:stores="stores")
+        router-view(
+          v-bind:orders="orders"
+          v-bind:auth="auth"
+          v-bind:time="time"
+          v-bind:stores="stores"
+        )
       .right
         .top
           .button(v-on:click="restart('/')") 새로고침
@@ -20,17 +30,17 @@
           .tab-group
             .tab-name 태블릿 화면
             .tab-buttons
-              .tab-button(:class="{active:!store.serviceStatus}" v-on:click="openServiceStatus()") On
-              .tab-button(:class="{active:store.serviceStatus}" v-on:click="closeServiceStatus()") Off
+              .tab-button(:class="{active:!store.serviceStatus}" @click="openServiceStatus") On
+              .tab-button(:class="{active:store.serviceStatus}" @click="closeServiceStatus") Off
           .tab-group
             .tab-name 태블릿 주문
             .tab-buttons
-              .tab-button(:class="{active:!store.orderStatus}" v-on:click="setOrderStatus(0)") On
-              .tab-button(:class="{active:store.orderStatus}" v-on:click="setOrderStatus(1)") Off
+              .tab-button(:class="{active:!store.orderStatus}" @click="setOrderStatus(0)") On
+              .tab-button(:class="{active:store.orderStatus}" @click="setOrderStatus(1)") Off
           hr
           router-link.button(v-if="stores.length > 1" to="/store") 매장 보기
           router-link.button.button-red(v-if="!auth.member" to="/login") 로그인
-          .button.button-red.button-member(v-if="auth.member" v-on:click="logout")
+          .button.button-red.button-member(v-if="auth.member" @click="logout")
             span.name {{auth.member.name}}
             span 로그아웃
     .foot.foot-left
@@ -55,6 +65,8 @@ export default {
       confirmModal: {
         show: false,
         close: () => {},
+        title: '',
+        message: '',
       },
     };
   },
@@ -82,18 +94,6 @@ export default {
     this.initStore();
 
     this.audio = new Audio('http://demo.admin.torder.co.kr/public/wav/order_sound.wav');
-  },
-
-  sockets: {
-    // orderlog(data) {
-    //   // console.log(data, 'orderlog!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-    //   if (this.$store.state.auth.store.code === data.shop_code) {
-    //     console.log('mine!');
-    //     this.$store.dispatch('pushOrder', data);
-    //     this.audio.play();
-    //     this.$store.dispatch('setOrder', data);
-    //   }
-    // }
   },
 
   methods: {
@@ -148,14 +148,30 @@ export default {
     closeConfirmModal() {
       this.confirmModal.show = false;
     },
+    reqOpenTablet() {
+      let url = 'http://admin.torder.co.kr/store/shop_open';
+      const fd = new FormData();
+      fd.append('store_code', this.auth.store.code);
+    },
+    reqCloseTablet() {
+      let url = 'http://admin.torder.co.kr/store/shop_close';
+      const fd = new FormData();
+      fd.append('store_code', this.auth.store.code);
+    },
     openServiceStatus() {
-      console.log(this.store.serviceStatus);
       this.confirmModal.show = true;
       this.confirmModal.close = this.closeConfirmModal;
+      this.confirmModal.title = '태블릿 열기';
+      this.confirmModal.message = '모든 태블릿의 화면을 열어요';
+      this.confirmModal.confirm = this.reqOpenTablet;
     },
-    // closeServiceStatus() {
-    //   this.confirmModal.show = true;
-    // },
+    closeServiceStatus() {
+      this.confirmModal.show = true;
+      this.confirmModal.close = this.closeConfirmModal;
+      this.confirmModal.title = '태블릿 닫기';
+      this.confirmModal.message = '모든 태블릿의 화면을 닫아요';
+      this.confirmModal.confirm = this.reqCloseTablet;
+    },
   },
 };
 </script>

@@ -9,8 +9,8 @@
       .message(v-if="message") {{message}}
     .foot
       .buttons
-        .button.button-commit(v-on:click="confirm") 확인
-        .button.button(v-on:click="close") 닫기
+        .button.button-commit(@click="confirm") 확인
+        .button.button(@click="close") 닫기
 </template>
 
 <script>
@@ -20,10 +20,22 @@ export default {
       type: Boolean,
       default: false,
     },
-    title: String,
-    message: String,
-    confirm: Function,
-    close: Function,
+    title: {
+      type: String,
+      default: '',
+    },
+    message: {
+      type: String,
+      default: '',
+    },
+    confirm: {
+      type: Function,
+      default: () => {},
+    },
+    close: {
+      type: Function,
+      default: () => {},
+    },
   },
 };
 </script>
