@@ -2,6 +2,8 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import axios from 'axios';
 
+import { vaildShopCode } from './store.helper';
+
 Vue.use(Vuex);
 
 /**
@@ -31,7 +33,7 @@ const socket = {
       Vue.set(state, 'clients', data);
     },
     SOCKET_orderlog(state, order) {
-      if (state.auth.store.code === order.shop_code) {
+      if (vaildShopCode(state, order)) {
         Vue.set(state, 'order', order);
       }
     },
@@ -57,7 +59,8 @@ const socket = {
     },
     SOCKET_orderlog({ commit, state }, order) {
       console.log('SOCKET_orderlog', state.auth.store.code, order.shop_code);
-      if (state.auth.store.code === order.shop_code) {
+
+      if (vaildShopCode(state, order)) {
         commit('PUSH_ORDER', order);
       }
     },
@@ -201,7 +204,7 @@ const store = new Vuex.Store({
 
           await dispatch('setAuth', auth);
 
-          let params = {
+          const params = {
             member_code: auth.member.code,
           };
 
@@ -262,6 +265,36 @@ const store = new Vuex.Store({
     async setCloseTablet(context, params) {
       try {
         const url = 'http://admin.torder.co.kr/store/shop_close';
+        const response = await axios(url, params);
+
+        if (response) {
+          return true;
+        }
+
+        return false;
+      } catch (error) {
+        console.log(error);
+        return false;
+      }
+    },
+    async setAgreeOrder(context, params) {
+      try {
+        const url = 'http://admin.torder.co.kr/store/shop_open_order';
+        const response = await axios(url, params);
+
+        if (response) {
+          return true;
+        }
+
+        return false;
+      } catch (error) {
+        console.log(error);
+        return false;
+      }
+    },
+    async setRejectOrder(context, params) {
+      try {
+        const url = 'http://admin.torder.co.kr/store/shop_close_order';
         const response = await axios(url, params);
 
         if (response) {
