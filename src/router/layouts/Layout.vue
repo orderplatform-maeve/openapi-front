@@ -30,8 +30,8 @@
           .tab-group
             .tab-name 태블릿 화면
             .tab-buttons
-              .tab-button(:class="{active:!store.serviceStatus}" @click="openServiceStatus") On
-              .tab-button(:class="{active:store.serviceStatus}" @click="closeServiceStatus") Off
+              .tab-button(:class="{active:!store.serviceStatus}" @click="openTabletScreen") On
+              .tab-button(:class="{active:store.serviceStatus}" @click="closeTabletScreen") Off
           .tab-group
             .tab-name 태블릿 주문
             .tab-buttons
@@ -175,14 +175,14 @@ export default {
         this.store.serviceStatus = 1;
       }
     },
-    openServiceStatus() {
+    openTabletScreen() {
       this.confirmModal.show = true;
       this.confirmModal.close = this.closeConfirmModal;
       this.confirmModal.title = '태블릿 열기';
       this.confirmModal.message = '모든 태블릿의 화면을 열어요';
       this.confirmModal.confirm = this.reqOpenTablet;
     },
-    closeServiceStatus() {
+    closeTabletScreen() {
       this.confirmModal.show = true;
       this.confirmModal.close = this.closeConfirmModal;
       this.confirmModal.title = '태블릿 닫기';
