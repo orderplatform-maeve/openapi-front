@@ -31,9 +31,9 @@
 export default {
   data() {
     return {
-      show: false,
+      show: true,
       table: {},
-    }
+    };
   },
   computed: {
     orders() {
@@ -47,7 +47,7 @@ export default {
             name_product:order.good.name,
             price_product: order.good.price,
             qty: order.qty,
-          }
+          };
         }
       }
       return orders;
@@ -66,14 +66,9 @@ export default {
       this.show = false;
     },
   },
-  created() {
-    this.$eventBus.$off('openTableOrders');
-    this.$eventBus.$on('openTableOrders', this.open);
-    this.$eventBus.$off('closeTableOrders');
-    this.$eventBus.$on('closeTableOrders', this.close);
-  },
-}
+};
 </script>
+
 <style lang="scss">
 @import "./scss/global.scss";
 #tableOrders {
@@ -113,7 +108,7 @@ export default {
     tfoot {
       text-align:right;
       font-weight:900;
-    } 
+    }
   }
 }
 </style>
