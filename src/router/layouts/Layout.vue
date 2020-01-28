@@ -56,7 +56,6 @@ export default {
   store,
   data() {
     return {
-      auth: {},
       orders: [],
       flag_restarting_clients: 0,
       time: {
@@ -83,7 +82,10 @@ export default {
     },
     store() {
       return this.$store.getters.store;
-    }
+    },
+    auth() {
+      return this.$store.getters.auth;
+    },
   },
 
   /**
@@ -104,8 +106,9 @@ export default {
       'setCloseTablet',
       'setAgreeOrder',
       'setRejectOrder',
+      'setAuth',
     ]),
-    initialized() {
+    async initialized() {
       const auth = this.$cookies.get('auth') || {};
       const noData = isEmpty(auth);
 
@@ -113,14 +116,14 @@ export default {
         return;
       }
 
-      console.log('auth', auth);
-
       if (auth) {
-        this.auth = auth;
-        this.$store.dispatch('setAuth', auth);
+        const response = await this.setAuth(auth);
 
-        this.getStores();
-        this.socketEmitter();
+        if (response) {
+          this.getStores();
+          this.socketEmitter();
+        }
+
       }
     },
     getStores() {

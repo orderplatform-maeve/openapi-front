@@ -147,7 +147,7 @@ const store = new Vuex.Store({
     pushOrder: (context, order) => {
       context.commit('PUSH_ORDER', order);
     },
-    setAuth: ({commit}, auth) => {
+    async setAuth({commit}, auth) {
       const url = 'http://demo.torder.co.kr/logs/Today_redis_data';
       const fd = new FormData();
 
@@ -155,14 +155,17 @@ const store = new Vuex.Store({
         fd.append('shop_code', auth.store.code);
       }
 
-      return axios
-        .post(url, fd)
-        .then(function(res) {
-          commit('SET_AUTH', {
-            auth,
-            data: res.data,
-          });
-        }.bind(this));
+      const response = await axios.post(url, fd);
+
+      if (response.status === 200) {
+        commit('SET_AUTH', {
+          auth,
+          data: response.data,
+        });
+        return true;
+      }
+
+      return false;
     },
     async login ({ dispatch }, payload) {
       try {
