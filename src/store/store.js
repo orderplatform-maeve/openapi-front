@@ -68,42 +68,8 @@ const socket = {
   },
 };
 
-const authProto = {
-  member: {
-    code: '',
-    name: '',
-  },
-  store: {
-    amt: null,
-    cnt: 0,
-    code: '',
-    name: '',
-  },
-};
-
-const store = new Vuex.Store({
-  state: {
-    order: undefined,
-    orders: [],
-    tables: {},
-    clients: {},
-    categorys: {},
-    products: {},
-    pos: {},
-    auth: authProto,
-    stores: [],
-    store: {},
-  },
+const authentication = {
   mutations: {
-    SET_ORDER: (state, order) => {
-      Vue.set(state, 'order', order);
-    },
-    UNSET_ORDER: (state) => {
-      Vue.set(state, 'order', undefined);
-    },
-    PUSH_ORDER: (state, order) => {
-      state.orders.push(order);
-    },
     SET_AUTH: (state, payload) => {
       const {
         auth,
@@ -119,40 +85,11 @@ const store = new Vuex.Store({
       Vue.set(state, 'auth', auth);
       Vue.set(state, 'orders', orders);
     },
-    SET_STORES: (state, stores) => {
-      Vue.set(state, 'stores', stores);
-    },
     RESET_AUTH: (state) => {
       Vue.set(state, 'auth', authProto);
     },
-    ...socket.mutations,
   },
   actions: {
-    commitOrder: (context, payload) => {
-      const url = 'http://demo.torder.co.kr/logs/commit_orderView_data';
-      const fd = new FormData();
-      fd.append('shop_code', payload.auth.store.code);
-      fd.append('key', payload.order.order_view_key);
-
-      return axios
-        .post(url, fd)
-        .then(function(res) {
-          if (res.data.result) {
-            payload.order.commit = true;
-
-            context.commit('UNSET_ORDER');
-          }
-        }.bind(this));
-    },
-    setOrder: (context, order) => {
-      context.commit('SET_ORDER', order);
-    },
-    unsetOrder: (context) => {
-      context.commit('UNSET_ORDER');
-    },
-    pushOrder: (context, order) => {
-      context.commit('PUSH_ORDER', order);
-    },
     async setAuth({commit}, auth) {
       const url = 'http://demo.torder.co.kr/logs/Today_redis_data';
       const fd = new FormData();
@@ -238,6 +175,77 @@ const store = new Vuex.Store({
     },
     logout({ commit }) {
       commit('RESET_AUTH');
+    },
+  },
+};
+
+const authProto = {
+  member: {
+    code: '',
+    name: '',
+  },
+  store: {
+    amt: null,
+    cnt: 0,
+    code: '',
+    name: '',
+  },
+};
+
+const store = new Vuex.Store({
+  state: {
+    order: undefined,
+    orders: [],
+    tables: {},
+    clients: {},
+    categorys: {},
+    products: {},
+    pos: {},
+    auth: authProto,
+    stores: [],
+    store: {},
+  },
+  mutations: {
+    SET_ORDER: (state, order) => {
+      Vue.set(state, 'order', order);
+    },
+    UNSET_ORDER: (state) => {
+      Vue.set(state, 'order', undefined);
+    },
+    PUSH_ORDER: (state, order) => {
+      state.orders.push(order);
+    },
+    SET_STORES: (state, stores) => {
+      Vue.set(state, 'stores', stores);
+    },
+    ...socket.mutations,
+    ...authentication.mutations,
+  },
+  actions: {
+    commitOrder: (context, payload) => {
+      const url = 'http://demo.torder.co.kr/logs/commit_orderView_data';
+      const fd = new FormData();
+      fd.append('shop_code', payload.auth.store.code);
+      fd.append('key', payload.order.order_view_key);
+
+      return axios
+        .post(url, fd)
+        .then(function(res) {
+          if (res.data.result) {
+            payload.order.commit = true;
+
+            context.commit('UNSET_ORDER');
+          }
+        }.bind(this));
+    },
+    setOrder: (context, order) => {
+      context.commit('SET_ORDER', order);
+    },
+    unsetOrder: (context) => {
+      context.commit('UNSET_ORDER');
+    },
+    pushOrder: (context, order) => {
+      context.commit('PUSH_ORDER', order);
     },
     setStores: ({ commit }, params) => {
       return axios
@@ -327,6 +335,7 @@ const store = new Vuex.Store({
       }
     },
     ...socket.actions,
+    ...authentication.actions,
   },
   getters: {
     order: (state) => {
