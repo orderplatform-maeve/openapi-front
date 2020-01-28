@@ -4,6 +4,12 @@ import axios from 'axios';
 
 import { vaildShopCode } from './store.helper';
 
+import {
+  DEMO_URL,
+  API_URL,
+  ADMIN_URL,
+} from './urls';
+
 Vue.use(Vuex);
 
 /**
@@ -92,7 +98,7 @@ const authentication = {
   },
   actions: {
     async setAuth({commit}, auth) {
-      const url = 'http://demo.torder.co.kr/logs/Today_redis_data';
+      const url = `${DEMO_URL}/logs/Today_redis_data`;
       const fd = new FormData();
 
       if (auth && auth.store && auth.store.code) {
@@ -115,7 +121,7 @@ const authentication = {
       try {
         const { id, pw } = payload;
 
-        const url = 'http://api.auth.order.orderhae.com/login';
+        const url = `${API_URL}/login`;
 
         const params = {
           id,
@@ -194,7 +200,7 @@ const order = {
   },
   actions: {
     commitOrder: (context, payload) => {
-      const url = 'http://demo.torder.co.kr/logs/commit_orderView_data';
+      const url = `${DEMO_URL}/logs/commit_orderView_data`;
       const fd = new FormData();
       fd.append('shop_code', payload.auth.store.code);
       fd.append('key', payload.order.order_view_key);
@@ -230,7 +236,7 @@ const shop = {
   actions: {
     setStores: ({ commit }, params) => {
       return axios
-        .get('http://api.auth.order.orderhae.com/stores', {
+        .get(`${API_URL}/stores`, {
           params,
         })
         .then(function(res) {
@@ -262,7 +268,7 @@ const device = {
   actions: {
     async setOpenTablet(context, params) {
       try {
-        const url = 'http://admin.torder.co.kr/store/shop_open';
+        const url = `${ADMIN_URL}/store/shop_open`;
         const response = await axios(url, params);
 
         if (response) {
@@ -277,7 +283,7 @@ const device = {
     },
     async setCloseTablet(context, params) {
       try {
-        const url = 'http://admin.torder.co.kr/store/shop_close';
+        const url = `${ADMIN_URL}/store/shop_close`;
         const response = await axios(url, params);
 
         if (response) {
@@ -292,7 +298,7 @@ const device = {
     },
     async setAgreeOrder(context, params) {
       try {
-        const url = 'http://admin.torder.co.kr/store/shop_open_order';
+        const url = `${ADMIN_URL}/store/shop_open_order`;
         const response = await axios(url, params);
 
         if (response) {
@@ -307,7 +313,7 @@ const device = {
     },
     async setRejectOrder(context, params) {
       try {
-        const url = 'http://admin.torder.co.kr/store/shop_close_order';
+        const url = `${ADMIN_URL}/store/shop_close_order`;
         const response = await axios(url, params);
 
         if (response) {
