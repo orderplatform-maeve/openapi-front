@@ -50,6 +50,7 @@
 import { mapActions } from 'vuex';
 
 import store from '@store/store';
+import { isEmpty } from '@utils/CheckedType';
 
 export default {
   store,
@@ -90,9 +91,7 @@ export default {
   * - 절차 적으로 실행되게 수정 필요
   */
   created() {
-    this.loadAuth();
-    this.setStores();
-    this.initStore();
+    this.initialized();
   },
 
   mounted() {
@@ -106,22 +105,36 @@ export default {
       'setAgreeOrder',
       'setRejectOrder',
     ]),
-    loadAuth() {
-      let auth = {};
-      try {
-        // %7B%22store%22%3A%7B%22code%22%3A%22AA221111%22%2C%22name%22%3A%22%EC%B2%AD%EB%8B%B4%EC%9D%B4%EC%83%81(%EA%B5%AC%EB%A1%9C%EB%94%94%EC%A7%80%ED%84%B8%EC%A0%90)%22%2C%22amt%22%3Anull%2C%22cnt%22%3A1%7D%2C%22member%22%3A%7B%22code%22%3A%22torder%22%2C%22name%22%3A%22%ED%8B%B0%EC%98%A4%EB%8D%94(%EB%A7%88%EC%8A%A4%ED%84%B0)%22%7D%7D
-        auth = this.$cookies.get('auth');
-        console.log('auth', auth);
-      } catch(e) {
-        console.log(e);
+    initialized() {
+      const auth = this.$cookies.get('auth') || {};
+      const noData = isEmpty(auth);
+
+      if (noData) {
+        return;
       }
-      if (!auth) {
-        auth = {};
+
+      console.log('auth', auth);
+
+      if (auth) {
+        this.auth = auth;
+        this.$store.dispatch('setAuth', auth);
+
+        this.getStores();
+        this.socketEmitter();
       }
-      this.auth = auth;
-      this.$store.dispatch('setAuth', auth);
     },
-    initStore() {
+    getStores() {
+      if(!(this.auth.member && this.auth.member.code)) {
+        return;
+      }
+
+      const params = {
+        member_code: this.auth.member.code,
+      };
+
+      this.$store.dispatch('setStores', params);
+    },
+    socketEmitter() {
       if (this.auth && this.auth.store && this.auth.store.code) {
         const reqData = { store_code: this.auth.store.code };
         this.orders = [];
@@ -133,17 +146,6 @@ export default {
         this.$socket.emit('reqProducts', reqData);
         this.$socket.emit('reqClients', reqData);
       }
-    },
-    setStores() {
-      if(!(this.auth.member && this.auth.member.code)) {
-        return;
-      }
-
-      const params = {
-        member_code: this.auth.member.code,
-      };
-
-      this.$store.dispatch('setStores', params);
     },
     logout() {
       this.$cookies.remove('auth', null, null);

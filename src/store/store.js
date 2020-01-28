@@ -148,8 +148,9 @@ const store = new Vuex.Store({
       context.commit('PUSH_ORDER', order);
     },
     setAuth: ({commit}, auth) => {
-      let url = 'http://demo.torder.co.kr/logs/Today_redis_data';
-      let fd = new FormData();
+      const url = 'http://demo.torder.co.kr/logs/Today_redis_data';
+      const fd = new FormData();
+
       if (auth && auth.store && auth.store.code) {
         fd.append('shop_code', auth.store.code);
       }
@@ -186,10 +187,16 @@ const store = new Vuex.Store({
 
           const parseStore = JSON.parse(data['T_order_member_store_data']);
 
+          const storeId = parseStore && parseStore[0]
+                          && parseStore[0].store_info && parseStore[0].store_info[0]
+                          && parseStore[0].store_info[0].store_id;
+
+          const code = storeId || '';
+
           const store = {
             amt: null,
             cnt: 1,
-            code: parseStore[0].store_info[0].store_id,
+            code,
             name: '',
           };
 

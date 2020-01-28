@@ -31,11 +31,13 @@ export default {
         id,
         pw,
       } = this;
+
       if (id && pw) {
         const payload = {
           id,
           pw,
         };
+
         const response = await this.login(payload);
 
         if (response) {
