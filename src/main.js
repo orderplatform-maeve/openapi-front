@@ -9,7 +9,11 @@ import "@babel/polyfill";
 
 import router from '@router';
 import { socketConfig } from '@config';
-import { ConfirmModal, TableOrdersModal, OrderModal } from '@components';
+import {
+  ConfirmModal,
+  TableOrdersModal,
+  OrderModal,
+} from '@components';
 
 Vue.use(VueCookies);
 Vue.use(VueRouter);
@@ -22,6 +26,4 @@ Vue.component('order', OrderModal);
 Vue.component('modal-confirm', ConfirmModal);
 Vue.component('modal-table-orders', TableOrdersModal);
 
-new Vue({
-  router
-}).$mount("#app");
+new Vue({router}).$mount("#app");

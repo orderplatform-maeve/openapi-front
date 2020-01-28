@@ -257,11 +257,6 @@ export default {
                   margin-left:88px;
                 }
               }
-
-              .msg {
-              }
-              .name {
-              }
               .memo {
                 display:flex;
                 align-items: center;
