@@ -49,8 +49,6 @@ export default {
   },
   data () {
     return {
-      scroll: true,
-      eventListener: null,
       viewMode: 'a',
     };
   },

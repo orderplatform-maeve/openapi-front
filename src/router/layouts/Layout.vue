@@ -107,6 +107,7 @@ export default {
       'setAgreeOrder',
       'setRejectOrder',
       'setAuth',
+      'logout',
     ]),
     async initialized() {
       const auth = this.$cookies.get('auth') || {};
@@ -151,8 +152,9 @@ export default {
       }
     },
     logout() {
+      this.$store.dispatch('logout');
       this.$cookies.remove('auth', null, null);
-      this.restart('/');
+      this.$router.replace('/login');
     },
     restart(url) {
       if (!url) {

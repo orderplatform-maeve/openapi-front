@@ -9,6 +9,7 @@ Vue.use(Vuex);
 /**
 * TODO:
 * - 추후 소켓 부분 모듈화 예정
+* - socket, rest, authentication 으로 모듈 분류 예정
 * ISSUE:
 * - vue-socket.io 내 emitter.js에서 분리된 vuex 모듈 config 코드가 없음 커스텀 작업 필요
 */
@@ -67,6 +68,19 @@ const socket = {
   },
 };
 
+const authProto = {
+  member: {
+    code: '',
+    name: '',
+  },
+  store: {
+    amt: null,
+    cnt: 0,
+    code: '',
+    name: '',
+  },
+};
+
 const store = new Vuex.Store({
   state: {
     order: undefined,
@@ -76,18 +90,7 @@ const store = new Vuex.Store({
     categorys: {},
     products: {},
     pos: {},
-    auth: {
-      member: {
-        code: '',
-        name: '',
-      },
-      store: {
-        amt: null,
-        cnt: 0,
-        code: '',
-        name: '',
-      },
-    },
+    auth: authProto,
     stores: [],
     store: {},
   },
@@ -119,12 +122,15 @@ const store = new Vuex.Store({
     SET_STORES: (state, stores) => {
       Vue.set(state, 'stores', stores);
     },
+    RESET_AUTH: (state) => {
+      Vue.set(state, 'auth', authProto);
+    },
     ...socket.mutations,
   },
   actions: {
     commitOrder: (context, payload) => {
-      let url = 'http://demo.torder.co.kr/logs/commit_orderView_data';
-      let fd = new FormData();
+      const url = 'http://demo.torder.co.kr/logs/commit_orderView_data';
+      const fd = new FormData();
       fd.append('shop_code', payload.auth.store.code);
       fd.append('key', payload.order.order_view_key);
 
@@ -229,6 +235,9 @@ const store = new Vuex.Store({
         console.log(error);
         return false;
       }
+    },
+    logout({ commit }) {
+      commit('RESET_AUTH');
     },
     setStores: ({ commit }, params) => {
       return axios
@@ -338,14 +347,8 @@ const store = new Vuex.Store({
     tables: (state) => {
       return state.tables;
     },
-    table: (state, tablet_number) => {
-      return state.tables[tablet_number];
-    },
     clients: (state) => {
       return state.clients;
-    },
-    client: (state, myid) => {
-      return state.clients[myid];
     },
     categorys: (state) => {
       const { categorys } = state;
