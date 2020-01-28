@@ -10,6 +10,7 @@ Vue.use(Vuex);
 * TODO:
 * - 추후 소켓 부분 모듈화 예정
 * - socket, rest, authentication 으로 모듈 분류 예정
+* - 의존성 없이 모듈 분리가 불가능.
 * ISSUE:
 * - vue-socket.io 내 emitter.js에서 분리된 vuex 모듈 config 코드가 없음 커스텀 작업 필요
 */
@@ -179,32 +180,7 @@ const authentication = {
   },
 };
 
-const authProto = {
-  member: {
-    code: '',
-    name: '',
-  },
-  store: {
-    amt: null,
-    cnt: 0,
-    code: '',
-    name: '',
-  },
-};
-
-const store = new Vuex.Store({
-  state: {
-    order: undefined,
-    orders: [],
-    tables: {},
-    clients: {},
-    categorys: {},
-    products: {},
-    pos: {},
-    auth: authProto,
-    stores: [],
-    store: {},
-  },
+const order = {
   mutations: {
     SET_ORDER: (state, order) => {
       Vue.set(state, 'order', order);
@@ -215,11 +191,6 @@ const store = new Vuex.Store({
     PUSH_ORDER: (state, order) => {
       state.orders.push(order);
     },
-    SET_STORES: (state, stores) => {
-      Vue.set(state, 'stores', stores);
-    },
-    ...socket.mutations,
-    ...authentication.mutations,
   },
   actions: {
     commitOrder: (context, payload) => {
@@ -247,6 +218,16 @@ const store = new Vuex.Store({
     pushOrder: (context, order) => {
       context.commit('PUSH_ORDER', order);
     },
+  },
+};
+
+const shop = {
+  mutations: {
+    SET_STORES: (state, stores) => {
+      Vue.set(state, 'stores', stores);
+    },
+  },
+  actions: {
     setStores: ({ commit }, params) => {
       return axios
         .get('http://api.auth.order.orderhae.com/stores', {
@@ -274,6 +255,11 @@ const store = new Vuex.Store({
           console.log({err: err});
         });
     },
+  },
+};
+
+const device = {
+  actions: {
     async setOpenTablet(context, params) {
       try {
         const url = 'http://admin.torder.co.kr/store/shop_open';
@@ -334,8 +320,47 @@ const store = new Vuex.Store({
         return false;
       }
     },
+  },
+};
+
+const authProto = {
+  member: {
+    code: '',
+    name: '',
+  },
+  store: {
+    amt: null,
+    cnt: 0,
+    code: '',
+    name: '',
+  },
+};
+
+const store = new Vuex.Store({
+  state: {
+    order: undefined,
+    orders: [],
+    tables: {},
+    clients: {},
+    categorys: {},
+    products: {},
+    pos: {},
+    auth: authProto,
+    stores: [],
+    store: {},
+  },
+  mutations: {
+    ...socket.mutations,
+    ...authentication.mutations,
+    ...order.mutations,
+    ...shop.mutations,
+  },
+  actions: {
     ...socket.actions,
     ...authentication.actions,
+    ...order.actions,
+    ...shop.actions,
+    ...device.actions
   },
   getters: {
     order: (state) => {
@@ -400,9 +425,7 @@ const store = new Vuex.Store({
       return state.pos;
     },
     store: (state) => state.store,
-    stores: (state) => {
-      return state.stores.sort((a, b) =>a.name - b.name);
-    }
+    stores: (state) => state.stores.sort((a, b) =>a.name - b.name),
   },
 });
 

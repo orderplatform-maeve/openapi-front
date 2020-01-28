@@ -63,7 +63,6 @@ export default {
         start: 0,
         end: 0,
       },
-      audio: null,
       confirmModal: {
         show: false,
         close: () => {},
