@@ -4,21 +4,16 @@
   .container
     .container-top
       .order-title
-        //.store_name {{order.store.name}}
         .table-number(:class="{call: order.order_info[0].good_code=='99999', setting: order.order_info[0].good_code=='88888'}") {{order.T_order_order_tablet_number}}
         .people_total_count(v-if="order.total_peoples > 0") {{order.total_peoples}}명
         .msg
-          //span.title(v-if="order.products[0].code=='99999'") 호출이요
-          //span.title(v-else-if="order.products[0].code=='88888'") 셋팅완료
           span.title(v-if="order.order_info[0].good_code=='99999'") 호출이요
           span.title(v-else-if="order.order_info[0].good_code=='88888'") 셋팅완료
           span.title(v-else) 주문이요
           .icon.visit(v-if="order.is_tablet_first_order") 입장
           .icon.first(v-if="order.is_first_order") 첫 주문
-        //.visit(v-if="order.products[0].code!='88888'&&order.group.seq==1") 입장
         .msg-time
           .commit(:class="{commited:order.commit}") {{order.commit ? '확인' : '미확인'}}
-          //.time {{order.time | moment("A hh:mm:ss") }}
           .time {{order.order_time}}
       .button.button-close(v-on:click="closeOrder") 닫기
     .container-body

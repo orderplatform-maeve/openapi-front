@@ -22,7 +22,7 @@ Vue.use(VueMoment);
 
 Vue.use(new VueSocketIO(socketConfig));
 
-Vue.component('order', OrderModal);
+Vue.component('modal-order', OrderModal);
 Vue.component('modal-confirm', ConfirmModal);
 Vue.component('modal-table-orders', TableOrdersModal);
 

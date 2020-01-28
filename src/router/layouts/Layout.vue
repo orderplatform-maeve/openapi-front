@@ -7,7 +7,7 @@
       v-bind:message="confirmModal.message"
     )
     modal-table-orders
-    order(v-if="order")
+    modal-order(v-if="order")
     .body
       .left
         router-view(
