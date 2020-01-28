@@ -30,7 +30,23 @@
 <script>
 
 export default {
-  props: ['auth', 'orders', 'time'],
+  props: {
+    auth: {
+      type: Object,
+      default() {
+        return {
+          member: {},
+          store: {},
+        };
+      },
+    },
+    orders: {
+      type: Array,
+      default() {
+        return [];
+      },
+    },
+  },
   data () {
     return {
       scroll: true,
@@ -48,19 +64,6 @@ export default {
     lengthCommitedOrders() {
       return this.$store.getters.lengthCommitedOrders;
     },
-    commited_orders_count() {
-      let count = 0;
-      for (let order of this.orders) {
-        if (order.commit.time) {
-          count += 1;
-        }
-      }
-      return count;
-    }
-  },
-  created() {
-    this.$eventBus.$off('closeOrder');
-    this.$eventBus.$on('closeOrder', this.closeOrder);
   },
   methods: {
     setViewMode(value) {
@@ -69,14 +72,6 @@ export default {
     },
     view(order) {
       this.$store.dispatch('setOrder', order);
-    },
-    newOrder(order) {
-      console.log('method newOrder');
-      this.scroll = false;
-      this.$eventBus.$emit('newOrder', order);
-    },
-    closeOrder() {
-      this.scroll = true;
     },
   }
 };
