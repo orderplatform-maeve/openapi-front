@@ -27,31 +27,14 @@
       .buttons
         .button(v-on:click="close") 닫기
 </template>
+
 <script>
 export default {
   data() {
     return {
-      show: true,
+      show: false,
       table: {},
     };
-  },
-  computed: {
-    orders() {
-      let orders = {};
-      for (let order of this.table.orders) {
-        if (orders[order.good.id]) {
-          orders[order.good.id].qty += order.qty;
-        } else {
-          orders[order.good.id] = {
-            code_product: order.good.code,
-            name_product:order.good.name,
-            price_product: order.good.price,
-            qty: order.qty,
-          };
-        }
-      }
-      return orders;
-    }
   },
   methods: {
     openMenuBoard(table) {
@@ -70,11 +53,9 @@ export default {
 </script>
 
 <style lang="scss">
-@import "./scss/global.scss";
+@import "../scss/global.scss";
 #tableOrders {
   @include modal;
-  .top {
-  }
 
   .order-list {
     display:table;
@@ -94,15 +75,11 @@ export default {
       > * {
         display:table-cell;
       }
-      .name {
-      }
       .price {
         text-align:right;
       }
       .qty {
         text-align:right;
-      }
-      .price-amt {
       }
     }
     tfoot {

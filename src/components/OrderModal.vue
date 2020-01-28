@@ -2,7 +2,7 @@
 #order
   .background
   .container
-    .container-top 
+    .container-top
       .order-title
         //.store_name {{order.store.name}}
         .table-number(:class="{call: order.order_info[0].good_code=='99999', setting: order.order_info[0].good_code=='88888'}") {{order.T_order_order_tablet_number}}
@@ -19,7 +19,7 @@
         .msg-time
           .commit(:class="{commited:order.commit}") {{order.commit ? '확인' : '미확인'}}
           //.time {{order.time | moment("A hh:mm:ss") }}
-          .time {{order.order_time}} 
+          .time {{order.order_time}}
       .button.button-close(v-on:click="closeOrder") 닫기
     .container-body
       .left
@@ -34,7 +34,6 @@
               .count {{product.good_qty}}개
               .name {{product.good_name}}
               .memo(v-if="product.memo_show") {{product.memo}}
-              //.first(v-if="product.first") 첫 주문
               ul.option-list(v-if="product.option")
                 li.option-item(v-for="option in product.option")
                   span +
@@ -57,6 +56,7 @@
       .buttons
         .button.button-commit(v-on:click="commitOrder(order)") 확인
 </template>
+
 <script>
 export default {
   data() {
@@ -70,6 +70,20 @@ export default {
       return this.$store.getters.order;
     },
   },
+  mounted() {
+    clearInterval(this.interval);
+    this.seconds = 10;
+    this.interval = setInterval(function(){
+      this.seconds -= 1;
+
+      if(this.seconds < 1) {
+        this.closeOrder();
+      }
+    }.bind(this), 1000);
+  },
+  beforeDestroy() {
+    this.closeOrder();
+  },
   methods: {
     commitOrder(order) {
       let auth = this.$store.getters.auth;
@@ -82,24 +96,11 @@ export default {
       this.$store.dispatch('unsetOrder');
     },
   },
-  mounted() {
-    clearInterval(this.interval);
-    this.seconds = 10;
-    this.interval = setInterval(function(){
-      this.seconds -= 1;
-
-      if(this.seconds < 1) {
-        this.closeOrder();
-      } 
-    }.bind(this), 1000);
-  },
-  beforeDestroy() {
-    this.closeOrder();
-  }, 
-}
+};
 </script>
+
 <style lang="scss">
-@import "./scss/global.scss";
+@import "../scss/global.scss";
 
 #order {
   position:fixed;
@@ -108,7 +109,7 @@ export default {
   display:flex;
   align-items: center;
   justify-content: center;
-  
+
   width:100%;
   height:100%;
   z-index:101;
@@ -180,7 +181,7 @@ export default {
           margin-bottom:12px;
           font-size:36px;
           font-weight:900;
-      
+
           .people_total_count {
             display:flex;
             align-items: center;
@@ -229,8 +230,8 @@ export default {
             margin:0;
             padding:0;
             overflow:scroll;
-            -webkit-overflow-scrolling: touch; 
-      
+            -webkit-overflow-scrolling: touch;
+
             .product-item {
               display:flex;
               flex-shrink:0;
@@ -330,8 +331,8 @@ export default {
             list-style:none;
             word-break: keep-all;
             overflow:scroll;
-            -webkit-overflow-scrolling: touch; 
-           
+            -webkit-overflow-scrolling: touch;
+
             .order-item {
               display:flex;
               flex-direction: row;
@@ -366,7 +367,7 @@ export default {
               .count {
                 margin-left:12px;
               }
-            } 
+            }
           }
         }
       }
