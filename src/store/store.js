@@ -72,6 +72,9 @@ const socket = {
         commit('PUSH_ORDER', order);
       }
     },
+    SOCKET_resRestartClients(context, message) {
+      console.log('SOCKET_resRestartClients', message);
+    }
   },
 };
 
