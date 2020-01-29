@@ -4,19 +4,12 @@ import axios from 'axios';
 
 import { vaildShopCode } from './store.helper';
 
-import {
-  DEMO_URL,
-  API_URL,
-  ADMIN_URL,
-} from './urls';
-
 Vue.use(Vuex);
 
 /**
 * TODO:
 * - 추후 소켓 부분 모듈화 예정
-* - socket, rest, authentication 으웃 모듈 분류 예정
-* - 의존성 없이 모듈 분리가 불가능.
+* - socket, rest, authentication 으로 모듈 분류 예정
 * ISSUE:
 * - vue-socket.io 내 emitter.js에서 분리된 vuex 모듈 config 코드가 없음 커스텀 작업 필요
 */
@@ -66,7 +59,8 @@ const socket = {
       // console.log('SOCKET_resClients', context, message);
     },
     SOCKET_orderlog({ commit, state }, order) {
-      // console.log('SOCKET_orderlog', state.auth.store.code, order.shop_code);
+      console.log('SOCKET_orderlog', state.auth.store.code, order.shop_code);
+
       if (vaildShopCode(state, order)) {
         commit('PUSH_ORDER', order);
       }
@@ -97,12 +91,13 @@ const authentication = {
   },
   actions: {
     async setAuth({commit}, auth) {
-      const url = `${DEMO_URL}/logs/Today_redis_data`;
+      const url = 'http://demo.torder.co.kr/logs/Today_redis_data';
       const fd = new FormData();
 
       if (auth && auth.store && auth.store.code) {
         fd.append('shop_code', auth.store.code);
       }
+
       const response = await axios.post(url, fd);
 
       if (response.status === 200) {
@@ -119,26 +114,28 @@ const authentication = {
       try {
         const { id, pw } = payload;
 
-        const url = `${DEMO_URL}/login/member_login`;
+        const url = 'http://api.auth.order.orderhae.com/login';
 
         const params = {
-          member_id: id,
-          member_pwd: pw,
+          id,
+          pw,
         };
 
         const res = await axios.post(url, params);
 
-        const data = res.data.data[0];
+        const data = res.data[0];
 
-        if (res.data.data.length) {
+        if (res.data.length) {
           const member = {
-            code: data['store_code'],
-            name: data['store_name'],
+            code: data['T_order_id'],
+            name: data['T_order_member_name'],
           };
 
-          console.log(data);
+          const parseStore = JSON.parse(data['T_order_member_store_data']);
 
-          const storeId = data['store_id'];
+          const storeId = parseStore && parseStore[0]
+                          && parseStore[0].store_info && parseStore[0].store_info[0]
+                          && parseStore[0].store_info[0].store_id;
 
           const code = storeId || '';
 
@@ -156,15 +153,15 @@ const authentication = {
 
           console.log('auth', auth);
 
+          Vue.$cookies.set('auth',  auth, '1y', null, null);
+
           await dispatch('setAuth', auth);
 
           const params = {
-            member_code: code,
+            member_code: auth.member.code,
           };
 
           await dispatch('setStores', params);
-
-          Vue.$cookies.set('auth',  auth, '1y', null, null);
 
           return true;
         } else {
@@ -172,156 +169,12 @@ const authentication = {
           return false;
         }
       } catch (error) {
-        console.error(error);
+        console.log(error);
         return false;
       }
     },
     logout({ commit }) {
       commit('RESET_AUTH');
-    },
-  },
-};
-
-const order = {
-  mutations: {
-    SET_ORDER: (state, order) => {
-      Vue.set(state, 'order', order);
-    },
-    UNSET_ORDER: (state) => {
-      Vue.set(state, 'order', undefined);
-    },
-    PUSH_ORDER: (state, order) => {
-      state.orders.push(order);
-    },
-  },
-  actions: {
-    commitOrder: (context, payload) => {
-      const url = `${DEMO_URL}/logs/commit_orderView_data`;
-      const fd = new FormData();
-      fd.append('shop_code', payload.auth.store.code);
-      fd.append('key', payload.order.order_view_key);
-
-      return axios
-        .post(url, fd)
-        .then(function(res) {
-          if (res.data.result) {
-            payload.order.commit = true;
-
-            context.commit('UNSET_ORDER');
-          }
-        }.bind(this));
-    },
-    setOrder: (context, order) => {
-      context.commit('SET_ORDER', order);
-    },
-    unsetOrder: (context) => {
-      context.commit('UNSET_ORDER');
-    },
-    pushOrder: (context, order) => {
-      context.commit('PUSH_ORDER', order);
-    },
-  },
-};
-
-const shop = {
-  mutations: {
-    SET_STORES: (state, stores) => {
-      Vue.set(state, 'stores', stores);
-    },
-  },
-  actions: {
-    setStores: ({ commit }, params) => {
-      return axios
-        .get(`${API_URL}/stores`, {
-          params,
-        })
-        .then(function(res) {
-          if (res.data) {
-            const stores = [];
-            for (let item of res.data.store_data) {
-              let store = {
-                code: item.shop_code,
-                name: item.shop_name,
-              };
-              if (item.current_order) {
-                store.amt = item.current_order.amt;
-                store.cnt = item.current_order.cnt;
-              }
-              stores.push(store);
-            }
-            commit('SET_STORES', stores);
-          } else {
-            // alert('매장이 없습니다.');
-            console.log('store');
-          }
-        }.bind(this)).catch(function(err) {
-          console.log({err: err});
-        });
-    },
-  },
-};
-
-const device = {
-  actions: {
-    async setOpenTablet(context, params) {
-      try {
-        const url = `${ADMIN_URL}/store/shop_open`;
-        const response = await axios(url, params);
-
-        if (response) {
-          return true;
-        }
-
-        return false;
-      } catch (error) {
-        console.log(error);
-        return false;
-      }
-    },
-    async setCloseTablet(context, params) {
-      try {
-        const url = `${ADMIN_URL}/store/shop_close`;
-        const response = await axios(url, params);
-
-        if (response) {
-          return true;
-        }
-
-        return false;
-      } catch (error) {
-        console.log(error);
-        return false;
-      }
-    },
-    async setAgreeOrder(context, params) {
-      try {
-        const url = `${ADMIN_URL}/store/shop_open_order`;
-        const response = await axios(url, params);
-
-        if (response) {
-          return true;
-        }
-
-        return false;
-      } catch (error) {
-        console.log(error);
-        return false;
-      }
-    },
-    async setRejectOrder(context, params) {
-      try {
-        const url = `${ADMIN_URL}/store/shop_close_order`;
-        const response = await axios(url, params);
-
-        if (response) {
-          return true;
-        }
-
-        return false;
-      } catch (error) {
-        console.log(error);
-        return false;
-      }
     },
   },
 };
@@ -353,17 +206,136 @@ const store = new Vuex.Store({
     store: {},
   },
   mutations: {
+    SET_ORDER: (state, order) => {
+      Vue.set(state, 'order', order);
+    },
+    UNSET_ORDER: (state) => {
+      Vue.set(state, 'order', undefined);
+    },
+    PUSH_ORDER: (state, order) => {
+      state.orders.push(order);
+    },
+    SET_STORES: (state, stores) => {
+      Vue.set(state, 'stores', stores);
+    },
     ...socket.mutations,
     ...authentication.mutations,
-    ...order.mutations,
-    ...shop.mutations,
   },
   actions: {
+    commitOrder: (context, payload) => {
+      const url = 'http://demo.torder.co.kr/logs/commit_orderView_data';
+      const fd = new FormData();
+      fd.append('shop_code', payload.auth.store.code);
+      fd.append('key', payload.order.order_view_key);
+
+      return axios
+        .post(url, fd)
+        .then(function(res) {
+          if (res.data.result) {
+            payload.order.commit = true;
+
+            context.commit('UNSET_ORDER');
+          }
+        }.bind(this));
+    },
+    setOrder: (context, order) => {
+      context.commit('SET_ORDER', order);
+    },
+    unsetOrder: (context) => {
+      context.commit('UNSET_ORDER');
+    },
+    pushOrder: (context, order) => {
+      context.commit('PUSH_ORDER', order);
+    },
+    setStores: ({ commit }, params) => {
+      return axios
+        .get('http://api.auth.order.orderhae.com/stores', {
+          params,
+        })
+        .then(function(res) {
+          if (res.data) {
+            const stores = [];
+            for (let item of res.data.store_data) {
+              let store = {
+                code: item.shop_code,
+                name: item.shop_name,
+              };
+              if (item.current_order) {
+                store.amt = item.current_order.amt;
+                store.cnt = item.current_order.cnt;
+              }
+              stores.push(store);
+            }
+            commit('SET_STORES', stores);
+          } else {
+            alert('매장이 없습니다.');
+          }
+        }.bind(this)).catch(function(err) {
+          console.log({err: err});
+        });
+    },
+    async setOpenTablet(context, params) {
+      try {
+        const url = 'http://admin.torder.co.kr/store/shop_open';
+        const response = await axios(url, params);
+
+        if (response) {
+          return true;
+        }
+
+        return false;
+      } catch (error) {
+        console.log(error);
+        return false;
+      }
+    },
+    async setCloseTablet(context, params) {
+      try {
+        const url = 'http://admin.torder.co.kr/store/shop_close';
+        const response = await axios(url, params);
+
+        if (response) {
+          return true;
+        }
+
+        return false;
+      } catch (error) {
+        console.log(error);
+        return false;
+      }
+    },
+    async setAgreeOrder(context, params) {
+      try {
+        const url = 'http://admin.torder.co.kr/store/shop_open_order';
+        const response = await axios(url, params);
+
+        if (response) {
+          return true;
+        }
+
+        return false;
+      } catch (error) {
+        console.log(error);
+        return false;
+      }
+    },
+    async setRejectOrder(context, params) {
+      try {
+        const url = 'http://admin.torder.co.kr/store/shop_close_order';
+        const response = await axios(url, params);
+
+        if (response) {
+          return true;
+        }
+
+        return false;
+      } catch (error) {
+        console.log(error);
+        return false;
+      }
+    },
     ...socket.actions,
     ...authentication.actions,
-    ...order.actions,
-    ...shop.actions,
-    ...device.actions
   },
   getters: {
     order: (state) => {
@@ -428,7 +400,9 @@ const store = new Vuex.Store({
       return state.pos;
     },
     store: (state) => state.store,
-    stores: (state) => state.stores.sort((a, b) =>a.name - b.name),
+    stores: (state) => {
+      return state.stores.sort((a, b) =>a.name - b.name);
+    }
   },
 });
 

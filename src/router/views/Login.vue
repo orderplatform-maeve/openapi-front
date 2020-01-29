@@ -40,6 +40,8 @@ export default {
 
         const response = await this.login(payload);
 
+        console.log('response', response);
+
         if (response) {
           this.$router.push('/store');
         }

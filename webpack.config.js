@@ -107,7 +107,7 @@ module.exports = {
     overlay: true,
     disableHostCheck: true,
     open: true,
-    hot: true
+    hot: true,
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin()
