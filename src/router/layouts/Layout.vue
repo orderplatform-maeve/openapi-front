@@ -39,8 +39,8 @@
               .tab-button(:class="{active:store.orderStatus}" @click="rejectOrder()") Off
           hr
           router-link.button(v-if="stores.length > 1" to="/store") 매장 보기
-          router-link.button.button-red(v-if="!auth.member" to="/login") 로그인
-          .button.button-red.button-member(v-if="auth.member" @click="logout")
+          router-link.button.button-red(v-if="!auth.member.name" to="/login") 로그인
+          .button.button-red.button-member(v-if="auth.member.name" @click="logout")
             span.name {{auth && auth.member && auth.member.name}}
             span 로그아웃
     .foot.foot-left
