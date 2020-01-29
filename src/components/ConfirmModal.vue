@@ -9,54 +9,37 @@
       .message(v-if="message") {{message}}
     .foot
       .buttons
-        .button.button-commit(v-on:click="confirm") 확인
-        .button.button(v-on:click="close") 닫기
+        .button.button-commit(@click="confirm") 확인
+        .button.button(@click="close") 닫기
 </template>
+
 <script>
 export default {
-  data() {
-    return {
-      show: false,
-      title: '',
-      message: '',
-    }
-  },
-  methods: {
-    confirm() {
-      console.log('confirm!');
+  props: {
+    show: {
+      type: Boolean,
+      default: false,
     },
-    open(args) {
-      if (args.hasOwnProperty('title')) {
-        this.title = args.title;
-      } else {
-        this.title = '';
-      }
-      if (args.hasOwnProperty('message')) {
-        this.message = args.message;
-      }else {
-        this.message= '';
-      }
-      if (args.hasOwnProperty('confirm')) {
-        this.confirm = args.confirm;
-      } else {
-        this.confirm = function() {
-          console.log('no confirm function');
-        }
-      }
-      this.show = true;
+    title: {
+      type: String,
+      default: '',
     },
-    close() {
-      this.show = false;
+    message: {
+      type: String,
+      default: '',
+    },
+    confirm: {
+      type: Function,
+      default: () => {},
+    },
+    close: {
+      type: Function,
+      default: () => {},
     },
   },
-  created() {
-    this.$eventBus.$off('openConfirmModal');
-    this.$eventBus.$on('openConfirmModal', this.open); 
-    this.$eventBus.$off('closeConfirmModal');
-    this.$eventBus.$on('closeConfirmModal', this.close); 
-  },
-}
+};
 </script>
+
 <style lang="scss">
 #ModalConfirm {
   position:fixed;
@@ -65,7 +48,7 @@ export default {
   display:flex;
   align-items: center;
   justify-content: center;
-  
+
   width:100%;
   height:100%;
   z-index:201;

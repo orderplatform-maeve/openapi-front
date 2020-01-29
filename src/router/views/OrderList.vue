@@ -3,7 +3,6 @@
   .top
     .tab-group
       .order-list-tab-buttons.tab-buttons
-        //.tab-button.datetime {{time.start | moment("MM월DD일 HH시mm분") }} 부터
         .order-list-tab-button.tab-button(v-on:click="setViewMode('a')" :class="{active: viewMode=='a'}")
           | 모든 주문
           .count {{lengthOrders}}
@@ -24,36 +23,34 @@
         span.title(v-else) 주문이요
         .icon.visit(v-if="order.is_tablet_first_order") 입장
         .icon.first(v-if="order.is_first_order") 첫 주문
-  
-      //.visit(v-if="order.products[0].code!='88888'&&order.group.seq==1") 입장
       .msg-time
         .commit(:class="{commited:order.commit}") {{order.commit ? '확인' : '미확인'}}
-        .time {{order.order_time}} 
-  //ul.order-list(:class="{'scroll-stop': !scroll}")
-    li.no-item(v-if="orders.length<1") 아직 주문이 없어요<br/>ㅠㅠ
-    li.order-item.order-title(v-for="order in orders" :class="{commit: order.commit.time, 'call-staff': order.call_staff, 'first-order': order.first_order}" v-on:click="newOrder(order)" :id="order.code" v-if="viewMode=='a'||viewMode=='n'&&!order.commit.time||viewMode=='c'&&order.commit.time")
-      //.store_name {{order.store.name}}
-      .table-number {{order.table.name}}
-      .msg
-        span.title(v-if="order.products[0].code=='99999'") 호출이요
-        span.title(v-else-if="order.products[0].code=='88888'") 셋팅완료
-        span.title(v-else) 주문이요
-      .visit(v-if="order.products[0].code!='88888'&&order.group.seq==1") 입장
-      .first(v-if="order.first") 첫 주문
-      .commit(:class="{commited:order.commit.time}") {{order.commit.time ? '확인' : '미확인'}}
-      .time {{order.time | moment("A hh:mm:ss") }}
+        .time {{order.order_time}}
 </template>
 <script>
-import axios from 'axios';
 
 export default {
-  props: ['auth', 'orders', 'time'],
+  props: {
+    auth: {
+      type: Object,
+      default() {
+        return {
+          member: {},
+          store: {},
+        };
+      },
+    },
+    orders: {
+      type: Array,
+      default() {
+        return [];
+      },
+    },
+  },
   data () {
     return {
-      scroll: true,
-      eventListener: null,
       viewMode: 'a',
-    }
+    };
   },
   computed: {
     sortedOrders() {
@@ -65,15 +62,6 @@ export default {
     lengthCommitedOrders() {
       return this.$store.getters.lengthCommitedOrders;
     },
-    commited_orders_count() {
-      let count = 0;
-      for (let order of this.orders) {
-        if (order.commit.time) {
-          count += 1;
-        }
-      } 
-      return count;
-    }
   },
   methods: {
     setViewMode(value) {
@@ -81,47 +69,14 @@ export default {
       this.viewMode = value;
     },
     view(order) {
-      this.$store.dispatch('setOrder', order)
+      this.$store.dispatch('setOrder', order);
     },
-    newOrder(order) {
-      console.log('method newOrder');
-      this.scroll = false;
-      this.$eventBus.$emit('newOrder', order); 
-    },
-    closeOrder(order) {
-      this.scroll = true;
-    },
-  },
-  beforeCreate() {
-  },
-  created() {
-    let auth = this.auth;
-    if (auth && auth.store) {
-    } else {
-      this.$router.push('/store');
-    }
-    this.$eventBus.$off('closeOrder');
-    this.$eventBus.$on('closeOrder', this.closeOrder); 
-    //this.$eventBus.$on('setOrders', this.setOrders); 
-
-    //this.getOrders();
-
-    /*
-    this.eventListener = null;
-    this.eventListener = new EventSource('http://view.torder.co.kr/psync.php?shop_code='+this.auth.store.code);
-    this.eventListener.addEventListener('message', this.message, false);
-    */
-  },
-  beforeDestroy() {
-    /*
-    this.eventListener.removeEventListener('message', this.message);
-    this.eventListener.close();
-    */
   }
-}
+};
 </script>
+
 <style lang="scss">
-@import "./scss/global.scss";
+@import "../../scss/global.scss";
 #orders {
   display:flex;
   flex-direction:column;
@@ -147,8 +102,7 @@ export default {
     padding:0 12px;
     overflow:scroll;
     flex-grow:1;
-    -webkit-overflow-scrolling: touch; 
-    /*transform: rotate(180deg);*/
+    -webkit-overflow-scrolling: touch;
 
     .no-item {
       display:flex;
@@ -166,7 +120,6 @@ export default {
       border: {
         top:solid 1px #484848;
       }
-      /*transform: rotate(-180deg);*/
     }
     .order-item:first-child {
       border-top:none;
@@ -177,8 +130,7 @@ export default {
   }
   .scroll-stop {
     overflow:hidden !important;
-    -webkit-overflow-scrolling: auto !important; 
+    -webkit-overflow-scrolling: auto !important;
   }
 }
-
 </style>

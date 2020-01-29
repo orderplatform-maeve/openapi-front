@@ -1,69 +1,44 @@
 <template lang="pug">
   .container
     .top
-      .title {{auth.member?auth.member.name:''}}
+      .title {{auth.member ? auth.member.name : ''}}
     .body
       ul.store-list
         li.store-item(v-for="store in stores" :data-number="store.code")
           .name {{store.name}}
-          //.order
-            .amt {{store.amt | currency}}원
-            .cnt {{store.cnt | currency}}개
-          //.button.button-table(v-on:click='select(store, "table")') 테이블 보기
           .button.button-order(v-on:click='selectStore(store, "order")') 주문 보기
-    //.bottom
-      .button(v-on:click='logout') 로그아웃
 </template>
 <script>
-import axios from 'axios';
 
 export default {
-  props: ['auth', 'stores'],
-  data() {
-    return {
-    };
-  },
-  filters: {
-    currency(value) {
-      if (!value) return '0'
-      return value.toFixed(0).replace(/(\d)(?=(\d{3})+(?:\.\d+)?$)/g, "$1,");
-    }
+  props: {
+    auth: {
+      type: Object,
+      default() {
+        return {
+          member: {},
+          store: {},
+        };
+      },
+    },
+    stores: {
+      type: Array,
+      default() {
+        return [];
+      },
+    },
   },
   methods: {
-    check() {
-      let auth = this.auth;
-      if (auth && auth.member) {
-      } else {
-        this.$router.push('/member');
-      }
-    },
     selectStore(store, type) {
-      console.log('selectStore', store, type);
       this.auth.store = store;
-      console.log(this.auth);
-      this.$eventBus.$emit('saveAuth'); 
-      this.$eventBus.$emit('reqOrders'); 
-      this.$router.push({
-        name: type,
-      });
-    },
-    getStores() {
-      if (this.auth && this.auth.member) {
-      } else {
-        return;
-      }
-
+      this.$cookies.set('auth', this.auth, '1y', null, null);
+      this.$store.dispatch('setAuth', this.auth);
+      this.$router.push({ name: type });
     },
   },
-  beforeMount() {
-    this.check(); 
-  },
-  created() {
-  },
-  mounted() {
-  },
-}
+};
 </script>
+
 <style lang="scss">
 ul.store-list {
   display:flex;
@@ -104,7 +79,7 @@ ul.store-list {
       justify-content: center;
       padding:0 24px;
       background-color:#fafafa;
-      height:48px; 
+      height:48px;
       border-radius:200px;
       color:#000000;
       font-size:16px;
