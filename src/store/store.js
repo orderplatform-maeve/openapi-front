@@ -66,15 +66,11 @@ const socket = {
       // console.log('SOCKET_resClients', context, message);
     },
     SOCKET_orderlog({ commit, state }, order) {
-      console.log('SOCKET_orderlog', state.auth.store.code, order.shop_code);
-
+      // console.log('SOCKET_orderlog', state.auth.store.code, order.shop_code);
       if (vaildShopCode(state, order)) {
         commit('PUSH_ORDER', order);
       }
     },
-    SOCKET_resRestartClients(context, message) {
-      console.log('SOCKET_resRestartClients', message);
-    }
   },
 };
 

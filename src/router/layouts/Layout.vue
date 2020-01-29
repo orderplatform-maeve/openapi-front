@@ -57,7 +57,6 @@ export default {
   data() {
     return {
       orders: [],
-      flag_restarting_clients: 0,
       time: {
         now: 0,
         start: 0,
@@ -97,6 +96,13 @@ export default {
 
   mounted() {
     this.time.now = Date();
+  },
+
+  sockets: {
+    resRestartClients(msg) {
+      console.log(msg, '!!!!!!!!!!!!');
+      this.$router.go(0);
+    },
   },
 
   methods: {
@@ -148,6 +154,7 @@ export default {
         this.$socket.emit('reqCategorys', reqData);
         this.$socket.emit('reqProducts', reqData);
         this.$socket.emit('reqClients', reqData);
+        this.$socket.emit('reqRestartClients', reqData);
       }
     },
     logout() {
