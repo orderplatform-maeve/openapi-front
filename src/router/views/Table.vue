@@ -5,12 +5,8 @@
     .button.button-dark(v-if="flag_restaring" v-on:click="cancelRestart()") 태블릿 새로고침 취소
   ul.table-list
     li.table-item(v-for="table in tables" :data-number="table.number" )
-      //.wrap-info
-        .price-amt {{table.price_amt}}원
-      //.table-number(v-on:click="openMenuBoard(table)" :class="{'empty-table':table.price_amt<1}") {{table.name}}
       .table-number(v-on:click="openMenuBoard(table)" :class="'empty-table'") {{table.name}}
       .wrap-clients
-        //.client-count {{table.client_count}}
         .client(v-for="client in table.clients" :class="{preparing:client.status=='preparing'}") t
 </template>
 <script>

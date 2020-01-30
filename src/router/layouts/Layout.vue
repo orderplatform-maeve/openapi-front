@@ -98,13 +98,6 @@ export default {
     this.time.now = Date();
   },
 
-  sockets: {
-    resRestartClients(msg) {
-      console.log(msg, '!!!!!!!!!!!!');
-      this.$router.go(0);
-    },
-  },
-
   methods: {
     ...mapActions([
       'setOpenTablet',
@@ -147,6 +140,8 @@ export default {
       if (this.auth && this.auth.store && this.auth.store.code) {
         const reqData = { store_code: this.auth.store.code };
         this.orders = [];
+
+        console.log('reqData', reqData);
 
         this.$socket.emit('reqStoreInfo', reqData);
         this.$socket.emit('reqTablesInfo', reqData);

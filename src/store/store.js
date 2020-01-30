@@ -22,24 +22,6 @@ Vue.use(Vuex);
 */
 const socket = {
   mutations: {
-    SOCKET_resStoreInfo(state, data) {
-      Vue.set(state, 'store', data);
-    },
-    SOCKET_resTablesInfo(state, data) {
-      Vue.set(state, 'tables', data);
-    },
-    SOCKET_resPos(state, data) {
-      Vue.set(state, 'pos', data);
-    },
-    SOCKET_resCategorys(state, data) {
-      Vue.set(state, 'categorys', data);
-    },
-    SOCKET_resProducts(state, data) {
-      Vue.set(state, 'products', data);
-    },
-    SOCKET_resClients(state, data) {
-      Vue.set(state, 'clients', data);
-    },
     SOCKET_orderlog(state, order) {
       if (vaildShopCode(state, order)) {
         Vue.set(state, 'order', order);
@@ -47,24 +29,6 @@ const socket = {
     },
   },
   actions: {
-    SOCKET_resStoreInfo(context, message) {
-      // console.log('SOCKET_resStoreInfo', context, message);
-    },
-    SOCKET_resTablesInfo(context, message) {
-      // console.log('SOCKET_resTablesInfo', context, message);
-    },
-    SOCKET_resPos(context, message) {
-      // console.log('SOCKET_resPos', context, message);
-    },
-    SOCKET_resCategorys(context, message) {
-      // console.log('SOCKET_resCategorys', context, message);
-    },
-    SOCKET_resProducts(context, message) {
-      // console.log('SOCKET_resProducts', context, message);
-    },
-    SOCKET_resClients(context, message) {
-      // console.log('SOCKET_resClients', context, message);
-    },
     SOCKET_orderlog({ commit, state }, order) {
       // console.log('SOCKET_orderlog', state.auth.store.code, order.shop_code);
       if (vaildShopCode(state, order)) {
@@ -339,97 +303,56 @@ const authProto = {
   },
 };
 
-const store = new Vuex.Store({
-  state: {
-    order: undefined,
-    orders: [],
-    tables: {},
-    clients: {},
-    categorys: {},
-    products: {},
-    pos: {},
-    auth: authProto,
-    stores: [],
-    store: {},
+const state = {
+  order: undefined,
+  orders: [],
+  auth: authProto,
+  stores: [],
+  store: {},
+};
+
+const mutations = {
+  ...socket.mutations,
+  ...authentication.mutations,
+  ...order.mutations,
+  ...shop.mutations,
+};
+
+const actions = {
+  ...socket.actions,
+  ...authentication.actions,
+  ...order.actions,
+  ...shop.actions,
+  ...device.actions,
+};
+
+const getters = {
+  order: (state) => {
+    return state.order;
   },
-  mutations: {
-    ...socket.mutations,
-    ...authentication.mutations,
-    ...order.mutations,
-    ...shop.mutations,
+  sortedOrders: (state) => {
+    return state.orders.sort((a, b) =>  b.timestamp - a.timestamp);
   },
-  actions: {
-    ...socket.actions,
-    ...authentication.actions,
-    ...order.actions,
-    ...shop.actions,
-    ...device.actions
+  lengthOrders: (state) => {
+    return state.orders.length;
   },
-  getters: {
-    order: (state) => {
-      return state.order;
-    },
-    sortedOrders: (state) => {
-      return state.orders.sort((a, b) =>  b.timestamp - a.timestamp);
-    },
-    lengthOrders: (state) => {
-      return state.orders.length;
-    },
-    lengthCommitedOrders: (state) => {
-      return state.orders.filter((order) => order.commit).length;
-    },
-    auth: (state) => {
-      return state.auth;
-    },
-    tables: (state) => {
-      return state.tables;
-    },
-    clients: (state) => {
-      return state.clients;
-    },
-    categorys: (state) => {
-      const { categorys } = state;
-
-      let result = {};
-      for (let category of categorys) {
-        const code = category['T_order_store_menu_code'];
-        category.T_order_store_menu_depth = JSON.parse(category.T_order_store_menu_depth);
-        result[code] = category;
-      }
-
-      return result;
-    },
-    products: (state) => {
-      const { products } = state;
-
-      let result = {};
-      for (let product of products) {
-        let code = product['T_order_store_good_code'];
-        product.T_order_store_good_category = JSON.parse(product.T_order_store_good_category);
-        if (!product.T_order_store_good_category) {
-          product.T_order_store_good_category = [];
-        }
-        result[code] = product;
-      }
-
-      return result;
-    },
-    pos: (state) => {
-      const { pos, auth } = state;
-
-      if (pos && pos.storeCode && pos.storeCode === auth.store.code) {
-        let pos_tables = {};
-        for (let item of pos.data) {
-          pos_tables[item.id] = item;
-        }
-        return pos_tables;
-      }
-
-      return state.pos;
-    },
-    store: (state) => state.store,
-    stores: (state) => state.stores.sort((a, b) =>a.name - b.name),
+  lengthCommitedOrders: (state) => {
+    return state.orders.filter((order) => order.commit).length;
   },
-});
+  auth: (state) => {
+    return state.auth;
+  },
+  store: (state) => state.store,
+  stores: (state) => state.stores.sort((a, b) =>a.name - b.name),
+};
+
+const storeInit = {
+  state,
+  mutations,
+  actions,
+  getters,
+};
+
+const store = new Vuex.Store(storeInit);
 
 export default store;
