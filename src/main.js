@@ -11,7 +11,6 @@ import router from '@router';
 import { socketConfig } from '@config';
 import {
   ConfirmModal,
-  TableOrdersModal,
   OrderModal,
 } from '@components';
 
@@ -24,6 +23,5 @@ Vue.use(new VueSocketIO(socketConfig));
 
 Vue.component('modal-order', OrderModal);
 Vue.component('modal-confirm', ConfirmModal);
-Vue.component('modal-table-orders', TableOrdersModal);
 
 new Vue({router}).$mount("#app");

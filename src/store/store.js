@@ -33,9 +33,9 @@ const socket = {
   actions: {
     SOCKET_orderlog({ commit, state }, order) {
       // console.log('SOCKET_orderlog', state.auth.store.code, order.shop_code);
-      // if (vaildShopCode(state, order)) {
-      //   commit('PUSH_ORDER', order);
-      // }
+      if (vaildShopCode(state, order)) {
+        commit('PUSH_ORDER', order);
+      }
     },
   },
 };
@@ -268,14 +268,14 @@ const state = {
 };
 
 const mutations = {
-  // ...socket.mutations,
+  ...socket.mutations,
   ...authentication.mutations,
   ...order.mutations,
   ...shop.mutations,
 };
 
 const actions = {
-  // ...socket.actions,
+  ...socket.actions,
   ...authentication.actions,
   ...order.actions,
   ...shop.actions,

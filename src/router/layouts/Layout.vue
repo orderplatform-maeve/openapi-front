@@ -6,7 +6,6 @@
       :title="confirmModal.title"
       :message="confirmModal.message"
     )
-    modal-table-orders
     modal-order(v-if="order")
     .body
       .left
@@ -24,7 +23,6 @@
           img.logo(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/logo/torder_color_white.png")
           .store_name {{auth && auth.store && auth.store.name}}
           router-link.button(v-if="auth && auth.store && auth.store.code" to="/order") 주문 보기
-          router-link.button(v-if="auth && auth.store && auth.store.code" to="/table") 테이블 보기<br/>(테스트)
         .bottom
           hr
           .tab-group
