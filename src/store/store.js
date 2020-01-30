@@ -110,10 +110,7 @@ const authentication = {
       console.log('response', response);
 
       if (response.status === 200) {
-        commit('SET_AUTH', {
-          auth,
-          data: response.data,
-        });
+        commit('SET_AUTH', auth);
         return true;
       }
 

@@ -10,10 +10,10 @@
     .body
       .left
         router-view(
-          :orders="orders"
           :auth="auth"
-          :time="time"
+          :orders="orders"
           :stores="stores"
+          :time="time"
         )
       .right
         .top
@@ -46,9 +46,7 @@
 
 <script>
 import { mapActions } from 'vuex';
-
 import store from '@store/store';
-import { isEmpty } from '@utils/CheckedType';
 
 export default {
   store,
@@ -84,14 +82,6 @@ export default {
     },
   },
 
-  /**
-  * TODO:
-  * - 절차 적으로 실행되게 수정 필요
-  */
-  created() {
-    this.initialized();
-  },
-
   mounted() {
     this.time.now = Date();
   },
@@ -102,37 +92,8 @@ export default {
       'setCloseTablet',
       'setAgreeOrder',
       'setRejectOrder',
-      'setAuth',
       'logout',
     ]),
-    async initialized() {
-      const auth = this.$cookies.get('auth') || {};
-      const noData = isEmpty(auth);
-
-      if (noData) {
-        return;
-      }
-
-      if (auth) {
-        const response = await this.setAuth(auth);
-
-        if (response) {
-          this.getStores();
-        }
-
-      }
-    },
-    getStores() {
-      if(!(this.auth.member && this.auth.member.code)) {
-        return;
-      }
-
-      const params = {
-        member_code: this.auth.member.code,
-      };
-
-      this.$store.dispatch('setStores', params);
-    },
     logout() {
       this.$store.dispatch('logout');
       this.$cookies.remove('auth', null, null);
