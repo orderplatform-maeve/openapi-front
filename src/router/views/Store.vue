@@ -5,7 +5,7 @@
     .body
       ul.store-list
         li.store-item(v-for="store in stores" :data-number="store.code")
-          .name {{store.name}}
+          .name {{store.store_name}}
           .button.button-order(v-on:click='selectStore(store, "order")') 주문 보기
 </template>
 <script>

@@ -33,16 +33,16 @@ export default {
       } = this;
 
       if (id && pw) {
-        const payload = {
-          id,
-          pw,
+        const params = {
+          member_id: id,
+          member_pwd: pw,
         };
 
-        const response = await this.login(payload);
+        const isLogin = await this.login(params);
 
-        console.log('response', response);
+        console.log('isLogin', isLogin);
 
-        if (response) {
+        if (isLogin) {
           this.$router.push('/store');
         }
       }

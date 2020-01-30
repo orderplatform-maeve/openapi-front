@@ -1,20 +1,20 @@
 <template lang="pug">
   #orderview
     modal-confirm(
-      v-bind:show="confirmModal.show"
-      v-bind:close="confirmModal.close"
-      v-bind:title="confirmModal.title"
-      v-bind:message="confirmModal.message"
+      :show="confirmModal.show"
+      :close="confirmModal.close"
+      :title="confirmModal.title"
+      :message="confirmModal.message"
     )
     modal-table-orders
     modal-order(v-if="order")
     .body
       .left
         router-view(
-          v-bind:orders="orders"
-          v-bind:auth="auth"
-          v-bind:time="time"
-          v-bind:stores="stores"
+          :orders="orders"
+          :auth="auth"
+          :time="time"
+          :stores="stores"
         )
       .right
         .top
@@ -30,13 +30,13 @@
           .tab-group
             .tab-name 태블릿 화면
             .tab-buttons
-              .tab-button(:class="{active:!store.serviceStatus}" @click="openTabletScreen") On
-              .tab-button(:class="{active:store.serviceStatus}" @click="closeTabletScreen") Off
+              .tab-button(:class="{active:!device.serviceStatus}" @click="openTabletScreen") On
+              .tab-button(:class="{active:device.serviceStatus}" @click="closeTabletScreen") Off
           .tab-group
             .tab-name 태블릿 주문
             .tab-buttons
-              .tab-button(:class="{active:!store.orderStatus}" @click="agreeOrder()") On
-              .tab-button(:class="{active:store.orderStatus}" @click="rejectOrder()") Off
+              .tab-button(:class="{active:!device.orderStatus}" @click="agreeOrder()") On
+              .tab-button(:class="{active:device.orderStatus}" @click="rejectOrder()") Off
           hr
           router-link.button(v-if="stores.length > 1" to="/store") 매장 보기
           router-link.button.button-red(v-if="!auth.member.name" to="/login") 로그인
@@ -78,8 +78,8 @@ export default {
     stores() {
       return this.$store.getters.stores;
     },
-    store() {
-      return this.$store.getters.store;
+    device() {
+      return this.$store.getters.device;
     },
     auth() {
       return this.$store.getters.auth;
@@ -120,7 +120,6 @@ export default {
 
         if (response) {
           this.getStores();
-          this.socketEmitter();
         }
 
       }
@@ -135,22 +134,6 @@ export default {
       };
 
       this.$store.dispatch('setStores', params);
-    },
-    socketEmitter() {
-      if (this.auth && this.auth.store && this.auth.store.code) {
-        const reqData = { store_code: this.auth.store.code };
-        this.orders = [];
-
-        console.log('reqData', reqData);
-
-        this.$socket.emit('reqStoreInfo', reqData);
-        this.$socket.emit('reqTablesInfo', reqData);
-        this.$socket.emit('reqPos', reqData);
-        this.$socket.emit('reqCategorys', reqData);
-        this.$socket.emit('reqProducts', reqData);
-        this.$socket.emit('reqClients', reqData);
-        this.$socket.emit('reqRestartClients', reqData);
-      }
     },
     logout() {
       this.$store.dispatch('logout');

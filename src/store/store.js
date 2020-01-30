@@ -3,12 +3,13 @@ import Vuex from 'vuex';
 import axios from 'axios';
 
 import { vaildShopCode } from './store.helper';
+import { isEmpty } from '@utils/CheckedType';
 
 import {
   DEMO_URL,
-  API_URL,
   ADMIN_URL,
 } from './urls';
+import endpoints from './endpoints';
 
 Vue.use(Vuex);
 
@@ -24,6 +25,7 @@ const socket = {
   mutations: {
     SOCKET_orderlog(state, order) {
       if (vaildShopCode(state, order)) {
+        console.log('object');
         Vue.set(state, 'order', order);
       }
     },
@@ -31,35 +33,71 @@ const socket = {
   actions: {
     SOCKET_orderlog({ commit, state }, order) {
       // console.log('SOCKET_orderlog', state.auth.store.code, order.shop_code);
-      if (vaildShopCode(state, order)) {
-        commit('PUSH_ORDER', order);
-      }
+      // if (vaildShopCode(state, order)) {
+      //   commit('PUSH_ORDER', order);
+      // }
     },
   },
 };
 
 const authentication = {
   mutations: {
-    SET_AUTH: (state, payload) => {
-      const {
-        auth,
-        data,
-      } = payload;
-
-      const orders = [];
-
-      for (let item of data) {
-        orders.push(JSON.parse(item.json_data));
-      }
-
-      Vue.set(state, 'auth', auth);
-      Vue.set(state, 'orders', orders);
-    },
-    RESET_AUTH: (state) => {
-      Vue.set(state, 'auth', authProto);
-    },
+    SET_AUTH: (state, auth) => Vue.set(state, 'auth', auth),
+    RESET_AUTH: (state) => Vue.set(state, 'auth', authProto),
   },
   actions: {
+    async login ({ commit }, params) {
+      try {
+        const url = endpoints.authentication.login;
+        const res = await axios.post(url, params);
+
+        if (!res) {
+          throw 'response 값이 없습니다.';
+        }
+
+        if (!res.data) {
+          throw 'response data 값이 없습니다.';
+        }
+
+        if (!res.data.result) {
+          throw 'data result 값이 false 값입니다.';
+        }
+
+        if (!res.data.member_data || isEmpty(res.data.member_data)) {
+          throw '멤버 정보 데이터가 없습니다.';
+        }
+
+        if (!res.data.shop_data) {
+          throw '가게 정보 리스트 데이터가 없습니다.';
+        }
+
+        if (res.data.shop_data.length === 0) {
+          throw '가게 정보 리스트가 빈 배열 입니다.';
+        }
+
+        console.log('member response', res);
+
+        const member = {
+          code: res.data.member_data.member_code,
+          name: res.data.member_data.member_name,
+        };
+
+        const auth = {
+          member,
+          store: authProto.store,
+        };
+
+        commit('SET_STORES', res.data.shop_data);
+        commit('SET_AUTH', auth);
+
+        Vue.$cookies.set('auth', auth, '1y', null, null);
+
+        return res.data.result;
+      } catch (error) {
+        console.error(error);
+        return false;
+      }
+    },
     async setAuth({commit}, auth) {
       const url = `${DEMO_URL}/logs/Today_redis_data`;
       const fd = new FormData();
@@ -68,6 +106,8 @@ const authentication = {
         fd.append('shop_code', auth.store.code);
       }
       const response = await axios.post(url, fd);
+
+      console.log('response', response);
 
       if (response.status === 200) {
         commit('SET_AUTH', {
@@ -78,67 +118,6 @@ const authentication = {
       }
 
       return false;
-    },
-    async login ({ dispatch }, payload) {
-      try {
-        const { id, pw } = payload;
-
-        const url = `${DEMO_URL}/login/member_login`;
-
-        const params = {
-          member_id: id,
-          member_pwd: pw,
-        };
-
-        const res = await axios.post(url, params);
-
-        const data = res.data.data[0];
-
-        if (res.data.data.length) {
-          const member = {
-            code: data['store_code'],
-            name: data['store_name'],
-          };
-
-          console.log(data);
-
-          const storeId = data['store_id'];
-
-          const code = storeId || '';
-
-          const store = {
-            amt: null,
-            cnt: 1,
-            code,
-            name: '',
-          };
-
-          const auth = {
-            member,
-            store,
-          };
-
-          console.log('auth', auth);
-
-          await dispatch('setAuth', auth);
-
-          const params = {
-            member_code: code,
-          };
-
-          await dispatch('setStores', params);
-
-          Vue.$cookies.set('auth',  auth, '1y', null, null);
-
-          return true;
-        } else {
-          alert('아이디와 비밀번호를 입력해주세요');
-          return false;
-        }
-      } catch (error) {
-        console.error(error);
-        return false;
-      }
     },
     logout({ commit }) {
       commit('RESET_AUTH');
@@ -190,37 +169,13 @@ const order = {
 const shop = {
   mutations: {
     SET_STORES: (state, stores) => {
+      console.log('stores', stores);
       Vue.set(state, 'stores', stores);
     },
   },
   actions: {
-    setStores: ({ commit }, params) => {
-      return axios
-        .get(`${API_URL}/stores`, {
-          params,
-        })
-        .then(function(res) {
-          if (res.data) {
-            const stores = [];
-            for (let item of res.data.store_data) {
-              let store = {
-                code: item.shop_code,
-                name: item.shop_name,
-              };
-              if (item.current_order) {
-                store.amt = item.current_order.amt;
-                store.cnt = item.current_order.cnt;
-              }
-              stores.push(store);
-            }
-            commit('SET_STORES', stores);
-          } else {
-            // alert('매장이 없습니다.');
-            console.log('store');
-          }
-        }.bind(this)).catch(function(err) {
-          console.log({err: err});
-        });
+    setStores: ({ commit }, stores) => {
+      commit('SET_STORES', stores);
     },
   },
 };
@@ -304,22 +259,23 @@ const authProto = {
 };
 
 const state = {
+  authentication: false,
   order: undefined,
   orders: [],
   auth: authProto,
   stores: [],
-  store: {},
+  device: {},
 };
 
 const mutations = {
-  ...socket.mutations,
+  // ...socket.mutations,
   ...authentication.mutations,
   ...order.mutations,
   ...shop.mutations,
 };
 
 const actions = {
-  ...socket.actions,
+  // ...socket.actions,
   ...authentication.actions,
   ...order.actions,
   ...shop.actions,
@@ -327,23 +283,13 @@ const actions = {
 };
 
 const getters = {
-  order: (state) => {
-    return state.order;
-  },
-  sortedOrders: (state) => {
-    return state.orders.sort((a, b) =>  b.timestamp - a.timestamp);
-  },
-  lengthOrders: (state) => {
-    return state.orders.length;
-  },
-  lengthCommitedOrders: (state) => {
-    return state.orders.filter((order) => order.commit).length;
-  },
-  auth: (state) => {
-    return state.auth;
-  },
-  store: (state) => state.store,
-  stores: (state) => state.stores.sort((a, b) =>a.name - b.name),
+  order: (state) => state.order,
+  sortedOrders: (state) => state.orders.sort((a, b) => b.timestamp - a.timestamp),
+  lengthOrders: (state) => state.orders.length,
+  lengthCommitedOrders: (state) => state.orders.filter((order) => order.commit).length,
+  auth: (state) => state.auth,
+  device: (state) => state.device,
+  stores: (state) => state.stores.sort((a, b) => a.name - b.name),
 };
 
 const storeInit = {
