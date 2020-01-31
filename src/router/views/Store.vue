@@ -33,6 +33,7 @@ export default {
       this.auth.store = store;
       this.$cookies.set('auth', this.auth, '1y', null, null);
       this.$store.dispatch('setAuth', this.auth);
+      this.$store.dispatch('setOrders', this.auth);
       this.$router.push({ name: type });
     },
   },

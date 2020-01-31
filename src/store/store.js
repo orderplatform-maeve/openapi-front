@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+import createPersistedState from 'vuex-persistedstate';
 import axios from 'axios';
 
 import { vaildShopCode } from './store.helper';
@@ -133,6 +134,10 @@ const order = {
     PUSH_ORDER: (state, order) => {
       state.orders.push(order);
     },
+    SET_ORDERS: (state, orders) => {
+      console.log('orders!!!!!!!', orders);
+      Vue.set(state, 'orders', orders);
+    },
   },
   actions: {
     commitOrder: (context, payload) => {
@@ -159,6 +164,22 @@ const order = {
     },
     pushOrder: (context, order) => {
       context.commit('PUSH_ORDER', order);
+    },
+    async setOrders({ commit }, auth) {
+      const url = `${DEMO_URL}/logs/Today_redis_data`;
+      const fd = new FormData();
+
+      console.log('auth!@#!@#@!#!@#', auth, fd);
+
+      if (auth && auth.store && auth.store.code) {
+        fd.append('shop_code', auth.store.code);
+      }
+      const response = await axios.post(url, fd);
+
+      if (response.status === 200) {
+        const orders = response.data;
+        commit('SET_ORDERS', orders);
+      }
     },
   },
 };
@@ -281,7 +302,17 @@ const actions = {
 
 const getters = {
   order: (state) => state.order,
-  sortedOrders: (state) => state.orders.sort((a, b) => b.timestamp - a.timestamp),
+  sortedOrders: (state) => {
+    const orders = [];
+
+    for (let item of state.orders) {
+      orders.push(JSON.parse(item.json_data));
+    }
+
+    // const filteredOrders = orders.filter((item) => item.shop_code === state.auth.store.store_code);
+
+    return orders.sort((a, b) => b.timestamp - a.timestamp);
+  },
   lengthOrders: (state) => state.orders.length,
   lengthCommitedOrders: (state) => state.orders.filter((order) => order.commit).length,
   auth: (state) => state.auth,
@@ -289,8 +320,13 @@ const getters = {
   stores: (state) => state.stores.sort((a, b) => a.name - b.name),
 };
 
+const plugins = [
+  createPersistedState(),
+];
+
 const storeInit = {
   state,
+  plugins,
   mutations,
   actions,
   getters,
