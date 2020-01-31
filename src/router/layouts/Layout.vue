@@ -22,7 +22,7 @@
             span {{time.now | moment("MM.DD HH:mm") }}
           img.logo(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/logo/torder_color_white.png")
           .store_name {{auth && auth.store && auth.store.name}}
-          router-link.button(v-if="auth && auth.store && auth.store.code" to="/order") 주문 보기
+          router-link.button(v-if="auth && auth.store && auth.store.store_code" to="/order") 주문 보기
         .bottom
           hr
           .tab-group
@@ -110,7 +110,7 @@ export default {
     },
     async reqOpenTablet() {
       const fd = new FormData();
-      fd.append('store_code', this.auth.store.code);
+      fd.append('store_code', this.auth.store.store_code);
 
       const response = await this.setOpenTablet(fd);
 
@@ -120,7 +120,7 @@ export default {
     },
     async reqCloseTablet() {
       const fd = new FormData();
-      fd.append('store_code', this.auth.store.code);
+      fd.append('store_code', this.auth.store.store_code);
 
       const response = await this.setCloseTablet(fd);
 
@@ -130,7 +130,7 @@ export default {
     },
     async reqAgreeOrder() {
       const fd = new FormData();
-      fd.append('store_code', this.auth.store.code);
+      fd.append('store_code', this.auth.store.store_code);
 
       const response = await this.setAgreeOrder(fd);
 
@@ -140,7 +140,7 @@ export default {
     },
     async reqRejectOrder() {
       const fd = new FormData();
-      fd.append('store_code', this.auth.store.code);
+      fd.append('store_code', this.auth.store.store_code);
 
       const response = await this.setRejectOrder(fd);
 

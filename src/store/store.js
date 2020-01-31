@@ -26,18 +26,23 @@ const socket = {
   mutations: {
     SOCKET_orderlog(state, order) {
       if (vaildShopCode(state, order)) {
-        console.log('object');
         Vue.set(state, 'order', order);
       }
+    },
+    SOCKET_resStoreInfo(state, storeDeviceInfo) {
+      Vue.set(state, 'device', storeDeviceInfo);
     },
   },
   actions: {
     SOCKET_orderlog({ commit, state }, order) {
-      // console.log('SOCKET_orderlog', state.auth.store.code, order.shop_code);
+      // console.log('SOCKET_orderlog', state.auth.store.store_code, order.shop_code);
       if (vaildShopCode(state, order)) {
         commit('PUSH_ORDER', order);
       }
     },
+    SOCKET_resStoreInfo(context, storeDeviceInfo) {
+      console.log('data!!!!!!!!!!', storeDeviceInfo);
+    }
   },
 };
 
@@ -103,8 +108,8 @@ const authentication = {
       const url = `${DEMO_URL}/logs/Today_redis_data`;
       const fd = new FormData();
 
-      if (auth && auth.store && auth.store.code) {
-        fd.append('shop_code', auth.store.code);
+      if (auth && auth.store && auth.store.store_code) {
+        fd.append('shop_code', auth.store.store_code);
       }
       const response = await axios.post(url, fd);
 
@@ -143,7 +148,7 @@ const order = {
     commitOrder: (context, payload) => {
       const url = `${DEMO_URL}/logs/commit_orderView_data`;
       const fd = new FormData();
-      fd.append('shop_code', payload.auth.store.code);
+      fd.append('shop_code', payload.auth.store.store_code);
       fd.append('key', payload.order.order_view_key);
 
       return axios
@@ -171,13 +176,16 @@ const order = {
 
       console.log('auth!@#!@#@!#!@#', auth, fd);
 
-      if (auth && auth.store && auth.store.code) {
-        fd.append('shop_code', auth.store.code);
+      if (auth && auth.store && auth.store.store_code) {
+        fd.append('shop_code', auth.store.store_code);
       }
       const response = await axios.post(url, fd);
 
       if (response.status === 200) {
         const orders = response.data;
+
+        console.log(orders);
+
         commit('SET_ORDERS', orders);
       }
     },
@@ -269,10 +277,9 @@ const authProto = {
     name: '',
   },
   store: {
-    amt: null,
-    cnt: 0,
-    code: '',
-    name: '',
+    store_code: '',
+    store_id: '',
+    store_name: '',
   },
 };
 
@@ -308,8 +315,6 @@ const getters = {
     for (let item of state.orders) {
       orders.push(JSON.parse(item.json_data));
     }
-
-    // const filteredOrders = orders.filter((item) => item.shop_code === state.auth.store.store_code);
 
     return orders.sort((a, b) => b.timestamp - a.timestamp);
   },

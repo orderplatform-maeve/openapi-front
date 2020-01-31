@@ -34,6 +34,11 @@ export default {
       this.$cookies.set('auth', this.auth, '1y', null, null);
       this.$store.dispatch('setAuth', this.auth);
       this.$store.dispatch('setOrders', this.auth);
+
+      const params = { store_code: this.auth.store.store_code };
+
+      this.$socket.emit('reqStoreInfo', params);
+
       this.$router.push({ name: type });
     },
   },
