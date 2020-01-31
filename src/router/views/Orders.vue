@@ -3,22 +3,29 @@
   .top
     .tab-group
       .order-list-tab-buttons.tab-buttons
-        .order-list-tab-button.tab-button(v-on:click="setViewMode('a')" :class="{active: viewMode=='a'}")
+        .order-list-tab-button.tab-button(@click="setViewMode('a')" :class="{active: isActiveAllOrderBadge}")
           | 모든 주문
           .count {{lengthOrders}}
-        .order-list-tab-button.tab-button(v-on:click="setViewMode('n')" :class="{active: viewMode=='n'}")
+        .order-list-tab-button.tab-button(@click="setViewMode('n')" :class="{active: isUnidentifiedOrdersBadge}")
           | 미확인 주문
-          .count {{lengthOrders - lengthCommitedOrders}}
-        .order-list-tab-button.tab-button(v-on:click="setViewMode('c')" :class="{active: viewMode=='c'}")
+          .count {{unidentifiedOrders}}
+        .order-list-tab-button.tab-button(@click="setViewMode('c')" :class="{active: isCheckedOrdersBadge}")
           | 확인 주문
           .count {{lengthCommitedOrders}}
 
   ul.order-list()
-    li.order-item(v-for="order in sortedOrders" :class="{commit: order.commit}" v-on:click="view(order)" v-if="viewMode=='a'||viewMode=='n'&&!order.commit||viewMode=='c'&&order.commit" )
-      .table-number(:class="{call: order.order_info[0].good_code=='99999', setting: order.order_info[0].good_code=='88888'}") {{order.T_order_order_tablet_number}}
-      .people_total_count(v-if="order.total_peoples > 0") {{order.total_peoples}}명
+    li.order-item(
+      v-for="order in sortedOrders"
+      :class="{commit: order.commit}"
+      @click="view(order)"
+      v-if="vaildViewMode(order.commit)"
+    )
+      .table-number(
+        :class="getTableNumberClass(order)"
+      ) {{order.T_order_order_tablet_number}}
+      .people_total_count(v-if="visibleCustomerCount(order.total_peoples)") {{order.total_peoples}}명
       .msg
-        span.title(v-if="order.order_info[0].good_code=='99999'") 호출이요
+        span.title(v-if="visibleCall(order)") 호출이요
         span.title(v-else-if="order.order_info[0].good_code=='88888'") 셋팅완료
         span.title(v-else) 주문이요
         .icon.visit(v-if="order.is_tablet_first_order") 입장
@@ -62,6 +69,18 @@ export default {
     lengthCommitedOrders() {
       return this.$store.getters.lengthCommitedOrders;
     },
+    unidentifiedOrders() {
+      return this.lengthOrders - this.lengthCommitedOrders;
+    },
+    isActiveAllOrderBadge(state) {
+      return state.viewMode === 'a';
+    },
+    isUnidentifiedOrdersBadge(state) {
+      return state.viewMode === 'n';
+    },
+    isCheckedOrdersBadge(state) {
+      return state.viewMode === 'c';
+    },
   },
   methods: {
     setViewMode(value) {
@@ -71,6 +90,47 @@ export default {
     view(order) {
       this.$store.dispatch('setOrder', order);
     },
+    vaildViewMode(commit) {
+      const { viewMode } = this;
+
+      const isAll = viewMode === 'a';
+      const isUndientified = viewMode === 'n' && !commit;
+      const isChecked = viewMode === 'c' && commit;
+
+      const isOk = isAll || isUndientified || isChecked;
+
+      return isOk;
+    },
+    getTableNumberClass(order) {
+      const goodCode = this.vaildGoodCode(order);
+      return this.getGoodType(goodCode);
+    },
+    vaildGoodCode(order) {
+      const isOrderInfo = order && order.order_info;
+      const isEmptyOrderInfo = order.order_info.length > 0;
+      const itemCode = isOrderInfo && isEmptyOrderInfo && order.order_info[0].good_code;
+
+      return itemCode;
+    },
+    getGoodType(goodCode) {
+      const call = goodCode === '99999';
+      const setting = goodCode === '88888';
+
+      const result = {
+        call,
+        setting,
+      };
+
+      return result;
+    },
+    visibleCustomerCount(cnt) {
+      return cnt > 0;
+    },
+    visibleCall(order) {
+      const { call } = this.getTableNumberClass(order);
+
+      return call;
+    }
   }
 };
 </script>

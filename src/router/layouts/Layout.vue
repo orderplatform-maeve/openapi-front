@@ -5,6 +5,7 @@
       :close="confirmModal.close"
       :title="confirmModal.title"
       :message="confirmModal.message"
+      :confirm="confirmModal.confirm"
     )
     modal-order(v-if="order")
     .body
@@ -17,12 +18,12 @@
         )
       .right
         .top
-          .button(v-on:click="restart('/')") 새로고침
+          .button(v-on:click="restart()") 새로고침
           .datetime
-            span {{time.now | moment("MM.DD HH:mm") }}
-          img.logo(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/logo/torder_color_white.png")
-          .store_name {{auth && auth.store && auth.store.name}}
-          router-link.button(v-if="auth && auth.store && auth.store.store_code" to="/order") 주문 보기
+            span {{ time.now | moment("MM.DD HH:mm") }}
+          img.logo(:src="logo")
+          .store_name {{storeName}}
+          router-link.button(v-if="visibleOrderButton" :to="paths.order") 주문 보기
         .bottom
           hr
           .tab-group
@@ -33,13 +34,13 @@
           .tab-group
             .tab-name 태블릿 주문
             .tab-buttons
-              .tab-button(:class="{active:!device.orderStatus}" @click="agreeOrder()") On
-              .tab-button(:class="{active:device.orderStatus}" @click="rejectOrder()") Off
+              .tab-button(:class="{active:!device.orderStatus}" @click="agreeOrder") On
+              .tab-button(:class="{active:device.orderStatus}" @click="rejectOrder") Off
           hr
-          router-link.button(v-if="stores.length > 1" to="/store") 매장 보기
-          router-link.button.button-red(v-if="!auth.member.name" to="/login") 로그인
-          .button.button-red.button-member(v-if="auth.member.name" @click="logout")
-            span.name {{auth && auth.member && auth.member.name}}
+          router-link.button(v-if="visibleStoresButton" :to="paths.store") 매장 보기
+          router-link.button.button-red(v-if="visibleLoginButton" :to="paths.login") 로그인
+          .button.button-red.button-member(v-if="visibleLogoutButton" @click="logout")
+            span.name {{userName}}
             span 로그아웃
     .foot.foot-left
 </template>
@@ -47,6 +48,7 @@
 <script>
 import { mapActions } from 'vuex';
 import store from '@store/store';
+import paths from '@router/paths';
 
 export default {
   store,
@@ -64,21 +66,46 @@ export default {
         title: '',
         message: '',
       },
+      paths,
+      logo: 'https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/logo/torder_color_white.png'
     };
   },
 
   computed: {
     order() {
-      return Boolean(this.$store.getters.order);
+      return !!this.$store.getters.order;
     },
     stores() {
       return this.$store.getters.stores;
     },
     device() {
+      console.log(this.$store.getters.device);
       return this.$store.getters.device;
     },
     auth() {
       return this.$store.getters.auth;
+    },
+    storeName() {
+      const { auth } = this;
+      return auth && auth.store && auth.store.store_name;
+    },
+    visibleOrderButton() {
+      const { auth } = this;
+      return !!(auth && auth.store && auth.store.store_code);
+    },
+    visibleStoresButton() {
+      const { stores } = this;
+      return stores.length > 1;
+    },
+    userName() {
+      const { auth } = this;
+      return auth && auth.member && auth.member.name;
+    },
+    visibleLoginButton() {
+      return !this.userName;
+    },
+    visibleLogoutButton() {
+      return !!this.userName;
     },
   },
 
@@ -99,54 +126,8 @@ export default {
       this.$cookies.remove('auth', null, null);
       this.$router.replace('/login');
     },
-    restart(url) {
-      if (!url) {
-        url = '/';
-      }
-      window.location = url;
-    },
-    closeConfirmModal() {
-      this.confirmModal.show = false;
-    },
-    async reqOpenTablet() {
-      const fd = new FormData();
-      fd.append('store_code', this.auth.store.store_code);
-
-      const response = await this.setOpenTablet(fd);
-
-      if (response) {
-        this.store.serviceStatus = 0;
-      }
-    },
-    async reqCloseTablet() {
-      const fd = new FormData();
-      fd.append('store_code', this.auth.store.store_code);
-
-      const response = await this.setCloseTablet(fd);
-
-      if (response) {
-        this.store.serviceStatus = 1;
-      }
-    },
-    async reqAgreeOrder() {
-      const fd = new FormData();
-      fd.append('store_code', this.auth.store.store_code);
-
-      const response = await this.setAgreeOrder(fd);
-
-      if (response) {
-        this.store.serviceStatus = 0;
-      }
-    },
-    async reqRejectOrder() {
-      const fd = new FormData();
-      fd.append('store_code', this.auth.store.store_code);
-
-      const response = await this.setRejectOrder(fd);
-
-      if (response) {
-        this.store.serviceStatus = 1;
-      }
+    restart() {
+      this.$router.go(0);
     },
     openTabletScreen() {
       this.confirmModal.show = true;
@@ -176,6 +157,50 @@ export default {
       this.confirmModal.message = '태블릿을 메뉴판으로만 사용하고 주문은 안돼요';
       this.confirmModal.confirm = this.reqRejectOrder;
     },
+    closeConfirmModal() {
+      this.confirmModal.show = false;
+    },
+    async reqOpenTablet() {
+      const fd = new FormData();
+      fd.append('store_code', this.auth.store.store_code);
+
+      const response = await this.setOpenTablet(fd);
+
+      if (response) {
+        this.device.serviceStatus = 0;
+      }
+    },
+    async reqCloseTablet() {
+      const fd = new FormData();
+      fd.append('store_code', this.auth.store.store_code);
+
+      const response = await this.setCloseTablet(fd);
+
+      if (response) {
+        this.device.serviceStatus = 1;
+      }
+    },
+    async reqAgreeOrder() {
+      const fd = new FormData();
+      fd.append('store_code', this.auth.store.store_code);
+
+      const response = await this.setAgreeOrder(fd);
+
+      if (response) {
+        this.device.orderStatus = 0;
+      }
+    },
+    async reqRejectOrder() {
+      const fd = new FormData();
+      fd.append('store_code', this.auth.store.store_code);
+
+      const response = await this.setRejectOrder(fd);
+
+      if (response) {
+        this.device.orderStatus = 1;
+      }
+    },
+
   },
 };
 </script>
