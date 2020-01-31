@@ -1,14 +1,15 @@
 <template lang="pug">
   .container
     .top
-      .title {{auth.member ? auth.member.name : ''}}
+      .title {{ name }}
     .body
       ul.store-list
-        li.store-item(v-for="store in stores" :data-number="store.code")
+        li.store-item(v-for="store in stores" :key="store.store_code")
           .name {{store.store_name}}
-          .button.button-order(v-on:click='selectStore(store, "order")') 주문 보기
+          .button.button-order(@click="selectStore(store)") 주문 보기
 </template>
 <script>
+import paths from '@router/paths';
 
 export default {
   props: {
@@ -16,8 +17,12 @@ export default {
       type: Object,
       default() {
         return {
-          member: {},
-          store: {},
+          member: {
+            name: '',
+          },
+          store: {
+            store_code: '',
+          },
         };
       },
     },
@@ -28,18 +33,25 @@ export default {
       },
     },
   },
+  computed: {
+    name: (state) => state.auth.member.name,
+  },
   methods: {
-    selectStore(store, type) {
+    async selectStore(store) {
       this.auth.store = store;
       this.$cookies.set('auth', this.auth, '1y', null, null);
-      this.$store.dispatch('setAuth', this.auth);
-      this.$store.dispatch('setOrders', this.auth);
+
+      await this.$store.dispatch('updateAuth', this.auth);
+
+      const fd = new FormData();
+      fd.append('shop_code', this.auth.store.store_code);
+
+      await this.$store.dispatch('setOrders', fd);
 
       const params = { store_code: this.auth.store.store_code };
-
       this.$socket.emit('reqStoreInfo', params);
 
-      this.$router.push({ name: type });
+      this.$router.push(paths.order);
     },
   },
 };

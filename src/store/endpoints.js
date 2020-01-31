@@ -8,6 +8,9 @@ const endpoints = {
   authentication: {
     login: `${DEMO_URL}/login/member_login`,
   },
+  orders: {
+    todayRedisData: `${DEMO_URL}/logs/Today_redis_data`,
+  },
 };
 
 export default endpoints;

@@ -81,8 +81,6 @@ const authentication = {
           throw '가게 정보 리스트가 빈 배열 입니다.';
         }
 
-        console.log('member response', res);
-
         const member = {
           code: res.data.member_data.member_code,
           name: res.data.member_data.member_name,
@@ -104,23 +102,8 @@ const authentication = {
         return false;
       }
     },
-    async setAuth({commit}, auth) {
-      const url = `${DEMO_URL}/logs/Today_redis_data`;
-      const fd = new FormData();
-
-      if (auth && auth.store && auth.store.store_code) {
-        fd.append('shop_code', auth.store.store_code);
-      }
-      const response = await axios.post(url, fd);
-
-      console.log('response', response);
-
-      if (response.status === 200) {
-        commit('SET_AUTH', auth);
-        return true;
-      }
-
-      return false;
+    updateAuth({ commit }, auth) {
+      commit('SET_AUTH', auth);
     },
     logout({ commit }) {
       commit('RESET_AUTH');
@@ -170,22 +153,12 @@ const order = {
     pushOrder: (context, order) => {
       context.commit('PUSH_ORDER', order);
     },
-    async setOrders({ commit }, auth) {
-      const url = `${DEMO_URL}/logs/Today_redis_data`;
-      const fd = new FormData();
-
-      console.log('auth!@#!@#@!#!@#', auth, fd);
-
-      if (auth && auth.store && auth.store.store_code) {
-        fd.append('shop_code', auth.store.store_code);
-      }
-      const response = await axios.post(url, fd);
+    async setOrders({ commit }, params) {
+      const url = endpoints.orders.todayRedisData;
+      const response = await axios.post(url, params);
 
       if (response.status === 200) {
         const orders = response.data;
-
-        console.log(orders);
-
         commit('SET_ORDERS', orders);
       }
     },
@@ -287,9 +260,12 @@ const state = {
   authentication: false,
   order: undefined,
   orders: [],
+  device: {
+    serviceStatus: false,
+    orderStatus: false,
+  },
   auth: authProto,
   stores: [],
-  device: {},
 };
 
 const mutations = {
