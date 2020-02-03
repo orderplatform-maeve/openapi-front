@@ -46,9 +46,9 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
 import store from '@store/store';
 import paths from '@router/paths';
+import { COOKIE_AUTH_NAME } from '@config';
 
 export default {
   store,
@@ -79,7 +79,6 @@ export default {
       return this.$store.getters.stores;
     },
     device() {
-      console.log(this.$store.getters.device);
       return this.$store.getters.device;
     },
     auth() {
@@ -114,17 +113,10 @@ export default {
   },
 
   methods: {
-    ...mapActions([
-      'setOpenTablet',
-      'setCloseTablet',
-      'setAgreeOrder',
-      'setRejectOrder',
-      'logout',
-    ]),
     logout() {
       this.$store.dispatch('logout');
-      this.$cookies.remove('auth', null, null);
-      this.$router.replace('/login');
+      this.$cookies.remove(COOKIE_AUTH_NAME, null, null);
+      this.$router.replace(paths.login);
     },
     restart() {
       this.$router.go(0);
@@ -164,7 +156,7 @@ export default {
       const fd = new FormData();
       fd.append('store_code', this.auth.store.store_code);
 
-      const response = await this.setOpenTablet(fd);
+      const response = await this.$store.dispatch('setOpenTablet', fd);
 
       if (response) {
         this.device.serviceStatus = 0;
@@ -174,7 +166,7 @@ export default {
       const fd = new FormData();
       fd.append('store_code', this.auth.store.store_code);
 
-      const response = await this.setCloseTablet(fd);
+      const response = await this.$store.dispatch('setCloseTablet', fd);
 
       if (response) {
         this.device.serviceStatus = 1;
@@ -184,7 +176,7 @@ export default {
       const fd = new FormData();
       fd.append('store_code', this.auth.store.store_code);
 
-      const response = await this.setAgreeOrder(fd);
+      const response = await this.$store.dispatch('setAgreeOrder', fd);
 
       if (response) {
         this.device.orderStatus = 0;
@@ -194,7 +186,7 @@ export default {
       const fd = new FormData();
       fd.append('store_code', this.auth.store.store_code);
 
-      const response = await this.setRejectOrder(fd);
+      const response = await this.$store.dispatch('setRejectOrder', fd);
 
       if (response) {
         this.device.orderStatus = 1;

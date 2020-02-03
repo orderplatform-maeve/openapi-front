@@ -5,6 +5,7 @@ import axios from 'axios';
 
 import { vaildShopCode } from './store.helper';
 import { isEmpty } from '@utils/CheckedType';
+import { COOKIE_AUTH_NAME } from '@config';
 
 import {
   DEMO_URL,
@@ -94,7 +95,7 @@ const authentication = {
         commit('SET_STORES', res.data.shop_data);
         commit('SET_AUTH', auth);
 
-        Vue.$cookies.set('auth', auth, '1y', null, null);
+        Vue.$cookies.set(COOKIE_AUTH_NAME, auth, '1y', null, null);
 
         return res.data.result;
       } catch (error) {
