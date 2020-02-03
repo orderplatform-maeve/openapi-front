@@ -61,13 +61,16 @@ export default {
   },
   computed: {
     sortedOrders() {
-      return this.$store.getters.sortedOrders;
+      const { orders } = this.$store.state;
+      return orders.sort((a, b) => b.timestamp - a.timestamp);
     },
     lengthOrders() {
-      return this.$store.getters.lengthOrders;
+      const { orders } = this.$store.state;
+      return orders.length;
     },
     lengthCommitedOrders() {
-      return this.$store.getters.lengthCommitedOrders;
+      const { orders } = this.$store.state;
+      return orders.filter((order) => order.commit).length;
     },
     unidentifiedOrders() {
       return this.lengthOrders - this.lengthCommitedOrders;

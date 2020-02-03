@@ -163,6 +163,7 @@ const order = {
         const orders = [];
 
         for (let item of response.data) {
+          // api 서버에서 가공해서 주는 요청으로 변경 할 필요 있음
           orders.push(JSON.parse(item.json_data));
         }
 
@@ -292,11 +293,6 @@ const actions = {
 
 const getters = {
   order: (state) => state.order,
-  sortedOrders: (state) => {
-    return state.orders.sort((a, b) => b.timestamp - a.timestamp);
-  },
-  lengthOrders: (state) => state.orders.length,
-  lengthCommitedOrders: (state) => state.orders.filter((order) => order.commit).length,
   auth: (state) => state.auth,
   device: (state) => state.device,
   stores: (state) => state.stores.sort((a, b) => a.name - b.name),
