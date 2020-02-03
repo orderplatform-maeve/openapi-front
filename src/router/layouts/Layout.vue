@@ -73,17 +73,17 @@ export default {
 
   computed: {
     order() {
-      // console.log(!!this.$store.state.order);
-      return !!this.$store.getters.order;
+      return !!this.$store.state.order;
     },
     stores() {
-      return this.$store.getters.stores;
+      const { stores } = this.$store.state;
+      return stores.sort((a, b) => a.name - b.name);
     },
     device() {
-      return this.$store.getters.device;
+      return this.$store.state.device;
     },
     auth() {
-      return this.$store.getters.auth;
+      return this.$store.state.auth;
     },
     storeName() {
       const { auth } = this;

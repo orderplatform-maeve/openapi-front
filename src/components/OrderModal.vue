@@ -62,7 +62,7 @@ export default {
   },
   computed: {
     order() {
-      return this.$store.getters.order;
+      return this.$store.state.order;
     },
   },
   mounted() {
@@ -81,7 +81,7 @@ export default {
   },
   methods: {
     commitOrder(order) {
-      let auth = this.$store.getters.auth;
+      let auth = this.$store.state.auth;
       this.$store.dispatch("commitOrder", {auth, order});
       this.$socket.emit('syncCommitOrder', order);
 

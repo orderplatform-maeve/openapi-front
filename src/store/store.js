@@ -291,12 +291,7 @@ const actions = {
   ...device.actions,
 };
 
-const getters = {
-  order: (state) => state.order,
-  auth: (state) => state.auth,
-  device: (state) => state.device,
-  stores: (state) => state.stores.sort((a, b) => a.name - b.name),
-};
+const getters = {};
 
 const plugins = [
   createPersistedState(),
