@@ -38,6 +38,7 @@ const socket = {
     SOCKET_orderlog({ commit, state }, order) {
       // console.log('SOCKET_orderlog', state.auth.store.store_code, order.shop_code);
       if (vaildShopCode(state, order)) {
+        // order 데이터더가 orders의 아이템 형태와 다름
         commit('PUSH_ORDER', order);
       }
     },
@@ -159,7 +160,12 @@ const order = {
       const response = await axios.post(url, params);
 
       if (response.status === 200) {
-        const orders = response.data;
+        const orders = [];
+
+        for (let item of response.data) {
+          orders.push(JSON.parse(item.json_data));
+        }
+
         commit('SET_ORDERS', orders);
       }
     },
@@ -287,13 +293,7 @@ const actions = {
 const getters = {
   order: (state) => state.order,
   sortedOrders: (state) => {
-    const orders = [];
-
-    for (let item of state.orders) {
-      orders.push(JSON.parse(item.json_data));
-    }
-
-    return orders.sort((a, b) => b.timestamp - a.timestamp);
+    return state.orders.sort((a, b) => b.timestamp - a.timestamp);
   },
   lengthOrders: (state) => state.orders.length,
   lengthCommitedOrders: (state) => state.orders.filter((order) => order.commit).length,

@@ -73,6 +73,7 @@ export default {
 
   computed: {
     order() {
+      // console.log(!!this.$store.state.order);
       return !!this.$store.getters.order;
     },
     stores() {
