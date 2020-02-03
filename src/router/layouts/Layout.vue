@@ -23,7 +23,7 @@
             span {{ time.now | moment("MM.DD HH:mm") }}
           img.logo(:src="logo")
           .store_name {{storeName}}
-          router-link.button(v-if="visibleOrderButton" :to="paths.order") 주문 보기
+          //- router-link.button(v-if="visibleOrderButton" :to="paths.order") 주문 보기
         .bottom
           hr
           .tab-group

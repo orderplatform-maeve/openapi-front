@@ -139,13 +139,13 @@ export default {
   mounted() {
     clearInterval(this.interval);
     this.seconds = 10;
-    this.interval = setInterval(function(){
+    this.interval = setInterval(() => {
       this.seconds -= 1;
 
       if(this.seconds < 1) {
         this.closeOrder();
       }
-    }.bind(this), 1000);
+    }, 1000);
   },
   beforeDestroy() {
     this.closeOrder();
