@@ -20,7 +20,7 @@
         .top
           .button(v-on:click="restart()") 새로고침
           .datetime
-            span {{ time.now | moment("MM.DD HH:mm") }}
+            span {{ time.now | moment("MM.DD HH:mm:ss") }}
           img.logo(:src="logo")
           .store_name {{storeName}}
           //- router-link.button(v-if="visibleOrderButton" :to="paths.order") 주문 보기
@@ -39,6 +39,7 @@
           hr
           router-link.button(v-if="visibleStoresButton" :to="paths.store") 매장 보기
           router-link.button.button-red(v-if="visibleLoginButton" :to="paths.login") 로그인
+          .version 1.0.3
           .button.button-red.button-member(v-if="visibleLogoutButton" @click="logout")
             span.name {{userName}}
             span 로그아웃
@@ -110,7 +111,9 @@ export default {
   },
 
   mounted() {
-    this.time.now = Date();
+    setInterval(() => {
+      this.time.now = Date();
+    }, 1000);
   },
 
   methods: {
@@ -161,6 +164,7 @@ export default {
 
       if (response) {
         this.device.serviceStatus = 0;
+        this.closeConfirmModal();
       }
     },
     async reqCloseTablet() {
@@ -171,6 +175,7 @@ export default {
 
       if (response) {
         this.device.serviceStatus = 1;
+        this.closeConfirmModal();
       }
     },
     async reqAgreeOrder() {
@@ -181,6 +186,7 @@ export default {
 
       if (response) {
         this.device.orderStatus = 0;
+        this.closeConfirmModal();
       }
     },
     async reqRejectOrder() {
@@ -191,6 +197,7 @@ export default {
 
       if (response) {
         this.device.orderStatus = 1;
+        this.closeConfirmModal();
       }
     },
     getOnTabletMonitorClass(device) {
