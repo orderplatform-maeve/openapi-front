@@ -4,8 +4,8 @@
       .title {{ name }}
     .body
       ul.store-list
-        li.store-item(v-for="store in stores" :key="store.store_code")
-          .name {{store.store_name}}
+        li.store-item(v-for="store in stores" :key="getStoreItemKey(store)")
+          .name {{getStoreName(store)}}
           .button.button-order(@click="selectStore(store)") 주문 보기
 </template>
 <script>
@@ -53,6 +53,18 @@ export default {
 
       this.$router.push(paths.order);
     },
+    getStoreItemKey(store) {
+      try {
+        return store && store.store_code;
+      } catch (error) {
+        console.error('store item key err');
+        return -1;
+      }
+    },
+    getStoreName(store) {
+      if (!store) return '';
+      return store.store_name;
+    }
   },
 };
 </script>
