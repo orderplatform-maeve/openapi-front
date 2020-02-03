@@ -161,6 +161,7 @@ export default {
 
       if (response) {
         this.device.serviceStatus = 0;
+        this.closeConfirmModal();
       }
     },
     async reqCloseTablet() {
@@ -171,6 +172,7 @@ export default {
 
       if (response) {
         this.device.serviceStatus = 1;
+        this.closeConfirmModal();
       }
     },
     async reqAgreeOrder() {
@@ -181,6 +183,7 @@ export default {
 
       if (response) {
         this.device.orderStatus = 0;
+        this.closeConfirmModal();
       }
     },
     async reqRejectOrder() {
@@ -191,6 +194,7 @@ export default {
 
       if (response) {
         this.device.orderStatus = 1;
+        this.closeConfirmModal();
       }
     },
     getOnTabletMonitorClass(device) {
