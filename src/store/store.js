@@ -281,7 +281,6 @@ const authProto = {
 };
 
 const state = {
-  authentication: false,
   order: undefined,
   orders: [],
   device: {
