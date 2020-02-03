@@ -7,9 +7,6 @@ import { vaildShopCode } from './store.helper';
 import { isEmpty } from '@utils/CheckedType';
 import { COOKIE_AUTH_NAME } from '@config';
 
-import {
-  ADMIN_URL,
-} from './urls';
 import endpoints from './endpoints';
 
 Vue.use(Vuex);
@@ -37,7 +34,6 @@ const socket = {
     SOCKET_orderlog({ commit, state }, order) {
       // console.log('SOCKET_orderlog', state.auth.store.store_code, order.shop_code);
       if (vaildShopCode(state, order)) {
-        // order 데이터더가 orders의 아이템 형태와 다름
         commit('PUSH_ORDER', order);
       }
     },
@@ -155,10 +151,7 @@ const order = {
           commit: true,
         };
 
-        // console.log(order_id)
-
         commit('UPDATE_ORDERS', order);
-        // payload.order.commit = true;
         commit('UNSET_ORDER');
       }
     },
@@ -207,7 +200,7 @@ const device = {
   actions: {
     async setOpenTablet(context, params) {
       try {
-        const url = `${ADMIN_URL}/store/shop_open`;
+        const url = endpoints.device.shopOpen;
         const response = await axios(url, params);
 
         if (response) {
@@ -222,7 +215,7 @@ const device = {
     },
     async setCloseTablet(context, params) {
       try {
-        const url = `${ADMIN_URL}/store/shop_close`;
+        const url = endpoints.device.shopClose;
         const response = await axios(url, params);
 
         if (response) {
@@ -237,7 +230,7 @@ const device = {
     },
     async setAgreeOrder(context, params) {
       try {
-        const url = `${ADMIN_URL}/store/shop_open_order`;
+        const url = endpoints.device.shopOpenOrder;
         const response = await axios(url, params);
 
         if (response) {
@@ -252,7 +245,7 @@ const device = {
     },
     async setRejectOrder(context, params) {
       try {
-        const url = `${ADMIN_URL}/store/shop_close_order`;
+        const url = endpoints.device.shopCloseOrder;
         const response = await axios(url, params);
 
         if (response) {

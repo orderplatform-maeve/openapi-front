@@ -12,6 +12,12 @@ const endpoints = {
     todayRedisData: `${DEMO_URL}/logs/Today_redis_data`,
     commitOrderViewData: `${DEMO_URL}/logs/commit_orderView_data`,
   },
+  device: {
+    shopOpen: `${ADMIN_URL}/store/shop_open`,
+    shopClose: `${ADMIN_URL}/store/shop_close`,
+    shopOpenOrder: `${ADMIN_URL}/store/shop_open_order`,
+    shopCloseOrder: `${ADMIN_URL}/store/shop_close_order`,
+  },
 };
 
 export default endpoints;
