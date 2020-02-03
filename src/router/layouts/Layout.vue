@@ -29,13 +29,13 @@
           .tab-group
             .tab-name 태블릿 화면
             .tab-buttons
-              .tab-button(:class="{active:!device.serviceStatus}" @click="openTabletScreen") On
-              .tab-button(:class="{active:device.serviceStatus}" @click="closeTabletScreen") Off
+              .tab-button(:class="getOnTabletMonitorClass(device)" @click="openTabletScreen") On
+              .tab-button(:class="getOffTabletMonitorClass(device)" @click="closeTabletScreen") Off
           .tab-group
             .tab-name 태블릿 주문
             .tab-buttons
-              .tab-button(:class="{active:!device.orderStatus}" @click="agreeOrder") On
-              .tab-button(:class="{active:device.orderStatus}" @click="rejectOrder") Off
+              .tab-button(:class="getOnTabletOrderClass(device)" @click="agreeOrder") On
+              .tab-button(:class="getOffTabletOrderClass(device)" @click="rejectOrder") Off
           hr
           router-link.button(v-if="visibleStoresButton" :to="paths.store") 매장 보기
           router-link.button.button-red(v-if="visibleLoginButton" :to="paths.login") 로그인
@@ -200,7 +200,40 @@ export default {
         this.device.orderStatus = 1;
       }
     },
+    getOnTabletMonitorClass(device) {
+      const active = !this.vaildServiceStatus(device);
 
+      return {
+        active,
+      };
+    },
+    getOffTabletMonitorClass(device) {
+      const active = this.vaildServiceStatus(device);
+
+      return {
+        active,
+      };
+    },
+    vaildServiceStatus(device) {
+      return device && device.serviceStatus;
+    },
+    getOnTabletOrderClass(device) {
+      const active = !this.vaildOrderStatus(device);
+
+      return {
+        active,
+      };
+    },
+    getOffTabletOrderClass(device) {
+      const active = this.vaildOrderStatus(device);
+
+      return {
+        active,
+      };
+    },
+    vaildOrderStatus(device) {
+      return device && device.orderStatus;
+    },
   },
 };
 </script>
