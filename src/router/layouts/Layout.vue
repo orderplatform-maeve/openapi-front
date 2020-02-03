@@ -20,7 +20,7 @@
         .top
           .button(v-on:click="restart()") 새로고침
           .datetime
-            span {{ time.now | moment("MM.DD HH:mm") }}
+            span {{ time.now | moment("MM.DD HH:mm:ss") }}
           img.logo(:src="logo")
           .store_name {{storeName}}
           //- router-link.button(v-if="visibleOrderButton" :to="paths.order") 주문 보기
@@ -111,7 +111,9 @@ export default {
   },
 
   mounted() {
-    this.time.now = Date();
+    setInterval(() => {
+      this.time.now = Date();
+    }, 1000);
   },
 
   methods: {
