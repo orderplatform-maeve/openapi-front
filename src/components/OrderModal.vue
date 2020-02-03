@@ -4,17 +4,17 @@
   .container
     .container-top
       .order-title
-        .table-number(:class="{call: order.order_info[0].good_code=='99999', setting: order.order_info[0].good_code=='88888'}") {{order.T_order_order_tablet_number}}
-        .people_total_count(v-if="order.total_peoples > 0") {{order.total_peoples}}명
+        .table-number(:class="getTableNumberClass(order)") {{checkedTabletNum(order)}}
+        .people_total_count(v-if="visibleCustomerCount(order)") {{checkedTotalPeople(order)}}명
         .msg
-          span.title(v-if="order.order_info[0].good_code=='99999'") 호출이요
-          span.title(v-else-if="order.order_info[0].good_code=='88888'") 셋팅완료
+          span.title(v-if="visibleCall(order)") 호출이요
+          span.title(v-else-if="isDoneSetting(order)") 셋팅완료
           span.title(v-else) 주문이요
-          .icon.visit(v-if="order.is_tablet_first_order") 입장
-          .icon.first(v-if="order.is_first_order") 첫 주문
+          .icon.visit(v-if="isFirstEntered(order)") 입장
+          .icon.first(v-if="isFirstOrder(order)") 첫 주문
         .msg-time
-          .commit(:class="{commited:order.commit}") {{order.commit ? '확인' : '미확인'}}
-          .time {{order.order_time}}
+          .commit(:class="getMsgTimeClass(order)") {{vaildCommitText(order)}}
+          .time {{getOrderTiem(order)}}
       .button.button-close(v-on:click="closeOrder") 닫기
     .container-body
       .left
@@ -53,6 +53,8 @@
 </template>
 
 <script>
+import utils from '@utils/orders.utils';
+
 export default {
   data() {
     return {
@@ -82,14 +84,14 @@ export default {
   methods: {
     commitOrder(order) {
       let auth = this.$store.state.auth;
-      this.$store.dispatch("commitOrder", {auth, order});
+      this.$store.dispatch("commitOrder", { auth, order });
       this.$socket.emit('syncCommitOrder', order);
-
     },
     closeOrder() {
       clearInterval(this.interval);
       this.$store.dispatch('unsetOrder');
     },
+    ...utils,
   },
 };
 </script>

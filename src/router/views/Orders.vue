@@ -34,7 +34,9 @@
         .commit(:class="getMsgTimeClass(order)") {{vaildCommitText(order)}}
         .time {{getOrderTiem(order)}}
 </template>
+
 <script>
+import utils from '@utils/orders.utils';
 
 export default {
   props: {
@@ -119,87 +121,7 @@ export default {
         commit: this.checkedCommit(order),
       };
     },
-    checkedCommit(order) {
-      return order && order.commit;
-    },
-    checkedTabletNum(order) {
-      try {
-        if (!order) {
-          throw 'have not order data';
-        }
-
-        return order.T_order_order_tablet_number;
-      } catch (error) {
-        console.error(error);
-        return 'have not tablet number';
-      }
-    },
-    getTableNumberClass(order) {
-      const goodCode = this.vaildGoodCode(order);
-      return this.getGoodType(goodCode);
-    },
-    vaildGoodCode(order) {
-      const isOrderInfo = order && order.order_info;
-      const isEmptyOrderInfo = order.order_info.length > 0;
-      const itemCode = isOrderInfo && isEmptyOrderInfo && order.order_info[0].good_code;
-
-      return itemCode;
-    },
-    getGoodType(goodCode) {
-      const call = goodCode === '99999';
-      const setting = goodCode === '88888';
-
-      const result = {
-        call,
-        setting,
-      };
-
-      return result;
-    },
-    isDoneSetting(order) {
-      const goodCode = this.vaildGoodCode(order);
-      const isDone = goodCode === '88888';
-      return isDone;
-    },
-    checkedTotalPeople(order) {
-      if (!order) return 0;
-
-      return order.total_peoples;
-    },
-    visibleCustomerCount(order) {
-      const cnt = this.checkedTotalPeople(order);
-
-      return cnt > 0;
-    },
-    visibleCall(order) {
-      const { call } = this.getTableNumberClass(order);
-
-      return call;
-    },
-    isFirstEntered(order) {
-      return order && order.is_tablet_first_order;
-    },
-    isFirstOrder(order) {
-      return order && order.is_first_order;
-    },
-    getMsgTimeClass(order) {
-      return {
-        commited: this.checkedCommit(order),
-      };
-    },
-    vaildCommitText(order) {
-      const isCommit = this.checkedCommit(order);
-
-      const msg = isCommit ? '확인' : '미확인';
-      return msg;
-    },
-    getOrderTiem(order) {
-      if (!order) {
-        return '';
-      }
-
-      return order.order_time;
-    },
+    ...utils,
   }
 };
 </script>
