@@ -1,9 +1,9 @@
 import Layout from '@layouts/Layout.vue';
-
-import Login from '@views/Login.vue';
-import Store from '@views/Store.vue';
-import Table from '@views/Table.vue';
-import OrderList from '@views/OrderList.vue';
+import {
+  Login,
+  Stores,
+  Orders,
+} from '@views';
 
 import paths from './paths';
 
@@ -25,19 +25,13 @@ const routes = [{
   {
     path: paths.store,
     name: paths.store.replace('/',''),
-    component: Store,
-    meta: { requiresAuth: true },
-  },
-  {
-    path: paths.table,
-    name: paths.table.replace('/',''),
-    component: Table,
+    component: Stores,
     meta: { requiresAuth: true },
   },
   {
     path: paths.order,
     name: paths.order.replace('/',''),
-    component: OrderList,
+    component: Orders,
     meta: { requiresAuth: true },
   }]
 }];

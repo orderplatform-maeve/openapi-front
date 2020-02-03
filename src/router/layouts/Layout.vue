@@ -1,56 +1,54 @@
 <template lang="pug">
   #orderview
     modal-confirm(
-      v-bind:show="confirmModal.show"
-      v-bind:close="confirmModal.close"
-      v-bind:title="confirmModal.title"
-      v-bind:message="confirmModal.message"
+      :show="confirmModal.show"
+      :close="confirmModal.close"
+      :title="confirmModal.title"
+      :message="confirmModal.message"
+      :confirm="confirmModal.confirm"
     )
-    modal-table-orders
     modal-order(v-if="order")
     .body
       .left
         router-view(
-          v-bind:orders="orders"
-          v-bind:auth="auth"
-          v-bind:time="time"
-          v-bind:stores="stores"
+          :auth="auth"
+          :orders="orders"
+          :stores="stores"
+          :time="time"
         )
       .right
         .top
-          .button(v-on:click="restart('/')") 새로고침
+          .button(v-on:click="restart()") 새로고침
           .datetime
-            span {{time.now | moment("MM.DD HH:mm") }}
-          img.logo(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/logo/torder_color_white.png")
-          .store_name {{auth && auth.store && auth.store.name}}
-          router-link.button(v-if="auth && auth.store && auth.store.code" to="/order") 주문 보기
-          router-link.button(v-if="auth && auth.store && auth.store.code" to="/table") 테이블 보기<br/>(테스트)
+            span {{ time.now | moment("MM.DD HH:mm") }}
+          img.logo(:src="logo")
+          .store_name {{storeName}}
+          //- router-link.button(v-if="visibleOrderButton" :to="paths.order") 주문 보기
         .bottom
           hr
           .tab-group
             .tab-name 태블릿 화면
             .tab-buttons
-              .tab-button(:class="{active:!store.serviceStatus}" @click="openTabletScreen") On
-              .tab-button(:class="{active:store.serviceStatus}" @click="closeTabletScreen") Off
+              .tab-button(:class="getOnTabletMonitorClass(device)" @click="openTabletScreen") On
+              .tab-button(:class="getOffTabletMonitorClass(device)" @click="closeTabletScreen") Off
           .tab-group
             .tab-name 태블릿 주문
             .tab-buttons
-              .tab-button(:class="{active:!store.orderStatus}" @click="agreeOrder()") On
-              .tab-button(:class="{active:store.orderStatus}" @click="rejectOrder()") Off
+              .tab-button(:class="getOnTabletOrderClass(device)" @click="agreeOrder") On
+              .tab-button(:class="getOffTabletOrderClass(device)" @click="rejectOrder") Off
           hr
-          router-link.button(v-if="stores.length > 1" to="/store") 매장 보기
-          router-link.button.button-red(v-if="!auth.member" to="/login") 로그인
-          .button.button-red.button-member(v-if="auth.member" @click="logout")
-            span.name {{auth && auth.member && auth.member.name}}
+          router-link.button(v-if="visibleStoresButton" :to="paths.store") 매장 보기
+          router-link.button.button-red(v-if="visibleLoginButton" :to="paths.login") 로그인
+          .button.button-red.button-member(v-if="visibleLogoutButton" @click="logout")
+            span.name {{userName}}
             span 로그아웃
     .foot.foot-left
 </template>
 
 <script>
-import { mapActions } from 'vuex';
-
 import store from '@store/store';
-import { isEmpty } from '@utils/CheckedType';
+import paths from '@router/paths';
+import { COOKIE_AUTH_NAME } from '@config';
 
 export default {
   store,
@@ -68,148 +66,61 @@ export default {
         title: '',
         message: '',
       },
+      paths,
+      logo: 'https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/logo/torder_color_white.png'
     };
   },
 
   computed: {
     order() {
-      return Boolean(this.$store.getters.order);
+      return !!this.$store.state.order;
     },
     stores() {
-      return this.$store.getters.stores;
+      const { stores } = this.$store.state;
+      return stores.sort((a, b) => a.name - b.name);
     },
-    store() {
-      return this.$store.getters.store;
+    device() {
+      return this.$store.state.device;
     },
     auth() {
-      return this.$store.getters.auth;
+      return this.$store.state.auth;
     },
-  },
-
-  /**
-  * TODO:
-  * - 절차 적으로 실행되게 수정 필요
-  */
-  created() {
-    this.initialized();
+    storeName() {
+      const { auth } = this;
+      return auth && auth.store && auth.store.store_name;
+    },
+    visibleOrderButton() {
+      const { auth } = this;
+      return !!(auth && auth.store && auth.store.store_code);
+    },
+    visibleStoresButton() {
+      const { stores } = this;
+      return stores.length > 1;
+    },
+    userName() {
+      const { auth } = this;
+      return auth && auth.member && auth.member.name;
+    },
+    visibleLoginButton() {
+      return !this.userName;
+    },
+    visibleLogoutButton() {
+      return !!this.userName;
+    },
   },
 
   mounted() {
     this.time.now = Date();
   },
 
-  sockets: {
-    resRestartClients(msg) {
-      console.log(msg, '!!!!!!!!!!!!');
-      this.$router.go(0);
-    },
-  },
-
   methods: {
-    ...mapActions([
-      'setOpenTablet',
-      'setCloseTablet',
-      'setAgreeOrder',
-      'setRejectOrder',
-      'setAuth',
-      'logout',
-    ]),
-    async initialized() {
-      const auth = this.$cookies.get('auth') || {};
-      const noData = isEmpty(auth);
-
-      if (noData) {
-        return;
-      }
-
-      if (auth) {
-        const response = await this.setAuth(auth);
-
-        if (response) {
-          this.getStores();
-          this.socketEmitter();
-        }
-
-      }
-    },
-    getStores() {
-      if(!(this.auth.member && this.auth.member.code)) {
-        return;
-      }
-
-      const params = {
-        member_code: this.auth.member.code,
-      };
-
-      this.$store.dispatch('setStores', params);
-    },
-    socketEmitter() {
-      if (this.auth && this.auth.store && this.auth.store.code) {
-        const reqData = { store_code: this.auth.store.code };
-        this.orders = [];
-
-        this.$socket.emit('reqStoreInfo', reqData);
-        this.$socket.emit('reqTablesInfo', reqData);
-        this.$socket.emit('reqPos', reqData);
-        this.$socket.emit('reqCategorys', reqData);
-        this.$socket.emit('reqProducts', reqData);
-        this.$socket.emit('reqClients', reqData);
-        this.$socket.emit('reqRestartClients', reqData);
-      }
-    },
     logout() {
       this.$store.dispatch('logout');
-      this.$cookies.remove('auth', null, null);
-      this.$router.replace('/login');
+      this.$cookies.remove(COOKIE_AUTH_NAME, null, null);
+      this.$router.replace(paths.login);
     },
-    restart(url) {
-      if (!url) {
-        url = '/';
-      }
-      window.location = url;
-    },
-    closeConfirmModal() {
-      this.confirmModal.show = false;
-    },
-    async reqOpenTablet() {
-      const fd = new FormData();
-      fd.append('store_code', this.auth.store.code);
-
-      const response = await this.setOpenTablet(fd);
-
-      if (response) {
-        this.store.serviceStatus = 0;
-      }
-    },
-    async reqCloseTablet() {
-      const fd = new FormData();
-      fd.append('store_code', this.auth.store.code);
-
-      const response = await this.setCloseTablet(fd);
-
-      if (response) {
-        this.store.serviceStatus = 1;
-      }
-    },
-    async reqAgreeOrder() {
-      const fd = new FormData();
-      fd.append('store_code', this.auth.store.code);
-
-      const response = await this.setAgreeOrder(fd);
-
-      if (response) {
-        this.store.serviceStatus = 0;
-      }
-    },
-    async reqRejectOrder() {
-      const fd = new FormData();
-      fd.append('store_code', this.auth.store.code);
-
-      const response = await this.setRejectOrder(fd);
-
-      if (response) {
-        this.store.serviceStatus = 1;
-      }
+    restart() {
+      this.$router.go(0);
     },
     openTabletScreen() {
       this.confirmModal.show = true;
@@ -238,6 +149,83 @@ export default {
       this.confirmModal.title = '주문 중단';
       this.confirmModal.message = '태블릿을 메뉴판으로만 사용하고 주문은 안돼요';
       this.confirmModal.confirm = this.reqRejectOrder;
+    },
+    closeConfirmModal() {
+      this.confirmModal.show = false;
+    },
+    async reqOpenTablet() {
+      const fd = new FormData();
+      fd.append('store_code', this.auth.store.store_code);
+
+      const response = await this.$store.dispatch('setOpenTablet', fd);
+
+      if (response) {
+        this.device.serviceStatus = 0;
+      }
+    },
+    async reqCloseTablet() {
+      const fd = new FormData();
+      fd.append('store_code', this.auth.store.store_code);
+
+      const response = await this.$store.dispatch('setCloseTablet', fd);
+
+      if (response) {
+        this.device.serviceStatus = 1;
+      }
+    },
+    async reqAgreeOrder() {
+      const fd = new FormData();
+      fd.append('store_code', this.auth.store.store_code);
+
+      const response = await this.$store.dispatch('setAgreeOrder', fd);
+
+      if (response) {
+        this.device.orderStatus = 0;
+      }
+    },
+    async reqRejectOrder() {
+      const fd = new FormData();
+      fd.append('store_code', this.auth.store.store_code);
+
+      const response = await this.$store.dispatch('setRejectOrder', fd);
+
+      if (response) {
+        this.device.orderStatus = 1;
+      }
+    },
+    getOnTabletMonitorClass(device) {
+      const active = !this.vaildServiceStatus(device);
+
+      return {
+        active,
+      };
+    },
+    getOffTabletMonitorClass(device) {
+      const active = this.vaildServiceStatus(device);
+
+      return {
+        active,
+      };
+    },
+    vaildServiceStatus(device) {
+      return device && device.serviceStatus;
+    },
+    getOnTabletOrderClass(device) {
+      const active = !this.vaildOrderStatus(device);
+
+      return {
+        active,
+      };
+    },
+    getOffTabletOrderClass(device) {
+      const active = this.vaildOrderStatus(device);
+
+      return {
+        active,
+      };
+    },
+    vaildOrderStatus(device) {
+      return device && device.orderStatus;
     },
   },
 };

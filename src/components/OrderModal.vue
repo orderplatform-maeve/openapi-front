@@ -4,48 +4,48 @@
   .container
     .container-top
       .order-title
-        .table-number(:class="{call: order.order_info[0].good_code=='99999', setting: order.order_info[0].good_code=='88888'}") {{order.T_order_order_tablet_number}}
-        .people_total_count(v-if="order.total_peoples > 0") {{order.total_peoples}}명
+        .table-number(:class="getTableNumberClass(order)") {{checkedTabletNum(order)}}
+        .people_total_count(v-if="visibleCustomerCount(order)") {{checkedTotalPeople(order)}}명
         .msg
-          span.title(v-if="order.order_info[0].good_code=='99999'") 호출이요
-          span.title(v-else-if="order.order_info[0].good_code=='88888'") 셋팅완료
+          span.title(v-if="visibleCall(order)") 호출이요
+          span.title(v-else-if="isDoneSetting(order)") 셋팅완료
           span.title(v-else) 주문이요
-          .icon.visit(v-if="order.is_tablet_first_order") 입장
-          .icon.first(v-if="order.is_first_order") 첫 주문
+          .icon.visit(v-if="isFirstEntered(order)") 입장
+          .icon.first(v-if="isFirstOrder(order)") 첫 주문
         .msg-time
-          .commit(:class="{commited:order.commit}") {{order.commit ? '확인' : '미확인'}}
-          .time {{order.order_time}}
+          .commit(:class="getMsgTimeClass(order)") {{vaildCommitText(order)}}
+          .time {{getOrderTiem(order)}}
       .button.button-close(v-on:click="closeOrder") 닫기
     .container-body
       .left
         .wrap-people-list
           ul.people-list
-            li.people-item(v-for="people in order.people_json" v-if="people.count > 0")
-              .count {{people.count}}명
-              .name {{people.name}}
+            li.people-item(v-for="people in order.people_json" v-if="isPeopleCnt(people)")
+              .count {{getPeopleCnt(people)}}명
+              .name {{getPeopleName(people)}}
         .wrap-product-list
           ul.product-list
             li.product-item(v-for="product in order.order_info")
-              .count {{product.good_qty}}개
-              .name {{product.good_name}}
-              .memo(v-if="product.memo_show") {{product.memo}}
-              ul.option-list(v-if="product.option")
+              .count {{getProductQty(product)}}개
+              .name {{getProjectGoodName(product)}}
+              .memo(v-if="isProductMemoShow(product)") {{getProductMemo(product)}}
+              ul.option-list(v-if="isProductOpt(product)")
                 li.option-item(v-for="option in product.option")
                   span +
-                  .count {{option.good_qty}}개
-                  .name  {{option.display_name}}
+                  .count {{getOptionGoodQty(option)}}개
+                  .name {{getOptionDisplayName(option)}}
       .right
         .wrap-c-product-list()
           .title 이전주문내역
           ul.c-product-list
             li.order-item(v-for="c_product in order.total_orders")
-              .name {{c_product.display_name}}
-              .count {{c_product.order_qty}}개
-              ul.option-list(v-if="c_product.option")
+              .name {{getBeforeProductDisplayName(c_product)}}
+              .count {{getBeforeProductOrderQty(c_product)}}개
+              ul.option-list(v-if="isBeforeProductOtp(c_product)")
                 li.option-item(v-for="option in c_product.option")
                   span +
-                  .count {{option.order_qty}}개
-                  .name  {{option.display_name}}
+                  .count {{getBeforeProductOptionOrderQty(option)}}개
+                  .name {{getBeforeProductOptionDisplayName(option)}}
     .container-foot
       .msg {{seconds}}초 후 닫혀요.
       .buttons
@@ -53,6 +53,77 @@
 </template>
 
 <script>
+import utils from '@utils/orders.utils';
+
+const peopleMethods = {
+  isPeopleCnt(people) {
+    if (!people) return false;
+    return people.count > 0;
+  },
+  getPeopleCnt(people) {
+    if (!people) return 0;
+    return people.count;
+  },
+  getPeopleName(people) {
+    if (!people) return '';
+    return people.name;
+  },
+};
+
+const productMethods = {
+  getProductQty(product) {
+    if (!product) return 0;
+    return product.good_qty;
+  },
+  getProjectGoodName(product) {
+    if (!product) return '';
+    return product.good_name;
+  },
+  isProductMemoShow(product) {
+    if(!product) return false;
+    return product.memo_show;
+  },
+  getProductMemo(product) {
+    if (!product) return '';
+    return product.memo;
+  },
+  isProductOpt(product) {
+    if(!product) return false;
+    return product.option;
+  },
+  getOptionGoodQty(option) {
+    if (!option) return 0;
+    return option.good_qty;
+  },
+  getOptionDisplayName(option) {
+    if (!option) return '';
+    return option.display_name;
+  },
+};
+
+const beforeProductMethods = {
+  getBeforeProductDisplayName(cProduct) {
+    if (!cProduct) return '';
+    return cProduct.display_name;
+  },
+  getBeforeProductOrderQty(cProduct) {
+    if (!cProduct) return 0;
+    return cProduct.order_qty;
+  },
+  isBeforeProductOtp(cProduct) {
+    if (!cProduct) return false;
+    return cProduct.option;
+  },
+  getBeforeProductOptionOrderQty(option) {
+    if (!option) return 0;
+    return option.order_qty;
+  },
+  getBeforeProductOptionDisplayName(option) {
+    if (!option) return '';
+    return option.display_name;
+  },
+};
+
 export default {
   data() {
     return {
@@ -62,34 +133,37 @@ export default {
   },
   computed: {
     order() {
-      return this.$store.getters.order;
+      return this.$store.state.order;
     },
   },
   mounted() {
     clearInterval(this.interval);
     this.seconds = 10;
-    this.interval = setInterval(function(){
+    this.interval = setInterval(() => {
       this.seconds -= 1;
 
       if(this.seconds < 1) {
         this.closeOrder();
       }
-    }.bind(this), 1000);
+    }, 1000);
   },
   beforeDestroy() {
     this.closeOrder();
   },
   methods: {
     commitOrder(order) {
-      let auth = this.$store.getters.auth;
-      this.$store.dispatch("commitOrder", {auth, order});
+      let auth = this.$store.state.auth;
+      this.$store.dispatch("commitOrder", { auth, order });
       this.$socket.emit('syncCommitOrder', order);
-
     },
     closeOrder() {
       clearInterval(this.interval);
       this.$store.dispatch('unsetOrder');
     },
+    ...peopleMethods,
+    ...productMethods,
+    ...beforeProductMethods,
+    ...utils,
   },
 };
 </script>

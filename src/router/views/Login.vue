@@ -5,15 +5,15 @@
   .body
     form#login-form
       .input
-        input(name='id' type='text' placeholder="아이디" v-model="id")
+        input(name="id" type="text" placeholder="아이디" v-model="id")
       .input
-        input(name='pw' type='password' placeholder="비밀번호" v-model="pw")
+        input(name="pw" type="password" placeholder="비밀번호" v-model="pw")
   .bottom
-    .button(v-on:click='onLogin') 로그인하기
+    .button(@click='onLogin') 로그인하기
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import paths from '@router/paths';
 
 export default {
   data() {
@@ -23,9 +23,6 @@ export default {
     };
   },
   methods: {
-    ...mapActions([
-      'login',
-    ]),
     async onLogin() {
       const {
         id,
@@ -33,15 +30,14 @@ export default {
       } = this;
 
       if (id && pw) {
-        const payload = {
-          id,
-          pw,
+        const params = {
+          member_id: id,
+          member_pwd: pw,
         };
 
-        const response = await this.login(payload);
-
-        if (response) {
-          this.$router.push('/store');
+        const isLogin = await this.$store.dispatch('login', params);
+        if (isLogin) {
+          this.$router.push(paths.store);
         }
       }
     },
