@@ -39,6 +39,7 @@
           hr
           router-link.button(v-if="visibleStoresButton" :to="paths.store") 매장 보기
           router-link.button.button-red(v-if="visibleLoginButton" :to="paths.login") 로그인
+          .version 1.0.3
           .button.button-red.button-member(v-if="visibleLogoutButton" @click="logout")
             span.name {{userName}}
             span 로그아웃
