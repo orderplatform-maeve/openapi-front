@@ -10,6 +10,7 @@ const endpoints = {
   },
   orders: {
     todayRedisData: `${DEMO_URL}/logs/Today_redis_data`,
+    commitOrderViewData: `${DEMO_URL}/logs/commit_orderView_data`,
   },
 };
 

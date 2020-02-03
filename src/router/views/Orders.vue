@@ -39,23 +39,6 @@
 import utils from '@utils/orders.utils';
 
 export default {
-  props: {
-    auth: {
-      type: Object,
-      default() {
-        return {
-          member: {},
-          store: {},
-        };
-      },
-    },
-    orders: {
-      type: Array,
-      default() {
-        return [];
-      },
-    },
-  },
   data () {
     return {
       viewMode: 'a',

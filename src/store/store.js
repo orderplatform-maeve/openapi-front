@@ -8,7 +8,6 @@ import { isEmpty } from '@utils/CheckedType';
 import { COOKIE_AUTH_NAME } from '@config';
 
 import {
-  DEMO_URL,
   ADMIN_URL,
 } from './urls';
 import endpoints from './endpoints';
@@ -43,7 +42,7 @@ const socket = {
       }
     },
     SOCKET_resStoreInfo(context, storeDeviceInfo) {
-      console.log('data!!!!!!!!!!', storeDeviceInfo);
+      // console.log('data!!!!!!!!!!', storeDeviceInfo);
     }
   },
 };
@@ -128,23 +127,40 @@ const order = {
       console.log('orders!!!!!!!', orders);
       Vue.set(state, 'orders', orders);
     },
+    UPDATE_ORDERS: (state, order) => {
+      const { orders } = state;
+      const idx = orders.findIndex((item) => item.order_view_key === order.order_view_key);
+
+      console.log('idx!~@~!~@', idx);
+
+      if (idx > -1) {
+        orders[idx].commit = true;
+        Vue.set(state, 'orders', orders);
+      }
+    },
   },
   actions: {
-    commitOrder: (context, payload) => {
-      const url = `${DEMO_URL}/logs/commit_orderView_data`;
+    async commitOrder({ commit }, payload) {
+      const url = endpoints.orders.commitOrderViewData;
       const fd = new FormData();
       fd.append('shop_code', payload.auth.store.store_code);
       fd.append('key', payload.order.order_view_key);
 
-      return axios
-        .post(url, fd)
-        .then(function(res) {
-          if (res.data.result) {
-            payload.order.commit = true;
+      const res = await axios.post(url, fd);
 
-            context.commit('UNSET_ORDER');
-          }
-        }.bind(this));
+      if (res && res.data && res.data.result) {
+
+        const order = {
+          ...payload.order,
+          commit: true,
+        };
+
+        // console.log(order_id)
+
+        commit('UPDATE_ORDERS', order);
+        // payload.order.commit = true;
+        commit('UNSET_ORDER');
+      }
     },
     setOrder: (context, order) => {
       context.commit('SET_ORDER', order);
