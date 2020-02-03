@@ -33,7 +33,7 @@
                 li.option-item(v-for="option in product.option")
                   span +
                   .count {{getOptionGoodQty(option)}}개
-                  .name  {{getOptionDisplayName(option)}}
+                  .name {{getOptionDisplayName(option)}}
       .right
         .wrap-c-product-list()
           .title 이전주문내역
@@ -45,7 +45,7 @@
                 li.option-item(v-for="option in c_product.option")
                   span +
                   .count {{getBeforeProductOptionOrderQty(option)}}개
-                  .name  {{getBeforeProductOptionDisplayName(option)}}
+                  .name {{getBeforeProductOptionDisplayName(option)}}
     .container-foot
       .msg {{seconds}}초 후 닫혀요.
       .buttons
