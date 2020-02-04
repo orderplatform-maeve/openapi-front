@@ -201,7 +201,7 @@ const device = {
     async setOpenTablet(context, params) {
       try {
         const url = endpoints.device.shopOpen;
-        const response = await axios(url, params);
+        const response = await axios.post(url, params);
 
         if (response) {
           return true;
@@ -216,7 +216,7 @@ const device = {
     async setCloseTablet(context, params) {
       try {
         const url = endpoints.device.shopClose;
-        const response = await axios(url, params);
+        const response = await axios.post(url, params);
 
         if (response) {
           return true;
@@ -231,7 +231,7 @@ const device = {
     async setAgreeOrder(context, params) {
       try {
         const url = endpoints.device.shopOpenOrder;
-        const response = await axios(url, params);
+        const response = await axios.post(url, params);
 
         if (response) {
           return true;
@@ -246,7 +246,7 @@ const device = {
     async setRejectOrder(context, params) {
       try {
         const url = endpoints.device.shopCloseOrder;
-        const response = await axios(url, params);
+        const response = await axios.post(url, params);
 
         if (response) {
           return true;
