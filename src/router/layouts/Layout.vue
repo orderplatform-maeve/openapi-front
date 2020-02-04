@@ -114,6 +114,9 @@ export default {
     setInterval(() => {
       this.time.now = Date();
     }, 1000);
+
+      const params = { store_code: this.auth.store.store_code };
+      this.$socket.emit('reqStoreInfo', params);
   },
 
   methods: {
@@ -181,7 +184,6 @@ export default {
     async reqAgreeOrder() {
       const fd = new FormData();
       fd.append('store_code', this.auth.store.store_code);
-
       const response = await this.$store.dispatch('setAgreeOrder', fd);
 
       if (response) {
@@ -192,7 +194,6 @@ export default {
     async reqRejectOrder() {
       const fd = new FormData();
       fd.append('store_code', this.auth.store.store_code);
-
       const response = await this.$store.dispatch('setRejectOrder', fd);
 
       if (response) {

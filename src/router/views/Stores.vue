@@ -48,9 +48,6 @@ export default {
 
       await this.$store.dispatch('setOrders', fd);
 
-      const params = { store_code: this.auth.store.store_code };
-      this.$socket.emit('reqStoreInfo', params);
-
       this.$router.push(paths.order);
     },
     getStoreItemKey(store) {
