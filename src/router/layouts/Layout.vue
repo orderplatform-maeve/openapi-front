@@ -114,6 +114,9 @@ export default {
     setInterval(() => {
       this.time.now = Date();
     }, 1000);
+
+      const params = { store_code: this.auth.store.store_code };
+      this.$socket.emit('reqStoreInfo', params);
   },
 
   methods: {
@@ -158,7 +161,7 @@ export default {
     },
     async reqOpenTablet() {
       const fd = new FormData();
-      fd.append('store_code', this.$store.state.auth?.store?.store_code);
+      fd.append('store_code', this.auth.store.store_code);
 
       const response = await this.$store.dispatch('setOpenTablet', fd);
 
@@ -169,8 +172,7 @@ export default {
     },
     async reqCloseTablet() {
       const fd = new FormData();
-      console.log(this.$store.state.auth?.store?.store_code);
-      fd.append('store_code', this.$store.state.auth?.store?.store_code);
+      fd.append('store_code', this.auth.store.store_code);
 
       const response = await this.$store.dispatch('setCloseTablet', fd);
 
@@ -181,8 +183,7 @@ export default {
     },
     async reqAgreeOrder() {
       const fd = new FormData();
-      fd.append('store_code', this.$store.state.auth?.store?.store_code);
-
+      fd.append('store_code', this.auth.store.store_code);
       const response = await this.$store.dispatch('setAgreeOrder', fd);
 
       if (response) {
@@ -192,8 +193,7 @@ export default {
     },
     async reqRejectOrder() {
       const fd = new FormData();
-      fd.append('store_code', this.$store.state.auth?.store?.store_code);
-
+      fd.append('store_code', this.auth.store.store_code);
       const response = await this.$store.dispatch('setRejectOrder', fd);
 
       if (response) {
