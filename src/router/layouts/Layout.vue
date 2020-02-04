@@ -158,7 +158,7 @@ export default {
     },
     async reqOpenTablet() {
       const fd = new FormData();
-      fd.append('store_code', this.auth.store.store_code);
+      fd.append('store_code', this.$store.state.auth?.store?.store_code);
 
       const response = await this.$store.dispatch('setOpenTablet', fd);
 
@@ -169,7 +169,8 @@ export default {
     },
     async reqCloseTablet() {
       const fd = new FormData();
-      fd.append('store_code', this.auth.store.store_code);
+      console.log(this.$store.state.auth?.store?.store_code);
+      fd.append('store_code', this.$store.state.auth?.store?.store_code);
 
       const response = await this.$store.dispatch('setCloseTablet', fd);
 
@@ -180,7 +181,7 @@ export default {
     },
     async reqAgreeOrder() {
       const fd = new FormData();
-      fd.append('store_code', this.auth.store.store_code);
+      fd.append('store_code', this.$store.state.auth?.store?.store_code);
 
       const response = await this.$store.dispatch('setAgreeOrder', fd);
 
@@ -191,7 +192,7 @@ export default {
     },
     async reqRejectOrder() {
       const fd = new FormData();
-      fd.append('store_code', this.auth.store.store_code);
+      fd.append('store_code', this.$store.state.auth?.store?.store_code);
 
       const response = await this.$store.dispatch('setRejectOrder', fd);
 
