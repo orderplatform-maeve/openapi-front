@@ -153,7 +153,7 @@ export default {
   methods: {
     commitOrder(order) {
       let auth = this.$store.state.auth;
-      this.$store.dispatch("commitOrder", { auth, order });
+      this.$store.dispatch('commitOrder', { auth, order });
     },
     closeOrder() {
       clearInterval(this.interval);

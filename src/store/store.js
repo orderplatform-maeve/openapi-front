@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import createPersistedState from 'vuex-persistedstate';
 import axios from 'axios';
+import querystring from 'querystring';
 
 import { vaildShopCode } from './store.helper';
 import { isEmpty } from '@utils/CheckedType';
@@ -263,6 +264,27 @@ const device = {
   },
 };
 
+const table = {
+  mutations: {
+    SET_TABLES: (state, tables) => {
+      Vue.set(state, 'tables', tables);
+    },
+  },
+  actions: {
+    async setTables({ commit }, payload) {
+      const str = querystring.stringify(payload);
+      const query = `?${str}`;
+      const url = `${endpoints.table.getTableList}${query}`;
+
+      const response = await axios.get(url);
+
+      if (response.data && response.data.data) {
+        commit('SET_TABLES', response.data.data);
+      }
+    },
+  },
+};
+
 const authProto = {
   member: {
     code: '',
@@ -284,6 +306,7 @@ const state = {
   },
   auth: authProto,
   stores: [],
+  tables: [],
 };
 
 const mutations = {
@@ -291,6 +314,7 @@ const mutations = {
   ...authentication.mutations,
   ...order.mutations,
   ...shop.mutations,
+  ...table.mutations,
 };
 
 const actions = {
@@ -299,6 +323,7 @@ const actions = {
   ...order.actions,
   ...shop.actions,
   ...device.actions,
+  ...table.actions,
 };
 
 const getters = {};

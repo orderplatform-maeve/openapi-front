@@ -1,5 +1,6 @@
 const DEMO_URL = 'http://demo.torder.co.kr';
 const ADMIN_URL = 'http://admin.torder.co.kr';
+const REST_URL = 'http://rest.torder.co.kr';
 
 // export const DEV_URL = 'http://dev.torder.co.kr';
 // export const DEMO_URL = 'http://demo.torder.co.kr';
@@ -17,6 +18,9 @@ const endpoints = {
     shopClose: `${ADMIN_URL}/store/shop_close`,
     shopOpenOrder: `${ADMIN_URL}/store/shop_open_order`,
     shopCloseOrder: `${ADMIN_URL}/store/shop_close_order`,
+  },
+  table: {
+    getTableList: `${REST_URL}/shop/get_table_list`,
   },
 };
 
