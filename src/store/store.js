@@ -32,13 +32,13 @@ const socket = {
   },
   actions: {
     SOCKET_orderlog({ commit, state }, order) {
-      // console.log('SOCKET_orderlog', state.auth.store.store_code, order.shop_code);
+      // console.log('SOCKET_orderlog', JSON.stringify(order));
       if (vaildShopCode(state, order)) {
         commit('PUSH_ORDER', order);
       }
     },
     SOCKET_resStoreInfo(context, storeDeviceInfo) {
-      // console.log('data!!!!!!!!!!', storeDeviceInfo);
+      console.log('SOCKET_resStoreInfo!!!!!!!!!!', storeDeviceInfo);
     }
   },
 };
@@ -167,6 +167,8 @@ const order = {
     async setOrders({ commit }, params) {
       const url = endpoints.orders.todayRedisData;
       const response = await axios.post(url, params);
+
+      console.log(response);
 
       if (response.status === 200) {
         const orders = [];

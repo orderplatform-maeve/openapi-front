@@ -11,7 +11,7 @@ export const vaildShopCodeOrigins = (state, order) => {
 };
 
 export const vaildShopCode = (state, order) => {
-  const isStateCode = state?.auth?.store?.store_code;
+  const isStateCode = state.auth?.store?.store_code;
 
   const isShopCode = order?.shop_code;
 

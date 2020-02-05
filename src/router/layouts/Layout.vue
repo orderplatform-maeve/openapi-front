@@ -110,13 +110,15 @@ export default {
     },
   },
 
+  created() {
+    const params = { store_code: this.auth.store.store_code };
+    this.$socket.emit('reqStoreInfo', params);
+  },
+
   mounted() {
     setInterval(() => {
       this.time.now = Date();
     }, 1000);
-
-      const params = { store_code: this.auth.store.store_code };
-      this.$socket.emit('reqStoreInfo', params);
   },
 
   methods: {
