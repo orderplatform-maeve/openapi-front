@@ -1,5 +1,6 @@
 <template lang="pug">
 #tables
+  modal-table-orders
   .top
     .button(v-if="!flag_restaring" v-on:click="restartAllClient()") 태블릿 전체 새로고침
     .button.button-dark(v-if="flag_restaring" v-on:click="cancelRestart()") 태블릿 새로고침 취소

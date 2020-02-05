@@ -12,6 +12,8 @@ import { socketConfig } from '@config';
 import {
   ConfirmModal,
   OrderModal,
+  TableOrdersModal,
+  MenuModal,
 } from '@components';
 
 Vue.use(VueCookies);
@@ -23,5 +25,7 @@ Vue.use(new VueSocketIO(socketConfig));
 
 Vue.component('modal-order', OrderModal);
 Vue.component('modal-confirm', ConfirmModal);
+Vue.component('modal-table-orders', TableOrdersModal);
+Vue.component('modal-menu', MenuModal);
 
 new Vue({router}).$mount("#app");
