@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import createPersistedState from 'vuex-persistedstate';
 import axios from 'axios';
+import querystring from 'querystring';
 
 import { vaildShopCode } from './store.helper';
 import { isEmpty } from '@utils/CheckedType';
@@ -32,13 +33,13 @@ const socket = {
   },
   actions: {
     SOCKET_orderlog({ commit, state }, order) {
-      // console.log('SOCKET_orderlog', state.auth.store.store_code, order.shop_code);
+      // console.log('SOCKET_orderlog', JSON.stringify(order));
       if (vaildShopCode(state, order)) {
         commit('PUSH_ORDER', order);
       }
     },
     SOCKET_resStoreInfo(context, storeDeviceInfo) {
-      // console.log('data!!!!!!!!!!', storeDeviceInfo);
+      console.log('SOCKET_resStoreInfo!!!!!!!!!!', storeDeviceInfo);
     }
   },
 };
@@ -168,6 +169,8 @@ const order = {
       const url = endpoints.orders.todayRedisData;
       const response = await axios.post(url, params);
 
+      console.log(response);
+
       if (response.status === 200) {
         const orders = [];
 
@@ -178,6 +181,15 @@ const order = {
 
         commit('SET_ORDERS', orders);
       }
+    },
+    async requestOrder({ commit }, params) {
+      const url = endpoints.orders.order;
+      const response = await axios.post(url, params);
+
+      if (response.data) {
+        return response.data;
+      }
+      return false;
     },
   },
 };
@@ -261,6 +273,63 @@ const device = {
   },
 };
 
+const table = {
+  mutations: {
+    SET_TABLES: (state, tables) => Vue.set(state, 'tables', tables),
+    SET_TABLE_CART_LIST: (state, cartList) => Vue.set(state, 'cartList', cartList),
+  },
+  actions: {
+    async setTables({ commit }, payload) {
+      const str = querystring.stringify(payload);
+      const query = `?${str}`;
+      const url = `${endpoints.table.getTableList}${query}`;
+
+      const response = await axios.get(url);
+
+      if (response.data && response.data.data) {
+        commit('SET_TABLES', response.data.data);
+      }
+    },
+    async setTableCartList({ commit }, params) {
+      const url = endpoints.table.getCartList;
+      const response = await axios.post(url, params);
+
+      if (response.data && response.data.data) {
+        commit('SET_TABLE_CART_LIST', response.data.data);
+      }
+    }
+  },
+};
+
+const menu = {
+  mutations: {
+    SET_CATEGORIES: (state, categories) => Vue.set(state, 'categories', categories),
+    SET_GOODS: (state, goods) => Vue.set(state, 'goods', goods),
+  },
+  actions: {
+    async setCategories({ commit }, params) {
+      const url = endpoints.menu.categories;
+      const response = await axios.post(url, params);
+
+      if (response.data && response.data.data) {
+        commit('SET_CATEGORIES', response.data.data);
+        return response.data.data;
+      }
+      return false;
+    },
+    async setGooods({ commit }, params) {
+      const url = endpoints.menu.getGoodsList;
+      const response = await axios.post(url, params);
+
+      if (response.data && response.data.data) {
+        commit('SET_GOODS', response.data.data);
+        return response.data.data;
+      }
+      return false;
+    }
+  },
+};
+
 const authProto = {
   member: {
     code: '',
@@ -282,6 +351,10 @@ const state = {
   },
   auth: authProto,
   stores: [],
+  tables: [],
+  cartList: [],
+  categories: [],
+  goods: [],
 };
 
 const mutations = {
@@ -289,6 +362,8 @@ const mutations = {
   ...authentication.mutations,
   ...order.mutations,
   ...shop.mutations,
+  ...table.mutations,
+  ...menu.mutations,
 };
 
 const actions = {
@@ -297,6 +372,8 @@ const actions = {
   ...order.actions,
   ...shop.actions,
   ...device.actions,
+  ...table.actions,
+  ...menu.actions,
 };
 
 const getters = {};

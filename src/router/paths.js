@@ -3,4 +3,5 @@ export default {
   login: '/login',
   store: '/store',
   order: '/order',
+  tables: '/tables',
 };

@@ -3,6 +3,7 @@ import {
   Login,
   Stores,
   Orders,
+  Tables,
 } from '@views';
 
 import paths from './paths';
@@ -32,6 +33,12 @@ const routes = [{
     path: paths.order,
     name: paths.order.replace('/',''),
     component: Orders,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: paths.tables,
+    name: paths.tables.replace('/',''),
+    component: Tables,
     meta: { requiresAuth: true },
   }]
 }];

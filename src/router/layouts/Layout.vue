@@ -23,7 +23,8 @@
             span {{ time.now | moment("MM.DD HH:mm:ss") }}
           img.logo(:src="logo")
           .store_name {{storeName}}
-          //- router-link.button(v-if="visibleOrderButton" :to="paths.order") 주문 보기
+          router-link.button(v-if="visibleOrderButton" :to="paths.order") 주문 보기
+          router-link.button(v-if="visibleOrderButton" :to="paths.tables") 테이블 보기
         .bottom
           hr
           .tab-group
@@ -110,13 +111,15 @@ export default {
     },
   },
 
+  created() {
+    const params = { store_code: this.auth.store.store_code };
+    this.$socket.emit('reqStoreInfo', params);
+  },
+
   mounted() {
     setInterval(() => {
       this.time.now = Date();
     }, 1000);
-
-      const params = { store_code: this.auth.store.store_code };
-      this.$socket.emit('reqStoreInfo', params);
   },
 
   methods: {
