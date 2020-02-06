@@ -21,6 +21,11 @@ const endpoints = {
   },
   table: {
     getTableList: `${REST_URL}/shop/get_table_list`,
+    getCartList: `${REST_URL}/tablet_order/get_cart_list`,
+  },
+  menu: {
+    categories: `${DEMO_URL}/shop/categorys`,
+    getGoodsList: `${DEMO_URL}/goods/get_goods_list`,
   },
 };
 

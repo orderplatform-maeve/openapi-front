@@ -1,6 +1,7 @@
 <template lang="pug">
 #tables
   modal-table-orders
+  modal-menu
   .top
     .button(v-if="!flag_restaring" v-on:click="restartAllClient()") 태블릿 전체 새로고침
     .button.button-dark(v-if="flag_restaring" v-on:click="cancelRestart()") 태블릿 새로고침 취소
@@ -23,9 +24,16 @@ export default {
       return this.$store.state.tables;
     }
   },
-  mounted() {
+  async mounted() {
     const params = { shop_code: this.$store.state.auth.store.store_code };
     this.$store.dispatch('setTables', params);
+
+    const fd = new FormData();
+    fd.append('store_code', this.$store.state.auth.store.store_code);
+
+    const categories = await this.$store.dispatch('setCategories', fd);
+    const goods = await this.$store.dispatch('setGooods', fd);
+    console.log('categories', categories, goods);
   },
   beforeDestroy() {
     this.cancelRestart();

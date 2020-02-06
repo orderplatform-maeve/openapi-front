@@ -8,15 +8,28 @@
       .wrap
         .title 주문하기
       .buttons
-        .button(v-on:click="openTableOrders(table)") 주문내역보기
+        .button(@click="openTableOrders(table)") 주문내역보기
     .body
       .left
         ul.list-category.first
-          li.item-category(v-for="category in categorys" v-if="category.T_order_store_menu_serviceUse==0&&category.T_order_store_menu_depth.includes('1')&&category.T_order_store_menu_use=='Y'" v-on:click="selectFirstCategory(category)" :class="{select: category.T_order_store_menu_code==first_category_code}") {{category.T_order_store_menu_name}}
+          li.item-category(
+            v-for="category in topCategorise"
+            @click="selectFirstCategory(category)"
+            :class="{select: category.T_order_store_menu_code === first_category_code}"
+          ) {{category.T_order_store_menu_name}}
+
         ul.list-category.second(v-if="first_category_code" ref="secondCategoryList")
-          li.item-category(v-for="category in categorys" v-if="category.T_order_store_menu_serviceUse==0&&category.T_order_store_menu_depth.includes(first_category_code)&&category.T_order_store_menu_use=='Y'" v-on:click="selectSecondCategory(category)" :class="{select: category.T_order_store_menu_code==second_category_code}") {{category.T_order_store_menu_name}}
+          li.item-category(
+            v-for="ctg in getSubCategorise()"
+            @click="selectSecondCategory(ctg)"
+            :class="{select: ctg.T_order_store_menu_code === second_category_code}"
+          ) {{ctg.T_order_store_menu_name}}
+
         ul.list-product(v-if="second_category_code" ref="productList")
-          li.item-product(v-for="product in products" v-if="second_category_code&&product.T_order_store_good_category.includes(second_category_code)" v-on:click="selectProduct(product)")
+          li.item-product(
+            v-for="product in getChooseProudcts()"
+            @click="selectProduct(product)"
+          )
             .name {{product.T_order_store_good_display_name}}
             .price {{product.T_order_store_good_defualt_price}}원
       .right
@@ -44,7 +57,7 @@ import axios from 'axios';
 export default {
   data() {
     return {
-      show: false,
+      show: true,
       table: {},
       first_category: undefined,
       first_category_code: undefined,
@@ -59,6 +72,10 @@ export default {
     };
   },
   computed: {
+    topCategorise() {
+      const { categories } = this.$store.state;
+      return categories.filter((item) => item.T_order_store_menu_depth.includes('1'));
+    },
     totalPrice() {
       let result = 0;
       return result;
@@ -67,22 +84,11 @@ export default {
       return this.select_products;
     },
     categorys() {
-      return this.$store.getters.categorys;
+      return this.$store.state.categories;
     },
     products() {
-      return this.$store.getters.products;
+      return this.$store.state.goods;
     },
-    sortedCart() {
-    }
-  },
-  created() {
-    this.$eventBus.$off('openMenuBoard');
-    this.$eventBus.$on('openMenuBoard', this.open);
-    this.$eventBus.$off('closeMenuBoard');
-    this.$eventBus.$on('closeMenuBoard', this.close);
-  },
-  mounted() {
-
   },
   methods: {
     submit() {
@@ -91,10 +97,6 @@ export default {
       let tablet_number = this.table.code;
       let store_good_code = [];
       let store_good_qty = [];
-
-      //console.log(this.table);
-      //console.log('auth', auth);
-
 
       let frm = new FormData();
       frm.set('store_shop_code', store_shop_code);
@@ -142,28 +144,26 @@ export default {
       this.show_select_products = true;
     },
     selectFirstCategory(category) {
-      let code = category.T_order_store_menu_code;
+      console.log(category);
+
+      const menuCode = category.T_order_store_menu_code;
       this.first_category = category;
-      this.first_category_code = code;
+      this.first_category_code = menuCode;
 
-      for (let code in this.$store.getters.categorys) {
-        let category = this.$store.getters.categorys[code];
+      console.log(this.first_category, menuCode, this.first_category_code);
 
-        if (category.T_order_store_menu_serviceUse==0
-          && category.T_order_store_menu_depth.includes(this.first_category_code)
-          && category.T_order_store_menu_use=='Y') {
-          this.selectSecondCategory(category);
-          break;
-        }
-      }
       this.$nextTick(() => {
         this.$refs.secondCategoryList.scrollTop = 0;
       });
     },
     selectSecondCategory(category) {
-      let code = category.T_order_store_menu_code;
+      console.log(category);
+
+      const code = category.T_order_store_menu_code;
       this.second_category = category;
       this.second_category_code = code;
+
+      console.log(this.second_category, code, this.second_category_code);
 
       this.$nextTick(() => {
         this.$refs.productList.scrollTop = 0;
@@ -207,10 +207,7 @@ export default {
           qty: 1,
           time: current_time,
         };
-        //this.set(this.select_products, code, product);
-        //this.set(this.select_products[code], 'qty', 1);
       }
-
 
       this.updateCart();
       this.show_select_products = false;
@@ -256,16 +253,39 @@ export default {
       this.select_products_price = 0;
       this.select_products_sorted = [];
     },
+    getSubCategorise() {
+      const categorise = [...this.categorys];
+
+      return categorise.filter((ctg) => ctg.T_order_store_menu_depth.includes(this.first_category_code));
+    },
+    getChooseProudcts() {
+      const arr = [...this.products].filter((item) => {
+        try {
+          if (!item.T_order_store_good_category) {
+            return null;
+          }
+          const idx = item.T_order_store_good_category.findIndex((o) => {
+            return o === this.second_category_code;
+          });
+          if (idx === -1) {
+            return null;
+          }
+          return item;
+        } catch (error) {
+          return null;
+        }
+      });
+      return arr;
+    },
   },
 };
 </script>
+
 <style lang="scss">
 @import "../scss/global.scss";
 #menuBoard {
   @include modal;
   .container {
-    > .top {
-    }
     > .body {
       > .left {
         width:70%;
@@ -275,12 +295,13 @@ export default {
           display:flex;
           width:25%;
           flex-shrink:0;
-          flex-direction:column;
           margin:0;
           padding:0;
           overflow:scroll;
+          flex-direction: column;
 
           .item-category {
+            min-width: 100px;
             display:flex;
             align-items: center;
             justify-content: center;
@@ -293,6 +314,7 @@ export default {
             border-radius:24px;
             margin:4px;
             word-break:keep-all;
+            margin-top: 10px;
           }
           .item-category:active,
           .item-category.select {
@@ -337,6 +359,7 @@ export default {
         }
       }
       > .right {
+        background-color: transparent;
         width:30%;
         h2 {
           margin:4px;
@@ -402,11 +425,6 @@ export default {
                 margin-top:4px;
                 padding-top:4px;
                 font-size:1em;
-
-                .price {
-                }
-                .qty-price {
-                }
               }
             }
           }

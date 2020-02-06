@@ -266,9 +266,8 @@ const device = {
 
 const table = {
   mutations: {
-    SET_TABLES: (state, tables) => {
-      Vue.set(state, 'tables', tables);
-    },
+    SET_TABLES: (state, tables) => Vue.set(state, 'tables', tables),
+    SET_TABLE_CART_LIST: (state, cartList) => Vue.set(state, 'cartList', cartList),
   },
   actions: {
     async setTables({ commit }, payload) {
@@ -282,6 +281,43 @@ const table = {
         commit('SET_TABLES', response.data.data);
       }
     },
+    async setTableCartList({ commit }, params) {
+      const url = endpoints.table.getCartList;
+      const response = await axios.post(url, params);
+
+      if (response.data && response.data.data) {
+        commit('SET_TABLE_CART_LIST', response.data.data);
+      }
+    }
+  },
+};
+
+const menu = {
+  mutations: {
+    SET_CATEGORIES: (state, categories) => Vue.set(state, 'categories', categories),
+    SET_GOODS: (state, goods) => Vue.set(state, 'goods', goods),
+  },
+  actions: {
+    async setCategories({ commit }, params) {
+      const url = endpoints.menu.categories;
+      const response = await axios.post(url, params);
+
+      if (response.data && response.data.data) {
+        commit('SET_CATEGORIES', response.data.data);
+        return response.data.data;
+      }
+      return false;
+    },
+    async setGooods({ commit }, params) {
+      const url = endpoints.menu.getGoodsList;
+      const response = await axios.post(url, params);
+
+      if (response.data && response.data.data) {
+        commit('SET_GOODS', response.data.data);
+        return response.data.data;
+      }
+      return false;
+    }
   },
 };
 
@@ -307,6 +343,9 @@ const state = {
   auth: authProto,
   stores: [],
   tables: [],
+  cartList: [],
+  categories: [],
+  goods: [],
 };
 
 const mutations = {
@@ -315,6 +354,7 @@ const mutations = {
   ...order.mutations,
   ...shop.mutations,
   ...table.mutations,
+  ...menu.mutations,
 };
 
 const actions = {
@@ -324,6 +364,7 @@ const actions = {
   ...shop.actions,
   ...device.actions,
   ...table.actions,
+  ...menu.actions,
 };
 
 const getters = {};
