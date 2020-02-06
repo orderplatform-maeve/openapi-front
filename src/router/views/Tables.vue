@@ -1,12 +1,19 @@
 <template lang="pug">
 #tables
-  modal-table-orders
+  modal-table-orders(
+    v-if="chooseTable"
+    :show="isTableOrderModal"
+    :tableName="getTableName()"
+    :onClose="closeTableOrderModal"
+    :showMenuModal="showMenuModal"
+  )
   modal-menu(
     v-if="chooseTable"
     :show="isMenuModal"
     :onClose="closeMenuModal"
     :tableName="getTableName()"
     :tableId="getTableId()"
+    :onTableOrder="showTableOrderModal"
   )
   .top
   ul.table-list
@@ -20,6 +27,7 @@ export default {
     return {
       isMenuModal: false,
       chooseTable: null,
+      isTableOrderModal: false,
     };
   },
   computed: {
@@ -39,6 +47,15 @@ export default {
     console.log('categories', categories, goods);
   },
   methods: {
+    showMenuModal() {
+      this.isMenuModal = true;
+    },
+    closeTableOrderModal() {
+      this.isTableOrderModal = false;
+    },
+    showTableOrderModal() {
+      this.isTableOrderModal = true;
+    },
     closeMenuModal() {
       this.isMenuModal = false;
     },

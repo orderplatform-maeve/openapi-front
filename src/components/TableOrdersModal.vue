@@ -1,10 +1,10 @@
 <template lang="pug">
 #tableOrders(v-if="show")
-  .background(v-on:click="close")
+  .background(@click="onClose")
   .container
     .top
       .wrap
-        .table-number {{table.name}}
+        .table-number {{tableName}}
       .wrap
         .title 주문내역보기
       .buttons
@@ -25,14 +25,31 @@
               td {{table.price_amt}}원
     .foot
       .buttons
-        .button(v-on:click="close") 닫기
+        .button(@click="onClose") 닫기
 </template>
 
 <script>
 export default {
+  props: {
+    show: {
+      type: Boolean,
+      default: false,
+    },
+    tableName: {
+      type: String,
+      default: '',
+    },
+    onClose: {
+      type: Function,
+      default: () => {},
+    },
+    showMenuModal: {
+      type: Function,
+      default: () => {},
+    },
+  },
   data() {
     return {
-      show: false,
       table: {},
     };
   },
@@ -43,14 +60,8 @@ export default {
   },
   methods: {
     openMenuBoard() {
-      this.close();
-    },
-    open(table) {
-      this.table = table;
-      this.show = true;
-    },
-    close() {
-      this.show = false;
+      this.showMenuModal();
+      this.onClose();
     },
   },
 };

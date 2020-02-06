@@ -1,8 +1,8 @@
 const DEMO_URL = 'http://demo.torder.co.kr';
+const DEMO_ADMIN_URL = 'http://demo.admin.torder.co.kr';
 const ADMIN_URL = 'http://admin.torder.co.kr';
 const REST_URL = 'http://rest.torder.co.kr';
 const DEV_URL = 'http://dev.torder.co.kr';
-const DEMO_ADMIN_URL = 'http://demo.admin.torder.co.kr';
 
 const endpoints = {
   authentication: {

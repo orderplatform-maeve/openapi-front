@@ -72,6 +72,10 @@ export default {
       type: String,
       default: '',
     },
+    onTableOrder: {
+      type: Function,
+      default: () => {},
+    },
   },
   data() {
     return {
@@ -162,6 +166,7 @@ export default {
       console.log(res);
     },
     openTableOrders() {
+      this.onTableOrder();
       this.close();
     },
     getSubCategorise() {
