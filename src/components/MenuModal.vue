@@ -135,11 +135,11 @@ export default {
     getInfoText() {
       return `${this.select_products_length}가지 ${this.select_products_qty}개 ${this.select_products_price}원`;
     },
-
-    submit() {
-      const auth = this.$store.state.auth;
+    async submit() {
+      const { auth } = this.$store.state;
       const store_shop_code = auth.store.store_code;
       const tablet_number = this.tableId;
+      console.log('tablet_number', this.tableId);
       const store_good_code = [];
       const store_good_qty = [];
 
@@ -158,35 +158,35 @@ export default {
         frm.append('store_good_qty[]', qty);
       }
 
-      axios
-        .post('http://demo.torder.co.kr/shop/order', frm)
-        .then(function(res) {
-          console.log(res);
-          this.close();
-        }.bind(this)).catch(function(err) {
-          console.log({err: err});
-        });
+      const res = await this.$store.dispatch('requestOrder', frm);
+      console.log(res);
     },
     openTableOrders() {
       this.close();
     },
-    plusQtyProduct(select_product) {
-      select_product.qty += 1;
-      this.updateCart();
-      this.show_select_products = false;
-      this.show_select_products = true;
+    getSubCategorise() {
+      const categorise = [...this.categorys];
+
+      return categorise.filter((ctg) => ctg.T_order_store_menu_depth.includes(this.first_category_code));
     },
-    minusQtyProduct(select_product) {
-      select_product.qty -= 1;
-
-      if (select_product.qty < 1) {
-        let code = select_product.product.T_order_store_good_code;
-        delete this.select_products[code];
-      }
-
-      this.updateCart();
-      this.show_select_products = false;
-      this.show_select_products = true;
+    getChooseProudcts() {
+      const arr = [...this.products].filter((item) => {
+        try {
+          if (!item.T_order_store_good_category) {
+            return null;
+          }
+          const idx = item.T_order_store_good_category.findIndex((o) => {
+            return o === this.second_category_code;
+          });
+          if (idx === -1) {
+            return null;
+          }
+          return item;
+        } catch (error) {
+          return null;
+        }
+      });
+      return arr;
     },
     selectFirstCategory(category) {
       const menuCode = category.T_order_store_menu_code;
@@ -206,13 +206,32 @@ export default {
         this.$refs.productList.scrollTop = 0;
       });
     },
+    // old method
+    plusQtyProduct(select_product) {
+      select_product.qty += 1;
+      this.updateCart();
+      this.show_select_products = false;
+      this.show_select_products = true;
+    },
+    minusQtyProduct(select_product) {
+      select_product.qty -= 1;
+
+      if (select_product.qty < 1) {
+        const code = select_product.product.T_order_store_good_code;
+        delete this.select_products[code];
+      }
+
+      this.updateCart();
+      this.show_select_products = false;
+      this.show_select_products = true;
+    },
     updateCart() {
       this.select_products_length = Object.keys(this.select_products).length;
 
       let price = 0;
       let qty = 0;
-      for (let key in this.select_products) {
-        let select_product = this.select_products[key];
+      for (const key in this.select_products) {
+        const select_product = this.select_products[key];
         price += select_product.qty * select_product.product.T_order_store_good_defualt_price;
         qty += select_product.qty;
       }
@@ -220,20 +239,18 @@ export default {
       this.select_products_qty = qty;
       this.select_products_price = price;
 
-      let keys = Object.keys(this.select_products).sort(function(a, b) {
+      const keys = Object.keys(this.select_products).sort((a, b) => {
         return this.select_products[b].time - this.select_products[a].time;
-
-      }.bind(this));
+      });
 
       this.select_products_sorted = [];
-      for (let code of keys) {
+      for (const code of keys) {
         this.select_products_sorted.push(this.select_products[code]);
       }
-
     },
     selectProduct(product) {
-      let code = product.T_order_store_good_code;
-      let current_time = Date.now();
+      const code = product.T_order_store_good_code;
+      const current_time = Date.now();
 
       if (this.select_products.hasOwnProperty(code))  {
         this.select_products[code].qty += 1;
@@ -261,30 +278,6 @@ export default {
       this.select_products_price = 0;
       this.select_products_sorted = [];
       this.onClose();
-    },
-    getSubCategorise() {
-      const categorise = [...this.categorys];
-
-      return categorise.filter((ctg) => ctg.T_order_store_menu_depth.includes(this.first_category_code));
-    },
-    getChooseProudcts() {
-      const arr = [...this.products].filter((item) => {
-        try {
-          if (!item.T_order_store_good_category) {
-            return null;
-          }
-          const idx = item.T_order_store_good_category.findIndex((o) => {
-            return o === this.second_category_code;
-          });
-          if (idx === -1) {
-            return null;
-          }
-          return item;
-        } catch (error) {
-          return null;
-        }
-      });
-      return arr;
     },
   },
 };

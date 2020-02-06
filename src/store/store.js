@@ -182,6 +182,15 @@ const order = {
         commit('SET_ORDERS', orders);
       }
     },
+    async requestOrder({ commit }, params) {
+      const url = endpoints.orders.order;
+      const response = await axios.post(url, params);
+
+      if (response.data) {
+        return response.data;
+      }
+      return false;
+    },
   },
 };
 
