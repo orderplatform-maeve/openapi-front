@@ -11,43 +11,43 @@
         .button(@click="openTableOrders()") 주문내역보기
     .body
       .left
-        ul.list-category.first
+        ul.list-category.first(v-if="topCategorise")
           li.item-category(
             v-for="category in topCategorise"
             @click="selectFirstCategory(category)"
-            :class="{select: category.T_order_store_menu_code === first_category_code}"
-          ) {{category.T_order_store_menu_name}}
+            :class="getTopCategoriseClass(category)"
+          ) {{getMenuName(category)}}
 
         ul.list-category.second(v-if="first_category_code" ref="secondCategoryList")
           li.item-category(
             v-for="ctg in getSubCategorise()"
             @click="selectSecondCategory(ctg)"
-            :class="{select: ctg.T_order_store_menu_code === second_category_code}"
-          ) {{ctg.T_order_store_menu_name}}
+            :class="getSubCategoriesClass(ctg)"
+          ) {{getMenuName(ctg)}}
 
         ul.list-product(v-if="second_category_code" ref="productList")
           li.item-product(
             v-for="product in getChooseProudcts()"
             @click="selectProduct(product)"
           )
-            .name {{product.T_order_store_good_display_name}}
-            .price {{product.T_order_store_good_defualt_price}}원
+            .name {{getGoodDisplayName(product)}}
+            .price {{getGoodDefualtPrice(product)}}원
       .right
         ul.select-product-list(v-if="show_select_products" ref="selectProductList")
           li.select-product-item(v-for="select_product in select_products_sorted")
-            .button.button-plus(v-on:click="plusQtyProduct(select_product)") +
+            .button.button-plus(@click="plusQtyProduct(select_product)") +
             .info
               .info-top
-                .name {{select_product.product.T_order_store_good_display_name}}
-                .qty {{select_product.qty}}개
+                .name {{getSelectedGoodDisplayName(select_product)}}
+                .qty {{getSelectedGoodQty(select_product)}}개
               .info-bottom
-                .price {{select_product.product.T_order_store_good_defualt_price}}원
-                .qty-price {{select_product.qty * select_product.product.T_order_store_good_defualt_price}}원
-            .button.button-minus(v-on:click="minusQtyProduct(select_product)") -
+                .price {{getSelectedGoodDefualtPrice(select_product)}}원
+                .qty-price {{getSelectedGoodQtyPrice(select_product)}}원
+            .button.button-minus(@click="minusQtyProduct(select_product)") -
     .foot
       .buttons
-        .button(v-on:click="close") 닫기
-        .button.button-red(v-on:click="submit")
+        .button(@click="close") 닫기
+        .button.button-red(@click="submit")
           .info {{select_products_length}}가지 {{select_products_qty}}개 {{select_products_price}}원
           .text 주문하기
 </template>
@@ -100,6 +100,42 @@ export default {
     },
   },
   methods: {
+    getTopCategoriseClass(category) {
+      if (!category?.T_order_store_menu_code) return { select: false };
+      const select = category.T_order_store_menu_code === this.first_category_code;
+      return { select };
+    },
+    getSubCategoriesClass(category) {
+      if (!category?.T_order_store_menu_code) return { select: false };
+      const select = category.T_order_store_menu_code === this.second_category_code;
+      return { select };
+    },
+    getMenuName: (category) => category?.T_order_store_menu_name,
+    getGoodDisplayName: (product) => product?.T_order_store_good_display_name,
+    getGoodDefualtPrice(product) {
+      if (!product?.T_order_store_good_defualt_price) return 0;
+      return product.T_order_store_good_defualt_price;
+    },
+    getSelectedGoodDisplayName(select_product) {
+      return this.getGoodDisplayName(select_product?.product);
+    },
+    getSelectedGoodQty(select_product) {
+      if (!select_product?.qty) return 0;
+      return select_product.qty;
+    },
+    getSelectedGoodDefualtPrice(select_product) {
+      return this.getGoodDefualtPrice(select_product?.product);
+    },
+    getSelectedGoodQtyPrice(select_product) {
+      const qty = this.getSelectedGoodQty(select_product);
+      const defaultPrice = this.getSelectedGoodDefualtPrice(select_product);
+      const sum = qty * defaultPrice;
+      return sum;
+    },
+    getInfoText() {
+      return `${this.select_products_length}가지 ${this.select_products_qty}개 ${this.select_products_price}원`;
+    },
+
     submit() {
       const auth = this.$store.state.auth;
       const store_shop_code = auth.store.store_code;
