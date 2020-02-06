@@ -9,8 +9,6 @@
     :tableId="getTableId()"
   )
   .top
-    .button(v-if="!flag_restaring" @click="restartAllClient()") 태블릿 전체 새로고침
-    .button.button-dark(v-if="flag_restaring" @click="cancelRestart()") 태블릿 새로고침 취소
   ul.table-list
     li.table-item(v-for="table in tables" :key="table.Ta_id" )
       .table-number(@click="openMenuBoard(table)" :class="'empty-table'") {{table.Tablet_name}}
@@ -20,8 +18,6 @@
 export default {
   data() {
     return {
-      timeouts: [],
-      flag_restaring: false,
       isMenuModal: false,
       chooseTable: null,
     };
@@ -42,9 +38,6 @@ export default {
     const goods = await this.$store.dispatch('setGooods', fd);
     console.log('categories', categories, goods);
   },
-  beforeDestroy() {
-    this.cancelRestart();
-  },
   methods: {
     closeMenuModal() {
       this.isMenuModal = false;
@@ -58,39 +51,6 @@ export default {
     openMenuBoard(table) {
       this.isMenuModal = true;
       this.chooseTable = table;
-    },
-    restartAllClient() {
-      this.flag_restaring = true;
-      console.log('restart all client');
-
-      let clients = this.$store.getters.clients;
-
-      let count = 0;
-      for (let myid in clients) {
-        let client = clients[myid];
-
-        let timeout = setTimeout(function() {
-          console.log(myid, client);
-
-          client.tablet_number;
-
-          let data = {
-            type_msg: 'restart',
-            myid: myid,
-          };
-          this.$socket.emit('reqRestartClient', data);
-        }.bind(this), count * 3000);
-        this.timeouts.push(timeout);
-        count += 1;
-      }
-
-    },
-    cancelRestart() {
-      for (let timeout of this.timeouts) {
-        clearTimeout(timeout);
-      }
-      this.timeouts = [];
-      this.flag_restaring = false;
     },
   },
 };
