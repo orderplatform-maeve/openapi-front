@@ -6,6 +6,7 @@
     :show="isMenuModal"
     :onClose="closeMenuModal"
     :tableName="getTableName()"
+    :tableId="getTableId()"
   )
   .top
     .button(v-if="!flag_restaring" @click="restartAllClient()") 태블릿 전체 새로고침
@@ -50,6 +51,9 @@ export default {
     },
     getTableName() {
       return this.chooseTable?.Tablet_name;
+    },
+    getTableId() {
+      return this.chooseTable?.Ta_id;
     },
     openMenuBoard(table) {
       this.isMenuModal = true;

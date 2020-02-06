@@ -12,6 +12,7 @@ const endpoints = {
   orders: {
     todayRedisData: `${DEMO_URL}/logs/Today_redis_data`,
     commitOrderViewData: `${DEMO_URL}/logs/commit_orderView_data`,
+    order: `${DEMO_URL}/shop/order`,
   },
   device: {
     shopOpen: `${ADMIN_URL}/store/shop_open`,
@@ -20,8 +21,8 @@ const endpoints = {
     shopCloseOrder: `${ADMIN_URL}/store/shop_close_order`,
   },
   table: {
-    getTableList: `${REST_URL}/shop/get_table_list`,
-    getCartList: `${REST_URL}/tablet_order/get_cart_list`,
+    getTableList: `${DEMO_URL}/shop/get_table_list`,
+    getCartList: `${DEMO_URL}/tablet_order/get_cart_list`,
   },
   menu: {
     categories: `${DEMO_URL}/shop/categorys`,

@@ -68,10 +68,13 @@ export default {
       type: String,
       default: '',
     },
+    tableId: {
+      type: String,
+      default: '',
+    },
   },
   data() {
     return {
-      table: {},
       first_category: undefined,
       first_category_code: undefined,
       second_category: undefined,
@@ -89,13 +92,6 @@ export default {
       const { categories } = this.$store.state;
       return categories.filter((item) => item.T_order_store_menu_depth.includes('1'));
     },
-    totalPrice() {
-      let result = 0;
-      return result;
-    },
-    selectProducts() {
-      return this.select_products;
-    },
     categorys() {
       return this.$store.state.categories;
     },
@@ -105,33 +101,34 @@ export default {
   },
   methods: {
     submit() {
-      let auth = this.$store.getters.auth;
-      let store_shop_code = auth.store.code;
-      let tablet_number = this.table.code;
-      let store_good_code = [];
-      let store_good_qty = [];
+      const auth = this.$store.state.auth;
+      const store_shop_code = auth.store.store_code;
+      const tablet_number = this.tableId;
+      const store_good_code = [];
+      const store_good_qty = [];
 
-      let frm = new FormData();
+      const frm = new FormData();
       frm.set('store_shop_code', store_shop_code);
       frm.set('tablet_number', tablet_number);
-      for (let code in this.select_products) {
-        let item = this.select_products[code];
-        let code = item.product.T_order_store_good_code;
-        let qty = item.qty;
+
+      for (const productCode in this.select_products) {
+        const item = this.select_products[productCode];
+        const code = item.product.T_order_store_good_code;
+        const qty = item.qty;
 
         store_good_code.push(code);
         store_good_qty.push(qty);
         frm.append('store_good_code[]', code);
         frm.append('store_good_qty[]', qty);
       }
+
       axios
-        .post('http://rest.torder.co.kr/shop/order', frm)
+        .post('http://demo.torder.co.kr/shop/order', frm)
         .then(function(res) {
           console.log(res);
           this.close();
         }.bind(this)).catch(function(err) {
           console.log({err: err});
-        }).finally(function () {
         });
     },
     openTableOrders(table) {
