@@ -8,7 +8,7 @@
       .wrap
         .title 주문하기
       .buttons
-        .button(@click="openTableOrders(table)") 주문내역보기
+        .button(@click="openTableOrders()") 주문내역보기
     .body
       .left
         ul.list-category.first
@@ -131,8 +131,7 @@ export default {
           console.log({err: err});
         });
     },
-    openTableOrders(table) {
-      this.$eventBus.$emit('openTableOrders', table);
+    openTableOrders() {
       this.close();
     },
     plusQtyProduct(select_product) {
