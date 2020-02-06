@@ -1,13 +1,18 @@
 <template lang="pug">
 #tables
   modal-table-orders
-  modal-menu
+  modal-menu(
+    v-if="chooseTable"
+    :show="isMenuModal"
+    :onClose="closeMenuModal"
+    :tableName="getTableName()"
+  )
   .top
-    .button(v-if="!flag_restaring" v-on:click="restartAllClient()") 태블릿 전체 새로고침
-    .button.button-dark(v-if="flag_restaring" v-on:click="cancelRestart()") 태블릿 새로고침 취소
+    .button(v-if="!flag_restaring" @click="restartAllClient()") 태블릿 전체 새로고침
+    .button.button-dark(v-if="flag_restaring" @click="cancelRestart()") 태블릿 새로고침 취소
   ul.table-list
     li.table-item(v-for="table in tables" :key="table.Ta_id" )
-      .table-number(v-on:click="openMenuBoard(table)" :class="'empty-table'") {{table.Tablet_name}}
+      .table-number(@click="openMenuBoard(table)" :class="'empty-table'") {{table.Tablet_name}}
 </template>
 
 <script>
@@ -16,13 +21,14 @@ export default {
     return {
       timeouts: [],
       flag_restaring: false,
+      isMenuModal: false,
+      chooseTable: null,
     };
   },
   computed: {
     tables() {
-      console.log(this.$store.state.tables);
       return this.$store.state.tables;
-    }
+    },
   },
   async mounted() {
     const params = { shop_code: this.$store.state.auth.store.store_code };
@@ -39,8 +45,15 @@ export default {
     this.cancelRestart();
   },
   methods: {
+    closeMenuModal() {
+      this.isMenuModal = false;
+    },
+    getTableName() {
+      return this.chooseTable?.Tablet_name;
+    },
     openMenuBoard(table) {
-      console.log(table);
+      this.isMenuModal = true;
+      this.chooseTable = table;
     },
     restartAllClient() {
       this.flag_restaring = true;

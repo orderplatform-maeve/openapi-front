@@ -1,10 +1,10 @@
 <template lang="pug">
 #menuBoard(v-if="show")
-  .background(v-on:click="close")
+  .background(@click="close")
   .container
     .top
       .wrap
-        .table-number {{table.name}}
+        .table-number {{tableName}}
       .wrap
         .title 주문하기
       .buttons
@@ -55,9 +55,22 @@
 import axios from 'axios';
 
 export default {
+  props: {
+    show: {
+      type: Boolean,
+      default: false,
+    },
+    onClose: {
+      type: Function,
+      default: () => {},
+    },
+    tableName: {
+      type: String,
+      default: '',
+    },
+  },
   data() {
     return {
-      show: true,
       table: {},
       first_category: undefined,
       first_category_code: undefined,
@@ -144,26 +157,18 @@ export default {
       this.show_select_products = true;
     },
     selectFirstCategory(category) {
-      console.log(category);
-
       const menuCode = category.T_order_store_menu_code;
       this.first_category = category;
       this.first_category_code = menuCode;
-
-      console.log(this.first_category, menuCode, this.first_category_code);
 
       this.$nextTick(() => {
         this.$refs.secondCategoryList.scrollTop = 0;
       });
     },
     selectSecondCategory(category) {
-      console.log(category);
-
       const code = category.T_order_store_menu_code;
       this.second_category = category;
       this.second_category_code = code;
-
-      console.log(this.second_category, code, this.second_category_code);
 
       this.$nextTick(() => {
         this.$refs.productList.scrollTop = 0;
@@ -213,36 +218,7 @@ export default {
       this.show_select_products = false;
       this.show_select_products = true;
     },
-    open(table) {
-      this.table = table;
-      for (let code in this.$store.getters.categorys) {
-        let category = this.$store.getters.categorys[code];
-
-        if (category.T_order_store_menu_serviceUse==0
-          && category.T_order_store_menu_depth.includes('1')
-          && category.T_order_store_menu_use=='Y') {
-          this.first_category = category;
-          this.first_category_code = code;
-
-          let first_code = code;
-          for (let code in this.$store.getters.categorys) {
-            let category = this.$store.getters.categorys[code];
-
-            if (category.T_order_store_menu_serviceUse==0
-              && category.T_order_store_menu_depth.includes(first_code)
-              && category.T_order_store_menu_use=='Y') {
-              this.second_category = category;
-              this.second_category_code = code;
-              break;
-            }
-          }
-          break;
-        }
-      }
-      this.show = true;
-    },
     close() {
-      this.show = false;
       this.first_category= undefined;
       this.first_category_code= undefined;
       this.second_category= undefined;
@@ -252,6 +228,7 @@ export default {
       this.select_products_qty = 0;
       this.select_products_price = 0;
       this.select_products_sorted = [];
+      this.onClose();
     },
     getSubCategorise() {
       const categorise = [...this.categorys];
