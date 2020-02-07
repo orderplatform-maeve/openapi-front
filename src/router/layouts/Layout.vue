@@ -16,7 +16,7 @@
           :stores="stores"
           :time="time"
         )
-      .right
+      .right(v-if="visibleSideMenu()")
         .top
           .button(v-on:click="restart()") 새로고침
           .datetime
@@ -123,6 +123,10 @@ export default {
   },
 
   methods: {
+    visibleSideMenu() {
+      console.log(this.$router.history.current.path, paths.display);
+      return this.$router.history.current.path !== paths.display;
+    },
     logout() {
       this.$store.dispatch('logout');
       this.$cookies.remove(COOKIE_AUTH_NAME, null, null);
