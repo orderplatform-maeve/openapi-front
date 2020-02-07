@@ -55,21 +55,6 @@
 <script>
 import utils from '@utils/orders.utils';
 
-const peopleMethods = {
-  isPeopleCnt(people) {
-    if (!people) return false;
-    return people.count > 0;
-  },
-  getPeopleCnt(people) {
-    if (!people) return 0;
-    return people.count;
-  },
-  getPeopleName(people) {
-    if (!people) return '';
-    return people.name;
-  },
-};
-
 const beforeProductMethods = {
   getBeforeProductDisplayName(cProduct) {
     if (!cProduct) return '';
@@ -128,7 +113,6 @@ export default {
       clearInterval(this.interval);
       this.$store.dispatch('unsetOrder');
     },
-    ...peopleMethods,
     ...beforeProductMethods,
     ...utils,
   },

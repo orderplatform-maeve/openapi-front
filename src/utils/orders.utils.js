@@ -123,6 +123,21 @@ const productMethods = {
   },
 };
 
+const peopleMethods = {
+  isPeopleCnt(people) {
+    if (!people) return false;
+    return people.count > 0;
+  },
+  getPeopleCnt(people) {
+    if (!people) return 0;
+    return people.count;
+  },
+  getPeopleName(people) {
+    if (!people) return '';
+    return people.name;
+  },
+};
+
 export default {
   getTableNumberClass,
   checkedTabletNum,
@@ -137,4 +152,5 @@ export default {
   vaildCommitText,
   getOrderTiem,
   ...productMethods,
+  ...peopleMethods,
 };
