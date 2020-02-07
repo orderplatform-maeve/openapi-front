@@ -9,6 +9,7 @@ import { isEmpty } from '@utils/CheckedType';
 import { COOKIE_AUTH_NAME } from '@config';
 
 import endpoints from './endpoints';
+import paths from '@router/paths';
 
 Vue.use(Vuex);
 
@@ -24,7 +25,13 @@ const socket = {
   mutations: {
     SOCKET_orderlog(state, order) {
       if (vaildShopCode(state, order)) {
-        Vue.set(state, 'order', order);
+        const pathname = window.location.hash.replace('#', '');
+        if (pathname === paths.display) {
+          console.log('displayNewOrder');
+          Vue.set(state, 'displayNewOrder', order);
+        } else {
+          Vue.set(state, 'order', order);
+        }
       }
     },
     SOCKET_resStoreInfo(state, storeDeviceInfo) {
@@ -344,6 +351,7 @@ const authProto = {
 
 const state = {
   order: undefined,
+  displayNewOrder: undefined,
   orders: [],
   device: {
     serviceStatus: false,

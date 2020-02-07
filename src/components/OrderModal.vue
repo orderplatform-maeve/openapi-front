@@ -70,37 +70,6 @@ const peopleMethods = {
   },
 };
 
-const productMethods = {
-  getProductQty(product) {
-    if (!product) return 0;
-    return product.good_qty;
-  },
-  getProjectGoodName(product) {
-    if (!product) return '';
-    return product.good_name;
-  },
-  isProductMemoShow(product) {
-    if(!product) return false;
-    return product.memo_show;
-  },
-  getProductMemo(product) {
-    if (!product) return '';
-    return product.memo;
-  },
-  isProductOpt(product) {
-    if(!product) return false;
-    return product.option;
-  },
-  getOptionGoodQty(option) {
-    if (!option) return 0;
-    return option.good_qty;
-  },
-  getOptionDisplayName(option) {
-    if (!option) return '';
-    return option.display_name;
-  },
-};
-
 const beforeProductMethods = {
   getBeforeProductDisplayName(cProduct) {
     if (!cProduct) return '';
@@ -160,7 +129,6 @@ export default {
       this.$store.dispatch('unsetOrder');
     },
     ...peopleMethods,
-    ...productMethods,
     ...beforeProductMethods,
     ...utils,
   },
@@ -285,7 +253,6 @@ export default {
           }
         }
 
-
         .wrap-product-list {
           display:flex;
           flex-direction:column;
@@ -310,7 +277,6 @@ export default {
               margin-bottom:12px;
               font-size:48px;
               font-weight:900;
-
 
               .option-list {
                 display:flex;
