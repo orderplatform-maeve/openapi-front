@@ -216,6 +216,7 @@ const shop = {
       const url = endpoints.shop.init;
       const response = await axios.post(url, params);
       console.log(response);
+      return response;
     },
   },
 };

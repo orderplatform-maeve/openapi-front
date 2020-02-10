@@ -125,7 +125,6 @@ export default {
 
   methods: {
     visibleSideMenu() {
-      console.log(this.$router.history.current.path, paths.display);
       return this.$router.history.current.path !== paths.display;
     },
     logout() {
