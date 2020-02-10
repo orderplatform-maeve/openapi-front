@@ -212,6 +212,11 @@ const shop = {
     setStores: ({ commit }, stores) => {
       commit('SET_STORES', stores);
     },
+    async setStoreInit({ commit }, params) {
+      const url = endpoints.shop.init;
+      const response = await axios.post(url, params);
+      console.log(response);
+    },
   },
 };
 

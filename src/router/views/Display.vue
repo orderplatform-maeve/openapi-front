@@ -1,7 +1,6 @@
 <template lang="pug">
 #display
   .left-side
-    h1 최근 주문
     .order-title
       .table-number(:class="getTableNumberClass(order)") {{checkedTabletNum(order)}}
       .people_total_count(v-if="visibleCustomerCount(order)") {{checkedTotalPeople(order)}}명
@@ -33,12 +32,10 @@
               .count {{getOptionGoodQty(option)}}개
               .name {{getOptionDisplayName(option)}}
   .right-side
-    h1 주문 목록
     ul.order-list()
       li.order-item(
         v-for="order in sortedOrders"
         :class="getOrderItemClass(order)"
-        @click="view(order)"
         v-if="visibleOrderItem(order)"
       )
         .table-number(
@@ -79,9 +76,6 @@ export default {
       return {
         commit: this.checkedCommit(order),
       };
-    },
-    view(order) {
-      this.$store.dispatch('setOrder', order);
     },
     visibleOrderItem(order) {
       const commit = this.checkedCommit(order);
