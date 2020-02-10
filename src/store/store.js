@@ -99,7 +99,7 @@ const authentication = {
         commit('SET_STORES', res.data.shop_data);
         commit('SET_AUTH', auth);
 
-        Vue.$cookies.set(COOKIE_AUTH_NAME, auth, '1y', null, null);
+        Vue.$cookies.set(COOKIE_AUTH_NAME, auth, '1y', null, 'torder.co.kr');
 
         return res.data.result;
       } catch (error) {
