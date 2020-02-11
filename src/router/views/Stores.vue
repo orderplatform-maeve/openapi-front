@@ -10,6 +10,8 @@
 </template>
 <script>
 import paths from '@router/paths';
+import { COOKIE_AUTH_NAME } from '@config';
+import { COOKIE_DOMAIN } from '@config/auth.constant';
 
 export default {
   props: {
@@ -39,7 +41,7 @@ export default {
   methods: {
     async selectStore(store) {
       this.auth.store = store;
-      this.$cookies.set('auth', this.auth, '1y', null, 'torder.co.kr');
+      this.$cookies.set(COOKIE_AUTH_NAME, this.auth, '1y', null, COOKIE_DOMAIN);
 
       await this.$store.dispatch('updateAuth', this.auth);
 
