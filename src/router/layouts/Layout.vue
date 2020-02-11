@@ -16,7 +16,7 @@
           :stores="stores"
           :time="time"
         )
-      .right
+      .right(v-if="visibleSideMenu()")
         .top
           .button(v-on:click="restart()") 새로고침
           .datetime
@@ -25,6 +25,7 @@
           .store_name {{storeName}}
           router-link.button(v-if="visibleOrderButton" :to="paths.order") 주문 보기
           router-link.button(v-if="visibleOrderButton" :to="paths.tables") 테이블 보기
+          router-link.button(:to="paths.display") 디스플레이
         .bottom
           hr
           .tab-group
@@ -123,6 +124,9 @@ export default {
   },
 
   methods: {
+    visibleSideMenu() {
+      return this.$router.history.current.path !== paths.display;
+    },
     logout() {
       this.$store.dispatch('logout');
       this.$cookies.remove(COOKIE_AUTH_NAME, null, null);

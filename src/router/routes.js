@@ -4,6 +4,7 @@ import {
   Stores,
   Orders,
   Tables,
+  Display,
 } from '@views';
 
 import paths from './paths';
@@ -40,7 +41,13 @@ const routes = [{
     name: paths.tables.replace('/',''),
     component: Tables,
     meta: { requiresAuth: true },
-  }]
+  },
+  {
+    path: paths.display,
+    name: paths.display.replace('/',''),
+    component: Display,
+    meta: { requiresAuth: true },
+  }],
 }];
 
 export default routes;

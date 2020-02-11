@@ -92,6 +92,52 @@ export function getOrderTiem(order) {
   return order.order_time;
 }
 
+const productMethods = {
+  getProductQty(product) {
+    if (!product) return 0;
+    return product.good_qty;
+  },
+  getProjectGoodName(product) {
+    if (!product) return '';
+    return product.good_name;
+  },
+  isProductMemoShow(product) {
+    if(!product) return false;
+    return product.memo_show;
+  },
+  getProductMemo(product) {
+    if (!product) return '';
+    return product.memo;
+  },
+  isProductOpt(product) {
+    if(!product) return false;
+    return product.option;
+  },
+  getOptionGoodQty(option) {
+    if (!option) return 0;
+    return option.good_qty;
+  },
+  getOptionDisplayName(option) {
+    if (!option) return '';
+    return option.display_name;
+  },
+};
+
+const peopleMethods = {
+  isPeopleCnt(people) {
+    if (!people) return false;
+    return people.count > 0;
+  },
+  getPeopleCnt(people) {
+    if (!people) return 0;
+    return people.count;
+  },
+  getPeopleName(people) {
+    if (!people) return '';
+    return people.name;
+  },
+};
+
 export default {
   getTableNumberClass,
   checkedTabletNum,
@@ -105,4 +151,6 @@ export default {
   checkedCommit,
   vaildCommitText,
   getOrderTiem,
+  ...productMethods,
+  ...peopleMethods,
 };

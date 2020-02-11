@@ -51,9 +51,8 @@
           .info {{select_products_length}}가지 {{select_products_qty}}개 {{select_products_price}}원
           .text 주문하기
 </template>
-<script>
-import axios from 'axios';
 
+<script>
 export default {
   props: {
     show: {

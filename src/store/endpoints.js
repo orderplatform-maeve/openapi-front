@@ -27,6 +27,9 @@ const endpoints = {
     categories: `${DEMO_URL}/shop/categorys`,
     getGoodsList: `${DEMO_URL}/goods/get_goods_list`,
   },
+  shop: {
+    init: `${DEMO_URL}/shop/init`,
+  },
 };
 
 export default endpoints;

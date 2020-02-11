@@ -9,6 +9,7 @@ import { isEmpty } from '@utils/CheckedType';
 import { COOKIE_AUTH_NAME } from '@config';
 
 import endpoints from './endpoints';
+import paths from '@router/paths';
 
 Vue.use(Vuex);
 
@@ -24,7 +25,13 @@ const socket = {
   mutations: {
     SOCKET_orderlog(state, order) {
       if (vaildShopCode(state, order)) {
-        Vue.set(state, 'order', order);
+        const pathname = window.location.hash.replace('#', '');
+        if (pathname === paths.display) {
+          console.log('displayNewOrder');
+          Vue.set(state, 'displayNewOrder', order);
+        } else {
+          Vue.set(state, 'order', order);
+        }
       }
     },
     SOCKET_resStoreInfo(state, storeDeviceInfo) {
@@ -92,7 +99,7 @@ const authentication = {
         commit('SET_STORES', res.data.shop_data);
         commit('SET_AUTH', auth);
 
-        Vue.$cookies.set(COOKIE_AUTH_NAME, auth, '1y', null, null);
+        Vue.$cookies.set(COOKIE_AUTH_NAME, auth, '1y', null, 'torder.co.kr');
 
         return res.data.result;
       } catch (error) {
@@ -204,6 +211,12 @@ const shop = {
   actions: {
     setStores: ({ commit }, stores) => {
       commit('SET_STORES', stores);
+    },
+    async setStoreInit({ commit }, params) {
+      const url = endpoints.shop.init;
+      const response = await axios.post(url, params);
+      console.log(response);
+      return response;
     },
   },
 };
@@ -344,6 +357,7 @@ const authProto = {
 
 const state = {
   order: undefined,
+  displayNewOrder: undefined,
   orders: [],
   device: {
     serviceStatus: false,

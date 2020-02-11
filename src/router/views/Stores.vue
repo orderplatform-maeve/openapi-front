@@ -39,7 +39,7 @@ export default {
   methods: {
     async selectStore(store) {
       this.auth.store = store;
-      this.$cookies.set('auth', this.auth, '1y', null, null);
+      this.$cookies.set('auth', this.auth, '1y', null, 'torder.co.kr');
 
       await this.$store.dispatch('updateAuth', this.auth);
 
@@ -48,7 +48,17 @@ export default {
 
       await this.$store.dispatch('setOrders', fd);
 
-      this.$router.push(paths.order);
+      const params = new FormData();
+      params.append('store_code', this.auth.store.store_code);
+
+      const res = await this.$store.dispatch('setStoreInit', params);
+
+      if (process.env.NODE_ENV === 'development') {
+        // window.location.href = res.data.data.T_order_store_orderView_version;
+        this.$router.push(paths.order);
+      } else {
+        window.location.href = res.data.data.T_order_store_orderView_version;
+      }
     },
     getStoreItemKey(store) {
       try {
