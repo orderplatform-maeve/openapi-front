@@ -23,9 +23,9 @@
             span {{ time.now | moment("MM.DD HH:mm:ss") }}
           img.logo(:src="logo")
           .store_name {{storeName}}
-          router-link.button(v-if="visibleOrderButton" :to="paths.order") 주문 보기
-          router-link.button(v-if="visibleOrderButton" :to="paths.tables") 테이블 보기
-          router-link.button(:to="paths.display") 디스플레이
+          //- router-link.button(v-if="visibleOrderButton" :to="paths.order") 주문 보기
+          //- router-link.button(v-if="visibleOrderButton" :to="paths.tables") 테이블 보기
+          //- router-link.button(v-if="visibleOrderButton" :to="paths.display") 디스플레이
         .bottom
           hr
           .tab-group
@@ -52,6 +52,7 @@
 import store from '@store/store';
 import paths from '@router/paths';
 import { COOKIE_AUTH_NAME } from '@config';
+import { COOKIE_DOMAIN } from '@config/auth.constant';
 
 export default {
   store,
@@ -129,7 +130,7 @@ export default {
     },
     logout() {
       this.$store.dispatch('logout');
-      this.$cookies.remove(COOKIE_AUTH_NAME, null, null);
+      this.$cookies.remove(COOKIE_AUTH_NAME, null, COOKIE_DOMAIN);
       this.$router.replace(paths.login);
     },
     restart() {

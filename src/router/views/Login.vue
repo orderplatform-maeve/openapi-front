@@ -30,12 +30,12 @@ export default {
       } = this;
 
       if (id && pw) {
-        const params = {
-          member_id: id,
-          member_pwd: pw,
-        };
 
-        const isLogin = await this.$store.dispatch('login', params);
+        const fd = new FormData();
+        fd.append('member_id', id);
+        fd.append('member_pwd', pw);
+
+        const isLogin = await this.$store.dispatch('login', fd);
         if (isLogin) {
           console.log(this.$router.push, paths.store);
           this.$router.push(paths.store);

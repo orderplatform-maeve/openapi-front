@@ -22,7 +22,7 @@
 
     .wrap-product-list
       ul.product-list
-        li.product-item(v-for="product in order.order_info")
+        li.product-item(v-for="product in getOrderInfo(order)")
           .count {{getProductQty(product)}}개
           .name {{getProjectGoodName(product)}}
           .memo(v-if="isProductMemoShow(product)") {{getProductMemo(product)}}
@@ -72,6 +72,11 @@ export default {
     },
   },
   methods: {
+    getOrderInfo(order) {
+      if (!order) return [];
+
+      return order.order_info;
+    },
     getOrderItemClass(order) {
       return {
         commit: this.checkedCommit(order),
