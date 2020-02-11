@@ -7,6 +7,7 @@ import querystring from 'querystring';
 import { vaildShopCode } from './store.helper';
 import { isEmpty } from '@utils/CheckedType';
 import { COOKIE_AUTH_NAME } from '@config';
+import { COOKIE_DOMAIN } from '@config/auth.constant';
 
 import endpoints from './endpoints';
 import paths from '@router/paths';
@@ -61,6 +62,7 @@ const authentication = {
       try {
         const url = endpoints.authentication.login;
         const res = await axios.post(url, params);
+        console.log('res', res);
 
         if (!res) {
           throw 'response 값이 없습니다.';
@@ -99,7 +101,9 @@ const authentication = {
         commit('SET_STORES', res.data.shop_data);
         commit('SET_AUTH', auth);
 
-        Vue.$cookies.set(COOKIE_AUTH_NAME, auth, '1y', null, 'torder.co.kr');
+        console.log(COOKIE_DOMAIN);
+
+        Vue.$cookies.set(COOKIE_AUTH_NAME, auth, '1y', null, COOKIE_DOMAIN);
 
         return res.data.result;
       } catch (error) {
