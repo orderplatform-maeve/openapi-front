@@ -356,6 +356,8 @@ const authProto = {
     store_code: '',
     store_id: '',
     store_name: '',
+    code: '',
+    name: '',
   },
 };
 
