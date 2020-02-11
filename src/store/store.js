@@ -116,6 +116,7 @@ const authentication = {
     },
     logout({ commit }) {
       commit('RESET_AUTH');
+      commit('SET_STORES', []);
     },
   },
 };
