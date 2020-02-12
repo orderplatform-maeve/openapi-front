@@ -116,6 +116,7 @@ const authentication = {
     },
     logout({ commit }) {
       commit('RESET_AUTH');
+      commit('SET_STORES', []);
     },
   },
 };
@@ -356,6 +357,8 @@ const authProto = {
     store_code: '',
     store_id: '',
     store_name: '',
+    code: '',
+    name: '',
   },
 };
 

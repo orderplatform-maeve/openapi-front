@@ -41,7 +41,14 @@ export default {
   methods: {
     async selectStore(store) {
       this.auth.store = store;
-      this.$cookies.set(COOKIE_AUTH_NAME, this.auth, '1y', null, COOKIE_DOMAIN);
+
+      const auth = {
+        ...this.auth,
+        code: this.auth.store_code,
+        name:  this.auth.store_name,
+      };
+
+      this.$cookies.set(COOKIE_AUTH_NAME, auth, '1y', null, COOKIE_DOMAIN);
 
       await this.$store.dispatch('updateAuth', this.auth);
 

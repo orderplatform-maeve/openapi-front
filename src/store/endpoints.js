@@ -14,10 +14,10 @@ const endpoints = {
     order: `${DEMO_URL}/shop/order`,
   },
   device: {
-    shopOpen: `${DEMO_ADMIN_URL}/store/shop_open`,
-    shopClose: `${DEMO_ADMIN_URL}/store/shop_close`,
-    shopOpenOrder: `${DEMO_ADMIN_URL}/store/shop_open_order`,
-    shopCloseOrder: `${DEMO_ADMIN_URL}/store/shop_close_order`,
+    shopOpen: `${ADMIN_URL}/store/shop_open`,
+    shopClose: `${ADMIN_URL}/store/shop_close`,
+    shopOpenOrder: `${ADMIN_URL}/store/shop_open_order`,
+    shopCloseOrder: `${ADMIN_URL}/store/shop_close_order`,
   },
   table: {
     getTableList: `${DEMO_URL}/shop/get_table_list`,
