@@ -3,34 +3,34 @@
   .top
   ul.table-list
     li.table-item(v-for="table in tables" :key="table.Ta_id" )
-      .table-number(@click="openTableOrders(table)" :class="'empty-table'") {{table.Tablet_name}}
+      .table-number(@click="openTableOrders(table)" :class="'empty-table'") {{getTableName(table)}}
 </template>
 
 <script>
 export default {
-  data() {
-    return {
-      isMenuModal: false,
-      isTableOrderModal: false,
-    };
-  },
   computed: {
     tables() {
       return this.$store.state.tables;
     },
   },
-  async mounted() {
-    const params = { shop_code: this.$store.state.auth.store.store_code };
-    this.$store.dispatch('setTables', params);
-
-    const fd = new FormData();
-    fd.append('store_code', this.$store.state.auth.store.store_code);
-
-    const categories = await this.$store.dispatch('setCategories', fd);
-    const goods = await this.$store.dispatch('setGooods', fd);
-    // console.log('categories', categories, goods);
+  mounted() {
+    this.initialized();
   },
   methods: {
+    async initialized() {
+      const params = { shop_code: this.$store.state.auth.store.store_code };
+      this.$store.dispatch('setTables', params);
+
+      const fd = new FormData();
+      fd.append('store_code', this.$store.state.auth.store.store_code);
+
+      const categories = await this.$store.dispatch('setCategories', fd);
+      const goods = await this.$store.dispatch('setGooods', fd);
+      // console.log('categories', categories, goods);
+    },
+    getTableName(table) {
+      return table?.Tablet_name;
+    },
     getTableId() {
       return this.chooseTable?.Ta_id;
     },

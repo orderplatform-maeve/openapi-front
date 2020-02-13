@@ -12,6 +12,7 @@
 import paths from '@router/paths';
 import { COOKIE_AUTH_NAME } from '@config';
 import { COOKIE_DOMAIN } from '@config/auth.constant';
+import { isDev } from '@utils/constants';
 
 export default {
   props: {
@@ -61,7 +62,7 @@ export default {
 
       await this.$store.dispatch('resetDisplayNewOrder');
 
-      if (process.env.NODE_ENV === 'development') {
+      if (isDev) {
         this.$router.push(paths.order);
       } else {
         window.location.href = res.data.data.T_order_store_orderView_version;
