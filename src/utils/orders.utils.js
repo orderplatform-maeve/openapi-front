@@ -1,7 +1,8 @@
 function vaildGoodCode(order) {
   const isOrderInfo = order && order.order_info;
   const isEmptyOrderInfo = order.order_info.length > 0;
-  const itemCode = isOrderInfo && isEmptyOrderInfo && order.order_info[0].good_code;
+  const isGoodCode = !!order.order_info[0];
+  const itemCode = isOrderInfo && isEmptyOrderInfo && isGoodCode && order.order_info[0].good_code;
 
   return itemCode;
 }
@@ -19,17 +20,25 @@ function getGoodType(goodCode) {
 }
 
 export function getTableNumberClass(order) {
+  if (!order) {
+    return {
+      call: false,
+      setting: false,
+    };
+  }
   const goodCode = vaildGoodCode(order);
   return getGoodType(goodCode);
 }
 
 export function visibleCall(order) {
+  if (!order) return false;
   const goodCode = vaildGoodCode(order);
   const isCall = goodCode === '99999';
   return isCall;
 }
 
 export function isDoneSetting(order) {
+  if (!order) return false;
   const goodCode = vaildGoodCode(order);
   const isDone = goodCode === '88888';
   return isDone;
@@ -43,7 +52,7 @@ export function checkedTabletNum(order) {
 
     return order.T_order_order_tablet_number;
   } catch (error) {
-    console.error(error);
+    // console.error(error);
     return 'have not tablet number';
   }
 }
@@ -60,6 +69,7 @@ export function checkedTotalPeople(order) {
 }
 
 export function isFirstEntered(order) {
+
   return order && order.is_tablet_first_order;
 }
 
@@ -138,6 +148,29 @@ const peopleMethods = {
   },
 };
 
+const beforeProductMethods = {
+  getBeforeProductDisplayName(cProduct) {
+    if (!cProduct) return '';
+    return cProduct.display_name;
+  },
+  getBeforeProductOrderQty(cProduct) {
+    if (!cProduct) return 0;
+    return cProduct.order_qty;
+  },
+  isBeforeProductOtp(cProduct) {
+    if (!cProduct) return false;
+    return cProduct.option;
+  },
+  getBeforeProductOptionOrderQty(option) {
+    if (!option) return 0;
+    return option.order_qty;
+  },
+  getBeforeProductOptionDisplayName(option) {
+    if (!option) return '';
+    return option.display_name;
+  },
+};
+
 export default {
   getTableNumberClass,
   checkedTabletNum,
@@ -153,4 +186,5 @@ export default {
   getOrderTiem,
   ...productMethods,
   ...peopleMethods,
+  ...beforeProductMethods,
 };

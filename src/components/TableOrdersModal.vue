@@ -14,10 +14,10 @@
         table.order-list
           tbody
             tr.order-item(v-for="order in orders")
-              td.name {{order.name_product}}
-              td.price {{order.price_product}}원
-              td.qty {{order.qty}}개
-              td.price.price-amt {{order.price_product * order.qty}}원
+              td.name {{order.display_name}}
+              td.price {{order.good_price}}원
+              td.qty {{order.order_qty}}개
+              td.price.price-amt {{order.good_price * order.order_qty}}원
           tfoot
             tr
               td(colspan=2) 합계
@@ -39,6 +39,10 @@ export default {
       type: String,
       default: '',
     },
+    tableId: {
+      type: String,
+      default: '',
+    },
     onClose: {
       type: Function,
       default: () => {},
@@ -50,13 +54,25 @@ export default {
   },
   data() {
     return {
-      table: {},
+      table: {
+        qty_amt: 0,
+        price_amt: 0,
+      },
     };
   },
   computed: {
     orders() {
       return [];
     }
+  },
+  created() {
+    const fd = new FormData();
+
+    const { store_code } = this.$store.state.auth.store;
+    fd.append('store_code', store_code);
+    fd.append('tablet_number', this.tableId);
+
+    this.$store.dispatch('setTableCartList', fd);
   },
   methods: {
     openMenuBoard() {

@@ -1,5 +1,21 @@
 <template lang="pug">
 #tables
+  modal-table-orders(
+    v-if="chooseTable"
+    :show="isTableOrderModal"
+    :tableName="getTableName()"
+    :tableId="getTableId()"
+    :onClose="closeTableOrderModal"
+    :showMenuModal="showMenuModal"
+  )
+  modal-menu(
+    v-if="chooseTable"
+    :show="isMenuModal"
+    :onClose="closeMenuModal"
+    :tableName="getTableName()"
+    :tableId="getTableId()"
+    :onTableOrder="showTableOrderModal"
+  )
   .top
   ul.table-list
     li.table-item(v-for="table in tables" :key="table.Ta_id" )
@@ -11,6 +27,7 @@ export default {
   data() {
     return {
       isMenuModal: false,
+      chooseTable: null,
       isTableOrderModal: false,
     };
   },
@@ -31,10 +48,28 @@ export default {
     // console.log('categories', categories, goods);
   },
   methods: {
+    showMenuModal() {
+      this.isMenuModal = true;
+    },
+    closeTableOrderModal() {
+      this.isTableOrderModal = false;
+    },
+    showTableOrderModal() {
+      this.isTableOrderModal = true;
+    },
+    closeMenuModal() {
+      this.isMenuModal = false;
+    },
+    getTableName() {
+      return this.chooseTable?.Tablet_name;
+    },
     getTableId() {
       return this.chooseTable?.Ta_id;
     },
     openTableOrders(table) {
+      this.isTableOrderModal = true;
+      this.chooseTable = table;
+
       const fd = new FormData();
 
       const { store_code } = this.$store.state.auth.store;

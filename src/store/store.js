@@ -28,7 +28,6 @@ const socket = {
       if (vaildShopCode(state, order)) {
         const pathname = window.location.hash.replace('#', '');
         if (pathname === paths.display) {
-          console.log('displayNewOrder');
           Vue.set(state, 'displayNewOrder', order);
         } else {
           Vue.set(state, 'order', order);
@@ -147,6 +146,9 @@ const order = {
         Vue.set(state, 'orders', orders);
       }
     },
+    RESET_DISPLAY_NEW_ORDER: (state) => {
+      Vue.set(state, 'displayNewOrder', undefined);
+    },
   },
   actions: {
     async commitOrder({ commit }, payload) {
@@ -203,6 +205,9 @@ const order = {
       }
       return false;
     },
+    resetDisplayNewOrder({ commit }) {
+      commit('RESET_DISPLAY_NEW_ORDER');
+    }
   },
 };
 
@@ -312,8 +317,10 @@ const table = {
       const url = endpoints.table.getCartList;
       const response = await axios.post(url, params);
 
-      if (response.data && response.data.data) {
-        commit('SET_TABLE_CART_LIST', response.data.data);
+      console.log('info@!#!', response.data.order_info);
+
+      if (response.data && response.data.data && response.data.data.order_info) {
+        commit('SET_TABLE_CART_LIST', response.data.data.order_info);
       }
     }
   },

@@ -1,28 +1,28 @@
 <template lang="pug">
 #display
   .left-side
-    .order-title
-      .table-number(:class="getTableNumberClass(order)") {{checkedTabletNum(order)}}
-      .people_total_count(v-if="visibleCustomerCount(order)") {{checkedTotalPeople(order)}}명
+    .order-title(v-if="newOrder")
+      .table-number(:class="getTableNumberClass(newOrder)") {{checkedTabletNum(newOrder)}}
+      .people_total_count(v-if="visibleCustomerCount(newOrder)") {{checkedTotalPeople(newOrder)}}명
       .msg
-        span.title(v-if="visibleCall(order)") 호출이요
-        span.title(v-else-if="isDoneSetting(order)") 셋팅완료
+        span.title(v-if="visibleCall(newOrder)") 호출이요
+        span.title(v-else-if="isDoneSetting(newOrder)") 셋팅완료
         span.title(v-else) 주문이요
-        .icon.visit(v-if="isFirstEntered(order)") 입장
-        .icon.first(v-if="isFirstOrder(order)") 첫 주문
+        .icon.visit(v-if="isFirstEntered(newOrder)") 입장
+        .icon.first(v-if="isFirstOrder(newOrder)") 첫 주문
       .msg-time
-        .commit(:class="getMsgTimeClass(order)") {{vaildCommitText(order)}}
-        .time {{getOrderTiem(order)}}
+        .commit(:class="getMsgTimeClass(newOrder)") {{vaildCommitText(newOrder)}}
+        .time {{getOrderTiem(newOrder)}}
 
-    .wrap-people-list
+    .wrap-people-list(v-if="newOrder")
       ul.people-list
-        li.people-item(v-for="people in order.people_json" v-if="isPeopleCnt(people)")
+        li.people-item(v-if="isPeopleCnt(people)" v-for="people in getPeopleJson(newOrder)")
           .count {{getPeopleCnt(people)}}명
           .name {{getPeopleName(people)}}
 
-    .wrap-product-list
+    .wrap-product-list(v-if="newOrder")
       ul.product-list
-        li.product-item(v-for="product in getOrderInfo(order)")
+        li.product-item(v-for="product in getOrderInfo(newOrder)")
           .count {{getProductQty(product)}}개
           .name {{getProjectGoodName(product)}}
           .memo(v-if="isProductMemoShow(product)") {{getProductMemo(product)}}
@@ -31,6 +31,18 @@
               span +
               .count {{getOptionGoodQty(option)}}개
               .name {{getOptionDisplayName(option)}}
+
+    .title 이전주문내역
+    ul.c-product-list(v-if="newOrder")
+      li.order-item(v-for="c_product in newOrder.total_orders")
+        .name {{getBeforeProductDisplayName(c_product)}}
+        .count {{getBeforeProductOrderQty(c_product)}}개
+        ul.option-list(v-if="isBeforeProductOtp(c_product)")
+          li.option-item(v-for="option in c_product.option")
+            span +
+            .count {{getBeforeProductOptionOrderQty(option)}}개
+            .name {{getBeforeProductOptionDisplayName(option)}}
+
   .right-side
     ul.order-list()
       li.order-item(
@@ -67,15 +79,24 @@ export default {
       const { orders } = this.$store.state;
       return orders.sort((a, b) => b.timestamp - a.timestamp);
     },
-    order() {
+    newOrder() {
       return this.$store.state.displayNewOrder;
     },
   },
   methods: {
+    getPeopleJson(newOrder) {
+      if (!newOrder || !newOrder.people_json) {
+        return [];
+      }
+      return newOrder.people_json;
+    },
     getOrderInfo(order) {
-      if (!order) return [];
-
-      return order.order_info;
+      console.log(order);
+      try {
+        return order.order_info;
+      } catch (error) {
+        return [];
+      }
     },
     getOrderItemClass(order) {
       return {
@@ -223,6 +244,67 @@ export default {
             font-size:24px;
             font-weight:900;
           }
+        }
+      }
+    }
+
+    .title {
+      display:flex;
+      flex-shrink:0;
+      align-items: center;
+      justify-content: center;
+      height:40px;
+      font-size:20px;
+      font-weight:700;
+      background-color:#ffffff;
+      color:#000000;
+      border-radius:100px;
+    }
+
+    .c-product-list {
+      flex-grow:1;
+      font-size:20px;
+      display:flex;
+      flex-direction:column;
+      margin:0;
+      padding:0;
+      list-style:none;
+      word-break: keep-all;
+      overflow:scroll;
+      -webkit-overflow-scrolling: touch;
+
+      .order-item {
+        display:flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        margin:0;
+        padding:8px 0;
+        font-size:20px;
+        align-items: flex-start;
+
+        border {
+          bottom:solid 1px #484848;
+        }
+
+        .option-list {
+          display:flex;
+          flex-direction:column;
+          margin:0;
+          padding:0;
+          font-size:0.8em;
+          width:100%;
+
+          .option-item {
+            display:flex;
+          }
+        }
+
+        .name {
+          flex-grow:1;
+          word-break:break-all;
+        }
+        .count {
+          margin-left:12px;
         }
       }
     }
