@@ -7,7 +7,14 @@
 </template>
 
 <script>
+import paths from '@router/paths';
+
 export default {
+  data() {
+    return {
+      chooseTable: null,
+    };
+  },
   computed: {
     tables() {
       return this.$store.state.tables;
@@ -20,13 +27,6 @@ export default {
     async initialized() {
       const params = { shop_code: this.$store.state.auth.store.store_code };
       this.$store.dispatch('setTables', params);
-
-      const fd = new FormData();
-      fd.append('store_code', this.$store.state.auth.store.store_code);
-
-      const categories = await this.$store.dispatch('setCategories', fd);
-      const goods = await this.$store.dispatch('setGooods', fd);
-      // console.log('categories', categories, goods);
     },
     getTableName(table) {
       return table?.Tablet_name;
@@ -34,16 +34,44 @@ export default {
     getTableId() {
       return this.chooseTable?.Ta_id;
     },
-    openTableOrders(table) {
-      const fd = new FormData();
+    async openTableOrders(table) {
+      this.chooseTable = table;
+      const isMenu = await this.getMenu();
+      const isPreviousOrders = await this.getPreviousOrders();
 
+      // console.log(isMenu, isPreviousOrders);
+
+      const isNext = isMenu && isPreviousOrders;
+      if (isNext) {
+        this.$router.push(paths.tableOrders);
+      }
+    },
+    async getMenu() {
+      const fd = new FormData();
+      const { store_code } = this.$store.state.auth.store;
+      fd.append('store_code', store_code);
+
+      const categories = await this.$store.dispatch('setCategories', fd);
+      const goods = await this.$store.dispatch('setGooods', fd);
+      // console.log('categories', categories, goods);
+
+      const noData = !categories || !goods
+
+      if (noData) return false;
+
+      return true;
+    },
+    async getPreviousOrders() {
+      const fd = new FormData();
       const { store_code } = this.$store.state.auth.store;
       fd.append('store_code', store_code);
       fd.append('tablet_number', this.getTableId());
 
-      console.log(store_code, this.getTableId());
+      const orders = await this.$store.dispatch('setTableCartList', fd);
+      // console.log(orders);
+      if (!orders) return false;
 
-      this.$store.dispatch('setTableCartList', fd);
+      return true;
     },
   },
 };

@@ -317,11 +317,11 @@ const table = {
       const url = endpoints.table.getCartList;
       const response = await axios.post(url, params);
 
-      console.log('info@!#!', response.data.order_info);
-
-      if (response.data && response.data.data && response.data.data.order_info) {
-        commit('SET_TABLE_CART_LIST', response.data.data.order_info);
+      if (response.data && response.data.order_info) {
+        commit('SET_TABLE_CART_LIST', response.data.order_info);
+        return response.data.order_info;
       }
+      return false;
     }
   },
 };
