@@ -1,8 +1,8 @@
 <template lang="pug">
 #display(@click="back")
   div.logo(
-    v-if="isLogo"
-    :style="{backgroundImage: `url(${imgDom.src})`}"
+    v-show="isLogo"
+    :style="{backgroundImage: `url(${logoUri})`}"
   )
   .left-side(v-if="!isLogo")
     .order-title(v-if="newOrder")
@@ -73,32 +73,11 @@
 import utils from '@utils/orders.utils';
 import * as logo from '@assets/images/logo.gif';
 
-function preloadImages(array) {
-  if (!preloadImages.list) {
-    preloadImages.list = [];
-  }
-  var list = preloadImages.list;
-  for (var i = 0; i < array.length; i++) {
-    var img = new Image();
-    img.onload = function() {
-      var index = list.indexOf(this);
-      if (index !== -1) {
-        // remove image from the array once it's loaded
-        // for memory consumption reasons
-        list.splice(index, 1);
-      }
-    };
-    list.push(img);
-    img.src = array[i];
-    return img;
-  }
-}
-
 export default {
   data () {
     return {
       viewMode: 'a',
-      imgDom: null,
+      logoUri: null,
       isLogo: false,
       timeoutId: null,
     };
@@ -118,21 +97,35 @@ export default {
         console.log('clearTimeout', val, this.timeoutId);
         clearTimeout(val);
         this.timeoutId = null;
+        this.logoUri = null;
       }
     },
     newOrder() {
       if(!this.timeoutId && !this.isLogo) {
-        this.imgDom.src = `${logo}?a=${Math.random()}`;
+        this.setLogoUri();
         this.isLogo = true;
         this.closeLogo();
       }
     },
   },
   created() {
-    const img = preloadImages([logo]);
-    this.imgDom = img;
+    this.setLogoUri();
   },
   methods: {
+    preloadImage(image) {
+      const img = new Image();
+      img.onload = () => {
+        this.logoUri = img.src;
+      };
+      img.src = image;
+    },
+    setLogoUri() {
+      const imageUri = this.getRandomLogoUri();
+      this.preloadImage(imageUri);
+    },
+    getRandomLogoUri() {
+      return `${logo}?a=${Math.random()}`;
+    },
     closeLogo() {
       console.log('closeLogo');
       this.timeoutId = setTimeout(() => {
