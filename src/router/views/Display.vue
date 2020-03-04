@@ -1,6 +1,10 @@
 <template lang="pug">
-#display
-  .left-side
+#display(@click="back")
+  div.logo(
+    v-if="isLogo"
+    :style="{backgroundImage: `url(${imgDom.src})`}"
+  )
+  .left-side(v-if="!isLogo")
     .order-title(v-if="newOrder")
       .table-number(:class="getTableNumberClass(newOrder)") {{checkedTabletNum(newOrder)}}
       .people_total_count(v-if="visibleCustomerCount(newOrder)") {{checkedTotalPeople(newOrder)}}명
@@ -43,7 +47,7 @@
             .count {{getBeforeProductOptionOrderQty(option)}}개
             .name {{getBeforeProductOptionDisplayName(option)}}
 
-  .right-side
+  .right-side(v-if="!isLogo")
     ul.order-list()
       li.order-item(
         v-for="order in sortedOrders"
@@ -67,11 +71,36 @@
 
 <script>
 import utils from '@utils/orders.utils';
+import * as logo from '@assets/images/logo.gif';
+
+function preloadImages(array) {
+  if (!preloadImages.list) {
+    preloadImages.list = [];
+  }
+  var list = preloadImages.list;
+  for (var i = 0; i < array.length; i++) {
+    var img = new Image();
+    img.onload = function() {
+      var index = list.indexOf(this);
+      if (index !== -1) {
+        // remove image from the array once it's loaded
+        // for memory consumption reasons
+        list.splice(index, 1);
+      }
+    };
+    list.push(img);
+    img.src = array[i];
+    return img;
+  }
+}
 
 export default {
   data () {
     return {
       viewMode: 'a',
+      imgDom: null,
+      isLogo: false,
+      timeoutId: null,
     };
   },
   computed: {
@@ -83,7 +112,33 @@ export default {
       return this.$store.state.displayNewOrder;
     },
   },
+  watch: {
+    isLogo(val) {
+      if (!val && !!this.timeoutId) {
+        console.log('clearTimeout', val, this.timeoutId);
+        clearTimeout(val);
+        this.timeoutId = null;
+      }
+    },
+    newOrder() {
+      if(!this.timeoutId && !this.isLogo) {
+        this.imgDom.src = `${logo}?a=${Math.random()}`;
+        this.isLogo = true;
+        this.closeLogo();
+      }
+    },
+  },
+  created() {
+    const img = preloadImages([logo]);
+    this.imgDom = img;
+  },
   methods: {
+    closeLogo() {
+      console.log('closeLogo');
+      this.timeoutId = setTimeout(() => {
+        this.isLogo = false;
+      }, 3000);
+    },
     getPeopleJson(newOrder) {
       if (!newOrder || !newOrder.people_json) {
         return [];
@@ -91,7 +146,7 @@ export default {
       return newOrder.people_json;
     },
     getOrderInfo(order) {
-      console.log(order);
+      console.log('getOrderInfo', order);
       try {
         return order.order_info;
       } catch (error) {
@@ -118,6 +173,9 @@ export default {
 
       return isOk;
     },
+    back() {
+      this.$router.back();
+    },
     ...utils,
   },
 };
@@ -128,6 +186,13 @@ export default {
 #display {
   display: flex;
   flex: 1;
+  .logo {
+    display: flex;
+    flex-grow: 1;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+  }
   .left-side {
     width: 50%;
     /* background-color: skyblue; */
