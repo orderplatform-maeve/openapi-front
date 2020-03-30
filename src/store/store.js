@@ -10,7 +10,6 @@ import { COOKIE_AUTH_NAME } from '@config';
 import { COOKIE_DOMAIN } from '@config/auth.constant';
 
 import endpoints from './endpoints';
-import paths from '@router/paths';
 
 Vue.use(Vuex);
 
@@ -26,12 +25,7 @@ const socket = {
   mutations: {
     SOCKET_orderlog(state, order) {
       if (vaildShopCode(state, order)) {
-        const pathname = window.location.hash.replace('#', '');
-        if (pathname === paths.display) {
-          Vue.set(state, 'displayNewOrder', order);
-        } else {
-          Vue.set(state, 'order', order);
-        }
+        Vue.set(state, 'order', order);
       }
     },
     SOCKET_resStoreInfo(state, storeDeviceInfo) {

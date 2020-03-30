@@ -25,7 +25,6 @@
           .store_name {{storeName}}
           router-link.button(v-if="visibleOrderButton" :to="paths.order") 주문 보기
           router-link.button(v-if="visibleOrderButton" :to="paths.tables") 테이블 보기
-          router-link.button(v-if="visibleOrderButton" :to="paths.display") 디스플레이
         .bottom
           hr
           .tab-group
