@@ -5,4 +5,5 @@ export default {
   order: '/order',
   tables: '/tables',
   tableOrders: '/tableOrders',
+  products: '/products',
 };

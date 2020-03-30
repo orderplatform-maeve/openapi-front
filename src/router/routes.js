@@ -5,6 +5,7 @@ import {
   Orders,
   Tables,
   TableOrders,
+  Products,
 } from '@views';
 
 import paths from './paths';
@@ -34,6 +35,12 @@ const routes = [{
     path: paths.order,
     name: paths.order.replace('/',''),
     component: Orders,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: paths.products,
+    name: paths.products.replace('/',''),
+    component: Products,
     meta: { requiresAuth: true },
   },
   {
