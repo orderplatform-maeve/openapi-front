@@ -347,6 +347,76 @@ const menu = {
       return false;
     }
   },
+  getters: {
+    getCategories(state) {
+      const processCategories = state.categories.map((item) => ({
+        code: item.T_order_store_menu_code,
+        parentCodes: JSON.parse(item.T_order_store_menu_depth),
+        name: item.T_order_store_menu_name,
+        names: item.T_order_store_menu_name_array,
+        sortNo: Number(item.T_order_store_menu_sort_number),
+        serviceFlag: item.T_order_store_menu_serviceUse,
+        startTime: item.T_order_store_menu_starttime,
+        endTime: item.T_order_store_menu_endtime,
+      }));
+
+      const firstCategories = processCategories.filter((category) => {
+        return category.parentCodes.includes('1');
+      }).sort((a, b) => a.sortNo - b.sortNo);
+
+      const secondCategories = firstCategories.map((fCtg) => {
+        return processCategories.filter((ctg) => {
+          return ctg.parentCodes.includes(fCtg.code);
+        }).sort((a, b) => a.sortNo - b.sortNo);
+      });
+
+      const results = firstCategories.map((item, idx) => ({
+        ...item,
+        subCategories: secondCategories[idx],
+      }));
+
+      return results;
+    },
+
+    processGoods(state) {
+      return state.goods.map( p => {
+        let categories = p.T_order_store_good_category;
+        const src = p.T_order_store_good_image;
+
+        try {
+          if (typeof categories === "string") {
+            categories = JSON.parse(categories);
+          }
+        } catch(e) {
+          console.log(e);
+        }
+
+        return {
+          categories,
+          code: p.T_order_store_good_code,
+          price: p.T_order_store_good_defualt_price,
+          displayName: p.T_order_store_good_display_name,
+          displayNameOneLine: p.T_order_store_good_display_name.replace(/\/\//gi, " "),
+          displayNameNewLine: p.T_order_store_good_display_name.replace(/\/\//gi, "<br/>"),
+          image: src,
+          name: p.T_order_store_good_name,
+          names: p.T_order_store_good_name_array,
+          sortNo: p.T_order_store_good_sort_number,
+          updated_dt: p.T_order_store_good_update_date,
+          noUse: p.T_order_store_good_use,
+          keyword: p.T_order_store_keyword,
+          hideInCart: p.T_order_store_non_show_cart,
+          posCode: p.T_order_store_pos_code,
+          options: p.option_group,
+          description: p.T_order_store_good_html,
+          descriptionFlag: p.T_order_store_good_html_flag.toLowerCase(),
+          openDetail: p.T_order_store_good_detail_open,
+          reviews: p.menuRatingList,
+          soldout: p.T_order_store_good_soldout,
+        };
+      }).sort((a, b) => a.sortNo - b.sortNo);
+    },
+  },
 };
 
 const authProto = {
@@ -398,7 +468,9 @@ const actions = {
   ...menu.actions,
 };
 
-const getters = {};
+const getters = {
+  ...menu.getters,
+};
 
 const plugins = [
   createPersistedState(),
