@@ -15,7 +15,10 @@
       :class="getActiveSubCategory(subCtgItem.code)"
     ) {{ subCtgItem.name }}
   .goods
-    .good(v-for="good in getGoods()" :key="good.code") {{ good.displayName }}
+    .good(v-for="good in getGoods()" :key="good.code")
+      .good-image(:style="{backgroundImage: `url(${good.image})`}")
+      .good-info
+        .name {{ good.displayName }}
 </template>
 
 <script>
@@ -191,12 +194,44 @@ export default {
   }
 
   .goods {
-    flex-direction: column;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    flex-shrink: 0;
     .good {
-      background-color: gray;
+      width: calc(33.3333% - 16px);
+      height: 50vh;
+      background-color: var(--c-9);
       display: flex;
-      margin-top: 8px;
-      flex-grow: 1;
+      margin: 8px;
+      color: var(--c-2);
+      flex-direction: column;
+      border-radius: 4px;
+      box-shadow: 0 0 8px -4px var(--c-7);
+      .good-image {
+        flex-grow: 1;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        border-top-left-radius: 4px;
+        border-top-right-radius: 4px;
+      }
+      .good-info {
+        display: flex;
+        flex-direction: column;
+        padding: 12px;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        font-size: 24px;
+        font-weight: 900;
+        word-break: normal;
+        .name {
+          text-align: center;
+          font-size: 24px;
+          font-weight: 900;
+          word-break: normal;
+        }
+      }
     }
   }
 
