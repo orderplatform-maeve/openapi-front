@@ -5,12 +5,14 @@
       v-for="ctgItem in data"
       :key="ctgItem.code"
       @click="() => onSelectMainCtg(ctgItem)"
+      :class="getActiveMainCategory(ctgItem.code)"
     ) {{ ctgItem.name }}
   .sub-categories
     .sub-category(
       v-for="subCtgItem in getSubCategories()"
       :key="subCtgItem.code"
       @click="() => onSelectSubCtg(subCtgItem)"
+      :class="getActiveSubCategory(subCtgItem.code)"
     ) {{ subCtgItem.name }}
   .goods
     .good(v-for="good in getGoods()" :key="good.code") {{ good.displayName }}
@@ -20,7 +22,7 @@
 export default {
   data() {
     return {
-      selectMainCtegoryItem: null,
+      selectMainCategoryItem: null,
       selectSubCategoryItem: null,
     };
   },
@@ -41,12 +43,12 @@ export default {
           };
           return obj;
         });
-        const chunk = {
+        const result = {
           ...categoryItem,
           subCategories,
         };
 
-        return chunk;
+        return result;
       });
 
       console.log(results);
@@ -62,14 +64,14 @@ export default {
   methods: {
     onSelectMainCtg(item) {
       // console.log(item.subCategories[0].goods);
-      this.selectMainCtegoryItem = item;
+      this.selectMainCategoryItem = item;
       this.selectSubCategoryItem = item.subCategories[0];
     },
     getSubCategories() {
       try {
-        const { data, selectMainCtegoryItem } = this;
+        const { data, selectMainCategoryItem } = this;
 
-        if (selectMainCtegoryItem) return selectMainCtegoryItem.subCategories;
+        if (selectMainCategoryItem) return selectMainCategoryItem.subCategories;
 
         return data[0].subCategories;
 
@@ -92,6 +94,48 @@ export default {
         console.error(e);
         return [];
       }
+    },
+    getActiveMainCategory(targetCode) {
+      try {
+        const { data, selectMainCategoryItem } = this;
+
+        if (!selectMainCategoryItem) {
+          const isDefaultActive = targetCode === data[0].code;
+          if (isDefaultActive) {
+            return 'active';
+          }
+          return '';
+        }
+
+        const isSelectedActive = selectMainCategoryItem.code === targetCode;
+        if (isSelectedActive) return 'active';
+
+        return '';
+      } catch (error) {
+        console.error(error);
+        return '';
+      }
+    },
+    getActiveSubCategory(targetCode) {
+      try {
+        const { data, selectSubCategoryItem } = this;
+
+        if (!selectSubCategoryItem) {
+          const isDefaultActive = targetCode === data[0].subCategories[0].code;
+          if (isDefaultActive) {
+            return 'active';
+          }
+          return '';
+        }
+
+        const isSelectedActive = selectSubCategoryItem.code === targetCode;
+        if (isSelectedActive) return 'active';
+
+        return '';
+      } catch (error) {
+        console.error(error);
+        return '';
+      }
     }
   },
 };
@@ -99,16 +143,29 @@ export default {
 
 <style lang="scss">
 .container{
-  background-color: red;
+  --c-1: #ffffff;
+  --c-2: #202020;
+  --c-3: #ff0000;
+  --c-7: #e0e0e0;
+  --c-8: #fafafa;
+  --c-9: #efefef;
+  --c-10: #000000;
+
   overflow: auto;
   .main-categories {
     display: flex;
     justify-content: space-between;
     .main-category {
       display: flex;
-      background-color: blue;
       flex-grow: 1;
       justify-content: center;
+      font-weight: 900;
+      font-size: 32px;
+      height: 60px;
+      align-items: center;
+    }
+    .active {
+      color: var(--c-3);
     }
   }
   .sub-categories {
@@ -116,16 +173,27 @@ export default {
     justify-content: space-between;
     .sub-category {
       display: flex;
-      background-color: green;
       flex-grow: 1;
       justify-content: center;
+      margin: 4px;
+      height: 44px;
+      font-weight: 900;
+      font-size: 16px;
+      align-items: center;
+      padding: 0 20px;
+
+    }
+    .active {
+      color: var(--c-3);
+      border-radius: 24px;
+      border: solid 2px var(--c-3);
     }
   }
 
   .goods {
     flex-direction: column;
     .good {
-      background-color: black;
+      background-color: gray;
       display: flex;
       margin-top: 8px;
       flex-grow: 1;

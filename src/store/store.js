@@ -377,7 +377,6 @@ const menu = {
 
       return results;
     },
-
     processGoods(state) {
       return state.goods.map( p => {
         let categories = p.T_order_store_good_category;
