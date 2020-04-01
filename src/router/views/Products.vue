@@ -61,8 +61,9 @@ export default {
   },
   methods: {
     onSelectMainCtg(item) {
-      console.log(item);
+      // console.log(item.subCategories[0].goods);
       this.selectMainCtegoryItem = item;
+      this.selectSubCategoryItem = item.subCategories[0];
     },
     getSubCategories() {
       try {
