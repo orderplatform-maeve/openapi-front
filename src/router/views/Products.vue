@@ -19,6 +19,8 @@
       .good-image(:style="{backgroundImage: `url(${good.image})`}")
       .good-info
         .name {{ good.displayName }}
+        .button {{ good.noUse ? '판매 재개' : '판매 중지' }}
+        .button {{ good.soldout ? '품절 취소' : '품절 처리' }}
 </template>
 
 <script>
@@ -230,6 +232,18 @@ export default {
           font-size: 24px;
           font-weight: 900;
           word-break: normal;
+        }
+        .button {
+          height: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 4px 16px;
+          font-weight: 900;
+          margin-top: 8px;
+          color: var(--c-9);
+          background-color: var(--c-2);
+          border-radius: 20px;
         }
       }
     }
