@@ -10,3 +10,4 @@ yarn-error.log
 *.ntvs*
 *.njsproj
 *.sln
+s3-credentials.json
