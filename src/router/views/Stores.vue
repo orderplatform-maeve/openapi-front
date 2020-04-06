@@ -1,13 +1,14 @@
 <template lang="pug">
-  .container
-    .top
-      .title {{ name }}
-    .body
-      ul.store-list
-        li.store-item(v-for="store in stores" :key="getStoreItemKey(store)")
-          .name {{getStoreName(store)}}
-          .button.button-order(@click="selectStore(store)") 주문 보기
+.container
+  .top
+    .title {{ name }}
+  .body
+    ul.store-list
+      li.store-item(v-for="store in stores" :key="getStoreItemKey(store)")
+        .name {{getStoreName(store)}}
+        .button.button-order(@click="selectStore(store)") 주문 보기
 </template>
+
 <script>
 import paths from '@router/paths';
 import { COOKIE_AUTH_NAME } from '@config';
@@ -62,11 +63,12 @@ export default {
 
       await this.$store.dispatch('resetDisplayNewOrder');
 
-      if (isDev) {
-        this.$router.push(paths.order);
-      } else {
-        window.location.href = res.data.data.T_order_store_orderView_version;
-      }
+      // if (isDev) {
+      //   this.$router.push(paths.order);
+      // } else {
+      //   window.location.href = res.data.data.T_order_store_orderView_version;
+      // }
+      this.$router.push(paths.order);
     },
     getStoreItemKey(store) {
       try {

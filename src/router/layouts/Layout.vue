@@ -24,7 +24,7 @@
           img.logo(:src="logo")
           .store_name {{storeName}}
           router-link.button(v-if="visibleOrderButton" :to="paths.order") 주문 보기
-          router-link.button(v-if="visibleOrderButton" :to="paths.tables") 테이블 보기
+          //- router-link.button(v-if="visibleOrderButton" :to="paths.tables") 테이블 보기
           router-link.button(v-if="visibleOrderButton" :to="paths.products") 상품 보기
         .bottom
           hr

@@ -1,6 +1,5 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import createPersistedState from 'vuex-persistedstate';
 import axios from 'axios';
 import querystring from 'querystring';
 
@@ -471,9 +470,7 @@ const getters = {
   ...menu.getters,
 };
 
-const plugins = [
-  createPersistedState(),
-];
+const plugins = [];
 
 const storeInit = {
   state,

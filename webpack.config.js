@@ -108,7 +108,6 @@ module.exports = {
     disableHostCheck: true,
     open: true,
     hot: true,
-    host: 'www.torder.co.kr',
   },
   plugins: [
     // new webpack.HotModuleReplacementPlugin()
