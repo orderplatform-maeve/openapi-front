@@ -84,7 +84,11 @@ export default {
       await this.$store.dispatch('resetDisplayNewOrder');
 
       try {
-        window.location.href = res.data.data.T_order_store_orderView_version;
+        if (res.data.data.T_order_store_orderView_version) {
+          window.location.href = res.data.data.T_order_store_orderView_version;
+        } else {
+          this.$router.push(paths.order);
+        }
       } catch(error) {
         return alert('리다이렉션 버젼 주소가 없습니다.');
         // this.$router.push(paths.order);
