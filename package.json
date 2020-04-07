@@ -7,12 +7,14 @@
   "private": true,
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack-dev-server --open --hot",
-    "build": "cross-env NODE_ENV=production webpack --progress --hide-modules"
+    "dev-prod": "cross-env NODE_ENV=production webpack-dev-server --open --hot",
+    "build": "cross-env NODE_ENV=production webpack --progress --hide-modules",
+    "deploy-tmp": "npm run build && cross-env UPLOAD_TYPE=tmp node ./script/deployTmp.js",
+    "deploy": "npm run build && cross-env UPLOAD_TYPE=1 node ./script/deploy.js"
   },
   "dependencies": {
     "axios": "^0.19.0",
     "pug": "^2.0.4",
-    "socket.io-client": "^2.2.0",
     "vue": "^2.5.11",
     "vue-cookies": "^1.5.13",
     "vue-filter": "^0.2.5",
@@ -26,14 +28,60 @@
     "last 2 versions",
     "not ie <= 8"
   ],
+  "parserOptions": {
+    "parser": "babel-eslint"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/recommended",
+      "eslint:recommended"
+    ],
+    "rules": {
+      "no-console": "off",
+      "vue/script-indent": [
+        "error",
+        2
+      ],
+      "vue/html-indent": [
+        "error",
+        2,
+        {
+          "attribute": 1,
+          "baseIndent": 1,
+          "closeBracket": 0,
+          "alignAttributesVertically": true,
+          "ignores": []
+        }
+      ],
+      "semi": [
+        2,
+        "always"
+      ],
+      "indent": [
+        "error",
+        2
+      ]
+    }
+  },
   "devDependencies": {
-    "babel-core": "^6.26.0",
-    "babel-loader": "^7.1.2",
-    "babel-preset-env": "^1.6.0",
-    "babel-preset-stage-3": "^6.24.1",
+    "@babel/core": "^7.8.4",
+    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.8.3",
+    "@babel/plugin-proposal-optional-chaining": "^7.8.3",
+    "@babel/polyfill": "^7.8.3",
+    "@babel/preset-env": "^7.8.4",
+    "aws-sdk": "^2.653.0",
+    "babel-eslint": "^10.0.3",
+    "babel-loader": "^8.0.6",
     "cross-env": "^5.0.5",
     "css-loader": "^0.28.7",
+    "eslint": "^6.8.0",
+    "eslint-plugin-vue": "^6.1.2",
     "file-loader": "^1.1.4",
+    "mime": "^2.4.4",
     "node-sass": "^4.5.3",
     "sass-loader": "^6.0.6",
     "vue-loader": "^13.0.5",

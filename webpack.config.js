@@ -1,5 +1,30 @@
-var path = require('path')
-var webpack = require('webpack')
+var path = require('path');
+var webpack = require('webpack');
+
+const aliases = {
+  '@': '.',
+  '@src': 'src',
+  '@router': 'src/router',
+  '@views': 'src/router/views',
+  '@layouts': 'src/router/layouts',
+  '@components': 'src/components',
+  '@assets': 'src/assets',
+  '@utils': 'src/utils',
+  '@store': 'src/store',
+  '@scss': 'src/scss',
+  '@config': 'src/config',
+};
+
+function resolveSrc(_path) {
+  return path.resolve(__dirname, _path);
+}
+
+const pAlias = {};
+
+for (const alias in aliases) {
+  const aliasTo = aliases[alias];
+  pAlias[alias] = resolveSrc(aliasTo);
+}
 
 module.exports = {
   entry: './src/main.js',
@@ -71,7 +96,8 @@ module.exports = {
   },
   resolve: {
     alias: {
-      'vue$': 'vue/dist/vue.esm.js'
+      'vue$': 'vue/dist/vue.esm.js',
+      ...pAlias
     },
     extensions: ['*', '.js', '.vue', '.json']
   },
@@ -80,21 +106,24 @@ module.exports = {
     noInfo: true,
     overlay: true,
     disableHostCheck: true,
+    open: true,
+    hot: true,
   },
+  plugins: [
+    // new webpack.HotModuleReplacementPlugin()
+  ],
   performance: {
     hints: false
   },
   devtool: '#eval-source-map'
-}
+};
 
 if (process.env.NODE_ENV === 'production') {
-  module.exports.devtool = '#source-map'
+  module.exports.devtool = '#source-map';
   // http://vue-loader.vuejs.org/en/workflow/production.html
   module.exports.plugins = (module.exports.plugins || []).concat([
     new webpack.DefinePlugin({
-      'process.env': {
-        NODE_ENV: '"production"'
-      }
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
     }),
     /*
     new webpack.optimize.UglifyJsPlugin({
@@ -107,5 +136,11 @@ if (process.env.NODE_ENV === 'production') {
     new webpack.LoaderOptionsPlugin({
       minimize: true
     })
-  ])
+  ]);
+} else {
+  module.exports.plugins = (module.exports.plugins || []).concat([
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+    }),
+  ]);
 }

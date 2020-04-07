@@ -1,51 +1,83 @@
 <template lang="pug">
 #menuBoard(v-if="show")
-  .background(v-on:click="close")
+  .background(@click="close")
   .container
     .top
       .wrap
-        .table-number {{table.name}}
+        .table-number {{tableName}}
       .wrap
         .title 주문하기
       .buttons
-        .button(v-on:click="openTableOrders(table)") 주문내역보기
+        .button(@click="openTableOrders()") 주문내역보기
     .body
       .left
-        ul.list-category.first
-          li.item-category(v-for="category in categorys" v-if="category.T_order_store_menu_serviceUse==0&&category.T_order_store_menu_depth.includes('1')&&category.T_order_store_menu_use=='Y'" v-on:click="selectFirstCategory(category)" :class="{select: category.T_order_store_menu_code==first_category_code}") {{category.T_order_store_menu_name}}
+        ul.list-category.first(v-if="topCategorise")
+          li.item-category(
+            v-for="category in topCategorise"
+            @click="selectFirstCategory(category)"
+            :class="getTopCategoriseClass(category)"
+          ) {{getMenuName(category)}}
+
         ul.list-category.second(v-if="first_category_code" ref="secondCategoryList")
-          li.item-category(v-for="category in categorys" v-if="category.T_order_store_menu_serviceUse==0&&category.T_order_store_menu_depth.includes(first_category_code)&&category.T_order_store_menu_use=='Y'" v-on:click="selectSecondCategory(category)" :class="{select: category.T_order_store_menu_code==second_category_code}") {{category.T_order_store_menu_name}}
+          li.item-category(
+            v-for="ctg in getSubCategorise()"
+            @click="selectSecondCategory(ctg)"
+            :class="getSubCategoriesClass(ctg)"
+          ) {{getMenuName(ctg)}}
+
         ul.list-product(v-if="second_category_code" ref="productList")
-          li.item-product(v-for="product in products" v-if="second_category_code&&product.T_order_store_good_category.includes(second_category_code)" v-on:click="selectProduct(product)")
-            .name {{product.T_order_store_good_display_name}}
-            .price {{product.T_order_store_good_defualt_price}}원
+          li.item-product(
+            v-for="product in getChooseProudcts()"
+            @click="selectProduct(product)"
+          )
+            .name {{getGoodDisplayName(product)}}
+            .price {{getGoodDefualtPrice(product)}}원
       .right
         ul.select-product-list(v-if="show_select_products" ref="selectProductList")
           li.select-product-item(v-for="select_product in select_products_sorted")
-            .button.button-plus(v-on:click="plusQtyProduct(select_product)") +
+            .button.button-plus(@click="plusQtyProduct(select_product)") +
             .info
               .info-top
-                .name {{select_product.product.T_order_store_good_display_name}}
-                .qty {{select_product.qty}}개
+                .name {{getSelectedGoodDisplayName(select_product)}}
+                .qty {{getSelectedGoodQty(select_product)}}개
               .info-bottom
-                .price {{select_product.product.T_order_store_good_defualt_price}}원
-                .qty-price {{select_product.qty * select_product.product.T_order_store_good_defualt_price}}원
-            .button.button-minus(v-on:click="minusQtyProduct(select_product)") -
+                .price {{getSelectedGoodDefualtPrice(select_product)}}원
+                .qty-price {{getSelectedGoodQtyPrice(select_product)}}원
+            .button.button-minus(@click="minusQtyProduct(select_product)") -
     .foot
       .buttons
-        .button(v-on:click="close") 닫기
-        .button.button-red(v-on:click="submit")
+        .button(@click="close") 닫기
+        .button.button-red(@click="submit")
           .info {{select_products_length}}가지 {{select_products_qty}}개 {{select_products_price}}원
           .text 주문하기
 </template>
-<script>
-import axios from 'axios';
 
+<script>
 export default {
+  props: {
+    show: {
+      type: Boolean,
+      default: false,
+    },
+    onClose: {
+      type: Function,
+      default: () => {},
+    },
+    tableName: {
+      type: String,
+      default: '',
+    },
+    tableId: {
+      type: String,
+      default: '',
+    },
+    onTableOrder: {
+      type: Function,
+      default: () => {},
+    },
+  },
   data() {
     return {
-      show: false,
-      table: {},
       first_category: undefined,
       first_category_code: undefined,
       second_category: undefined,
@@ -56,64 +88,129 @@ export default {
       select_products_qty: 0,
       select_products_price: 0,
       select_products_sorted: [],
-    }
+    };
   },
   computed: {
-    totalPrice() {
-      let result = 0;
-      return result;
-    },
-    selectProducts() {
-      return this.select_products;
+    topCategorise() {
+      const { categories } = this.$store.state;
+      return categories.filter((item) => item.T_order_store_menu_depth.includes('1'));
     },
     categorys() {
-      return this.$store.getters.categorys;
+      return this.$store.state.categories;
     },
     products() {
-      return this.$store.getters.products;
+      return this.$store.state.goods;
     },
-    sortedCart() {
-    }
   },
   methods: {
-    submit() {
-      let auth = this.$store.getters.auth;
-      let store_shop_code = auth.store.code;
-      let tablet_number = this.table.code;
-      let store_good_code = [];
-      let store_good_qty = [];
+    getTopCategoriseClass(category) {
+      if (!category?.T_order_store_menu_code) return { select: false };
+      const select = category.T_order_store_menu_code === this.first_category_code;
+      return { select };
+    },
+    getSubCategoriesClass(category) {
+      if (!category?.T_order_store_menu_code) return { select: false };
+      const select = category.T_order_store_menu_code === this.second_category_code;
+      return { select };
+    },
+    getMenuName: (category) => category?.T_order_store_menu_name,
+    getGoodDisplayName: (product) => product?.T_order_store_good_display_name,
+    getGoodDefualtPrice(product) {
+      if (!product?.T_order_store_good_defualt_price) return 0;
+      return product.T_order_store_good_defualt_price;
+    },
+    getSelectedGoodDisplayName(select_product) {
+      return this.getGoodDisplayName(select_product?.product);
+    },
+    getSelectedGoodQty(select_product) {
+      if (!select_product?.qty) return 0;
+      return select_product.qty;
+    },
+    getSelectedGoodDefualtPrice(select_product) {
+      return this.getGoodDefualtPrice(select_product?.product);
+    },
+    getSelectedGoodQtyPrice(select_product) {
+      const qty = this.getSelectedGoodQty(select_product);
+      const defaultPrice = this.getSelectedGoodDefualtPrice(select_product);
+      const sum = qty * defaultPrice;
+      return sum;
+    },
+    getInfoText() {
+      return `${this.select_products_length}가지 ${this.select_products_qty}개 ${this.select_products_price}원`;
+    },
+    async submit() {
+      const { auth } = this.$store.state;
+      const store_shop_code = auth.store.store_code;
+      const tablet_number = this.tableId;
+      console.log('tablet_number', this.tableId);
+      const store_good_code = [];
+      const store_good_qty = [];
 
-      //console.log(this.table);
-      //console.log('auth', auth);
-      
-
-      let frm = new FormData();
+      const frm = new FormData();
       frm.set('store_shop_code', store_shop_code);
       frm.set('tablet_number', tablet_number);
-      for (let code in this.select_products) {
-        let item = this.select_products[code];
-        let code = item.product.T_order_store_good_code;
-        let qty = item.qty;
+
+      for (const productCode in this.select_products) {
+        const item = this.select_products[productCode];
+        const code = item.product.T_order_store_good_code;
+        const qty = item.qty;
 
         store_good_code.push(code);
         store_good_qty.push(qty);
         frm.append('store_good_code[]', code);
         frm.append('store_good_qty[]', qty);
       }
-      axios
-      .post('http://rest.torder.co.kr/shop/order', frm)
-      .then(function(res) {
-        console.log(res);
-        this.close();
-      }.bind(this)).catch(function(err) {
-        console.log({err: err});
-      }).finally(function () {
-      });
+
+      const res = await this.$store.dispatch('requestOrder', frm);
+      console.log(res);
     },
-    openTableOrders(table) {
-      this.$eventBus.$emit('openTableOrders', table);
+    openTableOrders() {
+      this.onTableOrder();
       this.close();
     },
+    getSubCategorise() {
+      const categorise = [...this.categorys];
+
+      return categorise.filter((ctg) => ctg.T_order_store_menu_depth.includes(this.first_category_code));
+    },
+    getChooseProudcts() {
+      const arr = [...this.products].filter((item) => {
+        try {
+          if (!item.T_order_store_good_category) {
+            return null;
+          }
+          const idx = item.T_order_store_good_category.findIndex((o) => {
+            return o === this.second_category_code;
+          });
+          if (idx === -1) {
+            return null;
+          }
+          return item;
+        } catch (error) {
+          return null;
+        }
+      });
+      return arr;
+    },
+    selectFirstCategory(category) {
+      const menuCode = category.T_order_store_menu_code;
+      this.first_category = category;
+      this.first_category_code = menuCode;
+
+      this.$nextTick(() => {
+        this.$refs.secondCategoryList.scrollTop = 0;
+      });
+    },
+    selectSecondCategory(category) {
+      const code = category.T_order_store_menu_code;
+      this.second_category = category;
+      this.second_category_code = code;
+
+      this.$nextTick(() => {
+        this.$refs.productList.scrollTop = 0;
+      });
+    },
+    // old method
     plusQtyProduct(select_product) {
       select_product.qty += 1;
       this.updateCart();
@@ -124,7 +221,7 @@ export default {
       select_product.qty -= 1;
 
       if (select_product.qty < 1) {
-        let code = select_product.product.T_order_store_good_code;
+        const code = select_product.product.T_order_store_good_code;
         delete this.select_products[code];
       }
 
@@ -132,111 +229,49 @@ export default {
       this.show_select_products = false;
       this.show_select_products = true;
     },
-    selectFirstCategory(category) {
-      let code = category.T_order_store_menu_code;
-      this.first_category = category;
-      this.first_category_code = code;
-
-      for (let code in this.$store.getters.categorys) {
-        let category = this.$store.getters.categorys[code];
-
-        if (category.T_order_store_menu_serviceUse==0
-        && category.T_order_store_menu_depth.includes(this.first_category_code)
-        && category.T_order_store_menu_use=='Y') {
-          this.selectSecondCategory(category)
-          break;
-        }
-      }
-      this.$nextTick(() => {
-        this.$refs.secondCategoryList.scrollTop = 0;
-      });
-    },
-    selectSecondCategory(category) {
-      let code = category.T_order_store_menu_code;
-      this.second_category = category;
-      this.second_category_code = code;
-
-      this.$nextTick(() => {
-        this.$refs.productList.scrollTop = 0;
-      });
-    },
     updateCart() {
       this.select_products_length = Object.keys(this.select_products).length;
 
       let price = 0;
       let qty = 0;
-      for (let key in this.select_products) {
-        let select_product = this.select_products[key];
-        price += select_product.qty * select_product.product.T_order_store_good_defualt_price
+      for (const key in this.select_products) {
+        const select_product = this.select_products[key];
+        price += select_product.qty * select_product.product.T_order_store_good_defualt_price;
         qty += select_product.qty;
       }
 
       this.select_products_qty = qty;
       this.select_products_price = price;
 
-      let keys = Object.keys(this.select_products).sort(function(a, b) {
+      const keys = Object.keys(this.select_products).sort((a, b) => {
         return this.select_products[b].time - this.select_products[a].time;
-
-      }.bind(this));
+      });
 
       this.select_products_sorted = [];
-      for (let code of keys) {
-        this.select_products_sorted.push(this.select_products[code])
+      for (const code of keys) {
+        this.select_products_sorted.push(this.select_products[code]);
       }
-
     },
     selectProduct(product) {
-      let code = product.T_order_store_good_code;
-      let current_time = Date.now();
+      const code = product.T_order_store_good_code;
+      const current_time = Date.now();
 
       if (this.select_products.hasOwnProperty(code))  {
-        this.select_products[code].qty += 1
+        this.select_products[code].qty += 1;
         this.select_products[code].time = current_time;
       } else {
         this.select_products[code] = {
           product: product,
           qty: 1,
           time: current_time,
-        }
-        //this.set(this.select_products, code, product);
-        //this.set(this.select_products[code], 'qty', 1);
-      } 
-
+        };
+      }
 
       this.updateCart();
       this.show_select_products = false;
       this.show_select_products = true;
     },
-    open(table) {
-      this.table = table;
-      for (let code in this.$store.getters.categorys) {
-        let category = this.$store.getters.categorys[code];
-
-        if (category.T_order_store_menu_serviceUse==0
-        && category.T_order_store_menu_depth.includes('1')
-        && category.T_order_store_menu_use=='Y') {
-          this.first_category = category;
-          this.first_category_code = code;
-
-          let first_code = code;
-          for (let code in this.$store.getters.categorys) {
-            let category = this.$store.getters.categorys[code];
-
-            if (category.T_order_store_menu_serviceUse==0
-            && category.T_order_store_menu_depth.includes(first_code)
-            && category.T_order_store_menu_use=='Y') {
-              this.second_category = category;
-              this.second_category_code = code;
-              break;
-            }
-          }
-          break;
-        }
-      }
-      this.show = true;
-    },
     close() {
-      this.show = false;
       this.first_category= undefined;
       this.first_category_code= undefined;
       this.second_category= undefined;
@@ -246,26 +281,17 @@ export default {
       this.select_products_qty = 0;
       this.select_products_price = 0;
       this.select_products_sorted = [];
+      this.onClose();
     },
   },
-  created() {
-    this.$eventBus.$off('openMenuBoard');
-    this.$eventBus.$on('openMenuBoard', this.open);
-    this.$eventBus.$off('closeMenuBoard');
-    this.$eventBus.$on('closeMenuBoard', this.close);
-  },
-  mounted() {
-
-  },
-}
+};
 </script>
+
 <style lang="scss">
-@import "./scss/global.scss";
+@import "../scss/global.scss";
 #menuBoard {
   @include modal;
   .container {
-    > .top {
-    }
     > .body {
       > .left {
         width:70%;
@@ -275,12 +301,13 @@ export default {
           display:flex;
           width:25%;
           flex-shrink:0;
-          flex-direction:column;
           margin:0;
           padding:0;
           overflow:scroll;
-        
+          flex-direction: column;
+
           .item-category {
+            min-width: 100px;
             display:flex;
             align-items: center;
             justify-content: center;
@@ -293,13 +320,14 @@ export default {
             border-radius:24px;
             margin:4px;
             word-break:keep-all;
+            margin-top: 10px;
           }
           .item-category:active,
           .item-category.select {
             background-color:#ff0000;
             color:#ffffff;
           }
-        } 
+        }
         .list-product {
           display:flex;
           flex-grow:1;
@@ -334,9 +362,10 @@ export default {
             background-color:#ff0000;
             color:#ffffff;
           }
-        } 
+        }
       }
       > .right {
+        background-color: transparent;
         width:30%;
         h2 {
           margin:4px;
@@ -402,11 +431,6 @@ export default {
                 margin-top:4px;
                 padding-top:4px;
                 font-size:1em;
-
-                .price {
-                }
-                .qty-price {
-                }
               }
             }
           }
