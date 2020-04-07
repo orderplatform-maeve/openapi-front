@@ -66,11 +66,13 @@ export default {
       const auth = {
         ...this.auth,
         store: {
-          ...this.auth.store,
-          code: this.auth.store_code,
-          name: this.auth.store_name,
+          ...store,
+          code: store.store_code,
+          name: store.store_name,
         },
       };
+
+      console.log('auth 1@#!@#!@', auth);
 
       this.$cookies.set(COOKIE_AUTH_NAME, auth, '1y', null, COOKIE_DOMAIN);
       localStorage.auth = JSON.stringify(auth);
@@ -88,7 +90,7 @@ export default {
 
       try {
         if (res.data.data.T_order_store_orderView_version) {
-          window.location.href = res.data.data.T_order_store_orderView_version;
+          // window.location.href = res.data.data.T_order_store_orderView_version;
         } else {
           this.$router.push(paths.order);
         }
