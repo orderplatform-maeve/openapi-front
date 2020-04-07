@@ -140,7 +140,18 @@ export default {
 
   methods: {
     visibleSideMenu() {
-      return this.$router.history.current.path !== paths.display;
+      console.log(this.$router.history.current.path);
+
+      const targetPath = this.$router.history.current.path;
+
+      const isLoginPath = targetPath === '/login';
+      const isStorePath = targetPath === '/store';
+
+      const isFalse = isLoginPath || isStorePath;
+
+      if (isFalse) return false;
+
+      return true;
     },
     logout() {
       this.$store.dispatch('logout');
