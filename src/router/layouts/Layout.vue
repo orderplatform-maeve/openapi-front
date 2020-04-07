@@ -113,7 +113,6 @@ export default {
       return !!this.userName;
     },
   },
-
   created() {
     const params = { store_code: this.auth.store.store_code };
     this.$socket.emit('reqStoreInfo', params);
@@ -130,14 +129,12 @@ export default {
       localStorage.auth = JSON.stringify(cookieAuth);
     }
   },
-
   mounted() {
     setInterval(() => {
       this.time.now = Date();
     }, 1000);
     console.log(this.$cookies.get('auth'));
   },
-
   methods: {
     visibleSideMenu() {
       console.log(this.$router.history.current.path);
