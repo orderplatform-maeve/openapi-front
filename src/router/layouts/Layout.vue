@@ -115,6 +115,8 @@ export default {
     },
   },
   created() {
+    console.log(this.$cookies.get('auth'));
+
     const params = { store_code: this.auth.store.store_code };
     this.$socket.emit('reqStoreInfo', params);
 

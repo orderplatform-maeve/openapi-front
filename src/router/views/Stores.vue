@@ -65,8 +65,11 @@ export default {
 
       const auth = {
         ...this.auth,
-        code: this.auth.store_code,
-        name: this.auth.store_name,
+        store: {
+          ...this.auth.store,
+          code: this.auth.store_code,
+          name: this.auth.store_name,
+        },
       };
 
       this.$cookies.set(COOKIE_AUTH_NAME, auth, '1y', null, COOKIE_DOMAIN);
