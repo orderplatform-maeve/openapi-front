@@ -23,9 +23,10 @@
             span {{ time.now | moment("MM.DD HH:mm:ss") }}
           img.logo(:src="logo")
           .store_name {{storeName}}
-          //- router-link.button(v-if="visibleOrderButton" :to="paths.order") 주문 보기
+          router-link.button(v-if="visibleOrderButton" :to="paths.order") 주문 보기
+          //- router-link.button(v-if="visibleOrderButton" :to="paths.products") 상품 보기
+          //-   <br> (테스트)
           //- router-link.button(v-if="visibleOrderButton" :to="paths.tables") 테이블 보기
-          //- router-link.button(v-if="visibleOrderButton" :to="paths.display") 디스플레이
         .bottom
           hr
           .tab-group
@@ -41,7 +42,7 @@
           hr
           router-link.button(v-if="visibleStoresButton" :to="paths.store") 매장 보기
           router-link.button.button-red(v-if="visibleLoginButton" :to="paths.login") 로그인
-          .version 1.1.0
+          .version 1.0.5
           .button.button-red.button-member(v-if="visibleLogoutButton" @click="logout")
             span.name {{userName}}
             span 로그아웃
@@ -103,6 +104,7 @@ export default {
     },
     userName() {
       const { auth } = this;
+      console.log(auth);
       return auth && auth.member && auth.member.name;
     },
     visibleLoginButton() {
@@ -112,25 +114,49 @@ export default {
       return !!this.userName;
     },
   },
-
   created() {
+    console.log(this.$cookies.get('auth'));
+
     const params = { store_code: this.auth.store.store_code };
     this.$socket.emit('reqStoreInfo', params);
-  },
 
+    this.$store.commit('SET_AUTH', cookieAuth);
+
+    if (localStorage.auth) {
+      this.$cookies.set(COOKIE_AUTH_NAME, localStorage.auth, '1y', null, COOKIE_DOMAIN);
+      return this.$store.commit('SET_AUTH', JSON.parse(localStorage.auth));
+    }
+
+    const cookieAuth = this.$cookies.get(COOKIE_AUTH_NAME);
+    if (cookieAuth) {
+      localStorage.auth = JSON.stringify(cookieAuth);
+    }
+  },
   mounted() {
     setInterval(() => {
       this.time.now = Date();
     }, 1000);
+    console.log(this.$cookies.get('auth'));
   },
-
   methods: {
     visibleSideMenu() {
-      return this.$router.history.current.path !== paths.display;
+      console.log(this.$router.history.current.path);
+
+      const targetPath = this.$router.history.current.path;
+
+      const isLoginPath = targetPath === '/login';
+      const isStorePath = targetPath === '/store';
+
+      const isFalse = isLoginPath || isStorePath;
+
+      if (isFalse) return false;
+
+      return true;
     },
     logout() {
       this.$store.dispatch('logout');
       this.$cookies.remove(COOKIE_AUTH_NAME, null, COOKIE_DOMAIN);
+      localStorage.removeItem('auth');
       this.$router.replace(paths.login);
     },
     restart() {

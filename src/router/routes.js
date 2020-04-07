@@ -4,7 +4,8 @@ import {
   Stores,
   Orders,
   Tables,
-  Display,
+  TableOrders,
+  Products,
 } from '@views';
 
 import paths from './paths';
@@ -37,15 +38,21 @@ const routes = [{
     meta: { requiresAuth: true },
   },
   {
+    path: paths.products,
+    name: paths.products.replace('/',''),
+    component: Products,
+    meta: { requiresAuth: true },
+  },
+  {
     path: paths.tables,
     name: paths.tables.replace('/',''),
     component: Tables,
     meta: { requiresAuth: true },
   },
   {
-    path: paths.display,
-    name: paths.display.replace('/',''),
-    component: Display,
+    path: paths.tableOrders,
+    name: paths.tableOrders.replace('/',''),
+    component: TableOrders,
     meta: { requiresAuth: true },
   }],
 }];

@@ -1,18 +1,34 @@
 <template lang="pug">
 #tables
+  modal-table-orders(
+    v-if="chooseTable"
+    :show="isTableOrderModal"
+    :tableName="getTableName()"
+    :tableId="getTableId()"
+    :onClose="closeTableOrderModal"
+    :showMenuModal="showMenuModal"
+  )
+  modal-menu(
+    v-if="chooseTable"
+    :show="isMenuModal"
+    :onClose="closeMenuModal"
+    :tableName="getTableName()"
+    :tableId="getTableId()"
+    :onTableOrder="showTableOrderModal"
+  )
   .top
   ul.table-list
     li.table-item(v-for="table in tables" :key="table.Ta_id" )
-      .table-number(@click="openTableOrders(table)" :class="'empty-table'") {{getTableName(table)}}
+      .table-number(@click="openTableOrders(table)" :class="'empty-table'") {{table.Tablet_name}}
 </template>
 
 <script>
-import paths from '@router/paths';
-
 export default {
   data() {
     return {
+      isMenuModal: false,
       chooseTable: null,
+      isTableOrderModal: false,
     };
   },
   computed: {
@@ -20,58 +36,49 @@ export default {
       return this.$store.state.tables;
     },
   },
-  mounted() {
-    this.initialized();
+  async mounted() {
+    const params = { shop_code: this.$store.state.auth.store.store_code };
+    this.$store.dispatch('setTables', params);
+
+    const fd = new FormData();
+    fd.append('store_code', this.$store.state.auth.store.store_code);
+
+    const categories = await this.$store.dispatch('setCategories', fd);
+    const goods = await this.$store.dispatch('setGooods', fd);
+    // console.log('categories', categories, goods);
   },
   methods: {
-    async initialized() {
-      const params = { shop_code: this.$store.state.auth.store.store_code };
-      this.$store.dispatch('setTables', params);
+    showMenuModal() {
+      this.isMenuModal = true;
     },
-    getTableName(table) {
-      return table?.Tablet_name;
+    closeTableOrderModal() {
+      this.isTableOrderModal = false;
+    },
+    showTableOrderModal() {
+      this.isTableOrderModal = true;
+    },
+    closeMenuModal() {
+      this.isMenuModal = false;
+    },
+    getTableName() {
+      return this.chooseTable?.Tablet_name;
     },
     getTableId() {
       return this.chooseTable?.Ta_id;
     },
-    async openTableOrders(table) {
+    openTableOrders(table) {
+      this.isTableOrderModal = true;
       this.chooseTable = table;
-      const isMenu = await this.getMenu();
-      const isPreviousOrders = await this.getPreviousOrders();
 
-      // console.log(isMenu, isPreviousOrders);
-
-      const isNext = isMenu && isPreviousOrders;
-      if (isNext) {
-        this.$router.push(paths.tableOrders);
-      }
-    },
-    async getMenu() {
       const fd = new FormData();
-      const { store_code } = this.$store.state.auth.store;
-      fd.append('store_code', store_code);
 
-      const categories = await this.$store.dispatch('setCategories', fd);
-      const goods = await this.$store.dispatch('setGooods', fd);
-      // console.log('categories', categories, goods);
-
-      const noData = !categories || !goods
-
-      if (noData) return false;
-
-      return true;
-    },
-    async getPreviousOrders() {
-      const fd = new FormData();
       const { store_code } = this.$store.state.auth.store;
       fd.append('store_code', store_code);
       fd.append('tablet_number', this.getTableId());
 
-      const orders = await this.$store.dispatch('setTableCartList', fd);
-      // console.log(orders);
-      if (!orders) return false;
+      console.log(store_code, this.getTableId());
 
-      return true;
+      this.$store.dispatch('setTableCartList', fd);
     },
   },
 };

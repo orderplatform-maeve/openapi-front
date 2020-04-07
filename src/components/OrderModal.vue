@@ -55,29 +55,6 @@
 <script>
 import utils from '@utils/orders.utils';
 
-const beforeProductMethods = {
-  getBeforeProductDisplayName(cProduct) {
-    if (!cProduct) return '';
-    return cProduct.display_name;
-  },
-  getBeforeProductOrderQty(cProduct) {
-    if (!cProduct) return 0;
-    return cProduct.order_qty;
-  },
-  isBeforeProductOtp(cProduct) {
-    if (!cProduct) return false;
-    return cProduct.option;
-  },
-  getBeforeProductOptionOrderQty(option) {
-    if (!option) return 0;
-    return option.order_qty;
-  },
-  getBeforeProductOptionDisplayName(option) {
-    if (!option) return '';
-    return option.display_name;
-  },
-};
-
 export default {
   data() {
     return {
@@ -96,7 +73,7 @@ export default {
     this.interval = setInterval(() => {
       this.seconds -= 1;
 
-      if(this.seconds < 1) {
+      if (this.seconds < 1) {
         this.closeOrder();
       }
     }, 1000);
@@ -113,7 +90,6 @@ export default {
       clearInterval(this.interval);
       this.$store.dispatch('unsetOrder');
     },
-    ...beforeProductMethods,
     ...utils,
   },
 };
@@ -314,12 +290,9 @@ export default {
         .wrap-c-product-list {
           display:flex;
           flex-direction:column;
-          //margin-left:24px;
-          //margin-bottom:24px;
           flex-shrink:1;
           flex-grow:1;
           padding-left:24px;
-          //border-left:solid 1px #808080;
           min-width:200px;
 
           .title {

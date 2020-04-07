@@ -1,6 +1,5 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import createPersistedState from 'vuex-persistedstate';
 import axios from 'axios';
 import querystring from 'querystring';
 
@@ -10,7 +9,6 @@ import { COOKIE_AUTH_NAME } from '@config';
 import { COOKIE_DOMAIN } from '@config/auth.constant';
 
 import endpoints from './endpoints';
-import paths from '@router/paths';
 
 Vue.use(Vuex);
 
@@ -26,13 +24,7 @@ const socket = {
   mutations: {
     SOCKET_orderlog(state, order) {
       if (vaildShopCode(state, order)) {
-        const pathname = window.location.hash.replace('#', '');
-        if (pathname === paths.display) {
-          console.log('displayNewOrder');
-          Vue.set(state, 'displayNewOrder', order);
-        } else {
-          Vue.set(state, 'order', order);
-        }
+        Vue.set(state, 'order', order);
       }
     },
     SOCKET_resStoreInfo(state, storeDeviceInfo) {
@@ -89,7 +81,8 @@ const authentication = {
         }
 
         const member = {
-          code: res.data.member_data.member_code,
+          // member_code: res.data.member_data.member_code,
+          code: res.data.member_data.member_id,
           name: res.data.member_data.member_name,
         };
 
@@ -101,9 +94,8 @@ const authentication = {
         commit('SET_STORES', res.data.shop_data);
         commit('SET_AUTH', auth);
 
-        console.log(COOKIE_DOMAIN);
-
         Vue.$cookies.set(COOKIE_AUTH_NAME, auth, '1y', null, COOKIE_DOMAIN);
+        localStorage.auth = JSON.stringify(auth);
 
         return res.data.result;
       } catch (error) {
@@ -146,6 +138,9 @@ const order = {
         orders[idx].commit = true;
         Vue.set(state, 'orders', orders);
       }
+    },
+    RESET_DISPLAY_NEW_ORDER: (state) => {
+      Vue.set(state, 'displayNewOrder', undefined);
     },
   },
   actions: {
@@ -203,6 +198,9 @@ const order = {
       }
       return false;
     },
+    resetDisplayNewOrder({ commit }) {
+      commit('RESET_DISPLAY_NEW_ORDER');
+    }
   },
 };
 
@@ -312,9 +310,11 @@ const table = {
       const url = endpoints.table.getCartList;
       const response = await axios.post(url, params);
 
-      if (response.data && response.data.data) {
-        commit('SET_TABLE_CART_LIST', response.data.data);
+      if (response.data && response.data.order_info) {
+        commit('SET_TABLE_CART_LIST', response.data.order_info);
+        return response.data.order_info;
       }
+      return false;
     }
   },
 };
@@ -345,6 +345,75 @@ const menu = {
       }
       return false;
     }
+  },
+  getters: {
+    getCategories(state) {
+      const processCategories = state.categories.map((item) => ({
+        code: item.T_order_store_menu_code,
+        parentCodes: JSON.parse(item.T_order_store_menu_depth),
+        name: item.T_order_store_menu_name,
+        names: item.T_order_store_menu_name_array,
+        sortNo: Number(item.T_order_store_menu_sort_number),
+        serviceFlag: item.T_order_store_menu_serviceUse,
+        startTime: item.T_order_store_menu_starttime,
+        endTime: item.T_order_store_menu_endtime,
+      }));
+
+      const firstCategories = processCategories.filter((category) => {
+        return category.parentCodes.includes('1');
+      }).sort((a, b) => a.sortNo - b.sortNo);
+
+      const secondCategories = firstCategories.map((fCtg) => {
+        return processCategories.filter((ctg) => {
+          return ctg.parentCodes.includes(fCtg.code);
+        }).sort((a, b) => a.sortNo - b.sortNo);
+      });
+
+      const results = firstCategories.map((item, idx) => ({
+        ...item,
+        subCategories: secondCategories[idx],
+      }));
+
+      return results;
+    },
+    processGoods(state) {
+      return state.goods.map( p => {
+        let categories = p.T_order_store_good_category;
+        const src = p.T_order_store_good_image;
+
+        try {
+          if (typeof categories === "string") {
+            categories = JSON.parse(categories);
+          }
+        } catch(e) {
+          console.log(e);
+        }
+
+        return {
+          categories,
+          code: p.T_order_store_good_code,
+          price: p.T_order_store_good_defualt_price,
+          displayName: p.T_order_store_good_display_name,
+          displayNameOneLine: p.T_order_store_good_display_name.replace(/\/\//gi, " "),
+          displayNameNewLine: p.T_order_store_good_display_name.replace(/\/\//gi, "<br/>"),
+          image: src,
+          name: p.T_order_store_good_name,
+          names: p.T_order_store_good_name_array,
+          sortNo: p.T_order_store_good_sort_number,
+          updated_dt: p.T_order_store_good_update_date,
+          noUse: p.T_order_store_good_use,
+          keyword: p.T_order_store_keyword,
+          hideInCart: p.T_order_store_non_show_cart,
+          posCode: p.T_order_store_pos_code,
+          options: p.option_group,
+          description: p.T_order_store_good_html,
+          descriptionFlag: p.T_order_store_good_html_flag.toLowerCase(),
+          openDetail: p.T_order_store_good_detail_open,
+          reviews: p.menuRatingList,
+          soldout: p.T_order_store_good_soldout,
+        };
+      }).sort((a, b) => a.sortNo - b.sortNo);
+    },
   },
 };
 
@@ -397,11 +466,11 @@ const actions = {
   ...menu.actions,
 };
 
-const getters = {};
+const getters = {
+  ...menu.getters,
+};
 
-const plugins = [
-  createPersistedState(),
-];
+const plugins = [];
 
 const storeInit = {
   state,
