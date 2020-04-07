@@ -47,11 +47,12 @@ export default {
       const auth = {
         ...this.auth,
         code: this.auth.store_code,
-        name:  this.auth.store_name,
+        name: this.auth.store_name,
       };
 
       this.$cookies.set(COOKIE_AUTH_NAME, auth, '1y', null, COOKIE_DOMAIN);
-      await this.$store.dispatch('updateAuth', this.auth);
+      localStorage.auth = JSON.stringify(auth);
+      await this.$store.dispatch('updateAuth', auth);
 
       const fd = new FormData();
       fd.append('shop_code', this.auth.store.store_code);
@@ -63,12 +64,14 @@ export default {
 
       await this.$store.dispatch('resetDisplayNewOrder');
 
-      // if (isDev) {
-      //   this.$router.push(paths.order);
-      // } else {
-      //   window.location.href = res.data.data.T_order_store_orderView_version;
-      // }
-      this.$router.push(paths.order);
+      // this.$router.push(paths.order);
+
+      try {
+        window.location.href = res.data.data.T_order_store_orderView_version;
+      } catch(error) {
+        return alert('리다이렉션 버젼 주소가 없습니다.');
+      }
+
     },
     getStoreItemKey(store) {
       try {

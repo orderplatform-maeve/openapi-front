@@ -81,7 +81,8 @@ const authentication = {
         }
 
         const member = {
-          code: res.data.member_data.member_code,
+          // member_code: res.data.member_data.member_code,
+          code: res.data.member_data.member_id,
           name: res.data.member_data.member_name,
         };
 
@@ -93,9 +94,8 @@ const authentication = {
         commit('SET_STORES', res.data.shop_data);
         commit('SET_AUTH', auth);
 
-        console.log(COOKIE_DOMAIN);
-
         Vue.$cookies.set(COOKIE_AUTH_NAME, auth, '1y', null, COOKIE_DOMAIN);
+        localStorage.auth = JSON.stringify(auth);
 
         return res.data.result;
       } catch (error) {

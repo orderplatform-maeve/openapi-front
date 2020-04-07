@@ -25,7 +25,7 @@
           .store_name {{storeName}}
           router-link.button(v-if="visibleOrderButton" :to="paths.order") 주문 보기
           //- router-link.button(v-if="visibleOrderButton" :to="paths.tables") 테이블 보기
-          router-link.button(v-if="visibleOrderButton" :to="paths.products") 상품 보기
+          //- router-link.button(v-if="visibleOrderButton" :to="paths.products") 상품 보기
         .bottom
           hr
           .tab-group
@@ -103,6 +103,7 @@ export default {
     },
     userName() {
       const { auth } = this;
+      console.log(auth);
       return auth && auth.member && auth.member.name;
     },
     visibleLoginButton() {
@@ -116,12 +117,25 @@ export default {
   created() {
     const params = { store_code: this.auth.store.store_code };
     this.$socket.emit('reqStoreInfo', params);
+
+    this.$store.commit('SET_AUTH', cookieAuth);
+
+    if (localStorage.auth) {
+      this.$cookies.set(COOKIE_AUTH_NAME, localStorage.auth, '1y', null, COOKIE_DOMAIN);
+      return this.$store.commit('SET_AUTH', JSON.parse(localStorage.auth));
+    }
+
+    const cookieAuth = this.$cookies.get(COOKIE_AUTH_NAME);
+    if(cookieAuth) {
+      localStorage.auth = JSON.stringify(cookieAuth);
+    }
   },
 
   mounted() {
     setInterval(() => {
       this.time.now = Date();
     }, 1000);
+    console.log(this.$cookies.get('auth'));
   },
 
   methods: {
