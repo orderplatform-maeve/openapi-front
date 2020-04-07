@@ -4,12 +4,14 @@
     .title {{ name }}
   .body
     ul.store-list
-      li.store-item(v-for="store in stores" :key="getStoreItemKey(store)")
+      li.store-item(v-for="store in data" :key="getStoreItemKey(store)")
         .name {{getStoreName(store)}}
         .button.button-order(@click="selectStore(store)") 주문 보기
 </template>
 
 <script>
+import axios from 'axios';
+
 import paths from '@router/paths';
 import { COOKIE_AUTH_NAME } from '@config';
 import { COOKIE_DOMAIN } from '@config/auth.constant';
@@ -37,8 +39,25 @@ export default {
       },
     },
   },
+  data() {
+    return {
+      data: this.stores,
+    };
+  },
   computed: {
     name: (state) => state.auth.member.name,
+  },
+  async mounted() {
+    if (this.stores.length === 0) {
+      const res = await axios.get(`http://api.auth.order.orderhae.com/stores?member_code=${this.auth.member.code}`);
+      console.log(res.data.store_data);
+
+      this.data = res.data.store_data.map((o) => ({
+        ...o,
+        store_code: o.shop_code,
+        store_name: o.shop_name,
+      }));
+    }
   },
   methods: {
     async selectStore(store) {
@@ -64,12 +83,11 @@ export default {
 
       await this.$store.dispatch('resetDisplayNewOrder');
 
-      // this.$router.push(paths.order);
-
       try {
         window.location.href = res.data.data.T_order_store_orderView_version;
       } catch(error) {
         return alert('리다이렉션 버젼 주소가 없습니다.');
+        // this.$router.push(paths.order);
       }
 
     },
