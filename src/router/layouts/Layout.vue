@@ -24,8 +24,8 @@
           img.logo(:src="logo")
           .store_name {{storeName}}
           router-link.button(v-if="visibleOrderButton" :to="paths.order") 주문 보기
-          router-link.button(v-if="visibleOrderButton" :to="paths.products") 상품 보기
-            <br> (테스트)
+          //- router-link.button(v-if="visibleOrderButton" :to="paths.products") 상품 보기
+          //-   <br> (테스트)
           //- router-link.button(v-if="visibleOrderButton" :to="paths.tables") 테이블 보기
         .bottom
           hr
@@ -126,7 +126,7 @@ export default {
     }
 
     const cookieAuth = this.$cookies.get(COOKIE_AUTH_NAME);
-    if(cookieAuth) {
+    if (cookieAuth) {
       localStorage.auth = JSON.stringify(cookieAuth);
     }
   },
@@ -154,6 +154,7 @@ export default {
     logout() {
       this.$store.dispatch('logout');
       this.$cookies.remove(COOKIE_AUTH_NAME, null, COOKIE_DOMAIN);
+      localStorage.removeItem('auth');
       this.$router.replace(paths.login);
     },
     restart() {
