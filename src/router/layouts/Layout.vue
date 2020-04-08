@@ -567,7 +567,7 @@ export default {
     display:flex;
     position:fixed;
     bottom:0;
-    right:0;
+    right: 4px;
     .version-footer {
       font-size: 8px;
     }
