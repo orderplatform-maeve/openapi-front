@@ -78,7 +78,6 @@ export default {
       version,
     };
   },
-
   computed: {
     order() {
       return !!this.$store.state.order;
@@ -117,6 +116,17 @@ export default {
       return !!this.userName;
     },
   },
+  beforeCreate() {
+    let MACAddr = '';
+    try {
+      if (window.UUID) {
+        MACAddr = window.UUID.getMacAddress();
+      }
+    } catch(e) {
+      console.log(e);
+    }
+    this.$store.commit('updateMACAddr', MACAddr);
+  },
   created() {
     console.log(this.$cookies.get('auth'));
 
@@ -140,6 +150,41 @@ export default {
       this.time.now = Date();
     }, 1000);
     console.log(this.$cookies.get('auth'));
+
+    // get uCode from localStorage
+    let uCode = localStorage.getItem('uCode');
+
+    // get uCode from cookie
+    if (!uCode) {
+      uCode = this.$cookies.get('uCode');
+    }
+
+    // create uCode if no code
+    if (!uCode) {
+      uCode = '';
+      const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+      const charactersLength = characters.length;
+      for (let i = 0; i < 5; i++ ) {
+        uCode += characters.charAt(Math.floor(Math.random() * charactersLength));
+      }
+      this.$cookies.set("uCode", uCode, "3y");
+    }
+
+    // set uCode to localStorage
+    localStorage.setItem('uCode', uCode);
+    this.$store.commit('updateUCode', uCode);
+
+    setInterval(() => {
+      if (parseInt(parseInt(Date.now()/1000)) % 30 < 1) {
+        this.beep();
+      }
+    }, 1000);
+  },
+  sockets: {
+    connect() {
+      console.log('connect sokets');
+      this.beep();
+    },
   },
   methods: {
     visibleSideMenu() {
@@ -272,6 +317,39 @@ export default {
     vaildOrderStatus(device) {
       return device && device.orderStatus;
     },
+    beep() {
+      console.log('beep');
+      const time = Date.now();
+      const datetime = this.$moment(time).format();
+
+      let deviceUsage = {};
+      try {
+        if (window.UUID) {
+          deviceUsage = JSON.parse(window.UUID.getDeviceUsage());
+        }
+      } catch(e) {
+        //console.log(e);
+      }
+      const data = {
+        event: 'beep',
+        uCode: this.$store.state.uCode,
+        MACAddr: this.$store.state.MACAddr,
+        deviceUsage: deviceUsage,
+        location: window.location,
+        store: {
+          code: this.$store.state.auth.store.code,
+        },
+        table: {
+          code: 'orderview',
+        },
+        time: time,
+        path: this.$route.path,
+        datetime: datetime,
+      };
+      this.$socket.emit('event', data, (answer) => {
+        console.log(answer);
+      });
+    },
   },
 };
 </script>
@@ -281,7 +359,7 @@ export default {
 #orderview {
   display:flex;
   flex-direction:column;
-  width:100vw;
+  width: 100vw;
   height: 100vh;
   position:relative;
   background-color:#000000;

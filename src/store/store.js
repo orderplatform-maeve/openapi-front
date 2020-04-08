@@ -418,6 +418,17 @@ const menu = {
   },
 };
 
+const monitoring = {
+  mutations: {
+    updateMACAddr(state, payload) {
+      state.MACAddr = payload;
+    },
+    updateUCode(state, payload) {
+      state.uCode = payload;
+    },
+  },
+};
+
 const authProto = {
   member: {
     code: '',
@@ -446,6 +457,8 @@ const state = {
   cartList: [],
   categories: [],
   goods: [],
+  MACAddr: '00:00:00:00:00:00',
+  uCode: '',
 };
 
 const mutations = {
@@ -455,6 +468,7 @@ const mutations = {
   ...shop.mutations,
   ...table.mutations,
   ...menu.mutations,
+  ...monitoring.mutations,
 };
 
 const actions = {
