@@ -42,12 +42,12 @@
           hr
           router-link.button(v-if="visibleStoresButton" :to="paths.store") 매장 보기
           router-link.button.button-red(v-if="visibleLoginButton" :to="paths.login") 로그인
+          .name {{userName}}
           .version {{version}}
           .button.button-red.button-member(v-if="visibleLogoutButton" @click="logout")
-            span.name {{userName}}
             span 로그아웃
     .foot.foot-right
-      .version-footer {{version}}
+      .version-footer u-code: {{uCode}} {{version}}
 </template>
 
 <script>
@@ -79,6 +79,9 @@ export default {
     };
   },
   computed: {
+    uCode() {
+      return this.$store.state.uCode;
+    },
     order() {
       return !!this.$store.state.order;
     },
@@ -384,22 +387,27 @@ export default {
     hr {
       border-color:#606060;
     }
+
+    .name {
+      font-size:12px;
+      text-align: center;
+      margin-bottom: 4px;
+    }
+
     .button {
       display:flex;
       align-items: center;
       justify-content: center;
-      margin-top:12px;
-      height:40px;
-      width:100%;
-      border-radius:100px;
-      background-color:#ffffff;
-      color:#000000;
-      font-weight:900;
-      text-decoration:none;
-      .name {
-        font-size:12px;
-      }
-      text-align:center;
+      margin-top: 8px;
+      margin-bottom: 4px;
+      height: 40px;
+      width: 100%;
+      border-radius: 100px;
+      background-color: #ffffff;
+      color: #000000;
+      font-weight: 900;
+      text-decoration: none;
+      text-align: center;
     }
     .button.active {
       background-color:#484848;
