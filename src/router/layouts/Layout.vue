@@ -459,6 +459,9 @@ export default {
         display:flex;
       }
     }
+    .version {
+      text-align: center;
+    }
 
     @include tab-group;
 
