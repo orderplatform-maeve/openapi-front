@@ -339,9 +339,6 @@ export default {
         store: {
           code: this.$store.state.auth.store.code,
         },
-        table: {
-          code: 'orderview',
-        },
         time: time,
         path: this.$route.path,
         datetime: datetime,
