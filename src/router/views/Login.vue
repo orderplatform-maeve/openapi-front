@@ -32,7 +32,8 @@ export default {
       if (id && pw) {
 
         const fd = new FormData();
-        fd.append('member_id', id);
+
+        fd.append('member_id', id.toLowerCase());
         fd.append('member_pwd', pw);
 
         const isLogin = await this.$store.dispatch('login', fd);
