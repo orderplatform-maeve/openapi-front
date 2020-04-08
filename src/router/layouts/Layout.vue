@@ -321,7 +321,7 @@ export default {
       return device && device.orderStatus;
     },
     beep() {
-      console.log('beep');
+      // console.log('beep');
       const time = Date.now();
       const datetime = this.$moment(time).format();
 
