@@ -340,14 +340,14 @@ export default {
         deviceUsage: deviceUsage,
         location: window.location,
         store: {
-          code: this.$store.state.auth.store.code,
+          code: this.$store.state.auth?.store?.code,
         },
         time: time,
         path: this.$route.path,
         datetime: datetime,
       };
       this.$socket.emit('event', data, (answer) => {
-        console.log(answer);
+        // console.log(answer);
       });
     },
   },
