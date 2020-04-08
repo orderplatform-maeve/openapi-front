@@ -42,11 +42,12 @@
           hr
           router-link.button(v-if="visibleStoresButton" :to="paths.store") 매장 보기
           router-link.button.button-red(v-if="visibleLoginButton" :to="paths.login") 로그인
-          .version 1.0.5
+          .version {{version}}
           .button.button-red.button-member(v-if="visibleLogoutButton" @click="logout")
             span.name {{userName}}
             span 로그아웃
-    .foot.foot-left
+    .foot.foot-right
+      .version-footer {{version}}
 </template>
 
 <script>
@@ -54,6 +55,7 @@ import store from '@store/store';
 import paths from '@router/paths';
 import { COOKIE_AUTH_NAME } from '@config';
 import { COOKIE_DOMAIN } from '@config/auth.constant';
+import { version } from '@utils/constants';
 
 export default {
   store,
@@ -72,7 +74,8 @@ export default {
         message: '',
       },
       paths,
-      logo: 'https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/logo/torder_color_white.png'
+      logo: 'https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/logo/torder_color_white.png',
+      version,
     };
   },
 
@@ -479,6 +482,9 @@ export default {
     position:fixed;
     bottom:0;
     right:0;
+    .version-footer {
+      font-size: 8px;
+    }
   }
   > .foot {
     .button {
