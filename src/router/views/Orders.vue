@@ -20,13 +20,12 @@
       @click="view(order)"
       v-if="visibleOrderItem(order)"
     )
-      .table-number(
-        :class="getTableNumberClass(order)"
-      ) {{checkedTabletNum(order)}}
+      .table-number(:class="getTableNumberClass(order)") {{checkedTabletNum(order)}}
       .people_total_count(v-if="visibleCustomerCount(order)") {{checkedTotalPeople(order)}}명
       .msg
         span.title(v-if="visibleCall(order)") 호출이요
         span.title(v-else-if="isDoneSetting(order)") 셋팅완료
+        span.title(v-else-if="isRating(order)") 평가
         span.title(v-else) 주문이요
         .icon.visit(v-if="isFirstEntered(order)") 입장
         .icon.first(v-if="isFirstOrder(order)") 첫 주문
