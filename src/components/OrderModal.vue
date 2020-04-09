@@ -9,6 +9,7 @@
         .msg
           span.title(v-if="visibleCall(order)") 호출이요
           span.title(v-else-if="isDoneSetting(order)") 셋팅완료
+          span.title(v-else-if="isRating(order)") 평가
           span.title(v-else) 주문이요
           .icon.visit(v-if="isFirstEntered(order)") 입장
           .icon.first(v-if="isFirstOrder(order)") 첫 주문
@@ -17,7 +18,7 @@
           .time {{getOrderTiem(order)}}
       .button.button-close(v-on:click="closeOrder") 닫기
     .container-body
-      .left
+      .left(v-if="order.order_type === 'ORDER'")
         .wrap-people-list
           ul.people-list
             li.people-item(v-for="people in order.people_json" v-if="isPeopleCnt(people)")
@@ -34,6 +35,15 @@
                   span +
                   .count {{getOptionGoodQty(option)}}개
                   .name {{getOptionDisplayName(option)}}
+      .left(v-else-if="order.order_type === 'RATING'")
+        p 평가대상명 {{ order.rating_info.good_name }}
+        p 평점 {{ order.rating_info.score }}/10
+        p 평가 항목
+        div(v-for="ratingItem in order.rating_info.rating_array")
+          p {{ ratingItem.title }}
+          p 선택 된 항목
+          div(v-for="word in ratingItem.rewviews")
+            p {{ word.name }}
       .right
         .wrap-c-product-list()
           .title 이전주문내역
