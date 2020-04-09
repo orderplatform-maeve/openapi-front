@@ -65,7 +65,7 @@ const authentication = {
         }
 
         if (!res.data.result) {
-          throw 'data result 값이 false 값입니다.';
+          throw '존재하지 않는 아이디 이거나 비밀번호가 잘못 되었습니다.';
         }
 
         if (!res.data.member_data || isEmpty(res.data.member_data)) {
@@ -100,6 +100,7 @@ const authentication = {
         return res.data.result;
       } catch (error) {
         console.error(error);
+        alert(error);
         return false;
       }
     },
@@ -417,6 +418,17 @@ const menu = {
   },
 };
 
+const monitoring = {
+  mutations: {
+    updateMACAddr(state, payload) {
+      state.MACAddr = payload;
+    },
+    updateUCode(state, payload) {
+      state.uCode = payload;
+    },
+  },
+};
+
 const authProto = {
   member: {
     code: '',
@@ -445,6 +457,8 @@ const state = {
   cartList: [],
   categories: [],
   goods: [],
+  MACAddr: '00:00:00:00:00:00',
+  uCode: '',
 };
 
 const mutations = {
@@ -454,6 +468,7 @@ const mutations = {
   ...shop.mutations,
   ...table.mutations,
   ...menu.mutations,
+  ...monitoring.mutations,
 };
 
 const actions = {
