@@ -76,6 +76,13 @@ export default {
       };
     },
   },
+  async beforeCreate() {
+    console.log('bef', this.$store.state.auth.store.store_code);
+
+    const fd = new FormData();
+    fd.append('shop_code', this.$store.state.auth.store.store_code);
+    await this.$store.dispatch('setOrders', fd);
+  },
   methods: {
     setViewMode(value) {
       document.querySelector(".order-list").scrollTop = 0;

@@ -42,11 +42,12 @@
           hr
           router-link.button(v-if="visibleStoresButton" :to="paths.store") 매장 보기
           router-link.button.button-red(v-if="visibleLoginButton" :to="paths.login") 로그인
-          .version 1.0.5
+          .name {{userName}}
+          .version {{version}}
           .button.button-red.button-member(v-if="visibleLogoutButton" @click="logout")
-            span.name {{userName}}
             span 로그아웃
-    .foot.foot-left
+    .foot.foot-right
+      .version-footer u-code: {{uCode}} {{version}}
 </template>
 
 <script>
@@ -54,6 +55,7 @@ import store from '@store/store';
 import paths from '@router/paths';
 import { COOKIE_AUTH_NAME } from '@config';
 import { COOKIE_DOMAIN } from '@config/auth.constant';
+import { version } from '@utils/constants';
 
 export default {
   store,
@@ -72,11 +74,14 @@ export default {
         message: '',
       },
       paths,
-      logo: 'https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/logo/torder_color_white.png'
+      logo: 'https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/logo/torder_color_white.png',
+      version,
     };
   },
-
   computed: {
+    uCode() {
+      return this.$store.state.uCode;
+    },
     order() {
       return !!this.$store.state.order;
     },
@@ -114,6 +119,17 @@ export default {
       return !!this.userName;
     },
   },
+  beforeCreate() {
+    let MACAddr = '';
+    try {
+      if (window.UUID) {
+        MACAddr = window.UUID.getMacAddress();
+      }
+    } catch(e) {
+      console.log(e);
+    }
+    this.$store.commit('updateMACAddr', MACAddr);
+  },
   created() {
     console.log(this.$cookies.get('auth'));
 
@@ -133,15 +149,44 @@ export default {
     }
   },
   mounted() {
+    // get uCode from localStorage
+    let uCode = localStorage.getItem('uCode');
+
+    // get uCode from cookie
+    if (!uCode) {
+      uCode = this.$cookies.get('uCode');
+    }
+
+    // create uCode if no code
+    if (!uCode) {
+      uCode = '';
+      const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+      const charactersLength = characters.length;
+      for (let i = 0; i < 5; i++ ) {
+        uCode += characters.charAt(Math.floor(Math.random() * charactersLength));
+      }
+      this.$cookies.set("uCode", uCode, "3y");
+    }
+
+    // set uCode to localStorage
+    localStorage.setItem('uCode', uCode);
+    this.$store.commit('updateUCode', uCode);
+
     setInterval(() => {
       this.time.now = Date();
+      if (parseInt(parseInt(Date.now()/1000)) % 30 < 1) {
+        this.beep();
+      }
     }, 1000);
-    console.log(this.$cookies.get('auth'));
+  },
+  sockets: {
+    connect() {
+      console.log('connect sokets');
+      this.beep();
+    },
   },
   methods: {
     visibleSideMenu() {
-      console.log(this.$router.history.current.path);
-
       const targetPath = this.$router.history.current.path;
 
       const isLoginPath = targetPath === '/login';
@@ -269,6 +314,36 @@ export default {
     vaildOrderStatus(device) {
       return device && device.orderStatus;
     },
+    beep() {
+      // console.log('beep');
+      const time = Date.now();
+      const datetime = this.$moment(time).format();
+
+      let deviceUsage = {};
+      try {
+        if (window.UUID) {
+          deviceUsage = JSON.parse(window.UUID.getDeviceUsage());
+        }
+      } catch(e) {
+        //console.log(e);
+      }
+      const data = {
+        event: 'beep',
+        uCode: this.$store.state.uCode,
+        MACAddr: this.$store.state.MACAddr,
+        deviceUsage: deviceUsage,
+        location: window.location,
+        store: {
+          code: this.$store.state.auth?.store?.code,
+        },
+        time: time,
+        path: this.$route.path,
+        datetime: datetime,
+      };
+      this.$socket.emit('event', data, (answer) => {
+        // console.log(answer);
+      });
+    },
   },
 };
 </script>
@@ -278,7 +353,7 @@ export default {
 #orderview {
   display:flex;
   flex-direction:column;
-  width:100vw;
+  width: 100vw;
   height: 100vh;
   position:relative;
   background-color:#000000;
@@ -306,22 +381,27 @@ export default {
     hr {
       border-color:#606060;
     }
+
+    .name {
+      font-size:12px;
+      text-align: center;
+      margin-bottom: 4px;
+    }
+
     .button {
       display:flex;
       align-items: center;
       justify-content: center;
-      margin-top:12px;
-      height:40px;
-      width:100%;
-      border-radius:100px;
-      background-color:#ffffff;
-      color:#000000;
-      font-weight:900;
-      text-decoration:none;
-      .name {
-        font-size:12px;
-      }
-      text-align:center;
+      margin-top: 8px;
+      margin-bottom: 4px;
+      height: 40px;
+      width: 100%;
+      border-radius: 100px;
+      background-color: #ffffff;
+      color: #000000;
+      font-weight: 900;
+      text-decoration: none;
+      text-align: center;
     }
     .button.active {
       background-color:#484848;
@@ -380,6 +460,9 @@ export default {
       .buttons {
         display:flex;
       }
+    }
+    .version {
+      text-align: center;
     }
 
     @include tab-group;
@@ -478,7 +561,10 @@ export default {
     display:flex;
     position:fixed;
     bottom:0;
-    right:0;
+    right: 4px;
+    .version-footer {
+      font-size: 8px;
+    }
   }
   > .foot {
     .button {
