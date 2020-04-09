@@ -149,11 +149,6 @@ export default {
     }
   },
   mounted() {
-    setInterval(() => {
-      this.time.now = Date();
-    }, 1000);
-    console.log(this.$cookies.get('auth'));
-
     // get uCode from localStorage
     let uCode = localStorage.getItem('uCode');
 
@@ -178,6 +173,7 @@ export default {
     this.$store.commit('updateUCode', uCode);
 
     setInterval(() => {
+      this.time.now = Date();
       if (parseInt(parseInt(Date.now()/1000)) % 30 < 1) {
         this.beep();
       }
@@ -191,8 +187,6 @@ export default {
   },
   methods: {
     visibleSideMenu() {
-      console.log(this.$router.history.current.path);
-
       const targetPath = this.$router.history.current.path;
 
       const isLoginPath = targetPath === '/login';

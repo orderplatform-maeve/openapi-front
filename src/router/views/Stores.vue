@@ -72,15 +72,9 @@ export default {
         },
       };
 
-      console.log('auth 1@#!@#!@', auth);
-
       this.$cookies.set(COOKIE_AUTH_NAME, auth, '1y', null, COOKIE_DOMAIN);
       localStorage.auth = JSON.stringify(auth);
       await this.$store.dispatch('updateAuth', auth);
-
-      const fd = new FormData();
-      fd.append('shop_code', this.auth.store.store_code);
-      await this.$store.dispatch('setOrders', fd);
 
       const params = new FormData();
       params.append('store_code', this.auth.store.store_code);
@@ -90,8 +84,8 @@ export default {
 
       try {
         if (res.data.data.T_order_store_orderView_version) {
-          window.location.href = res.data.data.T_order_store_orderView_version;
           // this.$router.push(paths.order);
+          window.location.href = res.data.data.T_order_store_orderView_version;
         } else {
           this.$router.push(paths.order);
         }
