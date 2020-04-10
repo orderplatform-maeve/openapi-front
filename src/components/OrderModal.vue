@@ -9,6 +9,7 @@
         .msg
           span.title(v-if="visibleCall(order)") 호출이요
           span.title(v-else-if="isDoneSetting(order)") 셋팅완료
+          span.title(v-else-if="isRating(order)") 평가
           span.title(v-else) 주문이요
           .icon.visit(v-if="isFirstEntered(order)") 입장
           .icon.first(v-if="isFirstOrder(order)") 첫 주문
@@ -17,7 +18,7 @@
           .time {{getOrderTiem(order)}}
       .button.button-close(v-on:click="closeOrder") 닫기
     .container-body
-      .left
+      .left(v-if="getOrderType(order)")
         .wrap-people-list
           ul.people-list
             li.people-item(v-for="people in order.people_json" v-if="isPeopleCnt(people)")
@@ -34,6 +35,22 @@
                   span +
                   .count {{getOptionGoodQty(option)}}개
                   .name {{getOptionDisplayName(option)}}
+      .left(v-else-if="order.order_type === 'RATING'")
+        .name {{ order.rating_info.good_name }}
+        star-rating(
+          :increment=".5"
+          :read-only="true"
+          :rating="order.rating_info.score/2"
+          :show-rating="false"
+          active-color="#ff0000"
+          glowColor="#000"
+        )
+        .raitng-item(
+          class="rating"
+          v-if="order.rating_info.rating_array && (order.rating_info.rating_array.length > 0)"
+        ) 평가 항목
+        .word(v-for="ratingItem in order.rating_info.rating_array") {{ ratingItem.title }} -&nbsp;
+          span(v-for="word in ratingItem.rewviews") {{ word.name }}
       .right
         .wrap-c-product-list()
           .title 이전주문내역
@@ -54,8 +71,12 @@
 
 <script>
 import utils from '@utils/orders.utils';
+import StarRating from 'vue-star-rating';
 
 export default {
+  components: {
+    'star-rating': StarRating,
+  },
   data() {
     return {
       interval: undefined,
@@ -89,6 +110,13 @@ export default {
     closeOrder() {
       clearInterval(this.interval);
       this.$store.dispatch('unsetOrder');
+    },
+    getOrderType(order) {
+      try {
+        return order.order_type === 'ORDER';
+      } catch (error) {
+        return false;
+      }
     },
     ...utils,
   },
@@ -167,9 +195,20 @@ export default {
       overflow:scroll;
 
       .left {
-        display:flex;
-        flex-direction:column;
-        flex-grow:1;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        .name {
+          font-size: 20px;
+        }
+        .raitng-item {
+          font-size: 20px;
+          margin-top: 12px;
+        }
+        .word {
+          margin-top: 8px;
+          margin-bottom: 0;
+        }
 
         .wrap-people-list {
           display:flex;

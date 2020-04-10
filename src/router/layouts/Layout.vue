@@ -205,7 +205,8 @@ export default {
       this.$router.replace(paths.login);
     },
     restart() {
-      this.$router.go(0);
+      // location.href = '/'; // cache 파일을 먼저 로드한다.
+      location.replace('/'); // cache 파일을 로드하지 않는다.
     },
     openTabletScreen() {
       this.confirmModal.show = true;

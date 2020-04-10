@@ -124,6 +124,7 @@ if (process.env.NODE_ENV === 'production') {
   module.exports.plugins = (module.exports.plugins || []).concat([
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+      'process.env.STOP_REDIRECT': process.env.STOP_REDIRECT,
     }),
     /*
     new webpack.optimize.UglifyJsPlugin({

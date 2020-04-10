@@ -84,8 +84,12 @@ export default {
 
       try {
         if (res.data.data.T_order_store_orderView_version) {
-          // this.$router.push(paths.order);
-          window.location.href = res.data.data.T_order_store_orderView_version;
+
+          if (process.env.STOP_REDIRECT) {
+            this.$router.push(paths.order);
+          } else {
+            window.location.href = res.data.data.T_order_store_orderView_version;
+          }
         } else {
           this.$router.push(paths.order);
         }
