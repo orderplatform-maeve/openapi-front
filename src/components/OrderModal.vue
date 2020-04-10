@@ -45,11 +45,12 @@
           active-color="#ff0000"
           glowColor="#000"
         )
-        p 평가 항목
-        div(v-for="ratingItem in order.rating_info.rating_array")
-          p {{ ratingItem.title }}
-          div(v-for="word in ratingItem.rewviews")
-            p {{ word.name }}
+        .raitng-item(
+          class="rating"
+          v-if="order.rating_info.rating_array && (order.rating_info.rating_array.length > 0)"
+        ) 평가 항목
+        .word(v-for="ratingItem in order.rating_info.rating_array") {{ ratingItem.title }} -&nbsp;
+          span(v-for="word in ratingItem.rewviews") {{ word.name }}
       .right
         .wrap-c-product-list()
           .title 이전주문내역
@@ -192,6 +193,14 @@ export default {
         flex-grow: 1;
         .name {
           font-size: 20px;
+        }
+        .raitng-item {
+          font-size: 20px;
+          margin-top: 12px;
+        }
+        .word {
+          margin-top: 8px;
+          margin-bottom: 0;
         }
 
         .wrap-people-list {
