@@ -36,12 +36,18 @@
                   .count {{getOptionGoodQty(option)}}개
                   .name {{getOptionDisplayName(option)}}
       .left(v-else-if="order.order_type === 'RATING'")
-        p 평가대상명 {{ order.rating_info.good_name }}
-        p 평점 {{ order.rating_info.score }}/10
+        .name {{ order.rating_info.good_name }}
+        star-rating(
+          :increment=".5"
+          :read-only="true"
+          :rating="order.rating_info.score/2"
+          :show-rating="false"
+          active-color="#ff0000"
+          glowColor="#000"
+        )
         p 평가 항목
         div(v-for="ratingItem in order.rating_info.rating_array")
           p {{ ratingItem.title }}
-          p 선택 된 항목
           div(v-for="word in ratingItem.rewviews")
             p {{ word.name }}
       .right
@@ -64,8 +70,12 @@
 
 <script>
 import utils from '@utils/orders.utils';
+import StarRating from 'vue-star-rating';
 
 export default {
+  components: {
+    'star-rating': StarRating,
+  },
   data() {
     return {
       interval: undefined,
@@ -78,15 +88,15 @@ export default {
     },
   },
   mounted() {
-    clearInterval(this.interval);
-    this.seconds = 10;
-    this.interval = setInterval(() => {
-      this.seconds -= 1;
+    // clearInterval(this.interval);
+    // this.seconds = 10;
+    // this.interval = setInterval(() => {
+    //   this.seconds -= 1;
 
-      if (this.seconds < 1) {
-        this.closeOrder();
-      }
-    }, 1000);
+    //   if (this.seconds < 1) {
+    //     this.closeOrder();
+    //   }
+    // }, 1000);
   },
   beforeDestroy() {
     this.closeOrder();
@@ -177,9 +187,12 @@ export default {
       overflow:scroll;
 
       .left {
-        display:flex;
-        flex-direction:column;
-        flex-grow:1;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        .name {
+          font-size: 20px;
+        }
 
         .wrap-people-list {
           display:flex;
