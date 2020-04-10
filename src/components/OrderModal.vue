@@ -18,7 +18,7 @@
           .time {{getOrderTiem(order)}}
       .button.button-close(v-on:click="closeOrder") 닫기
     .container-body
-      .left(v-if="order.order_type === 'ORDER'")
+      .left(v-if="getOrderType(order)")
         .wrap-people-list
           ul.people-list
             li.people-item(v-for="people in order.people_json" v-if="isPeopleCnt(people)")
@@ -110,6 +110,13 @@ export default {
     closeOrder() {
       clearInterval(this.interval);
       this.$store.dispatch('unsetOrder');
+    },
+    getOrderType(order) {
+      try {
+        return order.order_type === 'ORDER';
+      } catch (error) {
+        return false;
+      }
     },
     ...utils,
   },
