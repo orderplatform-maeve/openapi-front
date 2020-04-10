@@ -12,21 +12,20 @@
         .order-list-tab-button.tab-button(@click="setViewMode('c')" :class="activeCheckedTabBtnClass")
           | 확인 주문
           .count {{lengthCommitedOrders}}
-
-  ul.order-list()
+  .loading(v-if="isLoading") 데이터 요청 중 입니다.
+  ul.order-list(v-if="!isLoading")
     li.order-item(
       v-for="order in sortedOrders"
       :class="getOrderItemClass(order)"
       @click="view(order)"
       v-if="visibleOrderItem(order)"
     )
-      .table-number(
-        :class="getTableNumberClass(order)"
-      ) {{checkedTabletNum(order)}}
+      .table-number(:class="getTableNumberClass(order)") {{checkedTabletNum(order)}}
       .people_total_count(v-if="visibleCustomerCount(order)") {{checkedTotalPeople(order)}}명
       .msg
         span.title(v-if="visibleCall(order)") 호출이요
         span.title(v-else-if="isDoneSetting(order)") 셋팅완료
+        span.title(v-else-if="isRating(order)") 평가
         span.title(v-else) 주문이요
         .icon.visit(v-if="isFirstEntered(order)") 입장
         .icon.first(v-if="isFirstOrder(order)") 첫 주문
@@ -42,6 +41,7 @@ export default {
   data () {
     return {
       viewMode: 'a',
+      isLoading: false,
     };
   },
   computed: {
@@ -76,12 +76,23 @@ export default {
       };
     },
   },
-  async beforeCreate() {
+  async mounted() {
+    this.isLoading = true;
+
     console.log('bef', this.$store.state.auth.store.store_code);
 
     const fd = new FormData();
     fd.append('shop_code', this.$store.state.auth.store.store_code);
-    await this.$store.dispatch('setOrders', fd);
+    const res = await this.$store.dispatch('setOrders', fd);
+
+    console.log(res);
+
+    if (res) {
+      setTimeout(() => {
+        this.isLoading = false;
+      }, 1000);
+    }
+
   },
   methods: {
     setViewMode(value) {
@@ -172,6 +183,14 @@ export default {
   .scroll-stop {
     overflow:hidden !important;
     -webkit-overflow-scrolling: auto !important;
+  }
+  .loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+    font-size: 40px;
+    font-weight: 900;
   }
 }
 </style>

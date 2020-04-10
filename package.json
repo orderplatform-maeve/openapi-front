@@ -1,13 +1,14 @@
 {
   "name": "orderview",
-  "description": "A Vue.js project",
-  "version": "1.0.0",
-  "author": "jungkyungsuk <me@jungslab.com>",
+  "description": "Torder Only Manager Usage",
+  "version": "1.0.5",
+  "author": "laon <cj4luv@gmail.com>",
   "license": "MIT",
   "private": true,
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack-dev-server --open --hot",
     "dev-prod": "cross-env NODE_ENV=production webpack-dev-server --open --hot",
+    "dev-prod:stop-redirect": "cross-env NODE_ENV=production STOP_REDIRECT=true webpack-dev-server --open --hot",
     "build": "cross-env NODE_ENV=production webpack --progress --hide-modules",
     "deploy-tmp": "npm run build && cross-env UPLOAD_TYPE=tmp node ./script/deployTmp.js",
     "deploy": "npm run build && cross-env UPLOAD_TYPE=1 node ./script/deploy.js"
@@ -21,6 +22,7 @@
     "vue-moment": "^4.0.0",
     "vue-router": "^3.1.2",
     "vue-socket.io": "^3.0.7",
+    "vue-star-rating": "^1.6.1",
     "vuex": "^3.1.1"
   },
   "browserslist": [
@@ -34,6 +36,7 @@
   "eslintConfig": {
     "root": true,
     "env": {
+      "browser": true,
       "node": true
     },
     "extends": [

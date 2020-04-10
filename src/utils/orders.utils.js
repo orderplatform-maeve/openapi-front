@@ -24,8 +24,18 @@ export function getTableNumberClass(order) {
     return {
       call: false,
       setting: false,
+      rating: false,
     };
   }
+
+  if (order.order_type === 'RATING') {
+    return {
+      call: false,
+      setting: false,
+      rating: true,
+    };
+  }
+
   const goodCode = vaildGoodCode(order);
   return getGoodType(goodCode);
 }
@@ -42,6 +52,14 @@ export function isDoneSetting(order) {
   const goodCode = vaildGoodCode(order);
   const isDone = goodCode === '88888';
   return isDone;
+}
+
+export function isRating(order) {
+  try {
+    return order.order_type === 'RATING';
+  } catch (error) {
+    return false;
+  }
 }
 
 export function checkedTabletNum(order) {
@@ -184,6 +202,7 @@ export default {
   checkedCommit,
   vaildCommitText,
   getOrderTiem,
+  isRating,
   ...productMethods,
   ...peopleMethods,
   ...beforeProductMethods,

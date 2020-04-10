@@ -16,6 +16,8 @@ import {
   MenuModal,
 } from '@components';
 
+Vue.config.devtools = true;
+
 Vue.use(VueCookies);
 Vue.use(VueRouter);
 Vue.use(VueFilter);

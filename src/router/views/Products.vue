@@ -81,7 +81,7 @@ export default {
         return data[0].subCategories;
 
       } catch (error) {
-        console.error(error);
+        // console.error(error);
         return [];
       }
     },
@@ -96,7 +96,7 @@ export default {
 
         return data[0].subCategories[0].goods;
       } catch (e) {
-        console.error(e);
+        // console.error(e);
         return [];
       }
     },
