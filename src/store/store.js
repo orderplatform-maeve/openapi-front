@@ -189,6 +189,8 @@ const order = {
 
         commit('SET_ORDERS', orders);
       }
+
+      return response;
     },
     async requestOrder({ commit }, params) {
       const url = endpoints.orders.order;
