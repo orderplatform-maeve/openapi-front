@@ -89,15 +89,15 @@ export default {
     },
   },
   mounted() {
-    // clearInterval(this.interval);
-    // this.seconds = 10;
-    // this.interval = setInterval(() => {
-    //   this.seconds -= 1;
+    clearInterval(this.interval);
+    this.seconds = 10;
+    this.interval = setInterval(() => {
+      this.seconds -= 1;
 
-    //   if (this.seconds < 1) {
-    //     this.closeOrder();
-    //   }
-    // }, 1000);
+      if (this.seconds < 1) {
+        this.closeOrder();
+      }
+    }, 1000);
   },
   beforeDestroy() {
     this.closeOrder();
