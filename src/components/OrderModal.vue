@@ -36,7 +36,7 @@
                   .count {{getOptionGoodQty(option)}}개
                   .name {{getOptionDisplayName(option)}}
       .left(v-else-if="order.order_type === 'RATING'")
-        .name {{ order.rating_info.good_name }}
+        .good-name {{ order.rating_info.good_name }}
         star-rating(
           :increment=".5"
           :read-only="true"
@@ -198,16 +198,19 @@ export default {
         display: flex;
         flex-direction: column;
         flex-grow: 1;
-        .name {
-          font-size: 20px;
+        .good-name {
+          font-size: 48px;
+          font-weight: 900;
         }
         .raitng-item {
-          font-size: 20px;
+          font-size: 48px;
           margin-top: 12px;
+          font-weight: 900;
         }
         .word {
           margin-top: 8px;
           margin-bottom: 0;
+          font-size: 40px;
         }
 
         .wrap-people-list {
