@@ -15,7 +15,7 @@
       :class="getActiveSubCategory(subCtgItem.code)"
     ) {{ subCtgItem.name }}
   .goods
-    .good(v-for="good in getGoods()" :key="good.code")
+    .good(v-for="good in Filter()" :key="good.code")
       .good-image(:style="{backgroundImage: `url(${good.image})`}")
       .good-info
         .name {{ good.displayName }}
@@ -35,29 +35,17 @@ export default {
     data() {
       const { processGoods, getCategories } = this.$store.getters;
 
-      const results = getCategories.map((categoryItem) => {
-        const subCategories = categoryItem.subCategories.map((subCategoryItem) => {
-          const obj = {
-            ...subCategoryItem,
-            goods: processGoods.filter((p) => {
-              if (p.categories) {
-                const subCategory = subCategoryItem.code;
-                return p.categories.includes(subCategory);
-              }
-            }),
-          };
-          return obj;
-        });
-        const result = {
+      const getCategoryItem = (categoryItem) => {
+        const getSubCategoryItem = (subCategoryItem) => this.getSubCategoryItem(subCategoryItem, processGoods);
+        const subCategories = categoryItem.subCategories.map(getSubCategoryItem);
+
+        return {
           ...categoryItem,
           subCategories,
         };
+      };
 
-        return result;
-      });
-
-      console.log(results);
-      return results;
+      return getCategories.map(getCategoryItem);
     },
   },
   async mounted() {
@@ -68,7 +56,6 @@ export default {
   },
   methods: {
     onSelectMainCtg(item) {
-      // console.log(item.subCategories[0].goods);
       this.selectMainCategoryItem = item;
       this.selectSubCategoryItem = item.subCategories[0];
     },
@@ -81,14 +68,13 @@ export default {
         return data[0].subCategories;
 
       } catch (error) {
-        // console.error(error);
         return [];
       }
     },
     onSelectSubCtg(item) {
       this.selectSubCategoryItem = item;
     },
-    getGoods() {
+    Filter() {
       try {
         const { data, selectSubCategoryItem } = this;
 
@@ -96,7 +82,6 @@ export default {
 
         return data[0].subCategories[0].goods;
       } catch (e) {
-        // console.error(e);
         return [];
       }
     },
@@ -141,7 +126,26 @@ export default {
         console.error(error);
         return '';
       }
-    }
+    },
+    getFilteredGoods(goods, subCategory) {
+      const findGoods = (good) => {
+        const { categories } = good;
+
+        if (categories) {
+          return categories.includes(subCategory);
+        }
+      };
+
+      return goods.filter(findGoods);
+    },
+    getSubCategoryItem(subCategoryItem, processGoods) {
+      const goods = this.getFilteredGoods(processGoods, subCategoryItem.code);
+
+      return {
+        ...subCategoryItem,
+        goods,
+      };
+    },
   },
 };
 </script>

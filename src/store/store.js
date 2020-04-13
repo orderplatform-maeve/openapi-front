@@ -177,8 +177,6 @@ const order = {
       const url = endpoints.orders.todayRedisData;
       const response = await axios.post(url, params);
 
-      console.log(response);
-
       if (response.status === 200) {
         const orders = [];
 
