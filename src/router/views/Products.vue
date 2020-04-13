@@ -15,12 +15,12 @@
       :class="getActiveSubCategory(subCtgItem.code)"
     ) {{ subCtgItem.name }}
   .goods
-    .good(v-for="good in Filter()" :key="good.code")
-      .good-image(:style="{backgroundImage: `url(${good.image})`}")
+    .good(v-for="good in getFilterGoods()" :key="good.code")
+      .good-image(:style="getGoodImage(good.image)")
       .good-info
         .name {{ good.displayName }}
-        .button {{ good.noUse ? '판매 재개' : '판매 중지' }}
-        .button {{ good.soldout ? '품절 취소' : '품절 처리' }}
+        .button {{ getUseStatusText(good.noUse) }}
+        .button {{ getSoldoutStatusText(good.soldout) }}
 </template>
 
 <script>
@@ -74,7 +74,7 @@ export default {
     onSelectSubCtg(item) {
       this.selectSubCategoryItem = item;
     },
-    Filter() {
+    getFilterGoods() {
       try {
         const { data, selectSubCategoryItem } = this;
 
@@ -146,6 +146,17 @@ export default {
         goods,
       };
     },
+    getGoodImage(image) {
+      return  {
+        backgroundImage: `url(${image})`,
+      };
+    },
+    getUseStatusText(noUse) {
+      return noUse ? '판매 재개' : '판매 중지';
+    },
+    getSoldoutStatusText(soldout) {
+      return soldout ? '품절 취소' : '품절 처리';
+    }
   },
 };
 </script>
