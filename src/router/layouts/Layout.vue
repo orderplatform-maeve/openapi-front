@@ -120,7 +120,16 @@ export default {
     },
   },
   beforeCreate() {
-    this.getMacAddress();
+    let MACAddr = '';
+    try {
+      if (window.UUID) {
+        MACAddr = window.UUID.getMacAddress();
+      }
+    } catch(e) {
+      console.log(e);
+    }
+
+    this.$store.commit('updateMACAddr', MACAddr);
   },
   created() {
     this.getAuthentication();
@@ -313,17 +322,6 @@ export default {
       if (cookieAuth) {
         localStorage.auth = JSON.stringify(cookieAuth);
       }
-    },
-    getMacAddress() {
-      let MACAddr = '';
-      try {
-        if (window.UUID) {
-          MACAddr = window.UUID.getMacAddress();
-        }
-      } catch(e) {
-        console.log(e);
-      }
-      this.$store.commit('updateMACAddr', MACAddr);
     },
     getUCode() {
       // get uCode from localStorage
