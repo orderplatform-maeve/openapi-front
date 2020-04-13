@@ -438,6 +438,22 @@ const monitoring = {
     updateUCode(state, payload) {
       state.uCode = payload;
     },
+
+  },
+};
+
+const goods = {
+  actions: {
+    async updateGoodStatusType(context, params) {
+
+      const url = endpoints.goods.updateGoodStatus;
+
+      const res = await axios.post(url, params);
+
+      console.log('update goods type response', res);
+
+      return res;
+    },
   },
 };
 
@@ -481,6 +497,7 @@ const mutations = {
   ...table.mutations,
   ...menu.mutations,
   ...monitoring.mutations,
+
 };
 
 const actions = {
@@ -491,6 +508,7 @@ const actions = {
   ...device.actions,
   ...table.actions,
   ...menu.actions,
+  ...goods.actions,
 };
 
 const getters = {

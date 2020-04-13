@@ -19,7 +19,7 @@
       .good-image(:style="getGoodImage(good.image)")
       .good-info
         .name {{ good.displayName }}
-        .button {{ getUseStatusText(good.noUse) }}
+        .button(@click="() => onNoUse(good)") {{ getUseStatusText(good.noUse) }}
         .button {{ getSoldoutStatusText(good.soldout) }}
 </template>
 
@@ -152,11 +152,52 @@ export default {
       };
     },
     getUseStatusText(noUse) {
-      return noUse ? '판매 재개' : '판매 중지';
+      return noUse ? '판매 재개 하기' : '판매 중지 하기';
     },
     getSoldoutStatusText(soldout) {
-      return soldout ? '품절 취소' : '품절 처리';
-    }
+      return soldout ? '품절 취소 하기' : '품절 처리 하기';
+    },
+    onNoUse(good) {
+      const { noUse } = good;
+
+      if (noUse) {
+        return this.onSelling(good);
+      }
+
+      return this.onStopSelling(good);
+    },
+    async onStopSelling(good) {
+      console.log(good);
+
+      const { store_code } = this.$store.state.auth.store;
+
+      const params = {
+        store_code: store_code,
+        good_code: good.code,
+        type: 'goodOff',
+      };
+
+      console.log(params);
+
+      const res = await this.$store.dispatch('updateGoodStatusType', params);
+      console.log(res);
+    },
+    async onSelling(good) {
+      console.log(good);
+
+      const { store_code } = this.$store.state.auth.store;
+
+      const params = {
+        store_code: store_code,
+        good_code: good.code,
+        type: 'goodOn',
+      };
+
+      console.log(params);
+
+      const res = await this.$store.dispatch('updateGoodStatusType', params);
+      console.log(res);
+    },
   },
 };
 </script>
