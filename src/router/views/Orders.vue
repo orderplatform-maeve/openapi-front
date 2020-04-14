@@ -79,12 +79,9 @@ export default {
   async mounted() {
     this.isLoading = true;
 
-    console.log('bef', this.$store.state.auth.store.store_code);
-
     const fd = new FormData();
     fd.append('shop_code', this.$store.state.auth.store.store_code);
     const res = await this.$store.dispatch('setOrders', fd);
-
     console.log(res);
 
     if (res) {
@@ -92,7 +89,6 @@ export default {
         this.isLoading = false;
       }, 1000);
     }
-
   },
   methods: {
     setViewMode(value) {
