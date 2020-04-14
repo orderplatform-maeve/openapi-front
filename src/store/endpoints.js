@@ -36,6 +36,9 @@ const endpoints = {
   shop: {
     init: `${SERVER_URL}/shop/init`,
   },
+  goods: {
+    updateGoodStatus: `${SERVER_URL}/goods/update_goods`,
+  },
 };
 
 export default endpoints;

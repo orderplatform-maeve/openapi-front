@@ -27,9 +27,6 @@ const socket = {
         Vue.set(state, 'order', order);
       }
     },
-    SOCKET_resStoreInfo(state, storeDeviceInfo) {
-      Vue.set(state, 'device', storeDeviceInfo);
-    },
   },
   actions: {
     SOCKET_orderlog({ commit, state }, order) {
@@ -38,9 +35,6 @@ const socket = {
         commit('PUSH_ORDER', order);
       }
     },
-    SOCKET_resStoreInfo(context, storeDeviceInfo) {
-      console.log('SOCKET_resStoreInfo!!!!!!!!!!', storeDeviceInfo);
-    }
   },
 };
 
@@ -140,9 +134,6 @@ const order = {
         Vue.set(state, 'orders', orders);
       }
     },
-    RESET_DISPLAY_NEW_ORDER: (state) => {
-      Vue.set(state, 'displayNewOrder', undefined);
-    },
   },
   actions: {
     async commitOrder({ commit }, payload) {
@@ -177,8 +168,6 @@ const order = {
       const url = endpoints.orders.todayRedisData;
       const response = await axios.post(url, params);
 
-      console.log(response);
-
       if (response.status === 200) {
         const orders = [];
 
@@ -201,9 +190,6 @@ const order = {
       }
       return false;
     },
-    resetDisplayNewOrder({ commit }) {
-      commit('RESET_DISPLAY_NEW_ORDER');
-    }
   },
 };
 
@@ -222,12 +208,40 @@ const shop = {
       const url = endpoints.shop.init;
       const response = await axios.post(url, params);
       console.log(response);
+
+      // T_order_store_close: 0
+      // T_order_store_close_order: 0
+
+      const device = {
+        serviceStatus: !!response.data.data.T_order_store_close,
+        orderStatus: !!response.data.data.T_order_store_close_order,
+      };
+      commit('setDeviceStatus', device);
+
       return response;
+    },
+    async requestStoreList({ commit }, params) {
+      const url = `http://api.auth.order.orderhae.com/stores?member_code=${params.member.code}`;
+      const res = await axios.get(url);
+
+      const stores = res.data.store_data.map((o) => ({
+        ...o,
+        store_code: o.shop_code,
+        store_name: o.shop_name,
+      }));
+
+      return stores;
     },
   },
 };
 
 const device = {
+  mutations: {
+    setDeviceStatus(state, device) {
+      console.log('commit setDeviceStatus', device);
+      Vue.set(state, 'device', device);
+    }
+  },
   actions: {
     async setOpenTablet(context, params) {
       try {
@@ -322,6 +336,11 @@ const table = {
   },
 };
 
+function imagePreload(url) {
+  const img = new Image();
+  img.src = url;
+}
+
 const menu = {
   mutations: {
     SET_CATEGORIES: (state, categories) => Vue.set(state, 'categories', categories),
@@ -343,6 +362,15 @@ const menu = {
       const response = await axios.post(url, params);
 
       if (response.data && response.data.data) {
+        // const array = JSON.parse(JSON.stringify(response.data.data));
+
+        // for (let index = 0; index < array.length; index++) {
+        //   const element = array[index];
+        //   if (element.T_order_store_good_image) {
+        //     imagePreload(element.T_order_store_good_image);
+        //   }
+        // }
+
         commit('SET_GOODS', response.data.data);
         return response.data.data;
       }
@@ -382,7 +410,6 @@ const menu = {
     processGoods(state) {
       return state.goods.map( p => {
         let categories = p.T_order_store_good_category;
-        const src = p.T_order_store_good_image;
 
         try {
           if (typeof categories === "string") {
@@ -392,6 +419,10 @@ const menu = {
           console.log(e);
         }
 
+        if (p.T_order_store_good_image) {
+          imagePreload(p.T_order_store_good_image);
+        }
+
         return {
           categories,
           code: p.T_order_store_good_code,
@@ -399,7 +430,7 @@ const menu = {
           displayName: p.T_order_store_good_display_name,
           displayNameOneLine: p.T_order_store_good_display_name.replace(/\/\//gi, " "),
           displayNameNewLine: p.T_order_store_good_display_name.replace(/\/\//gi, "<br/>"),
-          image: src,
+          image: p.T_order_store_good_image,
           name: p.T_order_store_good_name,
           names: p.T_order_store_good_name_array,
           sortNo: p.T_order_store_good_sort_number,
@@ -428,6 +459,22 @@ const monitoring = {
     updateUCode(state, payload) {
       state.uCode = payload;
     },
+
+  },
+};
+
+const goods = {
+  actions: {
+    async updateGoodStatusType(context, payload) {
+
+      const url = endpoints.goods.updateGoodStatus;
+
+      const res = await axios.get(url, payload);
+
+      console.log('update goods type response', res);
+
+      return res;
+    },
   },
 };
 
@@ -447,7 +494,6 @@ const authProto = {
 
 const state = {
   order: undefined,
-  displayNewOrder: undefined,
   orders: [],
   device: {
     serviceStatus: false,
@@ -471,6 +517,7 @@ const mutations = {
   ...table.mutations,
   ...menu.mutations,
   ...monitoring.mutations,
+  ...device.mutations,
 };
 
 const actions = {
@@ -481,6 +528,7 @@ const actions = {
   ...device.actions,
   ...table.actions,
   ...menu.actions,
+  ...goods.actions,
 };
 
 const getters = {

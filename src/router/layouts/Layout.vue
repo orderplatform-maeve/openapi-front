@@ -24,8 +24,7 @@
           img.logo(:src="logo")
           .store_name {{storeName}}
           router-link.button(v-if="visibleOrderButton" :to="paths.order") 주문 보기
-          //- router-link.button(v-if="visibleOrderButton" :to="paths.products") 상품 보기
-          //-   <br> (테스트)
+          //- router-link.button(v-if="visibleOrderButton" :to="paths.products") 상품 관리
           //- router-link.button(v-if="visibleOrderButton" :to="paths.tables") 테이블 보기
         .bottom
           hr
@@ -128,56 +127,15 @@ export default {
     } catch(e) {
       console.log(e);
     }
+
     this.$store.commit('updateMACAddr', MACAddr);
   },
   created() {
-    console.log(this.$cookies.get('auth'));
-
-    const params = { store_code: this.auth.store.store_code };
-    this.$socket.emit('reqStoreInfo', params);
-
-    this.$store.commit('SET_AUTH', cookieAuth);
-
-    if (localStorage.auth) {
-      this.$cookies.set(COOKIE_AUTH_NAME, localStorage.auth, '1y', null, COOKIE_DOMAIN);
-      return this.$store.commit('SET_AUTH', JSON.parse(localStorage.auth));
-    }
-
-    const cookieAuth = this.$cookies.get(COOKIE_AUTH_NAME);
-    if (cookieAuth) {
-      localStorage.auth = JSON.stringify(cookieAuth);
-    }
+    this.getAuthentication();
   },
   mounted() {
-    // get uCode from localStorage
-    let uCode = localStorage.getItem('uCode');
-
-    // get uCode from cookie
-    if (!uCode) {
-      uCode = this.$cookies.get('uCode');
-    }
-
-    // create uCode if no code
-    if (!uCode) {
-      uCode = '';
-      const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
-      const charactersLength = characters.length;
-      for (let i = 0; i < 5; i++ ) {
-        uCode += characters.charAt(Math.floor(Math.random() * charactersLength));
-      }
-      this.$cookies.set("uCode", uCode, "3y");
-    }
-
-    // set uCode to localStorage
-    localStorage.setItem('uCode', uCode);
-    this.$store.commit('updateUCode', uCode);
-
-    setInterval(() => {
-      this.time.now = Date();
-      if (parseInt(parseInt(Date.now()/1000)) % 30 < 1) {
-        this.beep();
-      }
-    }, 1000);
+    this.getUCode();
+    this.loopBeep();
   },
   sockets: {
     connect() {
@@ -316,7 +274,6 @@ export default {
       return device && device.orderStatus;
     },
     beep() {
-      // console.log('beep');
       const time = Date.now();
       const datetime = this.$moment(time).format();
 
@@ -328,6 +285,7 @@ export default {
       } catch(e) {
         //console.log(e);
       }
+
       const data = {
         event: 'beep',
         uCode: this.$store.state.uCode,
@@ -341,9 +299,83 @@ export default {
         path: this.$route.path,
         datetime: datetime,
       };
+
       this.$socket.emit('event', data, (answer) => {
         // console.log(answer);
       });
+    },
+    async getAuthentication() {
+      console.log('getAuthentication', this.$cookies.get('auth'));
+
+      const params = { store_code: this.auth.store.store_code };
+      this.$socket.emit('reqStoreInfo', params);
+
+      const cookieAuth = this.$cookies.get(COOKIE_AUTH_NAME);
+      if (cookieAuth) {
+        localStorage.auth = JSON.stringify(cookieAuth);
+
+        try {
+          const fd = new FormData();
+          fd.append('store_code', cookieAuth.store.store_code);
+          const res = await this.$store.dispatch('setStoreInit', fd);
+          console.log('cookies res', res);
+        } catch (error) {
+          console.log(error);
+        }
+        this.$store.commit('SET_AUTH', cookieAuth);
+      }
+
+      if (localStorage.auth) {
+        this.$cookies.set(COOKIE_AUTH_NAME, localStorage.auth, '1y', null, COOKIE_DOMAIN);
+
+        try {
+          const fd = new FormData();
+          fd.append('store_code', JSON.parse(localStorage.auth).store.store_code);
+          const res = await this.$store.dispatch('setStoreInit', fd);
+          console.log('local res', res);
+        } catch (error) {
+          console.log(error);
+        }
+
+        this.$store.commit('SET_AUTH', JSON.parse(localStorage.auth));
+      }
+    },
+    getUCode() {
+      // get uCode from localStorage
+      let uCode = localStorage.getItem('uCode');
+
+      // get uCode from cookie
+      if (!uCode) {
+        uCode = this.$cookies.get('uCode');
+      }
+
+      // create uCode if no code
+      if (!uCode) {
+        uCode = '';
+        const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+        const charactersLength = characters.length;
+        for (let i = 0; i < 5; i++ ) {
+          uCode += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        this.$cookies.set("uCode", uCode, "3y");
+      }
+
+      // set uCode to localStorage
+      localStorage.setItem('uCode', uCode);
+      this.$store.commit('updateUCode', uCode);
+    },
+    loopBeep() {
+      setInterval(() => {
+        this.time.now = Date();
+
+        const timestemp = parseInt(Date.now() / 1000);
+        const lap = timestemp % 30;
+        const term = lap < 1;
+
+        if (term) {
+          this.beep();
+        }
+      }, 1000);
     },
   },
 };
