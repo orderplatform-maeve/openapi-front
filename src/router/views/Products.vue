@@ -45,11 +45,16 @@ export default {
         };
       };
 
-      return getCategories.map(getCategoryItem);
+      const results = getCategories.map(getCategoryItem);
+      return results;
     },
   },
-  mounted() {
-    this.initialize();
+  async mounted() {
+    await this.initialize();
+    if (!this.selectSubCategoryItem) {
+      // console.log('initialize', this.data[0].subCategories[0].goods);
+      this.selectSubCategoryItem = this.data[0].subCategories[0];
+    }
   },
   methods: {
     onSelectMainCtg(item) {
@@ -73,40 +78,7 @@ export default {
     },
     getFilterGoods() {
       try {
-        const { data, selectSubCategoryItem } = this;
-
-        if (selectSubCategoryItem) {
-          // console.log(selectSubCategoryItem.goods);
-          const { goods } = selectSubCategoryItem;
-
-          // for (let index = 0; index < goods.length; index++) {
-          //   const img = new Image();
-
-          //   img.onload = () => {
-          //     goods[index].image = img.src;
-          //     // console.log('img loaded', goods[index].image);
-          //   };
-
-          //   img.src = goods[index].image;
-          // }
-
-          return goods;
-        }
-
-        const { goods } = data[0].subCategories[0];
-
-        // for (let index = 0; index < goods.length; index++) {
-        //   const img = new Image();
-
-        //   img.onload = () => {
-        //     goods[index].image = img.src;
-        //     // console.log('img loaded', goods[index].image);
-        //   };
-
-        //   img.src = goods[index].image;
-        // }
-
-        return goods;
+        return this.selectSubCategoryItem.goods;
       } catch (e) {
         return [];
       }
@@ -204,8 +176,27 @@ export default {
       };
 
       const res = await this.$store.dispatch('updateGoodStatusType', params);
-      await this.initialize();
       console.log(res);
+
+      if (res.status === 200) {
+        const findIdx = this.selectSubCategoryItem.goods.findIndex((item) => good.code === item.code);
+        console.log('finde index', this.selectSubCategoryItem.goods[findIdx].noUse);
+
+        const arr = JSON.parse(JSON.stringify(this.selectSubCategoryItem.goods));
+        arr[findIdx] = {
+          ...this.selectSubCategoryItem.goods[findIdx],
+          noUse: 1,
+        };
+
+        this.selectSubCategoryItem = {
+          ...this.selectSubCategoryItem,
+          goods: arr,
+        };
+
+        console.log('changed', this.selectSubCategoryItem.goods[findIdx].noUse);
+      } else {
+        alert('서버가 불안정하여 판매 중지 하기 실패하였습니다.');
+      }
     },
     async onSelling(good) {
       const { store_code } = this.$store.state.auth.store;
@@ -219,8 +210,27 @@ export default {
       };
 
       const res = await this.$store.dispatch('updateGoodStatusType', params);
-      await this.initialize();
       console.log(res);
+
+      if (res.status === 200) {
+        const findIdx = this.selectSubCategoryItem.goods.findIndex((item) => good.code === item.code);
+        console.log('finde index', this.selectSubCategoryItem.goods[findIdx].noUse);
+
+        const arr = JSON.parse(JSON.stringify(this.selectSubCategoryItem.goods));
+        arr[findIdx] = {
+          ...this.selectSubCategoryItem.goods[findIdx],
+          noUse: 0,
+        };
+
+        this.selectSubCategoryItem = {
+          ...this.selectSubCategoryItem,
+          goods: arr,
+        };
+
+        console.log('changed', this.selectSubCategoryItem.goods[findIdx].noUse);
+      } else {
+        alert('서버가 불안정하여 판매 중지 하기 실패하였습니다.');
+      }
     },
     onSoldoutStatus(good) {
       const { soldout } = good;
@@ -243,8 +253,27 @@ export default {
       };
 
       const res = await this.$store.dispatch('updateGoodStatusType', params);
-      await this.initialize();
       console.log(res);
+
+      if (res.status === 200) {
+        const findIdx = this.selectSubCategoryItem.goods.findIndex((item) => good.code === item.code);
+        console.log('finde index', this.selectSubCategoryItem.goods[findIdx].noUse);
+
+        const arr = JSON.parse(JSON.stringify(this.selectSubCategoryItem.goods));
+        arr[findIdx] = {
+          ...this.selectSubCategoryItem.goods[findIdx],
+          soldout: 1,
+        };
+
+        this.selectSubCategoryItem = {
+          ...this.selectSubCategoryItem,
+          goods: arr,
+        };
+
+        console.log('changed', this.selectSubCategoryItem.goods[findIdx].noUse);
+      } else {
+        alert('서버가 불안정하여 판매 중지 하기 실패하였습니다.');
+      }
     },
     async onSale(good) {
       const { store_code } = this.$store.state.auth.store;
@@ -258,8 +287,27 @@ export default {
       };
 
       const res = await this.$store.dispatch('updateGoodStatusType', params);
-      await this.initialize();
       console.log(res);
+
+      if (res.status === 200) {
+        const findIdx = this.selectSubCategoryItem.goods.findIndex((item) => good.code === item.code);
+        console.log('finde index', this.selectSubCategoryItem.goods[findIdx].noUse);
+
+        const arr = JSON.parse(JSON.stringify(this.selectSubCategoryItem.goods));
+        arr[findIdx] = {
+          ...this.selectSubCategoryItem.goods[findIdx],
+          soldout: 0,
+        };
+
+        this.selectSubCategoryItem = {
+          ...this.selectSubCategoryItem,
+          goods: arr,
+        };
+
+        console.log('changed', this.selectSubCategoryItem.goods[findIdx].noUse);
+      } else {
+        alert('서버가 불안정하여 판매 중지 하기 실패하였습니다.');
+      }
     },
     async initialize() {
       const fd = new FormData();
