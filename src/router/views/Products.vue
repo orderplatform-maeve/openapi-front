@@ -15,7 +15,11 @@
       :class="getActiveSubCategory(subCtgItem.code)"
     ) {{ subCtgItem.name }}
   .goods
-    .good(v-for="good in getFilterGoods()" :key="good.code")
+    .good(
+      v-for="good in products"
+      :key="good.code"
+      :style="getGoodItemVisible(good)"
+    )
       .good-image(:style="getGoodImage(good.image)")
       .good-info
         .name {{ good.displayName }}
@@ -47,6 +51,9 @@ export default {
 
       const results = getCategories.map(getCategoryItem);
       return results;
+    },
+    products() {
+      return this.$store.getters.processGoods;
     },
   },
   async mounted() {
@@ -315,7 +322,28 @@ export default {
       fd.append('store_code', this.$store.state.auth.store.store_code);
       await this.$store.dispatch('setCategories', fd);
       await this.$store.dispatch('setGooods', fd);
-    }
+    },
+    getGoodItemVisible(good) {
+      try {
+        let style = null;
+
+        if (this.selectSubCategoryItem) {
+          const array = this.selectSubCategoryItem.goods;
+          const findIdx = array.findIndex((o) => o.code === good.code);
+
+          if (findIdx === -1) {
+            style = {
+              display: 'none',
+            };
+          }
+        }
+
+        return style;
+      } catch (error) {
+        alert('네트워크 환경이 불안전하여 에러 발생');
+        return { display: 'none' };
+      }
+    },
   },
 };
 </script>
