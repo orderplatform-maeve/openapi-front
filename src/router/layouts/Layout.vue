@@ -304,7 +304,7 @@ export default {
         // console.log(answer);
       });
     },
-    async getAuthentication() {
+    getAuthentication() {
       console.log('getAuthentication', this.$cookies.get('auth'));
 
       const params = { store_code: this.auth.store.store_code };
@@ -317,8 +317,7 @@ export default {
         try {
           const fd = new FormData();
           fd.append('store_code', cookieAuth.store.store_code);
-          const res = await this.$store.dispatch('setStoreInit', fd);
-          console.log('cookies res', res);
+          this.$store.dispatch('setStoreInit', fd);
         } catch (error) {
           console.log(error);
         }
@@ -331,8 +330,7 @@ export default {
         try {
           const fd = new FormData();
           fd.append('store_code', JSON.parse(localStorage.auth).store.store_code);
-          const res = await this.$store.dispatch('setStoreInit', fd);
-          console.log('local res', res);
+          this.$store.dispatch('setStoreInit', fd);
         } catch (error) {
           console.log(error);
         }
