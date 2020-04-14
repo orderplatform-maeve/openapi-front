@@ -1,24 +1,26 @@
 <template lang="pug">
 .container
   .main-categories
-    .main-category(
+    a.main-category(
       v-for="ctgItem in data"
       :key="ctgItem.code"
       @click="() => onSelectMainCtg(ctgItem)"
       :class="getActiveMainCategory(ctgItem.code)"
+      :href="`#${ctgItem.code}`"
     ) {{ ctgItem.name }}
   .sub-categories
-    .sub-category(
+    a.sub-category(
       v-for="subCtgItem in getSubCategories()"
       :key="subCtgItem.code"
       @click="() => onSelectSubCtg(subCtgItem)"
       :class="getActiveSubCategory(subCtgItem.code)"
+      :href="`#${subCtgItem.code}`"
     ) {{ subCtgItem.name }}
 
 
   .scroll
-    .products(v-for="mainCtg in data" :key="mainCtg.code")
-      .goods(v-for="subCtg in mainCtg.subCategories")
+    .products(v-for="mainCtg in data" :key="mainCtg.code" :id="mainCtg.code")
+      .goods(v-for="subCtg in mainCtg.subCategories" :id="subCtg.code")
         .category-info
           .main-category-text {{ mainCtg.name }}
           .sub-category-text {{ subCtg.name }}
@@ -364,6 +366,11 @@ export default {
 
 <style lang="scss">
 .container{
+  a {
+    text-decoration: none;
+    color: var(--c-1);
+  }
+
   --c-1: #ffffff;
   --c-2: #202020;
   --c-3: #ff0000;
