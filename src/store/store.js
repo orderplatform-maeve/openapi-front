@@ -358,14 +358,14 @@ const menu = {
       const response = await axios.post(url, params);
 
       if (response.data && response.data.data) {
-        const array = JSON.parse(JSON.stringify(response.data.data));
+        // const array = JSON.parse(JSON.stringify(response.data.data));
 
-        for (let index = 0; index < array.length; index++) {
-          const element = array[index];
-          if (element.T_order_store_good_image) {
-            imagePreload(element.T_order_store_good_image);
-          }
-        }
+        // for (let index = 0; index < array.length; index++) {
+        //   const element = array[index];
+        //   if (element.T_order_store_good_image) {
+        //     imagePreload(element.T_order_store_good_image);
+        //   }
+        // }
 
         commit('SET_GOODS', response.data.data);
         return response.data.data;
@@ -413,6 +413,10 @@ const menu = {
           }
         } catch(e) {
           console.log(e);
+        }
+
+        if (p.T_order_store_good_image) {
+          imagePreload(p.T_order_store_good_image);
         }
 
         return {

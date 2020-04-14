@@ -340,7 +340,6 @@ export default {
 
         return style;
       } catch (error) {
-        alert('네트워크 환경이 불안전하여 에러 발생');
         return { display: 'none' };
       }
     },
