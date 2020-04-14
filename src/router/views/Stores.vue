@@ -72,8 +72,6 @@ export default {
       params.append('store_code', this.auth.store.store_code);
       const res = await this.$store.dispatch('setStoreInit', params);
 
-      await this.$store.dispatch('resetDisplayNewOrder');
-
       try {
         if (res.data.data.T_order_store_orderView_version) {
 

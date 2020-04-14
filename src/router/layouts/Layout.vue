@@ -24,7 +24,7 @@
           img.logo(:src="logo")
           .store_name {{storeName}}
           router-link.button(v-if="visibleOrderButton" :to="paths.order") 주문 보기
-          router-link.button(v-if="visibleOrderButton" :to="paths.products") 상품 관리
+          //- router-link.button(v-if="visibleOrderButton" :to="paths.products") 상품 관리
           //- router-link.button(v-if="visibleOrderButton" :to="paths.tables") 테이블 보기
         .bottom
           hr
@@ -304,22 +304,40 @@ export default {
         // console.log(answer);
       });
     },
-    getAuthentication() {
-      console.log(this.$cookies.get('auth'));
+    async getAuthentication() {
+      console.log('getAuthentication', this.$cookies.get('auth'));
 
       const params = { store_code: this.auth.store.store_code };
       this.$socket.emit('reqStoreInfo', params);
 
-      this.$store.commit('SET_AUTH', cookieAuth);
-
-      if (localStorage.auth) {
-        this.$cookies.set(COOKIE_AUTH_NAME, localStorage.auth, '1y', null, COOKIE_DOMAIN);
-        return this.$store.commit('SET_AUTH', JSON.parse(localStorage.auth));
-      }
-
       const cookieAuth = this.$cookies.get(COOKIE_AUTH_NAME);
       if (cookieAuth) {
         localStorage.auth = JSON.stringify(cookieAuth);
+
+        try {
+          const fd = new FormData();
+          fd.append('store_code', cookieAuth.store.store_code);
+          const res = await this.$store.dispatch('setStoreInit', fd);
+          console.log('cookies res', res);
+        } catch (error) {
+          console.log(error);
+        }
+        this.$store.commit('SET_AUTH', cookieAuth);
+      }
+
+      if (localStorage.auth) {
+        this.$cookies.set(COOKIE_AUTH_NAME, localStorage.auth, '1y', null, COOKIE_DOMAIN);
+
+        try {
+          const fd = new FormData();
+          fd.append('store_code', JSON.parse(localStorage.auth).store.store_code);
+          const res = await this.$store.dispatch('setStoreInit', fd);
+          console.log('local res', res);
+        } catch (error) {
+          console.log(error);
+        }
+
+        this.$store.commit('SET_AUTH', JSON.parse(localStorage.auth));
       }
     },
     getUCode() {

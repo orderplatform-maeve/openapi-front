@@ -27,9 +27,6 @@ const socket = {
         Vue.set(state, 'order', order);
       }
     },
-    SOCKET_resStoreInfo(state, storeDeviceInfo) {
-      Vue.set(state, 'device', storeDeviceInfo);
-    },
   },
   actions: {
     SOCKET_orderlog({ commit, state }, order) {
@@ -38,9 +35,6 @@ const socket = {
         commit('PUSH_ORDER', order);
       }
     },
-    SOCKET_resStoreInfo(context, storeDeviceInfo) {
-      console.log('SOCKET_resStoreInfo!!!!!!!!!!', storeDeviceInfo);
-    }
   },
 };
 
@@ -140,9 +134,6 @@ const order = {
         Vue.set(state, 'orders', orders);
       }
     },
-    RESET_DISPLAY_NEW_ORDER: (state) => {
-      Vue.set(state, 'displayNewOrder', undefined);
-    },
   },
   actions: {
     async commitOrder({ commit }, payload) {
@@ -199,9 +190,6 @@ const order = {
       }
       return false;
     },
-    resetDisplayNewOrder({ commit }) {
-      commit('RESET_DISPLAY_NEW_ORDER');
-    }
   },
 };
 
@@ -220,6 +208,16 @@ const shop = {
       const url = endpoints.shop.init;
       const response = await axios.post(url, params);
       console.log(response);
+
+      // T_order_store_close: 0
+      // T_order_store_close_order: 0
+
+      const device = {
+        serviceStatus: !!response.data.data.T_order_store_close,
+        orderStatus: !!response.data.data.T_order_store_close_order,
+      };
+      commit('setDeviceStatus', device);
+
       return response;
     },
     async requestStoreList({ commit }, params) {
@@ -238,6 +236,12 @@ const shop = {
 };
 
 const device = {
+  mutations: {
+    setDeviceStatus(state, device) {
+      console.log('commit setDeviceStatus', device);
+      Vue.set(state, 'device', device);
+    }
+  },
   actions: {
     async setOpenTablet(context, params) {
       try {
@@ -490,7 +494,6 @@ const authProto = {
 
 const state = {
   order: undefined,
-  displayNewOrder: undefined,
   orders: [],
   device: {
     serviceStatus: false,
@@ -514,7 +517,7 @@ const mutations = {
   ...table.mutations,
   ...menu.mutations,
   ...monitoring.mutations,
-
+  ...device.mutations,
 };
 
 const actions = {
