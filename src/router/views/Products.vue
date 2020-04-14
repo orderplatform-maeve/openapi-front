@@ -145,6 +145,7 @@ export default {
       };
     },
     getGoodImage(image) {
+      if (!image) return null;
       return  {
         backgroundImage: `url(${image})`,
       };

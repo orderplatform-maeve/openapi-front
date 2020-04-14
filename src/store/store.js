@@ -332,6 +332,11 @@ const table = {
   },
 };
 
+function imagePreload(url) {
+  const img = new Image();
+  img.src = url;
+}
+
 const menu = {
   mutations: {
     SET_CATEGORIES: (state, categories) => Vue.set(state, 'categories', categories),
@@ -353,6 +358,15 @@ const menu = {
       const response = await axios.post(url, params);
 
       if (response.data && response.data.data) {
+        const array = JSON.parse(JSON.stringify(response.data.data));
+
+        for (let index = 0; index < array.length; index++) {
+          const element = array[index];
+          if (element.T_order_store_good_image) {
+            imagePreload(element.T_order_store_good_image);
+          }
+        }
+
         commit('SET_GOODS', response.data.data);
         return response.data.data;
       }
