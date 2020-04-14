@@ -48,13 +48,8 @@ export default {
       return getCategories.map(getCategoryItem);
     },
   },
-  async mounted() {
-    const fd = new FormData();
-    fd.append('store_code', this.$store.state.auth.store.store_code);
-    await this.$store.dispatch('setCategories', fd);
-    await this.$store.dispatch('setGooods', fd);
-
-    // console.log(this.$store.state.goods);
+  mounted() {
+    this.initialize();
   },
   methods: {
     onSelectMainCtg(item) {
@@ -209,6 +204,7 @@ export default {
       };
 
       const res = await this.$store.dispatch('updateGoodStatusType', params);
+      await this.initialize();
       console.log(res);
     },
     async onSelling(good) {
@@ -223,6 +219,7 @@ export default {
       };
 
       const res = await this.$store.dispatch('updateGoodStatusType', params);
+      await this.initialize();
       console.log(res);
     },
     onSoldoutStatus(good) {
@@ -246,6 +243,7 @@ export default {
       };
 
       const res = await this.$store.dispatch('updateGoodStatusType', params);
+      await this.initialize();
       console.log(res);
     },
     async onSale(good) {
@@ -260,8 +258,15 @@ export default {
       };
 
       const res = await this.$store.dispatch('updateGoodStatusType', params);
+      await this.initialize();
       console.log(res);
     },
+    async initialize() {
+      const fd = new FormData();
+      fd.append('store_code', this.$store.state.auth.store.store_code);
+      await this.$store.dispatch('setCategories', fd);
+      await this.$store.dispatch('setGooods', fd);
+    }
   },
 };
 </script>
