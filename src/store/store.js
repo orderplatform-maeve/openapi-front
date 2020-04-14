@@ -392,7 +392,6 @@ const menu = {
     processGoods(state) {
       return state.goods.map( p => {
         let categories = p.T_order_store_good_category;
-        const src = p.T_order_store_good_image;
 
         try {
           if (typeof categories === "string") {
@@ -409,7 +408,7 @@ const menu = {
           displayName: p.T_order_store_good_display_name,
           displayNameOneLine: p.T_order_store_good_display_name.replace(/\/\//gi, " "),
           displayNameNewLine: p.T_order_store_good_display_name.replace(/\/\//gi, "<br/>"),
-          image: src,
+          image: p.T_order_store_good_image,
           name: p.T_order_store_good_name,
           names: p.T_order_store_good_name_array,
           sortNo: p.T_order_store_good_sort_number,
@@ -444,11 +443,11 @@ const monitoring = {
 
 const goods = {
   actions: {
-    async updateGoodStatusType(context, params) {
+    async updateGoodStatusType(context, payload) {
 
       const url = endpoints.goods.updateGoodStatus;
 
-      const res = await axios.post(url, params);
+      const res = await axios.get(url, payload);
 
       console.log('update goods type response', res);
 

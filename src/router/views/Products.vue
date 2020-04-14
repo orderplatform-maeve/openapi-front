@@ -20,7 +20,7 @@
       .good-info
         .name {{ good.displayName }}
         .button(@click="() => onNoUse(good)") {{ getUseStatusText(good.noUse) }}
-        .button {{ getSoldoutStatusText(good.soldout) }}
+        .button(@click="() => onSoldoutStatus(good)") {{ getSoldoutStatusText(good.soldout) }}
 </template>
 
 <script>
@@ -53,6 +53,8 @@ export default {
     fd.append('store_code', this.$store.state.auth.store.store_code);
     await this.$store.dispatch('setCategories', fd);
     await this.$store.dispatch('setGooods', fd);
+
+    // console.log(this.$store.state.goods);
   },
   methods: {
     onSelectMainCtg(item) {
@@ -78,9 +80,38 @@ export default {
       try {
         const { data, selectSubCategoryItem } = this;
 
-        if (selectSubCategoryItem) return selectSubCategoryItem.goods;
+        if (selectSubCategoryItem) {
+          // console.log(selectSubCategoryItem.goods);
+          const { goods } = selectSubCategoryItem;
 
-        return data[0].subCategories[0].goods;
+          // for (let index = 0; index < goods.length; index++) {
+          //   const img = new Image();
+
+          //   img.onload = () => {
+          //     goods[index].image = img.src;
+          //     // console.log('img loaded', goods[index].image);
+          //   };
+
+          //   img.src = goods[index].image;
+          // }
+
+          return goods;
+        }
+
+        const { goods } = data[0].subCategories[0];
+
+        // for (let index = 0; index < goods.length; index++) {
+        //   const img = new Image();
+
+        //   img.onload = () => {
+        //     goods[index].image = img.src;
+        //     // console.log('img loaded', goods[index].image);
+        //   };
+
+        //   img.src = goods[index].image;
+        // }
+
+        return goods;
       } catch (e) {
         return [];
       }
@@ -167,33 +198,66 @@ export default {
       return this.onStopSelling(good);
     },
     async onStopSelling(good) {
-      console.log(good);
-
       const { store_code } = this.$store.state.auth.store;
 
       const params = {
-        store_code: store_code,
-        good_code: good.code,
-        type: 'goodOff',
+        params: {
+          store_code,
+          good_code: good.code,
+          type: 'goodOff',
+        },
       };
-
-      console.log(params);
 
       const res = await this.$store.dispatch('updateGoodStatusType', params);
       console.log(res);
     },
     async onSelling(good) {
-      console.log(good);
-
       const { store_code } = this.$store.state.auth.store;
 
       const params = {
-        store_code: store_code,
-        good_code: good.code,
-        type: 'goodOn',
+        params: {
+          store_code,
+          good_code: good.code,
+          type: 'goodOn',
+        },
       };
 
-      console.log(params);
+      const res = await this.$store.dispatch('updateGoodStatusType', params);
+      console.log(res);
+    },
+    onSoldoutStatus(good) {
+      const { soldout } = good;
+
+      if (soldout) {
+        return this.onSale(good);
+      }
+
+      return this.onSoldout(good);
+    },
+    async onSoldout(good) {
+      const { store_code } = this.$store.state.auth.store;
+
+      const params = {
+        params: {
+          store_code,
+          good_code: good.code,
+          type: 'goodNoSale',
+        },
+      };
+
+      const res = await this.$store.dispatch('updateGoodStatusType', params);
+      console.log(res);
+    },
+    async onSale(good) {
+      const { store_code } = this.$store.state.auth.store;
+
+      const params = {
+        params: {
+          store_code,
+          good_code: good.code,
+          type: 'goodOnSale',
+        },
+      };
 
       const res = await this.$store.dispatch('updateGoodStatusType', params);
       console.log(res);
@@ -216,6 +280,7 @@ export default {
   .main-categories {
     display: flex;
     justify-content: space-between;
+    flex-shrink: 0;
     .main-category {
       display: flex;
       flex-grow: 1;
@@ -224,6 +289,7 @@ export default {
       font-size: 32px;
       height: 60px;
       align-items: center;
+      padding: 0 20px;
     }
     .active {
       color: var(--c-3);
@@ -232,6 +298,7 @@ export default {
   .sub-categories {
     display: flex;
     justify-content: space-between;
+    flex-shrink: 0;
     .sub-category {
       display: flex;
       flex-grow: 1;
@@ -242,7 +309,6 @@ export default {
       font-size: 16px;
       align-items: center;
       padding: 0 20px;
-
     }
     .active {
       color: var(--c-3);
