@@ -30,10 +30,27 @@ const socket = {
   },
   actions: {
     SOCKET_orderlog({ commit, state }, order) {
-      // console.log('SOCKET_orderlog', JSON.stringify(order));
+      console.log('SOCKET_orderlog', order);
       if (vaildShopCode(state, order)) {
         commit('PUSH_ORDER', order);
       }
+    },
+    SOCKET_orderview({ commit }, payload) {
+
+      if (payload.type_msg === 'commit') {
+        const targetOrder = {
+          commit: payload.commit,
+          order_view_key: payload.key,
+        };
+
+        console.log('targetOrder', targetOrder);
+        console.log('SOCKET_orderview', payload);
+
+        commit('UPDATE_ORDERS', targetOrder);
+        commit('UNSET_ORDER');
+      }
+
+      // ordeview load
     },
   },
 };
@@ -127,10 +144,10 @@ const order = {
       const { orders } = state;
       const idx = orders.findIndex((item) => item.order_view_key === order.order_view_key);
 
-      console.log('idx!~@~!~@', idx);
+      console.log('UPDATE_ORDERS', idx);
 
       if (idx > -1) {
-        orders[idx].commit = true;
+        orders[idx].commit = order.commit;
         Vue.set(state, 'orders', orders);
       }
     },
@@ -138,28 +155,28 @@ const order = {
   actions: {
     async commitOrder({ commit }, payload) {
       const url = endpoints.orders.commitOrderViewData;
+
       const fd = new FormData();
       fd.append('shop_code', payload.auth.store.store_code);
       fd.append('key', payload.order.order_view_key);
+      fd.append('commit', !payload.order.commit ? 1:0);
 
-      const res = await axios.post(url, fd);
+      await axios.post(url, fd);
+      // const res = await axios.post(url, fd);
 
-      if (res && res.data && res.data.result) {
+      // if (res && res.data && res.data.result) {
 
-        const order = {
-          ...payload.order,
-          commit: true,
-        };
+      //   const order = {
+      //     ...payload.order,
+      //     // commit: true,
+      //   };
 
-        commit('UPDATE_ORDERS', order);
-        commit('UNSET_ORDER');
-      }
+      //   // commit('UPDATE_ORDERS', order);
+      //   // commit('UNSET_ORDER');
+      // }
     },
     setOrder: (context, order) => {
       context.commit('SET_ORDER', order);
-    },
-    unsetOrder: (context) => {
-      context.commit('UNSET_ORDER');
     },
     pushOrder: (context, order) => {
       context.commit('PUSH_ORDER', order);
@@ -205,20 +222,26 @@ const shop = {
       commit('SET_STORES', stores);
     },
     async setStoreInit({ commit }, params) {
-      const url = endpoints.shop.init;
-      const response = await axios.post(url, params);
-      console.log(response);
+      try {
+        const url = endpoints.shop.init;
+        const response = await axios.post(url, params);
+        console.log(response);
 
-      // T_order_store_close: 0
-      // T_order_store_close_order: 0
+        const target = response.data.data;
 
-      const device = {
-        serviceStatus: !!response.data.data.T_order_store_close,
-        orderStatus: !!response.data.data.T_order_store_close_order,
-      };
-      commit('setDeviceStatus', device);
+        const device = {
+          serviceStatus: !!target.T_order_store_close,
+          orderStatus: !!target.T_order_store_close_order,
+        };
 
-      return response;
+        commit('setDeviceStatus', device);
+
+        return response;
+      } catch (error) {
+        // alert('서버 에러: 매장 정보를 가져올수 없습니다.');
+        console.error(error);
+        return false;
+      }
     },
     async requestStoreList({ commit }, params) {
       const url = `http://api.auth.order.orderhae.com/stores?member_code=${params.member.code}`;

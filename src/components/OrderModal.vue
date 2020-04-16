@@ -66,7 +66,7 @@
     .container-foot
       .msg {{seconds}}초 후 닫혀요.
       .buttons
-        .button.button-commit(v-on:click="commitOrder(order)") 확인
+        .button.button-commit(@click="commitOrder(order)") 확인
 </template>
 
 <script>
@@ -109,7 +109,7 @@ export default {
     },
     closeOrder() {
       clearInterval(this.interval);
-      this.$store.dispatch('unsetOrder');
+      this.$store.commit('UNSET_ORDER');
     },
     getOrderType(order) {
       try {
