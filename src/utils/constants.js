@@ -1,3 +1,3 @@
 export const isDev = process.env.NODE_ENV === 'development';
 
-export const version = 'v1.0.5.5';
+export const version = 'v1.0.5.6';
