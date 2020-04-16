@@ -76,16 +76,20 @@ export default {
         if (res.data.data.T_order_store_orderView_version) {
 
           if (process.env.STOP_REDIRECT) {
-            this.$router.push(paths.order);
+            return this.$router.push(paths.order);
           } else {
-            window.location.href = res.data.data.T_order_store_orderView_version;
+            // 캐시된 문서가 있는경우 서버에 요청 하지 않음
+            // window.location.href = res.data.data.T_order_store_orderView_version;
+            // cache 파일을 로드하지 않는다.
+            return location.replace(res.data.data.T_order_store_orderView_version);
           }
         } else {
-          this.$router.push(paths.order);
+          console.error('리다이렉션 버젼 주소가 없습니다. 최신버젼을 사용합니다.');
+          return this.$router.push(paths.order);
         }
       } catch(error) {
-        return alert('리다이렉션 버젼 주소가 없습니다.');
-        // this.$router.push(paths.order);
+        console.log('리다이렉션 버젼 주소가 없습니다.');
+        return this.$router.push(paths.order);
       }
 
     },

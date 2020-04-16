@@ -1,49 +1,26 @@
 <template lang="pug">
 .container
   .main-categories
-    a.main-category(
+    .main-category(
       v-for="ctgItem in data"
       :key="ctgItem.code"
       @click="() => onSelectMainCtg(ctgItem)"
       :class="getActiveMainCategory(ctgItem.code)"
-      :href="`#${ctgItem.code}`"
     ) {{ ctgItem.name }}
   .sub-categories
-    a.sub-category(
+    .sub-category(
       v-for="subCtgItem in getSubCategories()"
       :key="subCtgItem.code"
       @click="() => onSelectSubCtg(subCtgItem)"
       :class="getActiveSubCategory(subCtgItem.code)"
-      :href="`#${subCtgItem.code}`"
     ) {{ subCtgItem.name }}
-
-
-  .scroll
-    .products(v-for="mainCtg in data" :key="mainCtg.code" :id="mainCtg.code")
-      .goods(v-for="subCtg in mainCtg.subCategories" :id="subCtg.code")
-        .category-info
-          .main-category-text {{ mainCtg.name }}
-          .sub-category-text {{ subCtg.name }}
-        .good(
-          v-for="good in subCtg.goods"
-          :key="good.code"
-        )
-          .good-image(:style="getGoodImage(good.image)")
-          .good-info
-            .name {{ good.displayName }}
-            .button(@click="() => onNoUse(good)") {{ getUseStatusText(good.noUse) }}
-            .button(@click="() => onSoldoutStatus(good)") {{ getSoldoutStatusText(good.soldout) }}
-
-  //- .goods
-  //-   .good(
-  //-     v-for="good in getFilterGoods()"
-  //-     :key="good.code"
-  //-   )
-  //-     .good-image(:style="getGoodImage(good.image)")
-  //-     .good-info
-  //-       .name {{ good.displayName }}
-  //-       .button(@click="() => onNoUse(good)") {{ getUseStatusText(good.noUse) }}
-  //-       .button(@click="() => onSoldoutStatus(good)") {{ getSoldoutStatusText(good.soldout) }}
+  .goods
+    .good(v-for="good in getFilterGoods()" :key="good.code")
+      .good-image(:style="getGoodImage(good.image)")
+      .good-info
+        .name {{ good.displayName }}
+        .button(@click="() => onNoUse(good)") {{ getUseStatusText(good.noUse) }}
+        .button(@click="() => onSoldoutStatus(good)") {{ getSoldoutStatusText(good.soldout) }}
 </template>
 
 <script>
@@ -61,6 +38,7 @@ export default {
       const getCategoryItem = (categoryItem) => {
         const getSubCategoryItem = (subCategoryItem) => this.getSubCategoryItem(subCategoryItem, processGoods);
         const subCategories = categoryItem.subCategories.map(getSubCategoryItem);
+
         return {
           ...categoryItem,
           subCategories,
@@ -68,8 +46,6 @@ export default {
       };
 
       const results = getCategories.map(getCategoryItem);
-      console.log(results);
-
       return results;
     },
   },
@@ -169,7 +145,6 @@ export default {
       };
     },
     getGoodImage(image) {
-      if (!image) return null;
       return  {
         backgroundImage: `url(${image})`,
       };
@@ -339,38 +314,13 @@ export default {
       fd.append('store_code', this.$store.state.auth.store.store_code);
       await this.$store.dispatch('setCategories', fd);
       await this.$store.dispatch('setGooods', fd);
-    },
-    getGoodItemVisible(good) {
-      try {
-        let style = null;
-
-        if (this.selectSubCategoryItem) {
-          const array = this.selectSubCategoryItem.goods;
-          const findIdx = array.findIndex((o) => o.code === good.code);
-
-          if (findIdx === -1) {
-            style = {
-              display: 'none',
-            };
-          }
-        }
-
-        return style;
-      } catch (error) {
-        return { display: 'none' };
-      }
-    },
+    }
   },
 };
 </script>
 
 <style lang="scss">
 .container{
-  a {
-    text-decoration: none;
-    color: var(--c-1);
-  }
-
   --c-1: #ffffff;
   --c-2: #202020;
   --c-3: #ff0000;
@@ -420,93 +370,55 @@ export default {
     }
   }
 
-  .scroll {
-    overflow: auto;
-    flex-direction: column;
-    .products {
+  .goods {
+    flex-wrap: wrap;
+    align-items: flex-start;
+    flex-shrink: 0;
+    .good {
+      width: calc(33.3333% - 16px);
+      height: 50vh;
+      background-color: var(--c-9);
+      display: flex;
+      margin: 8px;
+      color: var(--c-2);
       flex-direction: column;
-      .goods {
+      border-radius: 4px;
+      box-shadow: 0 0 8px -4px var(--c-7);
+      .good-image {
+        flex-grow: 1;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        border-top-left-radius: 4px;
+        border-top-right-radius: 4px;
+      }
+      .good-info {
         display: flex;
-        flex-wrap: wrap;
-        align-items: flex-start;
-        flex-shrink: 0;
-        .category-info {
-          width: calc(33.3333% - 16px);
-          height: 50vh;
-          display: flex;
-          margin: 8px;
-          color: var(--c-3);
-          flex-direction: column;
-          font-size: 4vh;
-          font-weight: 100;
-          position: relative;
+        flex-direction: column;
+        padding: 12px;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        font-size: 24px;
+        font-weight: 900;
+        word-break: normal;
+        .name {
           text-align: center;
-          justify-content: center;
-
-          .sub-category-text {
-            font-size: 8vh;
-            text-align: right;
-            margin-top: 4vh;
-            padding-top: 4vh;
-          }
-          .sub-category-text::after {
-            content: "";
-            position: absolute;
-            top: 50%;
-            right: -100px;
-            height: 2px;
-            width: calc(50% + 100px);
-            background-color: var(--c-3);
-          }
+          font-size: 24px;
+          font-weight: 900;
+          word-break: normal;
         }
-        .good {
-          z-index: 2;
-          width: calc(33.3333% - 16px);
-          height: 50vh;
-          background-color: var(--c-9);
+        .button {
+          height: 40px;
           display: flex;
-          margin: 8px;
-          color: var(--c-2);
-          flex-direction: column;
-          border-radius: 4px;
-          box-shadow: 0 0 8px -4px var(--c-7);
-          .good-image {
-            flex-grow: 1;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            border-top-left-radius: 4px;
-            border-top-right-radius: 4px;
-          }
-          .good-info {
-            display: flex;
-            flex-direction: column;
-            padding: 12px;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            font-size: 24px;
-            font-weight: 900;
-            word-break: normal;
-            .name {
-              text-align: center;
-              font-size: 24px;
-              font-weight: 900;
-              word-break: normal;
-            }
-            .button {
-              height: 40px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              padding: 4px 16px;
-              font-weight: 900;
-              margin-top: 8px;
-              color: var(--c-9);
-              background-color: var(--c-2);
-              border-radius: 20px;
-            }
-          }
+          align-items: center;
+          justify-content: center;
+          padding: 4px 16px;
+          font-weight: 900;
+          margin-top: 8px;
+          color: var(--c-9);
+          background-color: var(--c-2);
+          border-radius: 20px;
         }
       }
     }

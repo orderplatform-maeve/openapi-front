@@ -18,13 +18,16 @@
         )
       .right(v-if="visibleSideMenu()")
         .top
-          .button(v-on:click="restart()") 새로고침
+          .button(
+            @click="restart()"
+          ) 새로고침
           .datetime
             span {{ time.now | moment("MM.DD HH:mm:ss") }}
           img.logo(:src="logo")
           .store_name {{storeName}}
           router-link.button(v-if="visibleOrderButton" :to="paths.order") 주문 보기
           //- router-link.button(v-if="visibleOrderButton" :to="paths.products") 상품 관리
+          //-   <br> (테스트)
           //- router-link.button(v-if="visibleOrderButton" :to="paths.tables") 테이블 보기
         .bottom
           hr
@@ -136,6 +139,7 @@ export default {
   mounted() {
     this.getUCode();
     this.loopBeep();
+    this.tagetVersionRedirect();
   },
   sockets: {
     connect() {
@@ -144,6 +148,47 @@ export default {
     },
   },
   methods: {
+    async tagetVersionRedirect() {
+      try {
+        if (this.$store.state.auth?.store?.store_code) {
+          const params = new FormData();
+          params.append('store_code', this.$store.state.auth.store.store_code);
+          const res = await this.$store.dispatch('setStoreInit', params);
+
+          // console.log('tagetVersionRedirect', res);
+
+          if (res.data.data.T_order_store_orderView_version) {
+            const {
+              protocol,
+              hostname,
+              pathname,
+              port,
+            } = location;
+
+            const nowPath = `${protocol}//${hostname}${pathname}`;
+
+            console.log('location', nowPath);
+
+            if (process.env.STOP_REDIRECT) {
+              const nowDevPath = `${protocol}//${hostname}:${port}${pathname}`;
+              console.log('location dev', nowDevPath === 'http://localhost:8080/');
+
+              if (nowDevPath !== 'http://localhost:8080/') {
+                return location.replace('/');
+              }
+            } else {
+              if (nowPath !== res.data.data.T_order_store_orderView_version) {
+                return location.replace(res.data.data.T_order_store_orderView_version);
+              }
+            }
+          }
+
+          return false;
+        }
+      } catch (error) {
+        return false;
+      }
+    },
     visibleSideMenu() {
       const targetPath = this.$router.history.current.path;
 
@@ -287,7 +332,7 @@ export default {
       }
 
       const data = {
-        event: 'beep',
+        type: 'beep',
         uCode: this.$store.state.uCode,
         MACAddr: this.$store.state.MACAddr,
         deviceUsage: deviceUsage,
@@ -301,7 +346,7 @@ export default {
       };
 
       this.$socket.emit('event', data, (answer) => {
-        // console.log(answer);
+        // console.log('event', answer.msg);
       });
     },
     getAuthentication() {
@@ -363,6 +408,7 @@ export default {
       this.$store.commit('updateUCode', uCode);
     },
     loopBeep() {
+      this.beep();
       setInterval(() => {
         this.time.now = Date();
 
