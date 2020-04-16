@@ -127,7 +127,7 @@ const order = {
       const { orders } = state;
       const idx = orders.findIndex((item) => item.order_view_key === order.order_view_key);
 
-      console.log('idx!~@~!~@', idx);
+      console.log('UPDATE_ORDERS', idx);
 
       if (idx > -1) {
         orders[idx].commit = true;
@@ -138,9 +138,11 @@ const order = {
   actions: {
     async commitOrder({ commit }, payload) {
       const url = endpoints.orders.commitOrderViewData;
+
       const fd = new FormData();
       fd.append('shop_code', payload.auth.store.store_code);
       fd.append('key', payload.order.order_view_key);
+      fd.append('commit', payload.order.commit);
 
       const res = await axios.post(url, fd);
 
