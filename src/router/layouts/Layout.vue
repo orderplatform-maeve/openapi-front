@@ -146,6 +146,11 @@ export default {
       console.log('connect sokets');
       this.beep();
     },
+    orderview(message) {
+      this.$socket.emit('res', message, (msg) => {
+        console.log('socket res');
+      });
+    }
   },
   methods: {
     async tagetVersionRedirect() {
@@ -182,7 +187,6 @@ export default {
               }
             }
           }
-
           return false;
         }
       } catch (error) {
