@@ -165,7 +165,23 @@ export default {
     },
     restart() {
       // location.href = '/'; // cache 파일을 먼저 로드한다.
-      location.replace('/'); // cache 파일을 로드하지 않는다.
+      console.log(this.$store.state.redirectionUrl);
+      try {
+        if (this.$store.state.redirectionUrl) {
+          if (process.env.STOP_REDIRECT) {
+            return
+          }
+
+          return location.replace(this.$store.state.redirectionUrl);
+        } else {
+          return location.replace('/'); // cache 파일을 로드하지 않는다.
+        }
+      } catch (error) {
+        alert('리다이렉션 버젼 주소가 없습니다. 최신 버젼으로 리다이렉션 합니다.');
+        return location.replace('/');
+      }
+
+      // location.replace('/'); // cache 파일을 로드하지 않는다.
     },
     openTabletScreen() {
       this.confirmModal.show = true;

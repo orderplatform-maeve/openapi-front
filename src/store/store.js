@@ -201,26 +201,36 @@ const shop = {
       console.log('stores', stores);
       Vue.set(state, 'stores', stores);
     },
+    SET_REDIRECTION_URL: (state, redirectionUrl) => {
+      Vue.set(state, 'redirectionUrl', redirectionUrl);
+    },
   },
   actions: {
     setStores: ({ commit }, stores) => {
       commit('SET_STORES', stores);
     },
     async setStoreInit({ commit }, params) {
-      const url = endpoints.shop.init;
-      const response = await axios.post(url, params);
-      console.log(response);
+      try {
+        const url = endpoints.shop.init;
+        const response = await axios.post(url, params);
+        console.log(response);
 
-      // T_order_store_close: 0
-      // T_order_store_close_order: 0
+        const target = response.data.data;
 
-      const device = {
-        serviceStatus: !!response.data.data.T_order_store_close,
-        orderStatus: !!response.data.data.T_order_store_close_order,
-      };
-      commit('setDeviceStatus', device);
+        const device = {
+          serviceStatus: !!target.T_order_store_close,
+          orderStatus: !!target.T_order_store_close_order,
+        };
 
-      return response;
+        commit('setDeviceStatus', device);
+        commit('SET_REDIRECTION_URL', target.T_order_store_orderView_version);
+
+        return response;
+      } catch (error) {
+        // alert('서버 에러: 매장 정보를 가져올수 없습니다.');
+        console.error(error);
+        return false;
+      }
     },
     async requestStoreList({ commit }, params) {
       const url = `http://api.auth.order.orderhae.com/stores?member_code=${params.member.code}`;
@@ -509,6 +519,7 @@ const state = {
   goods: [],
   MACAddr: '00:00:00:00:00:00',
   uCode: '',
+  redirectionUrl: '',
 };
 
 const mutations = {
