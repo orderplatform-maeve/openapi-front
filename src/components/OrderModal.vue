@@ -106,6 +106,7 @@ export default {
     commitOrder(order) {
       let auth = this.$store.state.auth;
       this.$store.dispatch('commitOrder', { auth, order });
+      this.$socket.emit('syncCommitOrder', order);
     },
     closeOrder() {
       clearInterval(this.interval);
