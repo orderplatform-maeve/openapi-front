@@ -35,9 +35,10 @@ const socket = {
         commit('PUSH_ORDER', order);
       }
     },
-    SOCKET_orderview({ commit }, payload) {
+    async SOCKET_orderview({ commit, state, dispatch }, payload) {
+      console.log('out SOCKET_orderview', payload);
 
-      if (payload.type_msg === 'commit') {
+      if (payload?.type_msg === 'commit') {
         const targetOrder = {
           commit: payload.commit,
           order_view_key: payload.key,
@@ -47,10 +48,56 @@ const socket = {
         console.log('SOCKET_orderview', payload);
 
         commit('UPDATE_ORDERS', targetOrder);
-        commit('UNSET_ORDER');
+        return commit('UNSET_ORDER');
       }
 
-      // ordeview load
+      if (payload?.type === 'reload') {
+
+        console.log('reload', payload);
+
+        const validUCode = payload.uCode === localStorage?.uCode;
+        const validMACAddr = payload.MACAddr === window.UUID?.getMacAddress();
+        const isRedirection = validUCode || validMACAddr;
+        console.log('reload SOCKET_orderview', payload, isRedirection);
+
+        try {
+          if (isRedirection) {
+
+            const params = new FormData();
+            params.append('store_code', state.auth.store.store_code);
+            const res = await dispatch('setStoreInit', params);
+
+            if (res.data.data.T_order_store_orderView_version) {
+              const {
+                protocol,
+                hostname,
+                pathname,
+                port,
+              } = location;
+
+              const nowPath = `${protocol}//${hostname}${pathname}`;
+
+              console.log('location', nowPath);
+
+              if (!process.env.STOP_REDIRECT) {
+                const nowDevPath = `${protocol}//${hostname}:${port}${pathname}`;
+                console.log('location dev', nowDevPath === 'http://localhost:8080/');
+
+                if (nowDevPath !== 'http://localhost:8080/') {
+                  return location.replace('/');
+                }
+              } else {
+                if (nowPath !== res.data.data.T_order_store_orderView_version) {
+                  return location.replace(res.data.data.T_order_store_orderView_version);
+                }
+              }
+            }
+
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      }
     },
   },
 };

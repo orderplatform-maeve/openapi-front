@@ -121,6 +121,14 @@ export default {
       return !!this.userName;
     },
   },
+  watch: {
+    '$route'(to, from) {
+      this.$socket.emit('log', {
+        path: to.path,
+        from: from.path,
+      });
+    },
+  },
   beforeCreate() {
     let MACAddr = '';
     try {
@@ -146,6 +154,11 @@ export default {
       console.log('connect sokets');
       this.beep();
     },
+    orderview(message) {
+      this.$socket.emit('res', message, (msg) => {
+        console.log('socket res');
+      });
+    }
   },
   methods: {
     async tagetVersionRedirect() {
@@ -182,7 +195,6 @@ export default {
               }
             }
           }
-
           return false;
         }
       } catch (error) {
