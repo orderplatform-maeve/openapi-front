@@ -30,9 +30,24 @@ const socket = {
   },
   actions: {
     SOCKET_orderlog({ commit, state }, order) {
-      // console.log('SOCKET_orderlog', JSON.stringify(order));
+      console.log('SOCKET_orderlog', order);
       if (vaildShopCode(state, order)) {
         commit('PUSH_ORDER', order);
+      }
+    },
+    SOCKET_orderview({ commit }, payload) {
+
+      if (payload.type_msg === 'commit') {
+        const targetOrder = {
+          commit: payload.commit,
+          order_view_key: payload.key,
+        };
+
+        console.log('targetOrder', targetOrder);
+        console.log('SOCKET_orderview', payload);
+
+        commit('UPDATE_ORDERS', targetOrder);
+        commit('UNSET_ORDER');
       }
     },
   },
@@ -130,7 +145,7 @@ const order = {
       console.log('UPDATE_ORDERS', idx);
 
       if (idx > -1) {
-        orders[idx].commit = true;
+        orders[idx].commit = order.commit;
         Vue.set(state, 'orders', orders);
       }
     },
@@ -142,26 +157,24 @@ const order = {
       const fd = new FormData();
       fd.append('shop_code', payload.auth.store.store_code);
       fd.append('key', payload.order.order_view_key);
-      fd.append('commit', payload.order.commit);
+      fd.append('commit', !payload.order.commit ? 1:0);
 
-      const res = await axios.post(url, fd);
+      await axios.post(url, fd);
+      // const res = await axios.post(url, fd);
 
-      if (res && res.data && res.data.result) {
+      // if (res && res.data && res.data.result) {
 
-        const order = {
-          ...payload.order,
-          commit: true,
-        };
+      //   const order = {
+      //     ...payload.order,
+      //     // commit: true,
+      //   };
 
-        commit('UPDATE_ORDERS', order);
-        commit('UNSET_ORDER');
-      }
+      //   // commit('UPDATE_ORDERS', order);
+      //   // commit('UNSET_ORDER');
+      // }
     },
     setOrder: (context, order) => {
       context.commit('SET_ORDER', order);
-    },
-    unsetOrder: (context) => {
-      context.commit('UNSET_ORDER');
     },
     pushOrder: (context, order) => {
       context.commit('PUSH_ORDER', order);

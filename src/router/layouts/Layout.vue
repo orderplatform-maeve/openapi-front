@@ -18,15 +18,18 @@
         )
       .right(v-if="visibleSideMenu()")
         .top
-          .button(v-on:click="restart()") 새로고침
+          .button(
+            @click="restart()"
+          ) 새로고침
           .datetime
             span {{ time.now | moment("MM.DD HH:mm:ss") }}
           img.logo(:src="logo")
           .store_name {{storeName}}
           router-link.button(v-if="visibleOrderButton" :to="paths.order") 주문 보기
-          //- router-link.button(v-if="visibleOrderButton" :to="paths.products") 상품 관리
-          //-   <br> (테스트)
+          router-link.button(v-if="visibleOrderButton" :to="paths.products") 상품 관리
+            <br> (테스트)
           //- router-link.button(v-if="visibleOrderButton" :to="paths.tables") 테이블 보기
+          p {{ log }}
         .bottom
           hr
           .tab-group
@@ -76,6 +79,8 @@ export default {
       paths,
       logo: 'https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/logo/torder_color_white.png',
       version,
+      clickTapOnRedirect: false,
+      log: '',
     };
   },
   computed: {
@@ -165,23 +170,25 @@ export default {
     },
     restart() {
       // location.href = '/'; // cache 파일을 먼저 로드한다.
-      console.log(this.$store.state.redirectionUrl);
-      try {
-        if (this.$store.state.redirectionUrl) {
-          if (process.env.STOP_REDIRECT) {
-            return
-          }
-
-          return location.replace(this.$store.state.redirectionUrl);
-        } else {
-          return location.replace('/'); // cache 파일을 로드하지 않는다.
-        }
-      } catch (error) {
-        alert('리다이렉션 버젼 주소가 없습니다. 최신 버젼으로 리다이렉션 합니다.');
-        return location.replace('/');
-      }
-
       // location.replace('/'); // cache 파일을 로드하지 않는다.
+      console.log(this.$store.state.redirectionUrl);
+      if (!this.clickTapOnRedirect) {
+        try {
+          if (this.$store.state.redirectionUrl) {
+            if (process.env.STOP_REDIRECT) {
+              this.log = 'stop redirect';
+              return location.replace('/');
+            }
+            this.log = 'have redirect';
+            return location.replace(this.$store.state.redirectionUrl);
+          }
+          this.log = 'noting redirect';
+          return location.replace('/'); // cache 파일을 로드하지 않는다.
+        } catch (error) {
+          this.log = '리다이렉션 버젼 주소가 없습니다. 최신 버젼으로 리다이렉션 합니다.';
+          return location.replace('/');
+        }
+      }
     },
     openTabletScreen() {
       this.confirmModal.show = true;
@@ -304,7 +311,7 @@ export default {
       }
 
       const data = {
-        event: 'beep',
+        type: 'beep',
         uCode: this.$store.state.uCode,
         MACAddr: this.$store.state.MACAddr,
         deviceUsage: deviceUsage,
@@ -318,7 +325,7 @@ export default {
       };
 
       this.$socket.emit('event', data, (answer) => {
-        // console.log(answer);
+        // console.log('event', answer.msg);
       });
     },
     getAuthentication() {
@@ -380,6 +387,7 @@ export default {
       this.$store.commit('updateUCode', uCode);
     },
     loopBeep() {
+      this.beep();
       setInterval(() => {
         this.time.now = Date();
 
