@@ -26,10 +26,9 @@
           img.logo(:src="logo")
           .store_name {{storeName}}
           router-link.button(v-if="visibleOrderButton" :to="paths.order") 주문 보기
-          router-link.button(v-if="visibleOrderButton" :to="paths.products") 상품 관리
-            <br> (테스트)
+          //- router-link.button(v-if="visibleOrderButton" :to="paths.products") 상품 관리
+          //-   <br> (테스트)
           //- router-link.button(v-if="visibleOrderButton" :to="paths.tables") 테이블 보기
-          p {{ log }}
         .bottom
           hr
           .tab-group
@@ -79,8 +78,6 @@ export default {
       paths,
       logo: 'https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/logo/torder_color_white.png',
       version,
-      clickTapOnRedirect: false,
-      log: '',
     };
   },
   computed: {
@@ -142,6 +139,7 @@ export default {
   mounted() {
     this.getUCode();
     this.loopBeep();
+    this.tagetVersionRedirect();
   },
   sockets: {
     connect() {
@@ -150,6 +148,47 @@ export default {
     },
   },
   methods: {
+    async tagetVersionRedirect() {
+      try {
+        if (this.$store.state.auth?.store?.store_code) {
+          const params = new FormData();
+          params.append('store_code', this.$store.state.auth.store.store_code);
+          const res = await this.$store.dispatch('setStoreInit', params);
+
+          // console.log('tagetVersionRedirect', res);
+
+          if (res.data.data.T_order_store_orderView_version) {
+            const {
+              protocol,
+              hostname,
+              pathname,
+              port,
+            } = location;
+
+            const nowPath = `${protocol}//${hostname}${pathname}`;
+
+            console.log('location', nowPath);
+
+            if (process.env.STOP_REDIRECT) {
+              const nowDevPath = `${protocol}//${hostname}:${port}${pathname}`;
+              console.log('location dev', nowDevPath === 'http://localhost:8080/');
+
+              if (nowDevPath !== 'http://localhost:8080/') {
+                return location.replace('/');
+              }
+            } else {
+              if (nowPath !== res.data.data.T_order_store_orderView_version) {
+                return location.replace(res.data.data.T_order_store_orderView_version);
+              }
+            }
+          }
+
+          return false;
+        }
+      } catch (error) {
+        return false;
+      }
+    },
     visibleSideMenu() {
       const targetPath = this.$router.history.current.path;
 
@@ -170,25 +209,7 @@ export default {
     },
     restart() {
       // location.href = '/'; // cache 파일을 먼저 로드한다.
-      // location.replace('/'); // cache 파일을 로드하지 않는다.
-      console.log(this.$store.state.redirectionUrl);
-      if (!this.clickTapOnRedirect) {
-        try {
-          if (this.$store.state.redirectionUrl) {
-            if (process.env.STOP_REDIRECT) {
-              this.log = 'stop redirect';
-              return location.replace('/');
-            }
-            this.log = 'have redirect';
-            return location.replace(this.$store.state.redirectionUrl);
-          }
-          this.log = 'noting redirect';
-          return location.replace('/'); // cache 파일을 로드하지 않는다.
-        } catch (error) {
-          this.log = '리다이렉션 버젼 주소가 없습니다. 최신 버젼으로 리다이렉션 합니다.';
-          return location.replace('/');
-        }
-      }
+      location.replace('/'); // cache 파일을 로드하지 않는다.
     },
     openTabletScreen() {
       this.confirmModal.show = true;

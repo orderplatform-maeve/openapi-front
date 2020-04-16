@@ -49,6 +49,8 @@ const socket = {
         commit('UPDATE_ORDERS', targetOrder);
         commit('UNSET_ORDER');
       }
+
+      // ordeview load
     },
   },
 };
@@ -214,9 +216,6 @@ const shop = {
       console.log('stores', stores);
       Vue.set(state, 'stores', stores);
     },
-    SET_REDIRECTION_URL: (state, redirectionUrl) => {
-      Vue.set(state, 'redirectionUrl', redirectionUrl);
-    },
   },
   actions: {
     setStores: ({ commit }, stores) => {
@@ -236,7 +235,6 @@ const shop = {
         };
 
         commit('setDeviceStatus', device);
-        commit('SET_REDIRECTION_URL', target.T_order_store_orderView_version);
 
         return response;
       } catch (error) {
@@ -532,7 +530,6 @@ const state = {
   goods: [],
   MACAddr: '00:00:00:00:00:00',
   uCode: '',
-  redirectionUrl: '',
 };
 
 const mutations = {
