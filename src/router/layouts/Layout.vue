@@ -121,6 +121,14 @@ export default {
       return !!this.userName;
     },
   },
+  watch: {
+    '$route'(to, from) {
+      this.$socket.emit('log', {
+        path: to.path,
+        from: from.path,
+      });
+    },
+  },
   beforeCreate() {
     let MACAddr = '';
     try {
