@@ -33,8 +33,8 @@
           .good-image(:style="getGoodImage(good.image)")
           .good-info
             .name {{ good.displayName }}
-            .button(@click="() => onNoUse(good)" :style="getSoldoutStatusStyle(good.noUse)") {{ getUseStatusText(good.noUse) }}
-            .button(@click="() => onSoldoutStatus(good)") {{ getSoldoutStatusText(good.soldout) }}
+            .button(@click="() => onNoUse(good)" :style="getButtonStatusStyle(good.noUse)") {{ getUseStatusText(good.noUse) }}
+            .button(@click="() => onSoldoutStatus(good)" :style="getButtonStatusStyle(good.soldout)") {{ getSoldoutStatusText(good.soldout) }}
 </template>
 
 <script>
@@ -171,8 +171,10 @@ export default {
     getSoldoutStatusText(soldout) {
       return soldout ? '메뉴 품절 취소' : '매뉴 품절';
     },
-    getSoldoutStatusStyle(noUse) {
-      return null;
+    getButtonStatusStyle(visble) {
+      return {
+        backgroundColor: `var(${visble ? '--c-3' : '--c-2'})`,
+      };
     },
     onNoUse(good) {
       const { noUse } = good;
