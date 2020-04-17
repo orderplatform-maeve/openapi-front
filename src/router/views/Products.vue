@@ -33,7 +33,7 @@
           .good-image(:style="getGoodImage(good.image)")
           .good-info
             .name {{ good.displayName }}
-            .button(@click="() => onNoUse(good)") {{ getUseStatusText(good.noUse) }}
+            .button(@click="() => onNoUse(good)" :style="getSoldoutStatusStyle(good.noUse)") {{ getUseStatusText(good.noUse) }}
             .button(@click="() => onSoldoutStatus(good)") {{ getSoldoutStatusText(good.soldout) }}
 </template>
 
@@ -59,7 +59,7 @@ export default {
       };
 
       const results = getCategories.map(getCategoryItem);
-      console.log(results);
+      // console.log(results);
 
       return results;
     },
@@ -166,10 +166,13 @@ export default {
       };
     },
     getUseStatusText(noUse) {
-      return noUse ? '판매 재개 하기' : '판매 중지 하기';
+      return noUse ? '메뉴 재개' : '메뉴 중지';
     },
     getSoldoutStatusText(soldout) {
-      return soldout ? '품절 취소 하기' : '품절 처리 하기';
+      return soldout ? '메뉴 품절 취소' : '매뉴 품절';
+    },
+    getSoldoutStatusStyle(noUse) {
+      return null;
     },
     onNoUse(good) {
       const { noUse } = good;
@@ -195,21 +198,15 @@ export default {
       console.log(res);
 
       if (res.status === 200) {
-        const findIdx = this.selectSubCategoryItem.goods.findIndex((item) => good.code === item.code);
-        console.log('finde index', this.selectSubCategoryItem.goods[findIdx].noUse);
+        const arr = JSON.parse(JSON.stringify(this.$store.state.goods));
+        const findIdx = arr.findIndex((o) => o.T_order_store_good_code === good.code);
 
-        const arr = JSON.parse(JSON.stringify(this.selectSubCategoryItem.goods));
         arr[findIdx] = {
-          ...this.selectSubCategoryItem.goods[findIdx],
-          noUse: 1,
+          ...arr[findIdx],
+          T_order_store_good_use: 1,
         };
 
-        this.selectSubCategoryItem = {
-          ...this.selectSubCategoryItem,
-          goods: arr,
-        };
-
-        console.log('changed', this.selectSubCategoryItem.goods[findIdx].noUse);
+        this.$store.commit('SET_GOODS', arr);
       } else {
         alert('서버가 불안정하여 판매 중지 하기 실패하였습니다.');
       }
@@ -229,21 +226,15 @@ export default {
       console.log(res);
 
       if (res.status === 200) {
-        const findIdx = this.selectSubCategoryItem.goods.findIndex((item) => good.code === item.code);
-        console.log('finde index', this.selectSubCategoryItem.goods[findIdx].noUse);
+        const arr = JSON.parse(JSON.stringify(this.$store.state.goods));
+        const findIdx = arr.findIndex((o) => o.T_order_store_good_code === good.code);
 
-        const arr = JSON.parse(JSON.stringify(this.selectSubCategoryItem.goods));
         arr[findIdx] = {
-          ...this.selectSubCategoryItem.goods[findIdx],
-          noUse: 0,
+          ...arr[findIdx],
+          T_order_store_good_use: 0,
         };
 
-        this.selectSubCategoryItem = {
-          ...this.selectSubCategoryItem,
-          goods: arr,
-        };
-
-        console.log('changed', this.selectSubCategoryItem.goods[findIdx].noUse);
+        this.$store.commit('SET_GOODS', arr);
       } else {
         alert('서버가 불안정하여 판매 중지 하기 실패하였습니다.');
       }
@@ -272,21 +263,15 @@ export default {
       console.log(res);
 
       if (res.status === 200) {
-        const findIdx = this.selectSubCategoryItem.goods.findIndex((item) => good.code === item.code);
-        console.log('finde index', this.selectSubCategoryItem.goods[findIdx].noUse);
+        const arr = JSON.parse(JSON.stringify(this.$store.state.goods));
+        const findIdx = arr.findIndex((o) => o.T_order_store_good_code === good.code);
 
-        const arr = JSON.parse(JSON.stringify(this.selectSubCategoryItem.goods));
         arr[findIdx] = {
-          ...this.selectSubCategoryItem.goods[findIdx],
-          soldout: 1,
+          ...arr[findIdx],
+          T_order_store_good_soldout: 1,
         };
 
-        this.selectSubCategoryItem = {
-          ...this.selectSubCategoryItem,
-          goods: arr,
-        };
-
-        console.log('changed', this.selectSubCategoryItem.goods[findIdx].noUse);
+        this.$store.commit('SET_GOODS', arr);
       } else {
         alert('서버가 불안정하여 판매 중지 하기 실패하였습니다.');
       }
@@ -306,21 +291,15 @@ export default {
       console.log(res);
 
       if (res.status === 200) {
-        const findIdx = this.selectSubCategoryItem.goods.findIndex((item) => good.code === item.code);
-        console.log('finde index', this.selectSubCategoryItem.goods[findIdx].noUse);
+        const arr = JSON.parse(JSON.stringify(this.$store.state.goods));
+        const findIdx = arr.findIndex((o) => o.T_order_store_good_code === good.code);
 
-        const arr = JSON.parse(JSON.stringify(this.selectSubCategoryItem.goods));
         arr[findIdx] = {
-          ...this.selectSubCategoryItem.goods[findIdx],
-          soldout: 0,
+          ...arr[findIdx],
+          T_order_store_good_soldout: 0,
         };
 
-        this.selectSubCategoryItem = {
-          ...this.selectSubCategoryItem,
-          goods: arr,
-        };
-
-        console.log('changed', this.selectSubCategoryItem.goods[findIdx].noUse);
+        this.$store.commit('SET_GOODS', arr);
       } else {
         alert('서버가 불안정하여 판매 중지 하기 실패하였습니다.');
       }
