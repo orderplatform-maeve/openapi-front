@@ -7,19 +7,22 @@
       @click="() => onSelectMainCtg(ctgItem)"
       :class="getActiveMainCategory(ctgItem.code)"
       :href="`#${ctgItem.code}`"
+      :ref="ctgItem.code"
     ) {{ ctgItem.name }}
   .sub-categories
     a.sub-category(
       v-for="subCtgItem in getSubCategories()"
       :key="subCtgItem.code"
+      :name="subCtgItem.code"
       @click="() => onSelectSubCtg(subCtgItem)"
       :class="getActiveSubCategory(subCtgItem.code)"
       :href="`#${subCtgItem.code}`"
+      :ref="subCtgItem.code"
     ) {{ subCtgItem.name }}
 
-  .scroll
+  .scroll(@scroll="handleScroll" ref="scroll")
     .products(v-for="mainCtg in data" :key="mainCtg.code" :id="mainCtg.code")
-      .goods(v-for="subCtg in mainCtg.subCategories" :id="subCtg.code")
+      .goods(class="scrollem" v-for="subCtg in mainCtg.subCategories" :id="subCtg.code")
         .category-info
           .main-category-text {{ mainCtg.name }}
           .sub-category-text {{ subCtg.name }}
@@ -347,6 +350,37 @@ export default {
       } catch (error) {
         return { display: 'none' };
       }
+    },
+    handleScroll(e) {
+      const products = e.target.children;
+      let elBottom = 0;
+      let subElBottom = 0;
+
+      [...products].forEach((el, i) => {
+        const elTop = el.offsetTop - this.$refs.scroll.offsetTop;
+        elBottom += el.offsetHeight;
+        const { scrollTop } = e.target;
+
+        // console.log(i, elTop, elBottom, scrollTop, el.id, targetId);
+        if (elTop <= scrollTop && elBottom >= scrollTop) {
+          // console.log(i, elTop, elBottom, scrollTop, el.id);
+
+          const findItem = this.data.find((o) => o.code === el.id);
+          this.selectMainCategoryItem = findItem;
+        }
+
+        [...el.children].forEach((element) => {
+          const subElTop = element.offsetTop - this.$refs.scroll.offsetTop;
+          subElBottom += element.offsetHeight;
+
+          if (subElTop <= scrollTop && subElBottom >= scrollTop) {
+            // console.log(subElTop, subElBottom, scrollTop, element.id);
+            const findSubItem = this.getSubCategories().find((o) => o.code === element.id);
+            this.selectSubCategoryItem = findSubItem;
+          }
+
+        });
+      });
     },
   },
 };
