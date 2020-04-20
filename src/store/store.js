@@ -100,9 +100,17 @@ const socket = {
       }
 
       if (payload?.type === '@put/product/status') {
-        if (payload?.data) {
+        if (payload?.good?.code) {
           // console.log('sync product data', payload.data);
-          commit('SET_GOODS', payload.data);
+          const arr = JSON.parse(JSON.stringify(state.goods));
+          const findIdx = arr.findIndex((o) => o.T_order_store_good_code === payload.good.code);
+
+          if (payload?.data) {
+            arr[findIdx] = payload.data;
+
+            commit('SET_GOODS', arr);
+          }
+
         }
       }
     },

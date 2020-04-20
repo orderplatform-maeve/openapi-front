@@ -200,7 +200,7 @@ export default {
           T_order_store_good_use: 1,
         };
 
-        this.reqEmitProductStatus(arr);
+        this.reqEmitProductStatus(good, arr[findIdx]);
         this.$store.commit('SET_GOODS', arr);
       } else {
         alert('서버가 불안정하여 판매 중지 하기 실패하였습니다.');
@@ -229,7 +229,7 @@ export default {
           T_order_store_good_use: 0,
         };
 
-        this.reqEmitProductStatus(arr);
+        this.reqEmitProductStatus(good, arr[findIdx]);
         this.$store.commit('SET_GOODS', arr);
       } else {
         alert('서버가 불안정하여 판매 중지 하기 실패하였습니다.');
@@ -267,7 +267,7 @@ export default {
           T_order_store_good_soldout: 1,
         };
 
-        this.reqEmitProductStatus(arr);
+        this.reqEmitProductStatus(good, arr[findIdx]);
         this.$store.commit('SET_GOODS', arr);
       } else {
         alert('서버가 불안정하여 판매 중지 하기 실패하였습니다.');
@@ -296,7 +296,7 @@ export default {
           T_order_store_good_soldout: 0,
         };
 
-        this.reqEmitProductStatus(arr);
+        this.reqEmitProductStatus(good, arr[findIdx]);
         this.$store.commit('SET_GOODS', arr);
       } else {
         alert('서버가 불안정하여 판매 중지 하기 실패하였습니다.');
@@ -339,12 +339,13 @@ export default {
         });
       });
     },
-    reqEmitProductStatus(data) {
+    reqEmitProductStatus(good, data) {
       this.$socket.emit('orderview', {
         store: {
           code: this.$store.state.auth.store.store_code,
         },
         type: '@put/product/status',
+        good,
         data,
       });
     }
