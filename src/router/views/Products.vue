@@ -1,6 +1,6 @@
 <template lang="pug">
 .container
-  .main-categories
+  .main-categories()
     a.main-category(
       v-for="ctgItem in data"
       :key="ctgItem.code"
@@ -20,7 +20,8 @@
       :ref="subCtgItem.code"
     ) {{ subCtgItem.name }}
 
-  .scroll(@scroll="handleScroll" ref="scroll")
+  .loading(v-if="isLoading") 데이터 요청 중 입니다.
+  .scroll(@scroll="handleScroll" ref="scroll" v-if="!isLoading")
     .products(v-for="mainCtg in data" :key="mainCtg.code" :id="mainCtg.code")
       .goods(class="scrollem" v-for="subCtg in mainCtg.subCategories" :id="subCtg.code")
         .category-info
@@ -41,6 +42,7 @@
 export default {
   data() {
     return {
+      isLoading: false,
       selectMainCategoryItem: null,
       selectSubCategoryItem: null,
     };
@@ -303,10 +305,18 @@ export default {
       }
     },
     async initialize() {
+      this.isLoading = true;
+
       const fd = new FormData();
       fd.append('store_code', this.$store.state.auth.store.store_code);
-      await this.$store.dispatch('setCategories', fd);
-      await this.$store.dispatch('setGooods', fd);
+      const ctgRes = await this.$store.dispatch('setCategories', fd);
+      const goodsRes = await this.$store.dispatch('setGooods', fd);
+
+      if (ctgRes && goodsRes) {
+        setTimeout(() => {
+          this.isLoading = false;
+        }, 0);
+      }
     },
     handleScroll(e) {
       const products = e.target.children;
@@ -499,6 +509,14 @@ export default {
         }
       }
     }
+  }
+  .loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+    font-size: 40px;
+    font-weight: 900;
   }
 
 }
