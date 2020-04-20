@@ -1,26 +1,40 @@
 <template lang="pug">
 .container
   .main-categories
-    .main-category(
+    a.main-category(
       v-for="ctgItem in data"
       :key="ctgItem.code"
       @click="() => onSelectMainCtg(ctgItem)"
       :class="getActiveMainCategory(ctgItem.code)"
+      :href="`#${ctgItem.code}`"
+      :ref="ctgItem.code"
     ) {{ ctgItem.name }}
   .sub-categories
-    .sub-category(
+    a.sub-category(
       v-for="subCtgItem in getSubCategories()"
       :key="subCtgItem.code"
+      :name="subCtgItem.code"
       @click="() => onSelectSubCtg(subCtgItem)"
       :class="getActiveSubCategory(subCtgItem.code)"
+      :href="`#${subCtgItem.code}`"
+      :ref="subCtgItem.code"
     ) {{ subCtgItem.name }}
-  .goods
-    .good(v-for="good in getFilterGoods()" :key="good.code")
-      .good-image(:style="getGoodImage(good.image)")
-      .good-info
-        .name {{ good.displayName }}
-        .button(@click="() => onNoUse(good)") {{ getUseStatusText(good.noUse) }}
-        .button(@click="() => onSoldoutStatus(good)") {{ getSoldoutStatusText(good.soldout) }}
+
+  .scroll(@scroll="handleScroll" ref="scroll")
+    .products(v-for="mainCtg in data" :key="mainCtg.code" :id="mainCtg.code")
+      .goods(class="scrollem" v-for="subCtg in mainCtg.subCategories" :id="subCtg.code")
+        .category-info
+          .main-category-text {{ mainCtg.name }}
+          .sub-category-text {{ subCtg.name }}
+        .good(
+          v-for="good in subCtg.goods"
+          :key="good.code"
+        )
+          .good-image(:style="getGoodImage(good.image)")
+          .good-info
+            .name {{ good.displayName }}
+            .button(@click="() => onNoUse(good)" :style="getButtonStatusStyle(good.noUse)") {{ getUseStatusText(good.noUse) }}
+            .button(@click="() => onSoldoutStatus(good)" :style="getButtonStatusStyle(good.soldout)") {{ getSoldoutStatusText(good.soldout) }}
 </template>
 
 <script>
@@ -38,7 +52,6 @@ export default {
       const getCategoryItem = (categoryItem) => {
         const getSubCategoryItem = (subCategoryItem) => this.getSubCategoryItem(subCategoryItem, processGoods);
         const subCategories = categoryItem.subCategories.map(getSubCategoryItem);
-
         return {
           ...categoryItem,
           subCategories,
@@ -46,6 +59,8 @@ export default {
       };
 
       const results = getCategories.map(getCategoryItem);
+      // console.log(results);
+
       return results;
     },
   },
@@ -145,15 +160,21 @@ export default {
       };
     },
     getGoodImage(image) {
+      if (!image) return null;
       return  {
         backgroundImage: `url(${image})`,
       };
     },
     getUseStatusText(noUse) {
-      return noUse ? '판매 재개 하기' : '판매 중지 하기';
+      return noUse ? '메뉴 재개' : '메뉴 중지';
     },
     getSoldoutStatusText(soldout) {
-      return soldout ? '품절 취소 하기' : '품절 처리 하기';
+      return soldout ? '메뉴 품절 취소' : '매뉴 품절';
+    },
+    getButtonStatusStyle(visble) {
+      return {
+        backgroundColor: `var(${visble ? '--c-3' : '--c-2'})`,
+      };
     },
     onNoUse(good) {
       const { noUse } = good;
@@ -179,21 +200,15 @@ export default {
       console.log(res);
 
       if (res.status === 200) {
-        const findIdx = this.selectSubCategoryItem.goods.findIndex((item) => good.code === item.code);
-        console.log('finde index', this.selectSubCategoryItem.goods[findIdx].noUse);
+        const arr = JSON.parse(JSON.stringify(this.$store.state.goods));
+        const findIdx = arr.findIndex((o) => o.T_order_store_good_code === good.code);
 
-        const arr = JSON.parse(JSON.stringify(this.selectSubCategoryItem.goods));
         arr[findIdx] = {
-          ...this.selectSubCategoryItem.goods[findIdx],
-          noUse: 1,
+          ...arr[findIdx],
+          T_order_store_good_use: 1,
         };
 
-        this.selectSubCategoryItem = {
-          ...this.selectSubCategoryItem,
-          goods: arr,
-        };
-
-        console.log('changed', this.selectSubCategoryItem.goods[findIdx].noUse);
+        this.$store.commit('SET_GOODS', arr);
       } else {
         alert('서버가 불안정하여 판매 중지 하기 실패하였습니다.');
       }
@@ -213,21 +228,15 @@ export default {
       console.log(res);
 
       if (res.status === 200) {
-        const findIdx = this.selectSubCategoryItem.goods.findIndex((item) => good.code === item.code);
-        console.log('finde index', this.selectSubCategoryItem.goods[findIdx].noUse);
+        const arr = JSON.parse(JSON.stringify(this.$store.state.goods));
+        const findIdx = arr.findIndex((o) => o.T_order_store_good_code === good.code);
 
-        const arr = JSON.parse(JSON.stringify(this.selectSubCategoryItem.goods));
         arr[findIdx] = {
-          ...this.selectSubCategoryItem.goods[findIdx],
-          noUse: 0,
+          ...arr[findIdx],
+          T_order_store_good_use: 0,
         };
 
-        this.selectSubCategoryItem = {
-          ...this.selectSubCategoryItem,
-          goods: arr,
-        };
-
-        console.log('changed', this.selectSubCategoryItem.goods[findIdx].noUse);
+        this.$store.commit('SET_GOODS', arr);
       } else {
         alert('서버가 불안정하여 판매 중지 하기 실패하였습니다.');
       }
@@ -256,21 +265,15 @@ export default {
       console.log(res);
 
       if (res.status === 200) {
-        const findIdx = this.selectSubCategoryItem.goods.findIndex((item) => good.code === item.code);
-        console.log('finde index', this.selectSubCategoryItem.goods[findIdx].noUse);
+        const arr = JSON.parse(JSON.stringify(this.$store.state.goods));
+        const findIdx = arr.findIndex((o) => o.T_order_store_good_code === good.code);
 
-        const arr = JSON.parse(JSON.stringify(this.selectSubCategoryItem.goods));
         arr[findIdx] = {
-          ...this.selectSubCategoryItem.goods[findIdx],
-          soldout: 1,
+          ...arr[findIdx],
+          T_order_store_good_soldout: 1,
         };
 
-        this.selectSubCategoryItem = {
-          ...this.selectSubCategoryItem,
-          goods: arr,
-        };
-
-        console.log('changed', this.selectSubCategoryItem.goods[findIdx].noUse);
+        this.$store.commit('SET_GOODS', arr);
       } else {
         alert('서버가 불안정하여 판매 중지 하기 실패하였습니다.');
       }
@@ -290,21 +293,15 @@ export default {
       console.log(res);
 
       if (res.status === 200) {
-        const findIdx = this.selectSubCategoryItem.goods.findIndex((item) => good.code === item.code);
-        console.log('finde index', this.selectSubCategoryItem.goods[findIdx].noUse);
+        const arr = JSON.parse(JSON.stringify(this.$store.state.goods));
+        const findIdx = arr.findIndex((o) => o.T_order_store_good_code === good.code);
 
-        const arr = JSON.parse(JSON.stringify(this.selectSubCategoryItem.goods));
         arr[findIdx] = {
-          ...this.selectSubCategoryItem.goods[findIdx],
-          soldout: 0,
+          ...arr[findIdx],
+          T_order_store_good_soldout: 0,
         };
 
-        this.selectSubCategoryItem = {
-          ...this.selectSubCategoryItem,
-          goods: arr,
-        };
-
-        console.log('changed', this.selectSubCategoryItem.goods[findIdx].noUse);
+        this.$store.commit('SET_GOODS', arr);
       } else {
         alert('서버가 불안정하여 판매 중지 하기 실패하였습니다.');
       }
@@ -314,13 +311,69 @@ export default {
       fd.append('store_code', this.$store.state.auth.store.store_code);
       await this.$store.dispatch('setCategories', fd);
       await this.$store.dispatch('setGooods', fd);
-    }
+    },
+    getGoodItemVisible(good) {
+      try {
+        let style = null;
+
+        if (this.selectSubCategoryItem) {
+          const array = this.selectSubCategoryItem.goods;
+          const findIdx = array.findIndex((o) => o.code === good.code);
+
+          if (findIdx === -1) {
+            style = {
+              display: 'none',
+            };
+          }
+        }
+
+        return style;
+      } catch (error) {
+        return { display: 'none' };
+      }
+    },
+    handleScroll(e) {
+      const products = e.target.children;
+      let elBottom = 0;
+      let subElBottom = 0;
+
+      [...products].forEach((el, i) => {
+        const elTop = el.offsetTop - this.$refs.scroll.offsetTop;
+        elBottom += el.offsetHeight;
+        const { scrollTop } = e.target;
+
+        // console.log(i, elTop, elBottom, scrollTop, el.id, targetId);
+        if (elTop <= scrollTop && elBottom >= scrollTop) {
+          // console.log(i, elTop, elBottom, scrollTop, el.id);
+
+          const findItem = this.data.find((o) => o.code === el.id);
+          this.selectMainCategoryItem = findItem;
+        }
+
+        [...el.children].forEach((element) => {
+          const subElTop = element.offsetTop - this.$refs.scroll.offsetTop;
+          subElBottom += element.offsetHeight;
+
+          if (subElTop <= scrollTop && subElBottom >= scrollTop) {
+            // console.log(subElTop, subElBottom, scrollTop, element.id);
+            const findSubItem = this.getSubCategories().find((o) => o.code === element.id);
+            this.selectSubCategoryItem = findSubItem;
+          }
+
+        });
+      });
+    },
   },
 };
 </script>
 
 <style lang="scss">
 .container{
+  a {
+    text-decoration: none;
+    color: var(--c-1);
+  }
+
   --c-1: #ffffff;
   --c-2: #202020;
   --c-3: #ff0000;
@@ -370,55 +423,93 @@ export default {
     }
   }
 
-  .goods {
-    flex-wrap: wrap;
-    align-items: flex-start;
-    flex-shrink: 0;
-    .good {
-      width: calc(33.3333% - 16px);
-      height: 50vh;
-      background-color: var(--c-9);
-      display: flex;
-      margin: 8px;
-      color: var(--c-2);
+  .scroll {
+    overflow: auto;
+    flex-direction: column;
+    .products {
       flex-direction: column;
-      border-radius: 4px;
-      box-shadow: 0 0 8px -4px var(--c-7);
-      .good-image {
-        flex-grow: 1;
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        border-top-left-radius: 4px;
-        border-top-right-radius: 4px;
-      }
-      .good-info {
+      .goods {
         display: flex;
-        flex-direction: column;
-        padding: 12px;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        font-size: 24px;
-        font-weight: 900;
-        word-break: normal;
-        .name {
-          text-align: center;
-          font-size: 24px;
-          font-weight: 900;
-          word-break: normal;
-        }
-        .button {
-          height: 40px;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        flex-shrink: 0;
+        .category-info {
+          width: calc(33.3333% - 16px);
+          height: 50vh;
           display: flex;
-          align-items: center;
+          margin: 8px;
+          color: var(--c-3);
+          flex-direction: column;
+          font-size: 4vh;
+          font-weight: 100;
+          position: relative;
+          text-align: center;
           justify-content: center;
-          padding: 4px 16px;
-          font-weight: 900;
-          margin-top: 8px;
-          color: var(--c-9);
-          background-color: var(--c-2);
-          border-radius: 20px;
+
+          .sub-category-text {
+            font-size: 8vh;
+            text-align: right;
+            margin-top: 4vh;
+            padding-top: 4vh;
+          }
+          .sub-category-text::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            right: -100px;
+            height: 2px;
+            width: calc(50% + 100px);
+            background-color: var(--c-3);
+          }
+        }
+        .good {
+          z-index: 2;
+          width: calc(33.3333% - 16px);
+          height: 50vh;
+          background-color: var(--c-9);
+          display: flex;
+          margin: 8px;
+          color: var(--c-2);
+          flex-direction: column;
+          border-radius: 4px;
+          box-shadow: 0 0 8px -4px var(--c-7);
+          .good-image {
+            flex-grow: 1;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            border-top-left-radius: 4px;
+            border-top-right-radius: 4px;
+          }
+          .good-info {
+            display: flex;
+            flex-direction: column;
+            padding: 12px;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 900;
+            word-break: normal;
+            .name {
+              text-align: center;
+              font-size: 24px;
+              font-weight: 900;
+              word-break: normal;
+            }
+            .button {
+              height: 40px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              padding: 4px 16px;
+              font-weight: 900;
+              margin-top: 8px;
+              color: var(--c-9);
+              background-color: var(--c-2);
+              border-radius: 20px;
+            }
+          }
         }
       }
     }
