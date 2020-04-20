@@ -98,6 +98,13 @@ const socket = {
           console.log(error);
         }
       }
+
+      if (payload?.type === '@put/product/status') {
+        if (payload?.data) {
+          // console.log('sync product data', payload.data);
+          commit('SET_GOODS', payload.data);
+        }
+      }
     },
   },
 };
@@ -184,7 +191,7 @@ const order = {
       state.orders.push(order);
     },
     SET_ORDERS: (state, orders) => {
-      console.log('orders!!!!!!!', orders);
+      // console.log('orders!!!!!!!', orders);
       Vue.set(state, 'orders', orders);
     },
     UPDATE_ORDERS: (state, order) => {
@@ -272,7 +279,7 @@ const shop = {
       try {
         const url = endpoints.shop.init;
         const response = await axios.post(url, params);
-        console.log(response);
+        // console.log(response);
 
         const target = response.data.data;
 
@@ -309,7 +316,7 @@ const shop = {
 const device = {
   mutations: {
     setDeviceStatus(state, device) {
-      console.log('commit setDeviceStatus', device);
+      // console.log('commit setDeviceStatus', device);
       Vue.set(state, 'device', device);
     }
   },

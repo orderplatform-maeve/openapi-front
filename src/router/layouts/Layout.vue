@@ -111,7 +111,7 @@ export default {
     },
     userName() {
       const { auth } = this;
-      console.log(auth);
+      // console.log(auth);
       return auth && auth.member && auth.member.name;
     },
     visibleLoginButton() {
@@ -180,11 +180,11 @@ export default {
 
             const nowPath = `${protocol}//${hostname}${pathname}`;
 
-            console.log('location', nowPath);
+            // console.log('location', nowPath);
 
             if (process.env.STOP_REDIRECT) {
               const nowDevPath = `${protocol}//${hostname}:${port}${pathname}`;
-              console.log('location dev', nowDevPath === 'http://localhost:8080/');
+              // console.log('location dev', nowDevPath === 'http://localhost:8080/');
 
               if (nowDevPath !== 'http://localhost:8080/') {
                 return location.replace('/');
