@@ -291,16 +291,17 @@ const shop = {
       }
     },
     async requestStoreList({ commit }, params) {
-      const url = `http://api.auth.order.orderhae.com/stores?member_code=${params.member.code}`;
-      const res = await axios.get(url);
+      try {
+        const fd = new FormData();
+        fd.append('member_id', params.member.code);
 
-      const stores = res.data.store_data.map((o) => ({
-        ...o,
-        store_code: o.shop_code,
-        store_name: o.shop_name,
-      }));
+        const url = endpoints.shop.getList;
+        const res = await axios.post(url, fd);
 
-      return stores;
+        return res.data.shop_data;
+      } catch (error) {
+        return false;
+      }
     },
   },
 };

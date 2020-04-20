@@ -48,7 +48,9 @@ export default {
     if (this.stores.length === 0) {
       const res = await this.$store.dispatch('requestStoreList', this.auth);
 
-      this.data = res;
+      if (res) {
+        this.data = res;
+      }
     }
   },
   methods: {

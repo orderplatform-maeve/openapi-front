@@ -60,7 +60,6 @@ export default {
 
       const results = getCategories.map(getCategoryItem);
       // console.log(results);
-
       return results;
     },
   },
@@ -90,13 +89,6 @@ export default {
     },
     onSelectSubCtg(item) {
       this.selectSubCategoryItem = item;
-    },
-    getFilterGoods() {
-      try {
-        return this.selectSubCategoryItem.goods;
-      } catch (e) {
-        return [];
-      }
     },
     getActiveMainCategory(targetCode) {
       try {
@@ -311,26 +303,6 @@ export default {
       fd.append('store_code', this.$store.state.auth.store.store_code);
       await this.$store.dispatch('setCategories', fd);
       await this.$store.dispatch('setGooods', fd);
-    },
-    getGoodItemVisible(good) {
-      try {
-        let style = null;
-
-        if (this.selectSubCategoryItem) {
-          const array = this.selectSubCategoryItem.goods;
-          const findIdx = array.findIndex((o) => o.code === good.code);
-
-          if (findIdx === -1) {
-            style = {
-              display: 'none',
-            };
-          }
-        }
-
-        return style;
-      } catch (error) {
-        return { display: 'none' };
-      }
     },
     handleScroll(e) {
       const products = e.target.children;

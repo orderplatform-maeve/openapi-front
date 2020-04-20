@@ -35,6 +35,7 @@ const endpoints = {
   },
   shop: {
     init: `${SERVER_URL}/shop/init`,
+    getList: `${SERVER_URL}/store/store_list`,
   },
   goods: {
     updateGoodStatus: `${SERVER_URL}/goods/update_goods`,
