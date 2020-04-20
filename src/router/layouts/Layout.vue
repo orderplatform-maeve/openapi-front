@@ -147,7 +147,7 @@ export default {
   mounted() {
     this.getUCode();
     this.loopBeep();
-    this.tagetVersionRedirect();
+    // this.tagetVersionRedirect();
   },
   sockets: {
     connect() {
