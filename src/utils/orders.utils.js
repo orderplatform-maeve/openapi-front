@@ -189,6 +189,20 @@ const beforeProductMethods = {
   },
 };
 
+export const getRatingText = (type) => {
+  try {
+    if (!type) throw type;
+
+    if (type === 'humans') return '직원 평가';
+
+    if (type === 'goods') return '메뉴 평가';
+
+    return '평가';
+  } catch (error) {
+    return '평가';
+  }
+};
+
 export default {
   getTableNumberClass,
   checkedTabletNum,
@@ -203,6 +217,7 @@ export default {
   vaildCommitText,
   getOrderTiem,
   isRating,
+  getRatingText,
   ...productMethods,
   ...peopleMethods,
   ...beforeProductMethods,
