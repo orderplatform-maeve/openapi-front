@@ -1,29 +1,25 @@
 <template lang="pug">
 .container
   .main-categories()
-    a.main-category(
+    .main-category(
       v-for="ctgItem in data"
       :key="ctgItem.code"
       @click="() => onSelectMainCtg(ctgItem)"
       :class="getActiveMainCategory(ctgItem.code)"
-      :href="`#${ctgItem.code}`"
-      :ref="ctgItem.code"
     ) {{ ctgItem.name }}
   .sub-categories
-    a.sub-category(
+    .sub-category(
       v-for="subCtgItem in getSubCategories()"
       :key="subCtgItem.code"
       :name="subCtgItem.code"
       @click="() => onSelectSubCtg(subCtgItem)"
       :class="getActiveSubCategory(subCtgItem.code)"
-      :href="`#${subCtgItem.code}`"
-      :ref="subCtgItem.code"
     ) {{ subCtgItem.name }}
 
   .loading(v-if="isLoading") 데이터 요청 중 입니다.
   .scroll(@scroll="handleScroll" ref="scroll" v-if="!isLoading")
-    .products(v-for="mainCtg in data" :key="mainCtg.code" :id="mainCtg.code")
-      .goods(class="scrollem" v-for="subCtg in mainCtg.subCategories" :id="subCtg.code")
+    .products(v-for="mainCtg in data" :key="mainCtg.code" :id="mainCtg.code" :ref="mainCtg.code")
+      .goods(v-for="subCtg in mainCtg.subCategories" :id="subCtg.code" :ref="subCtg.code")
         .category-info
           .main-category-text {{ mainCtg.name }}
           .sub-category-text {{ subCtg.name }}
@@ -76,6 +72,9 @@ export default {
     onSelectMainCtg(item) {
       this.selectMainCategoryItem = item;
       this.selectSubCategoryItem = item.subCategories[0];
+
+      const elTop = this.$refs[item.code][0].offsetTop - this.$refs.scroll.offsetTop;
+      this.$refs.scroll.scrollTo(0, elTop);
     },
     getSubCategories() {
       try {
@@ -91,6 +90,9 @@ export default {
     },
     onSelectSubCtg(item) {
       this.selectSubCategoryItem = item;
+
+      const elTop = this.$refs[item.code][0].offsetTop - this.$refs.scroll.offsetTop;
+      this.$refs.scroll.scrollTo(0, elTop);
     },
     getActiveMainCategory(targetCode) {
       try {
@@ -323,7 +325,7 @@ export default {
       let elBottom = 0;
       let subElBottom = 0;
 
-      [...products].forEach((el, i) => {
+      [...products].forEach((el) => {
         const elTop = el.offsetTop - this.$refs.scroll.offsetTop;
         elBottom += el.offsetHeight;
         const { scrollTop } = e.target;
