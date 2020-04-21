@@ -25,14 +25,25 @@ export function getTableNumberClass(order) {
       call: false,
       setting: false,
       rating: false,
+      crew: false,
     };
   }
 
   if (order.order_type === 'RATING') {
+    if (order.rating_type === 'humans') {
+      return {
+        call: false,
+        setting: false,
+        rating: false,
+        crew: true,
+      };
+    }
+
     return {
       call: false,
       setting: false,
       rating: true,
+      crew: false,
     };
   }
 
@@ -189,6 +200,20 @@ const beforeProductMethods = {
   },
 };
 
+export const getRatingText = (type) => {
+  try {
+    if (!type) throw type;
+
+    if (type === 'humans') return '직원 평가';
+
+    if (type === 'goods') return '메뉴 평가';
+
+    return '평가';
+  } catch (error) {
+    return '평가';
+  }
+};
+
 export default {
   getTableNumberClass,
   checkedTabletNum,
@@ -203,6 +228,7 @@ export default {
   vaildCommitText,
   getOrderTiem,
   isRating,
+  getRatingText,
   ...productMethods,
   ...peopleMethods,
   ...beforeProductMethods,
