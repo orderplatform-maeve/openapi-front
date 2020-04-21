@@ -98,6 +98,21 @@ const socket = {
           console.log(error);
         }
       }
+
+      if (payload?.type === '@put/product/status') {
+        if (payload?.good?.code) {
+          // console.log('sync product data', payload.data);
+          const arr = JSON.parse(JSON.stringify(state.goods));
+          const findIdx = arr.findIndex((o) => o.T_order_store_good_code === payload.good.code);
+
+          if (payload?.data) {
+            arr[findIdx] = payload.data;
+
+            commit('SET_GOODS', arr);
+          }
+
+        }
+      }
     },
   },
 };
@@ -184,7 +199,7 @@ const order = {
       state.orders.push(order);
     },
     SET_ORDERS: (state, orders) => {
-      console.log('orders!!!!!!!', orders);
+      // console.log('orders!!!!!!!', orders);
       Vue.set(state, 'orders', orders);
     },
     UPDATE_ORDERS: (state, order) => {
@@ -272,7 +287,7 @@ const shop = {
       try {
         const url = endpoints.shop.init;
         const response = await axios.post(url, params);
-        console.log(response);
+        // console.log(response);
 
         const target = response.data.data;
 
@@ -291,16 +306,17 @@ const shop = {
       }
     },
     async requestStoreList({ commit }, params) {
-      const url = `http://api.auth.order.orderhae.com/stores?member_code=${params.member.code}`;
-      const res = await axios.get(url);
+      try {
+        const fd = new FormData();
+        fd.append('member_id', params.member.code);
 
-      const stores = res.data.store_data.map((o) => ({
-        ...o,
-        store_code: o.shop_code,
-        store_name: o.shop_name,
-      }));
+        const url = endpoints.shop.getList;
+        const res = await axios.post(url, fd);
 
-      return stores;
+        return res.data.shop_data;
+      } catch (error) {
+        return false;
+      }
     },
   },
 };
@@ -308,7 +324,7 @@ const shop = {
 const device = {
   mutations: {
     setDeviceStatus(state, device) {
-      console.log('commit setDeviceStatus', device);
+      // console.log('commit setDeviceStatus', device);
       Vue.set(state, 'device', device);
     }
   },

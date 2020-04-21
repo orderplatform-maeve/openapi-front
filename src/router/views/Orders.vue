@@ -25,7 +25,7 @@
       .msg
         span.title(v-if="visibleCall(order)") 호출이요
         span.title(v-else-if="isDoneSetting(order)") 셋팅완료
-        span.title(v-else-if="isRating(order)") 평가
+        span.title(v-else-if="isRating(order)") {{getRatingText(order.rating_type)}}
         span.title(v-else) 주문이요
         .icon.visit(v-if="isFirstEntered(order)") 입장
         .icon.first(v-if="isFirstOrder(order)") 첫 주문

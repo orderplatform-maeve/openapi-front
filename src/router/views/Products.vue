@@ -1,28 +1,25 @@
 <template lang="pug">
 .container
-  .main-categories
-    a.main-category(
+  .main-categories()
+    .main-category(
       v-for="ctgItem in data"
       :key="ctgItem.code"
       @click="() => onSelectMainCtg(ctgItem)"
       :class="getActiveMainCategory(ctgItem.code)"
-      :href="`#${ctgItem.code}`"
-      :ref="ctgItem.code"
     ) {{ ctgItem.name }}
   .sub-categories
-    a.sub-category(
+    .sub-category(
       v-for="subCtgItem in getSubCategories()"
       :key="subCtgItem.code"
       :name="subCtgItem.code"
       @click="() => onSelectSubCtg(subCtgItem)"
       :class="getActiveSubCategory(subCtgItem.code)"
-      :href="`#${subCtgItem.code}`"
-      :ref="subCtgItem.code"
     ) {{ subCtgItem.name }}
 
-  .scroll(@scroll="handleScroll" ref="scroll")
-    .products(v-for="mainCtg in data" :key="mainCtg.code" :id="mainCtg.code")
-      .goods(class="scrollem" v-for="subCtg in mainCtg.subCategories" :id="subCtg.code")
+  .loading(v-if="isLoading") 데이터 요청 중 입니다.
+  .scroll(@scroll="handleScroll" ref="scroll" v-if="!isLoading")
+    .products(v-for="mainCtg in data" :key="mainCtg.code" :id="mainCtg.code" :ref="mainCtg.code")
+      .goods(v-for="subCtg in mainCtg.subCategories" :id="subCtg.code" :ref="subCtg.code")
         .category-info
           .main-category-text {{ mainCtg.name }}
           .sub-category-text {{ subCtg.name }}
@@ -41,6 +38,7 @@
 export default {
   data() {
     return {
+      isLoading: false,
       selectMainCategoryItem: null,
       selectSubCategoryItem: null,
     };
@@ -60,7 +58,6 @@ export default {
 
       const results = getCategories.map(getCategoryItem);
       // console.log(results);
-
       return results;
     },
   },
@@ -75,6 +72,9 @@ export default {
     onSelectMainCtg(item) {
       this.selectMainCategoryItem = item;
       this.selectSubCategoryItem = item.subCategories[0];
+
+      const elTop = this.$refs[item.code][0].offsetTop - this.$refs.scroll.offsetTop;
+      this.$refs.scroll.scrollTo(0, elTop);
     },
     getSubCategories() {
       try {
@@ -90,13 +90,9 @@ export default {
     },
     onSelectSubCtg(item) {
       this.selectSubCategoryItem = item;
-    },
-    getFilterGoods() {
-      try {
-        return this.selectSubCategoryItem.goods;
-      } catch (e) {
-        return [];
-      }
+
+      const elTop = this.$refs[item.code][0].offsetTop - this.$refs.scroll.offsetTop;
+      this.$refs.scroll.scrollTo(0, elTop);
     },
     getActiveMainCategory(targetCode) {
       try {
@@ -208,6 +204,7 @@ export default {
           T_order_store_good_use: 1,
         };
 
+        this.reqEmitProductStatus(good, arr[findIdx]);
         this.$store.commit('SET_GOODS', arr);
       } else {
         alert('서버가 불안정하여 판매 중지 하기 실패하였습니다.');
@@ -236,6 +233,7 @@ export default {
           T_order_store_good_use: 0,
         };
 
+        this.reqEmitProductStatus(good, arr[findIdx]);
         this.$store.commit('SET_GOODS', arr);
       } else {
         alert('서버가 불안정하여 판매 중지 하기 실패하였습니다.');
@@ -273,6 +271,7 @@ export default {
           T_order_store_good_soldout: 1,
         };
 
+        this.reqEmitProductStatus(good, arr[findIdx]);
         this.$store.commit('SET_GOODS', arr);
       } else {
         alert('서버가 불안정하여 판매 중지 하기 실패하였습니다.');
@@ -301,35 +300,24 @@ export default {
           T_order_store_good_soldout: 0,
         };
 
+        this.reqEmitProductStatus(good, arr[findIdx]);
         this.$store.commit('SET_GOODS', arr);
       } else {
         alert('서버가 불안정하여 판매 중지 하기 실패하였습니다.');
       }
     },
     async initialize() {
+      this.isLoading = true;
+
       const fd = new FormData();
       fd.append('store_code', this.$store.state.auth.store.store_code);
-      await this.$store.dispatch('setCategories', fd);
-      await this.$store.dispatch('setGooods', fd);
-    },
-    getGoodItemVisible(good) {
-      try {
-        let style = null;
+      const ctgRes = await this.$store.dispatch('setCategories', fd);
+      const goodsRes = await this.$store.dispatch('setGooods', fd);
 
-        if (this.selectSubCategoryItem) {
-          const array = this.selectSubCategoryItem.goods;
-          const findIdx = array.findIndex((o) => o.code === good.code);
-
-          if (findIdx === -1) {
-            style = {
-              display: 'none',
-            };
-          }
-        }
-
-        return style;
-      } catch (error) {
-        return { display: 'none' };
+      if (ctgRes && goodsRes) {
+        setTimeout(() => {
+          this.isLoading = false;
+        }, 0);
       }
     },
     handleScroll(e) {
@@ -337,7 +325,7 @@ export default {
       let elBottom = 0;
       let subElBottom = 0;
 
-      [...products].forEach((el, i) => {
+      [...products].forEach((el) => {
         const elTop = el.offsetTop - this.$refs.scroll.offsetTop;
         elBottom += el.offsetHeight;
         const { scrollTop } = e.target;
@@ -363,6 +351,16 @@ export default {
         });
       });
     },
+    reqEmitProductStatus(good, data) {
+      this.$socket.emit('orderview', {
+        store: {
+          code: this.$store.state.auth.store.store_code,
+        },
+        type: '@put/product/status',
+        good,
+        data,
+      });
+    }
   },
 };
 </script>
@@ -513,6 +511,14 @@ export default {
         }
       }
     }
+  }
+  .loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+    font-size: 40px;
+    font-weight: 900;
   }
 
 }
