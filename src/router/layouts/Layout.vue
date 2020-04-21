@@ -147,7 +147,9 @@ export default {
   mounted() {
     this.getUCode();
     this.loopBeep();
-    // this.tagetVersionRedirect();
+    if (process.env.UPLOAD_TYPE !== 'tmp') {
+      this.tagetVersionRedirect();
+    }
   },
   sockets: {
     connect() {
