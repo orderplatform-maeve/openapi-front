@@ -65,7 +65,11 @@
           :class="getActiveSubCategory(subCtgItem.code)"
         ) {{ subCtgItem.name }}
       .scroll
-        .good(v-for="good in getGoods()" :key="good.code") {{ good.displayName }}
+        .good(
+          v-for="good in getGoods()"
+          :key="good.code"
+          @click="() => addGoodCart(good)"
+        ) {{ good.displayName }}
           p ₩ {{ good.price }}
   .footer
     p 주문
@@ -197,6 +201,27 @@ export default {
         console.error(error);
         return '';
       }
+    },
+    addGoodCart(good) {
+      const result = {
+        option: good.options,
+        img_url: good.image,
+        pos_code: good.posCode,
+        pos_name: good.name,
+        cart_show: String(good.hideInCart),
+        good_code: good.code,
+        order_qty: 1,
+        pos_price: good.price,
+        good_items: "", // 서버개발자에게 물어봐야함
+        good_price: good.price,
+        order_time: Math.floor(+ new Date() / 1000),
+        display_name: good.displayName,
+        pos_order_id: '' // 서버개발자에게 물어봐야함
+      };
+
+      const newCartList = [...this.previousOrders, result];
+
+      this.$store.commit('SET_TABLE_CART_LIST', newCartList);
     },
   },
 };
