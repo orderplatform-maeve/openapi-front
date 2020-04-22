@@ -1,60 +1,68 @@
 <template lang="pug">
-  #container
-    .left-box
+#container
+  .left-box
+    .top
+      <table>
+        <tr>
+          <th>주문 번호</th>
+          <td>1231312</td>
+        </tr>
+        <tr>
+          <th>테이블</th>
+          <td>25</td>
+        </tr>
+        <tr>
+          <th>담당자</th>
+          <td>마스터</td>
+        </tr>
+      </table>
+      <table>
+        <tr>
+          <th>주문시간</th>
+          <th>10:14:47</th>
+        </tr>
+        <tr>
+          <th>고객수</th>
+          <td>$0</td>
+        </tr>
+        <tr>
+          <th>특기사항</th>
+          <td></td>
+        </tr>
+      </table>
+    .bill
       .top
-        <table>
-          <tr>
-            <th>주문 번호</th>
-            <td>1231312</td>
-          </tr>
-          <tr>
-            <th>테이블</th>
-            <td>25</td>
-          </tr>
-          <tr>
-            <th>담당자</th>
-            <td>마스터</td>
-          </tr>
-        </table>
-        <table>
-          <tr>
-            <th>주문시간</th>
-            <th>10:14:47</th>
-          </tr>
-          <tr>
-            <th>고객수</th>
-            <td>$0</td>
-          </tr>
-          <tr>
-            <th>특기사항</th>
-            <td></td>
-          </tr>
-        </table>
-      .bill
-        .top
-          p 상품명
-          p 수량
-          p 할인
-          p 금액
-          p 비고
-        .body(v-if="previousOrders")
-          .row(v-for="order in previousOrders")
-            p {{ order.display_name }}
-            p {{ order.order_qty }}
-            p discount
-            p {{ order.good_price }}
-            p etc
-        .footer
-          p {{ previousOrders.length }} 건
-          p 합계
-    .right-box
-      .main-categories
-        .main-category(
-          v-for="ctgItem in menu"
-          :key="ctgItem.code"
-          @click="() => onSelectMainCtg(ctgItem)"
-          :class="getActiveMainCategory(ctgItem.code)"
-        ) {{ ctgItem.name }}
+        p 상품명
+        p 수량
+        p 할인
+        p 금액
+        p 비고
+      .body(v-if="previousOrders")
+        .row(v-for="order in previousOrders")
+          p {{ order.display_name }}
+          p {{ order.order_qty }}
+          p discount
+          p {{ order.good_price }}
+          p etc
+      .footer
+        p {{ previousOrders.length }} 건
+        p 합계
+  .right-box
+    .main-categories
+      .main-category(
+        v-for="ctgItem in menu"
+        :key="ctgItem.code"
+        @click="() => onSelectMainCtg(ctgItem)"
+        :class="getActiveMainCategory(ctgItem.code)"
+      ) {{ ctgItem.name }}
+    .sub-categories
+      .sub-category(
+        v-for="subCtgItem in getSubCategories()"
+        :key="subCtgItem.code"
+        :name="subCtgItem.code"
+        @click="() => onSelectSubCtg(subCtgItem)"
+        :class="getActiveSubCategory(subCtgItem.code)"
+      ) {{ subCtgItem.name }}
 </template>
 
 <script>
@@ -144,6 +152,42 @@ export default {
         return '';
       }
     },
+    getSubCategories() {
+      try {
+        const { menu, selectMainCategoryItem } = this;
+
+        if (selectMainCategoryItem) return selectMainCategoryItem.subCategories;
+
+        return menu[0].subCategories;
+
+      } catch (error) {
+        return [];
+      }
+    },
+    onSelectSubCtg(item) {
+      this.selectSubCategoryItem = item;
+    },
+    getActiveSubCategory(targetCode) {
+      try {
+        const { menu, selectSubCategoryItem } = this;
+
+        if (!selectSubCategoryItem) {
+          const isDefaultActive = targetCode === menu[0].subCategories[0].code;
+          if (isDefaultActive) {
+            return 'active';
+          }
+          return '';
+        }
+
+        const isSelectedActive = selectSubCategoryItem.code === targetCode;
+        if (isSelectedActive) return 'active';
+
+        return '';
+      } catch (error) {
+        console.error(error);
+        return '';
+      }
+    },
   },
 };
 </script>
@@ -217,6 +261,29 @@ export default {
         color: var(--c-3);
       }
     }
+
+    .sub-categories {
+      display: flex;
+      justify-content: space-between;
+      flex-shrink: 0;
+      .sub-category {
+        display: flex;
+        flex-grow: 1;
+        justify-content: center;
+        margin: 4px;
+        height: 44px;
+        font-weight: 900;
+        font-size: 16px;
+        align-items: center;
+        padding: 0 20px;
+      }
+      .active {
+        color: var(--c-3);
+        border-radius: 24px;
+        border: solid 2px var(--c-3);
+      }
+    }
+
   }
 }
 </style>
