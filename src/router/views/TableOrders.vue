@@ -59,10 +59,14 @@ export default {
     },
   },
   async mounted() {
-    const isMenu = await this.getMenu();
-    const isPreviousOrders = await this.getPreviousOrders();
+    await this.getMenu();
+    await this.getPreviousOrders();
+    this.getOrderData();
   },
   methods: {
+    getOrderData() {
+      console.log(this.$store.state.orders);
+    },
     async getMenu() {
       const fd = new FormData();
       const { store_code } = this.$store.state.auth.store;
