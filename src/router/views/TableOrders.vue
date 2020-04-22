@@ -63,6 +63,8 @@
         @click="() => onSelectSubCtg(subCtgItem)"
         :class="getActiveSubCategory(subCtgItem.code)"
       ) {{ subCtgItem.name }}
+    .scroll
+      .good(v-for="good in getGoods()" :key="good.code") {{ good.displayName }}
 </template>
 
 <script>
@@ -78,15 +80,8 @@ export default {
       return this.$store.state.cartList;
     },
     menu() {
-      return this.$store.getters.getCategoriesGoods;
-    },
-  },
-  watch: {
-    menu(newData) {
-      console.log(newData);
-      if (!this.selectSubCategoryItem) {
-        this.selectSubCategoryItem = newData[0].subCategories[0];
-      }
+      const { getCategoriesGoods } = this.$store.getters;
+      return getCategoriesGoods;
     },
   },
   async mounted() {
@@ -95,6 +90,17 @@ export default {
     this.getOrderData();
   },
   methods: {
+    getGoods() {
+      try {
+        if (!this.selectSubCategoryItem) {
+          return this.menu[0].subCategories[0].goods;
+        }
+
+        return this.selectSubCategoryItem.goods;
+      } catch (error) {
+        return [];
+      }
+    },
     getOrderData() {
       console.log(this.$store.state.orders);
     },

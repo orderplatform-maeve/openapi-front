@@ -51,8 +51,9 @@ export default {
   },
   watch: {
     data(newData) {
-      console.log(newData);
+
       if (!this.selectSubCategoryItem) {
+        console.log(newData[0].subCategories[0]);
         this.selectSubCategoryItem = newData[0].subCategories[0];
       }
     },
