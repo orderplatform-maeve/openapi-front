@@ -48,14 +48,37 @@
           p {{ previousOrders.length }} 건
           p 합계
     .right-box
-      div right
+      .main-categories
+        .main-category(
+          v-for="ctgItem in menu"
+          :key="ctgItem.code"
+          @click="() => onSelectMainCtg(ctgItem)"
+          :class="getActiveMainCategory(ctgItem.code)"
+        ) {{ ctgItem.name }}
 </template>
 
 <script>
 export default {
+  data() {
+    return {
+      selectMainCategoryItem: null,
+      selectSubCategoryItem: null,
+    };
+  },
   computed: {
     previousOrders() {
       return this.$store.state.cartList;
+    },
+    menu() {
+      return this.$store.getters.getCategoriesGoods;
+    },
+  },
+  watch: {
+    menu(newData) {
+      console.log(newData);
+      if (!this.selectSubCategoryItem) {
+        this.selectSubCategoryItem = newData[0].subCategories[0];
+      }
     },
   },
   async mounted() {
@@ -96,50 +119,104 @@ export default {
 
       return true;
     },
+    onSelectMainCtg(item) {
+      this.selectMainCategoryItem = item;
+      this.selectSubCategoryItem = item.subCategories[0];
+    },
+    getActiveMainCategory(targetCode) {
+      try {
+        const { menu, selectMainCategoryItem } = this;
+
+        if (!selectMainCategoryItem) {
+          const isDefaultActive = targetCode === menu[0].code;
+          if (isDefaultActive) {
+            return 'active';
+          }
+          return '';
+        }
+
+        const isSelectedActive = selectMainCategoryItem.code === targetCode;
+        if (isSelectedActive) return 'active';
+
+        return '';
+      } catch (error) {
+        console.error(error);
+        return '';
+      }
+    },
   },
 };
 </script>
 
 <style lang="scss">
-  #container {
-    display: flex;
-    flex: 1;
-    .left-box {
-      width: 50%;
-      background-color: silver;
-      .top {
-        display: flex;
-      }
-      .bill {
-        .top {
-          width: 100%;
-          background-color: green;
-          padding: 10px;
-          box-sizing: border-box;
-          display: flex;
-          justify-content: space-around;
-        }
-        .body {
-          width: 100%;
-          background-color: orange;
-          padding: 10px;
-          box-sizing: border-box;
+#container {
+  --c-1: #ffffff;
+  --c-2: #202020;
+  --c-3: #ff0000;
+  --c-7: #e0e0e0;
+  --c-8: #fafafa;
+  --c-9: #efefef;
+  --c-10: #000000;
 
-          .row {
-            display: flex;
-            justify-content: space-around;
-          }
-        }
-        .footer {
+  display: flex;
+  flex: 1;
+  .left-box {
+    width: 50%;
+    background-color: silver;
+    .top {
+      display: flex;
+    }
+    .bill {
+      .top {
+        width: 100%;
+        background-color: green;
+        padding: 10px;
+        box-sizing: border-box;
+        display: flex;
+        justify-content: space-around;
+      }
+      .body {
+        width: 100%;
+        background-color: orange;
+        padding: 10px;
+        box-sizing: border-box;
+
+        .row {
           display: flex;
           justify-content: space-around;
-          background-color: aqua;
         }
       }
-    }
-    .right-box {
-      width: 50%;
-      background-color: red;
+      .footer {
+        display: flex;
+        justify-content: space-around;
+        background-color: aqua;
+      }
     }
   }
+  .right-box {
+    width: 50%;
+    background-color: blue;
+
+    .main-categories {
+      display: flex;
+      justify-content: space-between;
+      flex-shrink: 0;
+
+      .main-category {
+        display: flex;
+        flex-grow: 1;
+        justify-content: center;
+        font-weight: 900;
+        font-size: 32px;
+        height: 60px;
+        align-items: center;
+        padding: 0 20px;
+      }
+
+      .active {
+        color: var(--c-3);
+      }
+    }
+  }
+}
 </style>

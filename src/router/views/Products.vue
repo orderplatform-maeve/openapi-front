@@ -1,6 +1,6 @@
 <template lang="pug">
 .container
-  .main-categories()
+  .main-categories
     .main-category(
       v-for="ctgItem in data"
       :key="ctgItem.code"
