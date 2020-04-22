@@ -72,7 +72,7 @@
         ) {{ good.displayName }}
           p ₩ {{ good.price }}
   .footer
-    p 주문
+    p(@click="yesOrder") 주문
 </template>
 
 <script>
@@ -81,6 +81,8 @@ export default {
     return {
       selectMainCategoryItem: null,
       selectSubCategoryItem: null,
+      cartList: [],
+      order: null,
     };
   },
   computed: {
@@ -135,9 +137,11 @@ export default {
       fd.append('store_code', store_code);
       fd.append('tablet_number', this.$route.params.id);
 
-      const orders = await this.$store.dispatch('setTableCartList', fd);
+      const order = await this.$store.dispatch('setTableCartList', fd);
       // console.log(orders);
-      if (!orders) return false;
+      if (!order) return false;
+
+      this.order = order;
 
       return true;
     },
@@ -219,10 +223,33 @@ export default {
         pos_order_id: '' // 서버개발자에게 물어봐야함
       };
 
+      this.cartList = [...this.cartList, result];
       const newCartList = [...this.previousOrders, result];
 
       this.$store.commit('SET_TABLE_CART_LIST', newCartList);
     },
+    yesOrder() {
+      const config = { headers: { 'Content-Type': 'multipart/form-data' } };
+      const fd = new FormData();
+      const { store_code } = this.$store.state.auth.store;
+      fd.append('store_shop_code', store_code);
+      fd.append('tablet_number', this.$route.params.id);
+
+      console.log(this.cartList.entries(), this.cartList);
+
+      for (const [i, order] of this.cartList.entries()) {
+        console.log('order', order);
+        fd.append('orders['+i+'][code]', order.good_code); // 주문 코드가 필요
+        fd.append('orders['+i+'][qty]', order.order_qty);
+      }
+
+      const payload = {
+        params: fd,
+        config,
+      };
+
+      this.$store.dispatch('yesOrder', payload);
+    }
   },
 };
 </script>

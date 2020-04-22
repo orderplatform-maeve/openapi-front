@@ -420,9 +420,13 @@ const table = {
 
       if (response.data && response.data.order_info) {
         commit('SET_TABLE_CART_LIST', response.data.order_info);
-        return response.data.order_info;
+        return response.data;
       }
       return false;
+    },
+    async yesOrder(context, payload) {
+      const res = await axios.post(endpoints.table.order, payload.params, payload.config);
+      console.log(res);
     }
   },
 };
