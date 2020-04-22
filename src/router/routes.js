@@ -50,7 +50,7 @@ const routes = [{
     meta: { requiresAuth: true },
   },
   {
-    path: paths.tableOrders,
+    path: `${paths.tableOrders}/:id`,
     name: paths.tableOrders.replace('/',''),
     component: TableOrders,
     meta: { requiresAuth: true },

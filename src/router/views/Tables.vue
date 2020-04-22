@@ -43,7 +43,12 @@ export default {
 
       const isNext = isMenu && isPreviousOrders;
       if (isNext) {
-        this.$router.push(paths.tableOrders);
+        this.$router.push({
+          name: paths.tableOrders.replace('/', ''),
+          params: {
+            id: this.getTableId(),
+          },
+        });
       }
     },
     async getMenu() {
