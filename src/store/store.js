@@ -12,6 +12,11 @@ import endpoints from './endpoints';
 
 Vue.use(Vuex);
 
+function imagePreload(url) {
+  const img = new Image();
+  img.src = url;
+}
+
 /**
 * TODO:
 * - 추후 소켓 부분 모듈화 예정
@@ -422,11 +427,6 @@ const table = {
   },
 };
 
-function imagePreload(url) {
-  const img = new Image();
-  img.src = url;
-}
-
 const menu = {
   mutations: {
     SET_CATEGORIES: (state, categories) => Vue.set(state, 'categories', categories),
@@ -461,7 +461,7 @@ const menu = {
         return response.data.data;
       }
       return false;
-    }
+    },
   },
   getters: {
     getCategories(state) {
@@ -533,6 +533,42 @@ const menu = {
           soldout: p.T_order_store_good_soldout,
         };
       }).sort((a, b) => a.sortNo - b.sortNo);
+    },
+    getCategoriesGoods(state, getters) {
+      const { processGoods, getCategories } = getters;
+
+      const findGoods = (good, subCategory) => {
+        const { categories } = good;
+
+        if (categories) {
+          return categories.includes(subCategory);
+        }
+      };
+
+      const getFilteredGoods = (products, subCategory) => {
+        return products.filter((good) => findGoods(good, subCategory));
+      }
+
+      const getSubCategoryItem = (subCategoryItem, products) => {
+        const goods = getFilteredGoods(products, subCategoryItem.code);
+        return {
+          ...subCategoryItem,
+          goods,
+        };
+      };
+
+      const getCategoryItem = (categoryItem) => {
+        const getSubCategoryObj = (subCategoryItem) => getSubCategoryItem(subCategoryItem, processGoods);
+        const subCategories = categoryItem.subCategories.map(getSubCategoryObj);
+        return {
+          ...categoryItem,
+          subCategories,
+        };
+      };
+
+      const results = getCategories.map(getCategoryItem);
+      // console.log(results);
+      return results;
     },
   },
 };

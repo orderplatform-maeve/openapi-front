@@ -58,6 +58,41 @@ export default {
       return this.$store.state.cartList;
     },
   },
+  async mounted() {
+    const isMenu = await this.getMenu();
+    const isPreviousOrders = await this.getPreviousOrders();
+  },
+  methods: {
+    async getMenu() {
+      const fd = new FormData();
+      const { store_code } = this.$store.state.auth.store;
+      fd.append('store_code', store_code);
+
+      const categories = await this.$store.dispatch('setCategories', fd);
+      const goods = await this.$store.dispatch('setGooods', fd);
+      // console.log('categories', categories, goods);
+
+      const noData = !categories || !goods;
+
+      if (noData) return false;
+
+      return true;
+    },
+    async getPreviousOrders() {
+      console.log(this.$route.params.id);
+
+      const fd = new FormData();
+      const { store_code } = this.$store.state.auth.store;
+      fd.append('store_code', store_code);
+      fd.append('tablet_number', this.$route.params.id);
+
+      const orders = await this.$store.dispatch('setTableCartList', fd);
+      // console.log(orders);
+      if (!orders) return false;
+
+      return true;
+    },
+  },
 };
 </script>
 

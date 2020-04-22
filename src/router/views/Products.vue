@@ -45,28 +45,20 @@ export default {
   },
   computed: {
     data() {
-      const { processGoods, getCategories } = this.$store.getters;
-
-      const getCategoryItem = (categoryItem) => {
-        const getSubCategoryItem = (subCategoryItem) => this.getSubCategoryItem(subCategoryItem, processGoods);
-        const subCategories = categoryItem.subCategories.map(getSubCategoryItem);
-        return {
-          ...categoryItem,
-          subCategories,
-        };
-      };
-
-      const results = getCategories.map(getCategoryItem);
-      // console.log(results);
-      return results;
+      const { getCategoriesGoods } = this.$store.getters;
+      return getCategoriesGoods;
+    },
+  },
+  watch: {
+    data(newData) {
+      console.log(newData);
+      if (!this.selectSubCategoryItem) {
+        this.selectSubCategoryItem = newData[0].subCategories[0];
+      }
     },
   },
   async mounted() {
     await this.initialize();
-    if (!this.selectSubCategoryItem) {
-      // console.log('initialize', this.data[0].subCategories[0].goods);
-      this.selectSubCategoryItem = this.data[0].subCategories[0];
-    }
   },
   methods: {
     onSelectMainCtg(item) {
@@ -135,25 +127,6 @@ export default {
         console.error(error);
         return '';
       }
-    },
-    getFilteredGoods(goods, subCategory) {
-      const findGoods = (good) => {
-        const { categories } = good;
-
-        if (categories) {
-          return categories.includes(subCategory);
-        }
-      };
-
-      return goods.filter(findGoods);
-    },
-    getSubCategoryItem(subCategoryItem, processGoods) {
-      const goods = this.getFilteredGoods(processGoods, subCategoryItem.code);
-
-      return {
-        ...subCategoryItem,
-        goods,
-      };
     },
     getGoodImage(image) {
       if (!image) return null;

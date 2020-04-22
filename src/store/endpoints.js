@@ -3,11 +3,6 @@ import { isDev } from '@utils/constants';
 const DEMO_URL = 'http://demo.torder.co.kr';
 const REST_URL = 'http://rest.torder.co.kr';
 
-const DEMO_ADMIN_URL = 'http://demo.admin.torder.co.kr';
-const ADMIN_URL = 'http://admin.torder.co.kr';
-const DEV_URL = 'http://dev.torder.co.kr';
-const API_URL = 'http://api.auth.order.orderhae.com';
-
 const SERVER_URL = isDev ? DEMO_URL : REST_URL;
 
 const endpoints = {
