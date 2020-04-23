@@ -270,7 +270,7 @@ export default {
         this.cartList = [...this.cartList, result];
         const newCartList = [...this.previousOrders, result];
 
-        // this.$store.commit('SET_TABLE_CART_LIST', newCartList);
+        this.$store.commit('SET_TABLE_CART_LIST', newCartList);
       }
     },
     yesOrder() {
@@ -298,10 +298,10 @@ export default {
         this.optionModal = false;
       }, 0);
     },
-    optionMdalConfirm(rednerOrder, reqeustOrderArr) {
-      console.log('confirm', rednerOrder, reqeustOrderArr);
+    optionMdalConfirm(rednerOrder, requestOrder) {
+      console.log('confirm', requestOrder);
 
-      // this.cartList = [...this.cartList, ...reqeustOrderArr];
+      this.cartList = [...this.cartList, requestOrder];
       const newCartList = [...this.previousOrders, rednerOrder];
 
       this.$store.commit('SET_TABLE_CART_LIST', newCartList);

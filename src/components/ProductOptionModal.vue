@@ -160,16 +160,14 @@ export default {
           option: currentOption,
         };
 
-        const reqeustOrderArr = [
-          rednerOrder,
-          ...sortedOptions.map((o) => ({
-            good_code: o.code,
-            order_qty: o.qty,
-          })),
-        ];
+        const code = [this.product.code].concat(Array.from(sortedOptions, o => o.code +':' + o.qty)).join('-');
 
-        // console.log('arr', rednerOrder, reqeustOrderArr);
-        this.onSubmit(rednerOrder, reqeustOrderArr);
+        const requestOrder = {
+          good_code: code,
+          order_qty: 1,
+        };
+
+        this.onSubmit(rednerOrder, requestOrder);
       }
     },
     select(option) {
