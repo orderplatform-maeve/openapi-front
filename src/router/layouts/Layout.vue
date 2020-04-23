@@ -1,55 +1,56 @@
 <template lang="pug">
-  #orderview
-    modal-confirm(
-      :show="confirmModal.show"
-      :close="confirmModal.close"
-      :title="confirmModal.title"
-      :message="confirmModal.message"
-      :confirm="confirmModal.confirm"
-    )
-    modal-order(v-if="order")
-    .body
-      .left
-        router-view(
-          :auth="auth"
-          :orders="orders"
-          :stores="stores"
-          :time="time"
-        )
-      .right(v-if="visibleSideMenu()")
-        .top
-          .button(
-            @click="restart()"
-          ) 새로고침
-          .datetime
-            span {{ time.now | moment("MM.DD HH:mm:ss") }}
-          img.logo(:src="logo")
-          .store_name {{storeName}}
-          router-link.button(v-if="visibleOrderButton" :to="paths.order") 주문 보기
-          router-link.button(v-if="visibleOrderButton" :to="paths.products") 상품 관리
-          router-link.button(v-if="visibleOrderButton" :to="paths.tables") 테이블 주문
-            <br> (테스트)
-        .bottom
-          hr
-          .tab-group
-            .tab-name 태블릿 화면
-            .tab-buttons
-              .tab-button(:class="getOnTabletMonitorClass(device)" @click="openTabletScreen") On
-              .tab-button(:class="getOffTabletMonitorClass(device)" @click="closeTabletScreen") Off
-          .tab-group
-            .tab-name 태블릿 주문
-            .tab-buttons
-              .tab-button(:class="getOnTabletOrderClass(device)" @click="agreeOrder") On
-              .tab-button(:class="getOffTabletOrderClass(device)" @click="rejectOrder") Off
-          hr
-          router-link.button(v-if="visibleStoresButton" :to="paths.store") 매장 보기
-          router-link.button.button-red(v-if="visibleLoginButton" :to="paths.login") 로그인
-          .name {{userName}}
-          .version {{version}}
-          .button.button-red.button-member(v-if="visibleLogoutButton" @click="logout")
-            span 로그아웃
-    .foot.foot-right
-      .version-footer u-code: {{uCode}} {{version}}
+#orderview
+  flash-message
+  modal-confirm(
+    :show="confirmModal.show"
+    :close="confirmModal.close"
+    :title="confirmModal.title"
+    :message="confirmModal.message"
+    :confirm="confirmModal.confirm"
+  )
+  modal-order(v-if="order")
+  .body
+    .left
+      router-view(
+        :auth="auth"
+        :orders="orders"
+        :stores="stores"
+        :time="time"
+      )
+    .right(v-if="visibleSideMenu()")
+      .top
+        .button(
+          @click="restart()"
+        ) 새로고침
+        .datetime
+          span {{ time.now | moment("MM.DD HH:mm:ss") }}
+        img.logo(:src="logo")
+        .store_name {{storeName}}
+        router-link.button(v-if="visibleOrderButton" :to="paths.order") 주문 보기
+        router-link.button(v-if="visibleOrderButton" :to="paths.products") 상품 관리
+        router-link.button(v-if="visibleOrderButton" :to="paths.tables") 테이블 주문
+          <br> (테스트)
+      .bottom
+        hr
+        .tab-group
+          .tab-name 태블릿 화면
+          .tab-buttons
+            .tab-button(:class="getOnTabletMonitorClass(device)" @click="openTabletScreen") On
+            .tab-button(:class="getOffTabletMonitorClass(device)" @click="closeTabletScreen") Off
+        .tab-group
+          .tab-name 태블릿 주문
+          .tab-buttons
+            .tab-button(:class="getOnTabletOrderClass(device)" @click="agreeOrder") On
+            .tab-button(:class="getOffTabletOrderClass(device)" @click="rejectOrder") Off
+        hr
+        router-link.button(v-if="visibleStoresButton" :to="paths.store") 매장 보기
+        router-link.button.button-red(v-if="visibleLoginButton" :to="paths.login") 로그인
+        .name {{userName}}
+        .version {{version}}
+        .button.button-red.button-member(v-if="visibleLogoutButton" @click="logout")
+          span 로그아웃
+  .foot.foot-right
+    .version-footer u-code: {{uCode}} {{version}}
 </template>
 
 <script>

@@ -604,6 +604,38 @@ const goods = {
   },
 };
 
+const popup = {
+  mutations: {
+    pushFlashMessage(state, message) {
+      let time = new Date().getTime();
+      let indexLast = 0;
+
+      for (let index in state.flashMessages) {
+        index = parseInt(index);
+        const message = state.flashMessages[index];
+
+        if (message.time + 3000 < time && indexLast < index ) {
+          indexLast = index;
+        }
+      }
+
+      if (indexLast > 0) {
+        state.flashMessages = state.flashMessages.slice(0, indexLast);
+      }
+
+      let item = {
+        key: this.state.flashMessageCount,
+        message: message,
+        time: new Date().getTime(),
+      };
+
+      this.state.flashMessageCount += 1;
+
+      state.flashMessages.push(item);
+    },
+  },
+};
+
 const authProto = {
   member: {
     code: '',
@@ -633,6 +665,8 @@ const state = {
   goods: [],
   MACAddr: '00:00:00:00:00:00',
   uCode: '',
+  flashMessages: [],
+  flashMessageCount: 0,
 };
 
 const mutations = {
@@ -644,6 +678,7 @@ const mutations = {
   ...menu.mutations,
   ...monitoring.mutations,
   ...device.mutations,
+  ...popup.mutations,
 };
 
 const actions = {
