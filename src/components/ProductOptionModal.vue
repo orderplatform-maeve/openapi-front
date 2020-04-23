@@ -41,7 +41,7 @@ transition(name="modalFade")
                   span(v-if="option.price") {{option.price * option.qty | numFormat}} 원
         .buttons
           .button(@click="empty()") 전부 삭제
-          .button.button-red(@click="submit") 카트에 담기
+          .button.button-red(@click="submit") 주문 목록에 담기
 </template>
 
 <script>
@@ -60,6 +60,10 @@ export default {
       },
     },
     close: {
+      type: Function,
+      default: () => {},
+    },
+    onSubmit: {
       type: Function,
       default: () => {},
     },
@@ -108,13 +112,64 @@ export default {
         const sortedOptions = this.selectedOptions.sort((a, b) => {
           return a.group.sort_number - b.group.sort_number;
         });
-        const code = [this.product.code].concat(Array.from(sortedOptions, o => o.code +':' + o.qty)).join('-');
 
-        if (this.product.soldout) {
-          this.$store.commit('pushFlashMessage', '품절되었습니다.');
-        } else {
-          console.log('code', code);
-        }
+        // console.log(sortedOptions);
+
+        const optionProducts = sortedOptions.map((o) => {
+          return {
+            ...this.$store.state.goods.find((p) => p.T_order_store_good_code === o.code),
+            qty: o.qty,
+          };
+        });
+
+        // console.log('optionProducts', [...optionProducts]);
+
+        const currentOption = optionProducts.map((o) => ({
+          img_url: o.T_order_store_good_image,
+          pos_code: o.T_order_store_pos_code,
+          pos_name: o.T_order_store_good_name,
+          cart_show: String(o.T_order_store_non_show_cart),
+          good_code: o.T_order_store_good_code,
+          order_qty: o.qty,
+          pos_price: o.T_order_store_good_defualt_price,
+          good_price: o.T_order_store_good_defualt_price,
+          display_name: o.T_order_store_good_display_name,
+        }));
+
+        // console.log('currentOption', [...currentOption]);
+
+        const processProdct = (good) => ({
+          option: good.options,
+          img_url: good.image,
+          pos_code: good.posCode,
+          pos_name: good.name,
+          cart_show: String(good.hideInCart),
+          good_code: good.code,
+          order_qty: 1,
+          pos_price: good.price,
+          good_items: "", // 서버개발자에게 물어봐야함
+          good_price: good.price,
+          order_time: Math.floor(+ new Date() / 1000),
+          display_name: good.displayName,
+          pos_order_id: '', // 서버개발자에게 물어봐야함
+        });
+
+        const rednerOrder = {
+          ...processProdct(this.product),
+          qty: 1,
+          option: currentOption,
+        };
+
+        const reqeustOrderArr = [
+          rednerOrder,
+          ...sortedOptions.map((o) => ({
+            good_code: o.code,
+            order_qty: o.qty,
+          })),
+        ];
+
+        // console.log('arr', rednerOrder, reqeustOrderArr);
+        this.onSubmit(rednerOrder, reqeustOrderArr);
       }
     },
     select(option) {

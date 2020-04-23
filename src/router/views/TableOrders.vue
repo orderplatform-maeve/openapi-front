@@ -3,7 +3,7 @@
   modal-product-option(
     :show="optionModal"
     :product="selectedProduct"
-    :confirm="optionMdalConfirm"
+    :onSubmit="optionMdalConfirm"
     :close="optionModalClose"
   )
   #container
@@ -235,6 +235,7 @@ export default {
               o.qty = 0;
               o.group = g;
             });
+
             g_index += 1;
             g.option_items.sort((a, b) => {
               return a.sort_number - b.sort_number;
@@ -269,7 +270,7 @@ export default {
         this.cartList = [...this.cartList, result];
         const newCartList = [...this.previousOrders, result];
 
-        this.$store.commit('SET_TABLE_CART_LIST', newCartList);
+        // this.$store.commit('SET_TABLE_CART_LIST', newCartList);
       }
     },
     yesOrder() {
@@ -278,8 +279,6 @@ export default {
       const { store_code } = this.$store.state.auth.store;
       fd.append('store_shop_code', store_code);
       fd.append('tablet_number', this.$route.params.id);
-
-      console.log(this.cartList.entries(), this.cartList);
 
       for (const [i, order] of this.cartList.entries()) {
         console.log('order', order);
@@ -299,8 +298,13 @@ export default {
         this.optionModal = false;
       }, 0);
     },
-    optionMdalConfirm() {
-      console.log('confirm');
+    optionMdalConfirm(rednerOrder, reqeustOrderArr) {
+      console.log('confirm', rednerOrder, reqeustOrderArr);
+
+      // this.cartList = [...this.cartList, ...reqeustOrderArr];
+      const newCartList = [...this.previousOrders, rednerOrder];
+
+      this.$store.commit('SET_TABLE_CART_LIST', newCartList);
       this.optionModalClose();
     },
   },

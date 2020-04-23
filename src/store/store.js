@@ -226,7 +226,7 @@ const order = {
       const fd = new FormData();
       fd.append('shop_code', payload.auth.store.store_code);
       fd.append('key', payload.order.order_view_key);
-      fd.append('commit', !payload.order.commit ? 1:0);
+      fd.append('commit', !payload.order.commit ? 1 : 0);
 
       await axios.post(url, fd);
       // const res = await axios.post(url, fd);
