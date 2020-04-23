@@ -318,7 +318,7 @@ export default {
           flex-grow: 1;
           justify-content: center;
           font-weight: 900;
-          font-size: 32px;
+          font-size: 24px;
           height: 60px;
           align-items: center;
           padding: 0 20px;
