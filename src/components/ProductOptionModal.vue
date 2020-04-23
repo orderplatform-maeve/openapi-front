@@ -330,6 +330,7 @@ export default {
     display:flex;
     flex-direction:row;
     flex-grow: 1;
+    overflow-y: auto;
 
     .column-option-group {
       scroll-behavior: smooth;
