@@ -291,7 +291,9 @@ export default {
       this.$store.dispatch('yesOrder', payload);
     },
     optionModalClose() {
-      this.optionModal = false;
+      setTimeout(() => {
+        this.optionModal = false;
+      }, 0);
     },
     optionMdalConfirm() {
       console.log('confirm');

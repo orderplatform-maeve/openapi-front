@@ -1,47 +1,47 @@
 <template lang="pug">
-.md.md-product-option(v-if="show")
-  .md-background
-  .md-head
-    .md-title {{ product.displayNameOneLine }} 선택 옵션
-    .md-close-button(v-on:click="close()") 닫기
-  .md-body
-    .column-option-group(ref='optionGroup')
-      .option-group(v-for="group in product.options" v-bind:key="group.index" v-on:mousedown.stop="scroll")
-        .option-group-name {{ group.name }}
-        .option-require(v-if="group.require_flag") * 필수 선택 사항입니다.
-        .option-max-select {{ group.limit_select }}개 까지 선택할 수 있어요.
-        .option-items
-          .option-item.button(v-if="!group.require_flag" v-on:click="selectNone(group)" v-bind:class="{selected: group.noOption == true}")
-            .option-name 선택안함
+transition(name="modalFade")
+  .md.md-product-option(v-if="show")
+    .md-background
+    .md-head
+      .md-title {{ product.displayNameOneLine }} 선택 옵션
+      .md-close-button(@click="close()") 닫기
+    .md-body
+      .column-option-group(ref='optionGroup')
+        .option-group(v-for="group in product.options" v-bind:key="group.index" @mousedown.stop="scroll")
+          .option-group-name {{ group.name }}
+          .option-require(v-if="group.require_flag") * 필수 선택 사항입니다.
+          .option-max-select {{ group.limit_select }}개 까지 선택할 수 있어요.
+          .option-items
+            .option-item.button(v-if="!group.require_flag" @click="selectNone(group)" v-bind:class="{selected: group.noOption == true}")
+              .option-name 선택안함
 
-          .option-item.button(v-for="option in group.option_items" v-on:click="select(option)" v-bind:class="{selected: option.qty > 0}" )
-            .option-name {{option.displayname}}
-            .option-price(v-if="option.price>0") + {{option.price | numFormat}}원
+            .option-item.button(v-for="option in group.option_items" @click="select(option)" v-bind:class="{selected: option.qty > 0}" )
+              .option-name {{option.displayname}}
+              .option-price(v-if="option.price>0") + {{option.price | numFormat}}원
 
-
-    .column-product
-      .product-name(v-html="product.displayNameOneLine")
-      .product-default-price
-        .label 기본 가격
-        .price {{product.price | numFormat}}원
-      .product-selected-option-list
-        transition-group(name="selectedOption")
-          .selected-option-item(v-for="option in reversedSelectedOptions" v-bind:key="option.code + ':' + option.group.index")
-            .option-name
-              .text {{option.displayname}}
-              .group-name - {{option.group.name}}
-            .line
-              .option-qty(v-if="option.limit_qty!=1")
-                .button.button-plus(v-on:click.stop="plusQty(option)") +
-                .number {{option.qty}} 개
-                .button.button-minus(v-on:click.stop="minusQty(option)") -
-              .option-qty(v-else)
-                .button.button-remove(v-on:click.stop="popOption(option)") 삭제
-              .option-price
-                span(v-if="option.price") {{option.price * option.qty | numFormat}} 원
-      .buttons
-        .button(v-on:click="empty()") 전부 삭제
-        .button.button-red(v-on:click="submit") 카트에 담기
+      .column-product
+        .product-name(v-html="product.displayNameOneLine")
+        .product-default-price
+          .label 기본 가격
+          .price {{product.price | numFormat}}원
+        .product-selected-option-list
+          transition-group(name="selectedOption")
+            .selected-option-item(v-for="option in reversedSelectedOptions" v-bind:key="option.code + ':' + option.group.index")
+              .option-name
+                .text {{option.displayname}}
+                .group-name - {{option.group.name}}
+              .line
+                .option-qty(v-if="option.limit_qty!=1")
+                  .button.button-plus(@click.stop="plusQty(option)") +
+                  .number {{option.qty}} 개
+                  .button.button-minus(@click.stop="minusQty(option)") -
+                .option-qty(v-else)
+                  .button.button-remove(@click.stop="popOption(option)") 삭제
+                .option-price
+                  span(v-if="option.price") {{option.price * option.qty | numFormat}} 원
+        .buttons
+          .button(@click="empty()") 전부 삭제
+          .button.button-red(@click="submit") 카트에 담기
 </template>
 
 <script>
@@ -113,7 +113,7 @@ export default {
         if (this.product.soldout) {
           this.$store.commit('pushFlashMessage', this.$t('soldoutMessage'));
         } else {
-          this.$router.push({name: 'cart'}).catch(err => {});
+          this.$router.push({name: 'cart'}).catch(() => {});
           this.$store.commit('pushCart', {code: code});
         }
       }
@@ -537,5 +537,53 @@ export default {
 }
 .selectedOption-leave-active{
   animation: selectedOptionOut .5s;
+}
+
+.modalFade-enter-active{
+  animation: fade .5s;
+
+  .md-head {
+    animation: mdHead .5s;
+  }
+  .md-body {
+    animation: mdBody .5s;
+  }
+}
+
+.modalFade-leave-active{
+  animation: fade .5s reverse;
+
+  .md-head {
+    animation: mdHead .5s reverse;
+  }
+  .md-body {
+    animation: mdBody .5s reverse;
+  }
+
+}
+
+@keyframes fade {
+  0% {
+    opacity:0;
+  }
+  100% {
+    opacity:1;
+  }
+}
+@keyframes mdHead {
+  0% {
+    transform: translateY(-100vh);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+@keyframes mdBody {
+  0% {
+    transform: translateY(100vh);
+  }
+  100% {
+    transform: translateY(0);
+  }
 }
 </style>
