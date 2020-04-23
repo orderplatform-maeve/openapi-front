@@ -15,6 +15,7 @@ import {
   TableOrdersModal,
   MenuModal,
   ProductOptionModal,
+  FlashMessage,
 } from '@components';
 
 Vue.config.devtools = true;
@@ -31,5 +32,6 @@ Vue.component('modal-confirm', ConfirmModal);
 Vue.component('modal-table-orders', TableOrdersModal);
 Vue.component('modal-menu', MenuModal);
 Vue.component('modal-product-option', ProductOptionModal);
+Vue.component('flash-message', FlashMessage);
 
 new Vue({router}).$mount("#app");
