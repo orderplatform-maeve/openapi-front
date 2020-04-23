@@ -41,17 +41,13 @@
         .bill-top
           p 상품명
           p 수량
-          p 할인
           p 금액
-          p 비고
         .body(v-if="previousOrders")
           .row(v-for="order in previousOrders")
             .order
               p {{ order.display_name }}
               p {{ order.order_qty }}
-              p discount
               p {{ order.good_price }}
-              p etc
             .option(v-for="option in order.option")
               p {{ option.display_name }}
               p {{ option.order_qty }}
@@ -100,7 +96,7 @@ export default {
   },
   computed: {
     previousOrders() {
-      console.log(this.$store.state.cartList);
+      // console.log(this.$store.state.cartList);
       return this.$store.state.cartList;
     },
     menu() {
@@ -111,7 +107,7 @@ export default {
   async mounted() {
     await this.getMenu();
     await this.getPreviousOrders();
-    this.getOrderData();
+    await this.getOrderData();
   },
   methods: {
     getGoods() {
@@ -125,8 +121,21 @@ export default {
         return [];
       }
     },
-    getOrderData() {
-      console.log(this.$store.state.orders);
+    async getOrderData() {
+      try {
+        const { store_code } = this.$store.state.auth.store;
+        const fd = new FormData();
+        fd.append('shop_code', store_code);
+        // fd.append('tablet_number', this.$route.params.id);
+
+        const res = await this.$store.dispatch('setOrders', fd);
+        const currentOrder =  res.data.find((o) => o.table_number === this.$route.params.id);
+        console.log('currentOrder', currentOrder);
+
+        this.order = currentOrder;
+      } catch (error) {
+        console.log(error);
+      }
     },
     async getMenu() {
       const fd = new FormData();
@@ -154,8 +163,6 @@ export default {
       const order = await this.$store.dispatch('setTableCartList', fd);
       // console.log(orders);
       if (!order) return false;
-
-      this.order = order;
 
       return true;
     },
