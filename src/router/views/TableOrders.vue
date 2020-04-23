@@ -2,6 +2,7 @@
 .top-box
   modal-product-option(
     :show="optionModal"
+    :product="selectedProduct"
     :confirm="optionMdalConfirm"
     :close="optionModalClose"
   )
@@ -89,6 +90,7 @@ export default {
       cartList: [],
       order: null,
       optionModal: false,
+      selectedProduct: null,
     };
   },
   computed: {
@@ -214,7 +216,34 @@ export default {
     },
     selectGood(good) {
       if (good.options && good.options.length) {
-        console.log('options');
+
+
+        const clone = JSON.parse(JSON.stringify(good));
+
+        if (clone.options) {
+          let g_index = 0;
+
+          clone.options.map((g) => {
+            g.noOption = true;
+            g.index = g_index;
+            g.selected_count = 0;
+            g.option_items.map((o) => {
+              o.qty = 0;
+              o.group = g;
+            });
+            g_index += 1;
+            g.option_items.sort((a, b) => {
+              return a.sort_number - b.sort_number;
+            });
+          });
+          clone.options.sort((a, b) => {
+            return a.sort_number - b.sort_number;
+          });
+        }
+
+        this.selectedProduct = clone;
+        console.log('options', this.selectedProduct);
+
         this.optionModal = true;
       } else {
         const result = {
