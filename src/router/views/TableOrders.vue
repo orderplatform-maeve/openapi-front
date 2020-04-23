@@ -46,11 +46,16 @@
           p 비고
         .body(v-if="previousOrders")
           .row(v-for="order in previousOrders")
-            p {{ order.display_name }}
-            p {{ order.order_qty }}
-            p discount
-            p {{ order.good_price }}
-            p etc
+            .order
+              p {{ order.display_name }}
+              p {{ order.order_qty }}
+              p discount
+              p {{ order.good_price }}
+              p etc
+            .option(v-for="option in order.option")
+              p {{ option.display_name }}
+              p {{ option.order_qty }}
+              p {{ option.pos_price }}
         .footer
           p {{ previousOrders.length }} 건
           p 합계
@@ -95,6 +100,7 @@ export default {
   },
   computed: {
     previousOrders() {
+      console.log(this.$store.state.cartList);
       return this.$store.state.cartList;
     },
     menu() {
@@ -216,8 +222,6 @@ export default {
     },
     selectGood(good) {
       if (good.options && good.options.length) {
-
-
         const clone = JSON.parse(JSON.stringify(good));
 
         if (clone.options) {
@@ -344,6 +348,18 @@ export default {
           .row {
             display: flex;
             justify-content: space-around;
+            flex-direction: column;
+            position: relative;
+            .order {
+              display: flex;
+              justify-content: space-around;
+            }
+
+            .option {
+              display: flex;
+              justify-content: space-around;
+              background-color: pink;
+            }
           }
         }
         .footer {

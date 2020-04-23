@@ -111,10 +111,9 @@ export default {
         const code = [this.product.code].concat(Array.from(sortedOptions, o => o.code +':' + o.qty)).join('-');
 
         if (this.product.soldout) {
-          this.$store.commit('pushFlashMessage', this.$t('soldoutMessage'));
+          this.$store.commit('pushFlashMessage', '품절되었습니다.');
         } else {
-          this.$router.push({name: 'cart'}).catch(() => {});
-          this.$store.commit('pushCart', {code: code});
+          console.log('code', code);
         }
       }
     },
