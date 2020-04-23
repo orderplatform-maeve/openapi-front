@@ -432,6 +432,7 @@ export default {
         const term = lap < 1;
 
         if (term) {
+          console.log('term', new Date());
           this.beep();
         }
       }, 1000);

@@ -38,7 +38,7 @@
           </tr>
         </table>
       .bill
-        .top
+        .bill-top
           p 상품명
           p 수량
           p 할인
@@ -56,7 +56,7 @@
               p {{ option.display_name }}
               p {{ option.order_qty }}
               p {{ option.pos_price }}
-        .footer
+        .bill-footer
           p {{ previousOrders.length }} 건
           p 합계
     .right-box
@@ -83,7 +83,7 @@
         ) {{ good.displayName }}
           p ₩ {{ good.price }}
   .footer
-    p(@click="yesOrder") 주문
+    .button(@click="yesOrder") 주문
 </template>
 
 <script>
@@ -274,24 +274,26 @@ export default {
       }
     },
     yesOrder() {
-      const config = { headers: { 'Content-Type': 'multipart/form-data' } };
-      const fd = new FormData();
-      const { store_code } = this.$store.state.auth.store;
-      fd.append('store_shop_code', store_code);
-      fd.append('tablet_number', this.$route.params.id);
+      if (this.cartList && this.cartList.length) {
+        const config = { headers: { 'Content-Type': 'multipart/form-data' } };
+        const fd = new FormData();
+        const { store_code } = this.$store.state.auth.store;
+        fd.append('store_shop_code', store_code);
+        fd.append('tablet_number', this.$route.params.id);
 
-      for (const [i, order] of this.cartList.entries()) {
-        console.log('order', order);
-        fd.append('orders['+i+'][code]', order.good_code); // 주문 코드가 필요
-        fd.append('orders['+i+'][qty]', order.order_qty);
+        for (const [i, order] of this.cartList.entries()) {
+          console.log('order', order);
+          fd.append('orders['+i+'][code]', order.good_code); // 주문 코드가 필요
+          fd.append('orders['+i+'][qty]', order.order_qty);
+        }
+
+        const payload = {
+          params: fd,
+          config,
+        };
+
+        this.$store.dispatch('yesOrder', payload);
       }
-
-      const payload = {
-        params: fd,
-        config,
-      };
-
-      this.$store.dispatch('yesOrder', payload);
     },
     optionModalClose() {
       setTimeout(() => {
@@ -329,13 +331,22 @@ export default {
     flex: 1;
     overflow: hidden;
     .left-box {
+      display: flex;
+      flex-direction: column;
       width: 50%;
       background-color: silver;
+      overflow: hidden;
       .top {
         display: flex;
+        background-color: skyblue;
       }
       .bill {
-        .top {
+        display: flex;
+        flex-direction: column;
+        background-color: rgb(44, 63, 146);
+        flex-grow: 1;
+        overflow: hidden;
+        .bill-top {
           width: 100%;
           background-color: green;
           padding: 10px;
@@ -344,10 +355,13 @@ export default {
           justify-content: space-around;
         }
         .body {
-          width: 100%;
+          display: flex;
+          flex-direction: column;
+          flex-grow: 1;
           background-color: orange;
           padding: 10px;
           box-sizing: border-box;
+          overflow-y: auto;
 
           .row {
             display: flex;
@@ -366,7 +380,7 @@ export default {
             }
           }
         }
-        .footer {
+        .bill-footer {
           display: flex;
           justify-content: space-around;
           background-color: aqua;
@@ -449,7 +463,17 @@ export default {
   }
 
   .footer {
-    height: 50px;
+    display: flex;
+    height: 100px;
+    justify-content: center;
+    align-items: center;
+
+    .button {
+      padding: 16px 20px;
+      background-color: white;
+      font-size: 24px;
+      color: black;
+    }
   }
 }
 </style>
