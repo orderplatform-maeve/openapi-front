@@ -388,8 +388,11 @@ export default {
       }
     }
     .right-box {
+      display: flex;
+      flex-direction: column;
       width: 50%;
       background-color: blue;
+      overflow: hidden;
 
       .main-categories {
         display: flex;
@@ -439,12 +442,12 @@ export default {
         display: flex;
         flex-wrap: wrap;
         align-items: flex-start;
-        flex-shrink: 0;
         background-color: violet;
-        height: calc(100% - 116px);
         padding: 10px 4px;
         box-sizing: border-box;
         justify-content: center;
+        flex-grow: 1;
+        overflow-y: auto;
 
         .good {
           width: calc(33.3333% - 16px);
