@@ -1,5 +1,10 @@
 <template lang="pug">
 .top-box
+  modal-product-option(
+    :show="optionModal"
+    :confirm="optionMdalConfirm"
+    :close="optionModalClose"
+  )
   #container
     .left-box
       .top
@@ -83,6 +88,7 @@ export default {
       selectSubCategoryItem: null,
       cartList: [],
       order: null,
+      optionModal: false,
     };
   },
   computed: {
@@ -209,6 +215,7 @@ export default {
     selectGood(good) {
       if (good.options && good.options.length) {
         console.log('options');
+        this.optionModal = true;
       } else {
         const result = {
           option: good.options,
@@ -253,7 +260,14 @@ export default {
       };
 
       this.$store.dispatch('yesOrder', payload);
-    }
+    },
+    optionModalClose() {
+      this.optionModal = false;
+    },
+    optionMdalConfirm() {
+      console.log('confirm');
+      this.optionModalClose();
+    },
   },
 };
 </script>

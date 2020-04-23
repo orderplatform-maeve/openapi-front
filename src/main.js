@@ -14,6 +14,7 @@ import {
   OrderModal,
   TableOrdersModal,
   MenuModal,
+  ProductOptionModal,
 } from '@components';
 
 Vue.config.devtools = true;
@@ -29,5 +30,6 @@ Vue.component('modal-order', OrderModal);
 Vue.component('modal-confirm', ConfirmModal);
 Vue.component('modal-table-orders', TableOrdersModal);
 Vue.component('modal-menu', MenuModal);
+Vue.component('modal-product-option', ProductOptionModal);
 
 new Vue({router}).$mount("#app");
