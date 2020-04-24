@@ -9,20 +9,20 @@
   #container
     .left-box
       .top
-        table
-          tr
-            th 주문 번호
-            td {{ getOrderId() }}
-          tr
-            th 테이블
-            td {{ getOrderTableNum() }}
-        table
-          tr
-            th 주문시간
-            td {{ getOrderTime() }}
-          tr
-            th 고객수
-            td {{ getOrderCustomerCount() }}
+        .order-table
+          .table-row
+            .table-row-title 주문 번호
+            .table-row-content {{ getOrderId() }}
+          .table-row
+            .table-row-title 테이블
+            .table-row-content {{ getOrderTableNum() }}
+        .order-table
+          .table-row
+            .table-row-title 주문시간
+            .table-row-content {{ getOrderTime() }}
+          .table-row
+            .table-row-title 고객수
+            .table-row-content {{ getOrderCustomerCount() }}
       .bill
         .bill-top
           p 상품명
@@ -320,6 +320,10 @@ export default {
 </script>
 
 <style lang="scss">
+p {
+  margin: 0;
+}
+
 .top-box{
   display: flex;
   flex: 1;
@@ -344,7 +348,33 @@ export default {
       overflow: hidden;
       .top {
         display: flex;
+        justify-content: space-between;
+        align-items: center;
         background-color: skyblue;
+        box-sizing: border-box;
+        .order-table {
+          padding: 8px;
+          background-color: red;
+          flex-grow: 1;
+          font-size: 20px;
+          display: flex;
+          flex-direction: column;
+          .table-row {
+            background-color: yellowgreen;
+            display: flex;
+            .table-row-title {
+              background-color: burlywood;
+              display: flex;
+              flex-grow: 1;
+              font-weight: 900;
+            }
+            .table-row-content {
+              display: flex;
+              flex-grow: 1;
+              background-color: purple;
+            }
+          }
+        }
       }
       .bill {
         display: flex;
