@@ -9,34 +9,20 @@
   #container
     .left-box
       .top
-        <table>
-          <tr>
-            <th>주문 번호</th>
-            <td>1231312</td>
-          </tr>
-          <tr>
-            <th>테이블</th>
-            <td>25</td>
-          </tr>
-          <tr>
-            <th>담당자</th>
-            <td>마스터</td>
-          </tr>
-        </table>
-        <table>
-          <tr>
-            <th>주문시간</th>
-            <th>10:14:47</th>
-          </tr>
-          <tr>
-            <th>고객수</th>
-            <td>$0</td>
-          </tr>
-          <tr>
-            <th>특기사항</th>
-            <td></td>
-          </tr>
-        </table>
+        table
+          tr
+            th 주문 번호
+            td {{ getOrderId() }}
+          tr
+            th 테이블
+            td {{ getOrderTableNum() }}
+        table
+          tr
+            th 주문시간
+            td {{ getOrderTime() }}
+          tr
+            th 고객수
+            td {{ getOrderCustomerCount() }}
       .bill
         .bill-top
           p 상품명
@@ -110,6 +96,18 @@ export default {
     await this.getOrderData();
   },
   methods: {
+    getOrderId() {
+      return this.order?.order_id;
+    },
+    getOrderTableNum() {
+      return this.order?.T_order_order_tablet_number;
+    },
+    getOrderTime() {
+      return this.order?.order_time;
+    },
+    getOrderCustomerCount() {
+      return this.order?.People;
+    },
     getGoods() {
       try {
         if (!this.selectSubCategoryItem) {
@@ -132,7 +130,10 @@ export default {
         const currentOrder =  res.data.find((o) => o.table_number === this.$route.params.id);
         console.log('currentOrder', currentOrder);
 
-        this.order = currentOrder;
+        const parseOrder = JSON.parse(currentOrder.json_data);
+        console.log(parseOrder);
+
+        this.order = parseOrder;
       } catch (error) {
         console.log(error);
       }
@@ -153,8 +154,6 @@ export default {
       return true;
     },
     async getPreviousOrders() {
-      console.log(this.$route.params.id);
-
       const fd = new FormData();
       const { store_code } = this.$store.state.auth.store;
       fd.append('store_code', store_code);
