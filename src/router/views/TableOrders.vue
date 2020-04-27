@@ -615,11 +615,11 @@ p {
       }
 
       .scroll {
+        border-top: 1px solid var(--c-7);
         overflow: auto;
         display: flex;
         flex-wrap: wrap;
         align-items: flex-start;
-        background-color: violet;
         padding: 10px 4px;
         box-sizing: border-box;
         justify-content: center;
@@ -629,7 +629,7 @@ p {
         .good {
           width: calc(33.3333% - 16px);
           height: 15vh;
-          border: 1px solid black;
+          border: 1px solid white;
           margin: 4px;
           border-radius: 4px;
           padding: 4px;
