@@ -25,9 +25,9 @@
             .table-row-content {{ getOrderCustomerCount() }}
       .bill
         .bill-top
-          p 상품명
-          p 수량
-          p 금액
+          .bill-category 상품명
+          .bill-category 수량
+          .bill-category 금액
         .body(v-if="previousOrders")
           .row(v-for="order in previousOrders")
             .order
@@ -382,22 +382,29 @@ p {
       .bill {
         display: flex;
         flex-direction: column;
-        background-color: rgb(44, 63, 146);
         flex-grow: 1;
         overflow: hidden;
+        margin-top: 8px;
         .bill-top {
           width: 100%;
-          background-color: green;
           padding: 10px;
           box-sizing: border-box;
           display: flex;
           justify-content: space-around;
+          border-bottom: 1px solid var(--c-7);
+          .bill-category {
+            display: flex;
+            flex-grow: 1;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            font-weight: 900;
+          }
         }
         .body {
           display: flex;
           flex-direction: column;
           flex-grow: 1;
-          background-color: orange;
           padding: 10px;
           box-sizing: border-box;
           overflow-y: auto;
