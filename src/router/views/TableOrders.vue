@@ -64,8 +64,9 @@
           v-for="good in getGoods()"
           :key="good.code"
           @click="() => selectGood(good)"
-        ) {{ good.displayName }}
-          p ₩ {{ good.price }}
+        )
+          p {{ good.displayName }}
+          p ₩ {{ getPrice(good.price) }}
   .footer
     .button.order(@click="yesOrder") 주문
     .button.close(@click="close") 닫기
@@ -629,13 +630,19 @@ p {
         .good {
           width: calc(33.3333% - 16px);
           height: 15vh;
-          border: 1px solid white;
           margin: 4px;
+          background-color: var(--c-1);
           border-radius: 4px;
           padding: 4px;
           box-sizing: border-box;
           display: flex;
           flex-grow: 1;
+          color: var(--c-10);
+          font-size: 20px;
+          font-weight: 800;
+          justify-content: space-around;
+          align-items: center;
+          flex-direction: column;
         }
       }
 
