@@ -11,7 +11,7 @@
       .top
         .order-table
           .table-row
-            .table-row-title 주문 번호
+            .table-row-title 주문번호
             .table-row-content {{ getOrderId() }}
           .table-row
             .table-row-title 테이블
@@ -344,34 +344,37 @@ p {
       display: flex;
       flex-direction: column;
       width: 50%;
-      background-color: silver;
       overflow: hidden;
       .top {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        background-color: skyblue;
         box-sizing: border-box;
         .order-table {
-          padding: 8px;
-          background-color: red;
+          padding: 4px;
           flex-grow: 1;
           font-size: 20px;
           display: flex;
           flex-direction: column;
           .table-row {
-            background-color: yellowgreen;
             display: flex;
+            border: 1px solid var(--c-7);
+            padding: 4px;
             .table-row-title {
-              background-color: burlywood;
               display: flex;
               flex-grow: 1;
               font-weight: 900;
+              max-width: 80px;
+              justify-content: center;
+              align-items: center;
+              border-right: 1px solid var(--c-7);
             }
             .table-row-content {
+              font-size: 16px;
               display: flex;
               flex-grow: 1;
-              background-color: purple;
+              justify-content: center;
+              align-items: center;
             }
           }
         }
