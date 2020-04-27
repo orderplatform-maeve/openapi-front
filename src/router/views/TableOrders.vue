@@ -28,8 +28,11 @@
           .bill-category.product-title 상품명
           .bill-category.product-qty 수량
           .bill-category.product-price 금액
-        .body(v-if="previousOrders")
-          .row(v-for="order in previousOrders")
+        .bill-body(v-if="previousOrders")
+          .row(
+            v-for="(order, orderIdx) in previousOrders"
+            :class="getLastBorder(orderIdx)"
+          )
             .order
               .order-text.product-title
                 .title {{ order.display_name }}
@@ -369,6 +372,15 @@ export default {
       } catch (error) {
         return 0;
       }
+    },
+    getLastBorder(orderIdx) {
+      const { previousOrders } = this;
+      const targetCount = previousOrders.length - 1;
+      if (orderIdx === targetCount) {
+        return {
+          last: true,
+        };
+      }
     }
   },
 };
@@ -466,7 +478,7 @@ p {
             border-left: 1px solid var(--c-7);
           }
         }
-        .body {
+        .bill-body {
           display: flex;
           flex-direction: column;
           flex-grow: 1;
@@ -552,6 +564,9 @@ p {
                 box-sizing: border-box;
               }
             }
+          }
+          .row.last {
+            border-bottom: 1px dashed var(--c-3);
           }
         }
         .bill-footer {
