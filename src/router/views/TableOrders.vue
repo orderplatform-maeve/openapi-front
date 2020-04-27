@@ -74,6 +74,7 @@
 
 <script>
 import { won } from '@utils/regularExpressions';
+import paths from '@router/paths';
 
 export default {
   data() {
@@ -101,8 +102,13 @@ export default {
     await this.getPreviousOrders();
     await this.getOrderData();
   },
+  destroyed() {
+    this.$store.commit('SET_TABLE_CART_LIST', []);
+  },
   methods: {
-    close() {},
+    close() {
+      this.$router.replace(paths.tables);
+    },
     getPrice(price) {
       try {
         return won(price);
@@ -142,10 +148,10 @@ export default {
 
         const res = await this.$store.dispatch('setOrders', fd);
         const currentOrder =  res.data.find((o) => o.table_number === this.$route.params.id);
-        console.log('currentOrder', currentOrder);
+        // console.log('currentOrder', currentOrder);
 
         const parseOrder = JSON.parse(currentOrder.json_data);
-        console.log(parseOrder);
+        // console.log(parseOrder);
 
         this.order = parseOrder;
       } catch (error) {
