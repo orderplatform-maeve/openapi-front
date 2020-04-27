@@ -41,8 +41,8 @@
               .option-text.product-qty {{ option.order_qty }}
               .option-text.product-price {{ option.pos_price }}
         .bill-footer
-          p {{ previousOrders.length }} 건
-          p 합계
+          p {{ getOrderCount() }} 건
+          p 합계: {{ getTotalPrice() }}
     .right-box
       .main-categories
         .main-category(
@@ -327,6 +327,31 @@ export default {
       this.$store.commit('SET_TABLE_CART_LIST', newCartList);
       this.optionModalClose();
     },
+    getOrderCount() {
+      const { previousOrders } = this;
+      try {
+        return previousOrders.length;
+      } catch (error) {
+        return 0;
+      }
+    },
+    getTotalPrice() {
+      const { previousOrders } = this;
+      try {
+        let total = 0;
+
+        previousOrders.forEach((order) => {
+          total += order.good_price;
+          order.option.forEach((option) => {
+            total += option.pos_price;
+          });
+        });
+
+        return won(total);
+      } catch (error) {
+        return 0;
+      }
+    }
   },
 };
 </script>
