@@ -433,6 +433,7 @@ p {
             display: flex;
             flex-direction: column;
             position: relative;
+            border-bottom: 1px solid var(--c-7);
             .order {
               display: flex;
               justify-content: center;
@@ -475,6 +476,7 @@ p {
               display: flex;
               justify-content: center;
               align-items: center;
+              border-top: 1px solid var(--c-7);
               .option-text {
                 display: flex;
                 justify-content: center;
@@ -511,7 +513,11 @@ p {
         .bill-footer {
           display: flex;
           justify-content: space-around;
-          background-color: aqua;
+          border-top: 1px dashed var(--c-7);
+          padding: 16px 8px 16px 8px;
+          box-sizing: border-box;
+          font-size: 20px;
+          font-weight: 600;
         }
       }
     }
