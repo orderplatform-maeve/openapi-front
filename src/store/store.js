@@ -425,8 +425,18 @@ const table = {
       return false;
     },
     async yesOrder(context, payload) {
-      const res = await axios.post(endpoints.table.order, payload.params, payload.config);
-      console.log(res);
+      try {
+        const res = await axios.post(endpoints.table.order, payload.params, payload.config);
+        console.log(res);
+
+        if (res.status === 200) {
+          return res;
+        }
+
+        return false;
+      } catch (error) {
+        return false;
+      }
     }
   },
 };

@@ -318,7 +318,15 @@ export default {
           config,
         };
 
-        this.$store.dispatch('yesOrder', payload);
+        const res = this.$store.dispatch('yesOrder', payload);
+
+        if (res) {
+          this.cartList = [];
+        } else {
+          this.$store.commit('pushFlashMessage', '주문 실패하였습니다.');
+        }
+      } else {
+        this.$store.commit('pushFlashMessage', '새로운 주문이 없습니다.');
       }
     },
     optionModalClose() {
