@@ -448,7 +448,7 @@ p {
               border-right: 1px solid var(--c-7);
             }
             .table-row-content {
-              font-size: 16px;
+              font-size: 12px;
               display: flex;
               flex-grow: 1;
               justify-content: center;
@@ -460,9 +460,9 @@ p {
       .bill {
         display: flex;
         flex-direction: column;
+        flex-grow: 1;
         overflow: hidden;
         margin-top: 8px;
-        flex-grow: 1;
         .bill-top {
           width: 100%;
           padding: 8px 0 8px 0;
@@ -490,19 +490,20 @@ p {
           }
         }
         .bill-body {
-          display: flex;
+          /* display: flex;
           flex-direction: column;
+          flex-grow: 1; */
           padding: 8px 0 8px 0;
           box-sizing: border-box;
           overflow-y: auto;
-          flex-grow: 1;
           .row {
             display: flex;
             flex-direction: column;
-            position: relative;
             border-bottom: 1px solid var(--c-7);
+            box-sizing: border-box;
+
             .order {
-              height: 6vh;
+              height: 60px;
               display: flex;
               justify-content: center;
               align-items: center;
@@ -541,7 +542,7 @@ p {
             }
 
             .option {
-              height: 6vh;
+              height: 60px;
               display: flex;
               justify-content: center;
               align-items: center;
