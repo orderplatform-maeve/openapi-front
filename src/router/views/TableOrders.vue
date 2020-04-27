@@ -566,8 +566,8 @@ p {
       display: flex;
       flex-direction: column;
       width: 50%;
-      background-color: blue;
       overflow: hidden;
+      border-left: 1px solid var(--c-7);
 
       .main-categories {
         display: flex;
@@ -594,6 +594,8 @@ p {
         display: flex;
         justify-content: space-between;
         flex-shrink: 0;
+        flex-wrap: wrap;
+
         .sub-category {
           display: flex;
           flex-grow: 1;
