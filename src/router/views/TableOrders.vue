@@ -67,7 +67,8 @@
         ) {{ good.displayName }}
           p ₩ {{ good.price }}
   .footer
-    .button(@click="yesOrder") 주문
+    .button.order(@click="yesOrder") 주문
+    .button.close(@click="close") 닫기
 </template>
 
 <script>
@@ -100,6 +101,7 @@ export default {
     await this.getOrderData();
   },
   methods: {
+    close() {},
     getPrice(price) {
       try {
         return won(price);
@@ -364,15 +366,16 @@ p {
   display: flex;
   flex: 1;
   flex-direction: column;
-  #container {
-    --c-1: #ffffff;
-    --c-2: #202020;
-    --c-3: #ff0000;
-    --c-7: #e0e0e0;
-    --c-8: #fafafa;
-    --c-9: #efefef;
-    --c-10: #000000;
 
+  --c-1: #ffffff;
+  --c-2: #202020;
+  --c-3: #ff0000;
+  --c-7: #e0e0e0;
+  --c-8: #fafafa;
+  --c-9: #efefef;
+  --c-10: #000000;
+
+  #container {
     display: flex;
     flex: 1;
     overflow: hidden;
@@ -642,12 +645,24 @@ p {
     height: 100px;
     justify-content: center;
     align-items: center;
+    border-top: 2px solid var(--c-7);
 
     .button {
-      padding: 16px 20px;
+      padding: 10px 60px;
       background-color: white;
-      font-size: 24px;
+      font-size: 36px;
       color: black;
+      font-weight: 800;
+      border-radius: 20px;
+    }
+
+    .button.order {
+      background-color: var(--c-3);
+      color: white;
+    }
+
+    .button.close {
+      margin-left: 30%;
     }
   }
 }
