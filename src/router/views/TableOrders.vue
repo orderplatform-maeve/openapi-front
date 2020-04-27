@@ -31,11 +31,12 @@
         .body(v-if="previousOrders")
           .row(v-for="order in previousOrders")
             .order
-              .order-text {{ order.display_name }}
+              .order-text.product-title
+                .title {{ order.display_name }}
               .order-text {{ order.order_qty }}
               .order-text {{ order.good_price }}
             .option(v-for="option in order.option")
-              p → {{ option.display_name }}
+              p ┕▷ {{ option.display_name }}
               p {{ option.order_qty }}
               p {{ option.pos_price }}
         .bill-footer
@@ -414,24 +415,32 @@ p {
           display: flex;
           flex-direction: column;
           flex-grow: 1;
-          padding: 10px;
+          padding: 8px 0 8px 0;
           box-sizing: border-box;
           overflow-y: auto;
-
           .row {
             display: flex;
-            justify-content: space-around;
             flex-direction: column;
             position: relative;
             .order {
               display: flex;
-              justify-content: space-around;
               .order-text {
                 display: flex;
-                flex-grow: 1;
                 justify-content: center;
                 align-items: center;
                 font-size: 20px;
+                padding: 8px 0 8px 0;
+                box-sizing: border-box;
+              }
+              .order-text.product-title {
+                width: 60%;
+                .title {
+                  width: 100%;
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                  white-space: nowrap;
+                  text-align: center;
+                }
               }
             }
 
