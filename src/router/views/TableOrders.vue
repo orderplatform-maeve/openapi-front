@@ -554,7 +554,7 @@ p {
           }
 
           .total {
-            width: 25%;
+            min-width: 25%;
             padding-right: 8px;
             box-sizing: border-box;
             text-align: end;
