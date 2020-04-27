@@ -358,9 +358,11 @@ export default {
 
         previousOrders.forEach((order) => {
           total += order.good_price;
-          order.option.forEach((option) => {
-            total += option.pos_price;
-          });
+          if (order?.option) {
+            order.option.forEach((option) => {
+              total += option.pos_price;
+            });
+          }
         });
 
         return won(total);
