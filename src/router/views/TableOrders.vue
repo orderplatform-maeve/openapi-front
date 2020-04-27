@@ -41,8 +41,8 @@
               .option-text.product-qty {{ option.order_qty }}
               .option-text.product-price {{ option.pos_price }}
         .bill-footer
-          p {{ getOrderCount() }} 건
-          p 합계: {{ getTotalPrice() }}
+          .counter {{ getOrderCount() }} 건
+          .total 합계: {{ getTotalPrice() }}
     .right-box
       .main-categories
         .main-category(
@@ -101,7 +101,6 @@ export default {
   },
   methods: {
     getPrice(price) {
-      console.log(price, won(price));
       try {
         return won(price);
       } catch (error) {
@@ -537,12 +536,26 @@ p {
         }
         .bill-footer {
           display: flex;
-          justify-content: space-around;
+          justify-content: flex-end;
           border-top: 1px dashed var(--c-7);
-          padding: 16px 8px 16px 8px;
+          padding: 16px 0 16px 0;
           box-sizing: border-box;
           font-size: 20px;
           font-weight: 600;
+
+          .counter {
+            width: 15%;;
+            text-align: end;
+            padding-right: 8px;
+            box-sizing: border-box;
+          }
+
+          .total {
+            width: 25%;
+            padding-right: 8px;
+            box-sizing: border-box;
+            text-align: end;
+          }
         }
       }
     }
