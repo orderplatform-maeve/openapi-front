@@ -33,12 +33,13 @@
             .order
               .order-text.product-title
                 .title {{ order.display_name }}
-              .order-text {{ order.order_qty }}
-              .order-text {{ order.good_price }}
+              .order-text.product-qty {{ order.order_qty }}
+              .order-text.product-price {{ getPrice(order.good_price) }}
             .option(v-for="option in order.option")
-              p ┕▷ {{ option.display_name }}
-              p {{ option.order_qty }}
-              p {{ option.pos_price }}
+              .option-text.product-title
+                .title ┕▷ {{ option.display_name }}
+              .option-text.product-qty {{ option.order_qty }}
+              .option-text.product-price {{ option.pos_price }}
         .bill-footer
           p {{ previousOrders.length }} 건
           p 합계
@@ -70,6 +71,8 @@
 </template>
 
 <script>
+import { won } from '@utils/regularExpressions';
+
 export default {
   data() {
     return {
@@ -97,6 +100,14 @@ export default {
     await this.getOrderData();
   },
   methods: {
+    getPrice(price) {
+      console.log(price, won(price));
+      try {
+        return won(price);
+      } catch (error) {
+        return 0;
+      }
+    },
     getOrderId() {
       return this.order?.order_id;
     },
@@ -424,6 +435,8 @@ p {
             position: relative;
             .order {
               display: flex;
+              justify-content: center;
+              align-items: center;
               .order-text {
                 display: flex;
                 justify-content: center;
@@ -439,15 +452,59 @@ p {
                   overflow: hidden;
                   text-overflow: ellipsis;
                   white-space: nowrap;
-                  text-align: center;
+                  text-align: left;
+                  padding-left: 8px;
+                  box-sizing: border-box;
                 }
+              }
+              .order-text.product-qty {
+                width: 15%;
+                justify-content: flex-end;
+                padding-right: 8px;
+                box-sizing: border-box;
+              }
+              .order-text.product-price {
+                width: 25%;
+                justify-content: flex-end;
+                padding-right: 8px;
+                box-sizing: border-box;
               }
             }
 
             .option {
               display: flex;
-              justify-content: space-around;
-              background-color: pink;
+              justify-content: center;
+              align-items: center;
+              .option-text {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-size: 20px;
+                padding: 8px 0 8px 0;
+                box-sizing: border-box;
+              }
+              .option-text.product-title {
+                width: 60%;
+                .title {
+                  width: 100%;
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                  white-space: nowrap;
+                  text-align: left;
+                }
+              }
+              .option-text.product-qty {
+                width: 15%;
+                justify-content: flex-end;
+                padding-right: 8px;
+                box-sizing: border-box;
+              }
+              .option-text.product-price {
+                width: 25%;
+                justify-content: flex-end;
+                padding-right: 8px;
+                box-sizing: border-box;
+              }
             }
           }
         }
