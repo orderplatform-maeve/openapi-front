@@ -28,7 +28,7 @@
           .bill-category.product-title 상품명
           .bill-category.product-qty 수량
           .bill-category.product-price 금액
-        .bill-body(v-if="previousOrders")
+        .bill-body(v-if="previousOrders" ref="billBody")
           .row(
             v-for="(order, orderIdx) in previousOrders"
             :class="getLastBorder(orderIdx)"
@@ -299,8 +299,15 @@ export default {
         this.cartList = [...this.cartList, result];
         const newCartList = [...this.previousOrders, result];
 
+        this.billScrollBottom();
+
         this.$store.commit('SET_TABLE_CART_LIST', newCartList);
       }
+    },
+    billScrollBottom() {
+      setTimeout(() => {
+        this.$refs.billBody.scrollTo(0, this.$refs.billBody.scrollHeight);
+      }, 0);
     },
     yesOrder() {
       if (this.cartList && this.cartList.length) {
@@ -343,6 +350,7 @@ export default {
       this.cartList = [...this.cartList, requestOrder];
       const newCartList = [...this.previousOrders, rednerOrder];
 
+      this.billScrollBottom();
       this.$store.commit('SET_TABLE_CART_LIST', newCartList);
       this.optionModalClose();
     },
@@ -378,7 +386,7 @@ export default {
       const targetCount = previousOrders.length - 1;
       if (orderIdx === targetCount) {
         return {
-          last: true,
+          last: false,
         };
       }
     }
@@ -674,6 +682,7 @@ p {
           justify-content: space-around;
           align-items: center;
           flex-direction: column;
+          text-align: center;
         }
       }
 
