@@ -306,7 +306,8 @@ export default {
     },
     billScrollBottom() {
       setTimeout(() => {
-        this.$refs.billBody.scrollTo(0, this.$refs.billBody.scrollHeight);
+        // this.$refs.billBody.scrollTo(0, this.$refs.billBody.scrollHeight);
+        this.$refs.billBody.scrollTop = this.$refs.billBody.scrollHeight;
       }, 0);
     },
     yesOrder() {
@@ -426,6 +427,7 @@ p {
         justify-content: space-between;
         align-items: center;
         box-sizing: border-box;
+        flex-shrink: 0;
         .order-table {
           padding: 4px;
           flex-grow: 1;
@@ -458,15 +460,16 @@ p {
       .bill {
         display: flex;
         flex-direction: column;
-        flex-grow: 1;
         overflow: hidden;
         margin-top: 8px;
+        flex-grow: 1;
         .bill-top {
           width: 100%;
           padding: 8px 0 8px 0;
           box-sizing: border-box;
           display: flex;
           border-bottom: 1px solid var(--c-7);
+          flex-shrink: 0;
           .bill-category {
             display: flex;
             justify-content: center;
@@ -489,16 +492,17 @@ p {
         .bill-body {
           display: flex;
           flex-direction: column;
-          flex-grow: 1;
           padding: 8px 0 8px 0;
           box-sizing: border-box;
           overflow-y: auto;
+          flex-grow: 1;
           .row {
             display: flex;
             flex-direction: column;
             position: relative;
             border-bottom: 1px solid var(--c-7);
             .order {
+              height: 6vh;
               display: flex;
               justify-content: center;
               align-items: center;
@@ -537,6 +541,7 @@ p {
             }
 
             .option {
+              height: 6vh;
               display: flex;
               justify-content: center;
               align-items: center;
@@ -585,6 +590,7 @@ p {
           box-sizing: border-box;
           font-size: 20px;
           font-weight: 600;
+          flex-shrink: 0;
 
           .counter {
             width: 15%;;
@@ -656,7 +662,6 @@ p {
 
       .scroll {
         border-top: 1px solid var(--c-7);
-        overflow: auto;
         display: flex;
         flex-wrap: wrap;
         align-items: flex-start;
