@@ -25,17 +25,17 @@
             .table-row-content {{ getOrderCustomerCount() }}
       .bill
         .bill-top
-          .bill-category 상품명
-          .bill-category 수량
-          .bill-category 금액
+          .bill-category.product-title 상품명
+          .bill-category.product-qty 수량
+          .bill-category.product-price 금액
         .body(v-if="previousOrders")
           .row(v-for="order in previousOrders")
             .order
-              p {{ order.display_name }}
-              p {{ order.order_qty }}
-              p {{ order.good_price }}
+              .order-text {{ order.display_name }}
+              .order-text {{ order.order_qty }}
+              .order-text {{ order.good_price }}
             .option(v-for="option in order.option")
-              p {{ option.display_name }}
+              p → {{ option.display_name }}
               p {{ option.order_qty }}
               p {{ option.pos_price }}
         .bill-footer
@@ -387,18 +387,27 @@ p {
         margin-top: 8px;
         .bill-top {
           width: 100%;
-          padding: 10px;
+          padding: 8px 0 8px 0;
           box-sizing: border-box;
           display: flex;
-          justify-content: space-around;
           border-bottom: 1px solid var(--c-7);
           .bill-category {
             display: flex;
-            flex-grow: 1;
             justify-content: center;
             align-items: center;
             font-size: 20px;
             font-weight: 900;
+          }
+          .bill-category.product-title {
+            width: 60%;
+          }
+          .bill-category.product-qty {
+            width: 15%;
+            border-left: 1px solid var(--c-7);
+          }
+          .bill-category.product-price {
+            width: 25%;
+            border-left: 1px solid var(--c-7);
           }
         }
         .body {
@@ -417,6 +426,13 @@ p {
             .order {
               display: flex;
               justify-content: space-around;
+              .order-text {
+                display: flex;
+                flex-grow: 1;
+                justify-content: center;
+                align-items: center;
+                font-size: 20px;
+              }
             }
 
             .option {
