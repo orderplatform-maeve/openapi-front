@@ -146,10 +146,8 @@ export default {
     this.getAuthentication();
   },
   mounted() {
-    if (!process.env?.STOP_REDIRECT) {
-      this.getUCode();
-      this.loopBeep();
-    }
+    this.getUCode();
+    this.loopBeep();
     if (process.env.UPLOAD_TYPE !== 'tmp') {
       this.tagetVersionRedirect();
     }
