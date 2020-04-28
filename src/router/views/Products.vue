@@ -30,12 +30,13 @@
           .good-image(:style="getGoodImage(good.image)")
           .good-info
             .name {{ good.displayName }}
-            .button(@click="() => onNoUse(good)" :style="getButtonStatusStyle(good.noUse)") {{ getUseStatusText(good.noUse) }}
-            .button(@click="() => onSoldoutStatus(good)" :style="getButtonStatusStyle(good.soldout)") {{ getSoldoutStatusText(good.soldout) }}
-            .button(@click="() => onBestStatus(good)" :style="getButtonStatusStyle(good.best)") {{ getBestStatusText(good.best) }}
-            .button(@click="() => onHitStatus(good)" :style="getButtonStatusStyle(good.hit)") {{ getHitStatusText(good.hit) }}
-            .button(@click="() => onMdStatus(good)" :style="getButtonStatusStyle(good.md)") {{ getMdStatusText(good.md) }}
-            .button(@click="() => onSaleStatus(good)" :style="getButtonStatusStyle(good.sale)") {{ getSaleStatusText(good.sale) }}
+            .good-buttons
+              .button(@click="() => onNoUse(good)" :style="getButtonStatusStyle(good.noUse)") {{ getUseStatusText(good.noUse) }}
+              .button(@click="() => onSoldoutStatus(good)" :style="getButtonStatusStyle(good.soldout)") {{ getSoldoutStatusText(good.soldout) }}
+              .button(@click="() => onBestStatus(good)" :style="getButtonStatusStyle(good.best)") {{ getBestStatusText(good.best) }}
+              .button(@click="() => onHitStatus(good)" :style="getButtonStatusStyle(good.hit)") {{ getHitStatusText(good.hit) }}
+              .button(@click="() => onMdStatus(good)" :style="getButtonStatusStyle(good.md)") {{ getMdStatusText(good.md) }}
+              .button(@click="() => onSaleStatus(good)" :style="getButtonStatusStyle(good.sale)") {{ getSaleStatusText(good.sale) }}
 </template>
 
 <script>
@@ -658,6 +659,7 @@ export default {
             text-align: right;
             margin-top: 4vh;
             padding-top: 4vh;
+            white-space: nowrap;
           }
           .sub-category-text::after {
             content: "";
@@ -716,6 +718,11 @@ export default {
               background-color: var(--c-2);
               border-radius: 20px;
             }
+          }
+          .good-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
           }
         }
       }
