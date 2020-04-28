@@ -30,13 +30,12 @@
           .good-image(:style="getGoodImage(good.image)")
           .good-info
             .name {{ good.displayName }}
-          .good-info.event
             .button(@click="() => onNoUse(good)" :style="getButtonStatusStyle(good.noUse)") {{ getUseStatusText(good.noUse) }}
             .button(@click="() => onSoldoutStatus(good)" :style="getButtonStatusStyle(good.soldout)") {{ getSoldoutStatusText(good.soldout) }}
-            .button(@click="() => onSoldoutStatus(good)" :style="getButtonStatusStyle(good.soldout)") {{ getSoldoutStatusText(good.soldout) }}
-            .button(@click="() => onSoldoutStatus(good)" :style="getButtonStatusStyle(good.soldout)") {{ getSoldoutStatusText(good.soldout) }}
-            .button(@click="() => onSoldoutStatus(good)" :style="getButtonStatusStyle(good.soldout)") {{ getSoldoutStatusText(good.soldout) }}
-            .button(@click="() => onSoldoutStatus(good)" :style="getButtonStatusStyle(good.soldout)") {{ getSoldoutStatusText(good.soldout) }}
+            .button(@click="() => onBestStatus(good)" :style="getButtonStatusStyle(good.best)") {{ getBestStatusText(good.best) }}
+            .button(@click="() => onHitStatus(good)" :style="getButtonStatusStyle(good.hit)") {{ getHitStatusText(good.hit) }}
+            .button(@click="() => onMdStatus(good)" :style="getButtonStatusStyle(good.md)") {{ getMdStatusText(good.md) }}
+            .button(@click="() => onSaleStatus(good)" :style="getButtonStatusStyle(good.sale)") {{ getSaleStatusText(good.sale) }}
 </template>
 
 <script>
@@ -145,6 +144,18 @@ export default {
     },
     getSoldoutStatusText(soldout) {
       return soldout ? '메뉴 품절 취소' : '매뉴 품절';
+    },
+    getBestStatusText(best) {
+      return best ? '베스트 취소' : '베스트 적용';
+    },
+    getHitStatusText(best) {
+      return best ? '히트 취소' : '히트 적용';
+    },
+    getMdStatusText(best) {
+      return best ? '추천 취소' : '추천 적용';
+    },
+    getSaleStatusText(best) {
+      return best ? '할인 취소' : '할인 적용';
     },
     getButtonStatusStyle(visble) {
       return {
@@ -339,7 +350,226 @@ export default {
         good,
         data,
       });
-    }
+    },
+    onBestStatus(good) {
+      const { best } = good;
+
+      if (best) {
+        return this.offBest(good);
+      }
+
+      return this.onBest(good);
+    },
+    offBest(good) {
+      const { store_code } = this.$store.state.auth.store;
+
+      const params = {
+        params: {
+          store_code,
+          good_code: good.code,
+          type_best: 0,
+        },
+      };
+
+      console.log(params);
+
+      const arr = JSON.parse(JSON.stringify(this.$store.state.goods));
+      const findIdx = arr.findIndex((o) => o.T_order_store_good_code === good.code);
+
+      arr[findIdx] = {
+        ...arr[findIdx],
+        type_best: 0,
+      };
+
+      this.reqEmitProductStatus(good, arr[findIdx]);
+      this.$store.commit('SET_GOODS', arr);
+    },
+    onBest(good) {
+      const { store_code } = this.$store.state.auth.store;
+
+      const params = {
+        params: {
+          store_code,
+          good_code: good.code,
+          type_best: 1,
+        },
+      };
+
+      console.log(params);
+
+      const arr = JSON.parse(JSON.stringify(this.$store.state.goods));
+      const findIdx = arr.findIndex((o) => o.T_order_store_good_code === good.code);
+
+      arr[findIdx] = {
+        ...arr[findIdx],
+        type_best: 1,
+      };
+
+      this.reqEmitProductStatus(good, arr[findIdx]);
+      this.$store.commit('SET_GOODS', arr);
+    },
+    onHitStatus(good) {
+      const { hit } = good;
+
+      if (hit) {
+        return this.offHit(good);
+      }
+      return this.onHit(good);
+    },
+    offHit(good) {
+      const { store_code } = this.$store.state.auth.store;
+
+      const params = {
+        params: {
+          store_code,
+          good_code: good.code,
+          type_hit: 0,
+        },
+      };
+
+      console.log(params);
+
+      const arr = JSON.parse(JSON.stringify(this.$store.state.goods));
+      const findIdx = arr.findIndex((o) => o.T_order_store_good_code === good.code);
+
+      arr[findIdx] = {
+        ...arr[findIdx],
+        type_hit: 0,
+      };
+
+      this.reqEmitProductStatus(good, arr[findIdx]);
+      this.$store.commit('SET_GOODS', arr);
+    },
+    onHit(good) {
+      const { store_code } = this.$store.state.auth.store;
+
+      const params = {
+        params: {
+          store_code,
+          good_code: good.code,
+          type_hit: 1,
+        },
+      };
+
+      console.log(params);
+
+      const arr = JSON.parse(JSON.stringify(this.$store.state.goods));
+      const findIdx = arr.findIndex((o) => o.T_order_store_good_code === good.code);
+
+      arr[findIdx] = {
+        ...arr[findIdx],
+        type_hit: 1,
+      };
+
+      this.reqEmitProductStatus(good, arr[findIdx]);
+      this.$store.commit('SET_GOODS', arr);
+    },
+    onMdStatus(good) {
+      const { md } = good;
+      if (md) return this.offMd(good);
+      return this.onMd(good);
+    },
+    offMd(good) {
+      const { store_code } = this.$store.state.auth.store;
+
+      const params = {
+        params: {
+          store_code,
+          good_code: good.code,
+          type_md: 0,
+        },
+      };
+
+      console.log(params);
+
+      const arr = JSON.parse(JSON.stringify(this.$store.state.goods));
+      const findIdx = arr.findIndex((o) => o.T_order_store_good_code === good.code);
+
+      arr[findIdx] = {
+        ...arr[findIdx],
+        type_md: 0,
+      };
+
+      this.reqEmitProductStatus(good, arr[findIdx]);
+      this.$store.commit('SET_GOODS', arr);
+    },
+    onMd(good) {
+      const { store_code } = this.$store.state.auth.store;
+
+      const params = {
+        params: {
+          store_code,
+          good_code: good.code,
+          type_md: 1,
+        },
+      };
+
+      console.log(params);
+
+      const arr = JSON.parse(JSON.stringify(this.$store.state.goods));
+      const findIdx = arr.findIndex((o) => o.T_order_store_good_code === good.code);
+
+      arr[findIdx] = {
+        ...arr[findIdx],
+        type_md: 1,
+      };
+
+      this.reqEmitProductStatus(good, arr[findIdx]);
+      this.$store.commit('SET_GOODS', arr);
+    },
+    onSaleStatus(good) {
+      const { sale } = good;
+      if (sale) return this.offDiscount(good);
+      return this.onDiscount(good);
+    },
+    offDiscount(good) {
+      const { store_code } = this.$store.state.auth.store;
+
+      const params = {
+        params: {
+          store_code,
+          good_code: good.code,
+          type_sale: 0,
+        },
+      };
+
+      console.log(params);
+
+      const arr = JSON.parse(JSON.stringify(this.$store.state.goods));
+      const findIdx = arr.findIndex((o) => o.T_order_store_good_code === good.code);
+
+      arr[findIdx] = {
+        ...arr[findIdx],
+        type_sale: 0,
+      };
+
+      this.reqEmitProductStatus(good, arr[findIdx]);
+      this.$store.commit('SET_GOODS', arr);
+    },
+    onDiscount(good) {
+      const { store_code } = this.$store.state.auth.store;
+
+      const params = {
+        params: {
+          store_code,
+          good_code: good.code,
+          type_sale: 1,
+        },
+      };
+
+      console.log(params);
+
+      const arr = JSON.parse(JSON.stringify(this.$store.state.goods));
+      const findIdx = arr.findIndex((o) => o.T_order_store_good_code === good.code);
+
+      arr[findIdx] = {
+        ...arr[findIdx],
+        type_sale: 1,
+      };
+
+      this.reqEmitProductStatus(good, arr[findIdx]);
+      this.$store.commit('SET_GOODS', arr);
+    },
   },
 };
 </script>
@@ -486,13 +716,6 @@ export default {
               background-color: var(--c-2);
               border-radius: 20px;
             }
-          }
-          .good-info.event {
-            padding: 0 8px 8px 8px;
-            flex-wrap: wrap;
-            flex-direction: row;
-            justify-content: space-around;
-            box-sizing: border-box;
           }
         }
       }

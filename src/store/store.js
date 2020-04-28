@@ -545,6 +545,10 @@ const menu = {
           openDetail: p.T_order_store_good_detail_open,
           reviews: p.menuRatingList,
           soldout: p.T_order_store_good_soldout,
+          best: p.type_best,
+          hit: p.type_hit,
+          md: p.type_md,
+          sale: p.type_sale,
         };
       }).sort((a, b) => a.sortNo - b.sortNo);
     },
