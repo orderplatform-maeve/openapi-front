@@ -557,7 +557,7 @@ export default {
         params: {
           store_code,
           good_code: good.code,
-          type: 'goodOffSale',
+          type: 'goodOff_TypeSale',
         },
       };
 
@@ -586,7 +586,7 @@ export default {
         params: {
           store_code,
           good_code: good.code,
-          type_sale: 1,
+          type: 'goodOn_TypeSale',
         },
       };
 

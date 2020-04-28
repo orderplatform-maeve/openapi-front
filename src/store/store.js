@@ -112,7 +112,7 @@ const socket = {
 
           if (payload?.data) {
             arr[findIdx] = payload.data;
-
+            commit('pushFlashMessage', `"${payload.good.displayName}" 정보가 수정되었습니다.`)
             commit('SET_GOODS', arr);
           }
 
