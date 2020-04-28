@@ -198,7 +198,7 @@ export default {
         this.reqEmitProductStatus(good, arr[findIdx]);
         this.$store.commit('SET_GOODS', arr);
       } else {
-        alert('서버가 불안정하여 판매 중지 하기 실패하였습니다.');
+        this.$store.commit('pushFlashMessage', '서버가 불안정하여 판매 중지 하기 실패하였습니다.');
       }
     },
     async onSelling(good) {
@@ -227,7 +227,7 @@ export default {
         this.reqEmitProductStatus(good, arr[findIdx]);
         this.$store.commit('SET_GOODS', arr);
       } else {
-        alert('서버가 불안정하여 판매 중지 하기 실패하였습니다.');
+        this.$store.commit('pushFlashMessage', '서버가 불안정하여 판매 중지 하기 실패하였습니다.');
       }
     },
     onSoldoutStatus(good) {
@@ -265,7 +265,7 @@ export default {
         this.reqEmitProductStatus(good, arr[findIdx]);
         this.$store.commit('SET_GOODS', arr);
       } else {
-        alert('서버가 불안정하여 판매 중지 하기 실패하였습니다.');
+        this.$store.commit('pushFlashMessage', '서버가 불안정하여 판매 중지 하기 실패하였습니다.');
       }
     },
     async onSale(good) {
@@ -294,7 +294,7 @@ export default {
         this.reqEmitProductStatus(good, arr[findIdx]);
         this.$store.commit('SET_GOODS', arr);
       } else {
-        alert('서버가 불안정하여 판매 중지 하기 실패하였습니다.');
+        this.$store.commit('pushFlashMessage', '서버가 불안정하여 판매 중지 하기 실패하였습니다.');
       }
     },
     async initialize() {

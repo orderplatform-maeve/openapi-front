@@ -247,8 +247,7 @@ export default {
       if (option.qty < 1) {
         this.popOption(option);
       }
-
-    }
+    },
   }
 };
 </script>
