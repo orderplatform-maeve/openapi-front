@@ -179,7 +179,7 @@ export default {
         params: {
           store_code,
           good_code: good.code,
-          type: 'goodOffBest',
+          type: 'goodOff',
         },
       };
 
