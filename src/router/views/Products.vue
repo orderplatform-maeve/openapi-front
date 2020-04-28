@@ -643,7 +643,7 @@ export default {
         flex-shrink: 0;
         .category-info {
           width: calc(33.3333% - 16px);
-          height: 80vh;
+          height: 76vh;
           display: flex;
           margin: 8px;
           color: var(--c-3);
@@ -674,7 +674,7 @@ export default {
         .good {
           z-index: 2;
           width: calc(33.3333% - 16px);
-          height: 80vh;
+          height: 76vh;
           background-color: var(--c-9);
           display: flex;
           margin: 8px;
@@ -723,6 +723,7 @@ export default {
             display: flex;
             flex-wrap: wrap;
             justify-content: space-around;
+            box-sizing: border-box;
           }
         }
       }
