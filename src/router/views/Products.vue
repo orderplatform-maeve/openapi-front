@@ -30,7 +30,12 @@
           .good-image(:style="getGoodImage(good.image)")
           .good-info
             .name {{ good.displayName }}
+          .good-info.event
             .button(@click="() => onNoUse(good)" :style="getButtonStatusStyle(good.noUse)") {{ getUseStatusText(good.noUse) }}
+            .button(@click="() => onSoldoutStatus(good)" :style="getButtonStatusStyle(good.soldout)") {{ getSoldoutStatusText(good.soldout) }}
+            .button(@click="() => onSoldoutStatus(good)" :style="getButtonStatusStyle(good.soldout)") {{ getSoldoutStatusText(good.soldout) }}
+            .button(@click="() => onSoldoutStatus(good)" :style="getButtonStatusStyle(good.soldout)") {{ getSoldoutStatusText(good.soldout) }}
+            .button(@click="() => onSoldoutStatus(good)" :style="getButtonStatusStyle(good.soldout)") {{ getSoldoutStatusText(good.soldout) }}
             .button(@click="() => onSoldoutStatus(good)" :style="getButtonStatusStyle(good.soldout)") {{ getSoldoutStatusText(good.soldout) }}
 </template>
 
@@ -407,7 +412,7 @@ export default {
         flex-shrink: 0;
         .category-info {
           width: calc(33.3333% - 16px);
-          height: 50vh;
+          height: 80vh;
           display: flex;
           margin: 8px;
           color: var(--c-3);
@@ -437,7 +442,7 @@ export default {
         .good {
           z-index: 2;
           width: calc(33.3333% - 16px);
-          height: 50vh;
+          height: 80vh;
           background-color: var(--c-9);
           display: flex;
           margin: 8px;
@@ -481,6 +486,13 @@ export default {
               background-color: var(--c-2);
               border-radius: 20px;
             }
+          }
+          .good-info.event {
+            padding: 0 8px 8px 8px;
+            flex-wrap: wrap;
+            flex-direction: row;
+            justify-content: space-around;
+            box-sizing: border-box;
           }
         }
       }
