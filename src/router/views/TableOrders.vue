@@ -28,21 +28,22 @@
           .bill-category.product-title 상품명
           .bill-category.product-qty 수량
           .bill-category.product-price 금액
-        .bill-body(v-if="previousOrders" ref="billBody")
-          .row(
-            v-for="(order, orderIdx) in previousOrders"
-            :class="getLastBorder(orderIdx)"
-          )
-            .order
-              .order-text.product-title
-                .title {{ order.display_name }}
-              .order-text.product-qty {{ order.order_qty }}
-              .order-text.product-price {{ getPrice(order.good_price) }}
-            .option(v-for="option in order.option")
-              .option-text.product-title
-                .title ┕▷ {{ option.display_name }}
-              .option-text.product-qty {{ option.order_qty }}
-              .option-text.product-price {{ option.pos_price }}
+        .wrapper
+          .bill-body(v-if="previousOrders" ref="billBody")
+            .row(
+              v-for="(order, orderIdx) in previousOrders"
+              :class="getLastBorder(orderIdx)"
+            )
+              .order
+                .order-text.product-title
+                  .title {{ order.display_name }}
+                .order-text.product-qty {{ order.order_qty }}
+                .order-text.product-price {{ getPrice(order.good_price) }}
+              .option(v-for="option in order.option")
+                .option-text.product-title
+                  .title ┕▷ {{ option.display_name }}
+                .option-text.product-qty {{ option.order_qty }}
+                .option-text.product-price {{ option.pos_price }}
         .bill-footer
           .counter {{ getOrderCount() }} 건
           .total 합계: {{ getTotalPrice() }}
@@ -489,10 +490,13 @@ p {
             border-left: 1px solid var(--c-7);
           }
         }
-        .bill-body {
-          /* display: flex;
+        .wrapper {
+          display: flex;
           flex-direction: column;
-          flex-grow: 1; */
+          flex-grow: 1;
+          overflow: hidden;
+        }
+        .bill-body {
           padding: 8px 0 8px 0;
           box-sizing: border-box;
           overflow-y: auto;
