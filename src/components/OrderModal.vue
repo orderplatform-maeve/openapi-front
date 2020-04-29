@@ -66,7 +66,7 @@
     .container-foot
       .msg {{seconds}}초 후 닫혀요.
       .buttons
-        .button.button-commit(@click="commitOrder(order)") 확인
+        .button.button-commit(@click="commitOrder(order)") {{ getCommitText() }}
 </template>
 
 <script>
@@ -81,6 +81,7 @@ export default {
     return {
       interval: undefined,
       seconds: 10,
+      isConfirm: false,
     };
   },
   computed: {
@@ -103,10 +104,26 @@ export default {
   beforeDestroy() {
     this.closeOrder();
   },
+  sockets: {
+    orderview(payload) {
+      if (payload?.type_msg === 'commit') {
+        console.log('local');
+        clearInterval(this.interval);
+        this.isConfirm = false;
+      }
+    },
+  },
   methods: {
-    commitOrder(order) {
-      let auth = this.$store.state.auth;
-      this.$store.dispatch('commitOrder', { auth, order });
+    async commitOrder(order) {
+      const auth = this.$store.state.auth;
+      this.isConfirm = true;
+
+      try {
+        const { data } = await this.$store.dispatch('commitOrder', { auth, order });
+      } catch (error) {
+        this.$store.commit('pushFlashMessage', '네트워크 이상이 있으니 잠시 후 다시 시도 해주세요.');
+        this.isConfirm = false;
+      }
     },
     closeOrder() {
       clearInterval(this.interval);
@@ -118,6 +135,9 @@ export default {
       } catch (error) {
         return false;
       }
+    },
+    getCommitText() {
+      return this.isConfirm ? '요청중...' : '확인';
     },
     ...utils,
   },

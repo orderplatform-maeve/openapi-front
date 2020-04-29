@@ -170,10 +170,10 @@ export default {
           const params = new FormData();
           params.append('store_code', this.$store.state.auth.store.store_code);
           const res = await this.$store.dispatch('setStoreInit', params);
-
           // console.log('tagetVersionRedirect', res);
 
-          if (res.data.data.T_order_store_orderView_version) {
+          const nextUrl = res.data.data.T_order_store_orderView_version;
+          if (nextUrl) {
             const {
               protocol,
               hostname,
@@ -182,19 +182,18 @@ export default {
             } = location;
 
             const nowPath = `${protocol}//${hostname}${pathname}`;
+            console.log('location', nowPath);
 
-            // console.log('location', nowPath);
-
-            if (process.env.STOP_REDIRECT) {
+            if (!process.env.STOP_REDIRECT) {
               const nowDevPath = `${protocol}//${hostname}:${port}${pathname}`;
-              // console.log('location dev', nowDevPath === 'http://localhost:8080/');
+              console.log('location dev', nowDevPath === 'http://localhost:8080/');
 
-              if (nowDevPath !== 'http://localhost:8080/') {
+              if (nowDevPath === 'http://localhost:8080/') {
                 return location.replace('/');
               }
-            } else {
-              if (nowPath !== res.data.data.T_order_store_orderView_version) {
-                return location.replace(res.data.data.T_order_store_orderView_version);
+
+              if (nowPath !== nextUrl) {
+                return location.replace(nextUrl);
               }
             }
           }

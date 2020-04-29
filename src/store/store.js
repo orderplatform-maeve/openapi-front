@@ -67,12 +67,12 @@ const socket = {
 
         try {
           if (isRedirection) {
-
             const params = new FormData();
             params.append('store_code', state.auth.store.store_code);
             const res = await dispatch('setStoreInit', params);
 
-            if (res.data.data.T_order_store_orderView_version) {
+            const nextUrl = res.data.data.T_order_store_orderView_version;
+            if (nextUrl) {
               const {
                 protocol,
                 hostname,
@@ -81,23 +81,23 @@ const socket = {
               } = location;
 
               const nowPath = `${protocol}//${hostname}${pathname}`;
-
               console.log('location', nowPath);
 
               if (!process.env.STOP_REDIRECT) {
                 const nowDevPath = `${protocol}//${hostname}:${port}${pathname}`;
                 console.log('location dev', nowDevPath === 'http://localhost:8080/');
 
-                if (nowDevPath !== 'http://localhost:8080/') {
+                if (nowDevPath === 'http://localhost:8080/') {
                   return location.replace('/');
                 }
-              } else {
-                if (nowPath !== res.data.data.T_order_store_orderView_version) {
-                  return location.replace(res.data.data.T_order_store_orderView_version);
+
+                // diff version
+                if (nowPath !== nextUrl) {
+                  return location.replace(nextUrl);
                 }
+                return location.replace('/');
               }
             }
-
           }
         } catch (error) {
           console.log(error);
@@ -228,19 +228,8 @@ const order = {
       fd.append('key', payload.order.order_view_key);
       fd.append('commit', !payload.order.commit ? 1 : 0);
 
-      await axios.post(url, fd);
-      // const res = await axios.post(url, fd);
-
-      // if (res && res.data && res.data.result) {
-
-      //   const order = {
-      //     ...payload.order,
-      //     // commit: true,
-      //   };
-
-      //   // commit('UPDATE_ORDERS', order);
-      //   // commit('UNSET_ORDER');
-      // }
+      const res = await axios.post(url, fd, { timeout: 5000 });
+      return res;
     },
     setOrder: (context, order) => {
       context.commit('SET_ORDER', order);
