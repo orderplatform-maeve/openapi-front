@@ -1,6 +1,6 @@
 <template lang="pug">
 .container
-  .main-categories()
+  .main-categories
     .main-category(
       v-for="ctgItem in data"
       :key="ctgItem.code"
@@ -30,8 +30,13 @@
           .good-image(:style="getGoodImage(good.image)")
           .good-info
             .name {{ good.displayName }}
-            .button(@click="() => onNoUse(good)" :style="getButtonStatusStyle(good.noUse)") {{ getUseStatusText(good.noUse) }}
-            .button(@click="() => onSoldoutStatus(good)" :style="getButtonStatusStyle(good.soldout)") {{ getSoldoutStatusText(good.soldout) }}
+            .good-buttons
+              .button(@click="() => onNoUse(good)" :style="getButtonStatusStyle(good.noUse)") {{ getUseStatusText(good.noUse) }}
+              .button(@click="() => onSoldoutStatus(good)" :style="getButtonStatusStyle(good.soldout)") {{ getSoldoutStatusText(good.soldout) }}
+              .button(@click="() => onBestStatus(good)" :style="getButtonStatusStyle(good.best)") {{ getBestStatusText(good.best) }}
+              .button(@click="() => onHitStatus(good)" :style="getButtonStatusStyle(good.hit)") {{ getHitStatusText(good.hit) }}
+              .button(@click="() => onMdStatus(good)" :style="getButtonStatusStyle(good.md)") {{ getMdStatusText(good.md) }}
+              .button(@click="() => onSaleStatus(good)" :style="getButtonStatusStyle(good.sale)") {{ getSaleStatusText(good.sale) }}
 </template>
 
 <script>
@@ -45,28 +50,21 @@ export default {
   },
   computed: {
     data() {
-      const { processGoods, getCategories } = this.$store.getters;
+      const { getCategoriesGoods } = this.$store.getters;
+      return getCategoriesGoods;
+    },
+  },
+  watch: {
+    data(newData) {
 
-      const getCategoryItem = (categoryItem) => {
-        const getSubCategoryItem = (subCategoryItem) => this.getSubCategoryItem(subCategoryItem, processGoods);
-        const subCategories = categoryItem.subCategories.map(getSubCategoryItem);
-        return {
-          ...categoryItem,
-          subCategories,
-        };
-      };
-
-      const results = getCategories.map(getCategoryItem);
-      // console.log(results);
-      return results;
+      if (!this.selectSubCategoryItem) {
+        console.log(newData[0].subCategories[0]);
+        this.selectSubCategoryItem = newData[0].subCategories[0];
+      }
     },
   },
   async mounted() {
     await this.initialize();
-    if (!this.selectSubCategoryItem) {
-      // console.log('initialize', this.data[0].subCategories[0].goods);
-      this.selectSubCategoryItem = this.data[0].subCategories[0];
-    }
   },
   methods: {
     onSelectMainCtg(item) {
@@ -136,25 +134,6 @@ export default {
         return '';
       }
     },
-    getFilteredGoods(goods, subCategory) {
-      const findGoods = (good) => {
-        const { categories } = good;
-
-        if (categories) {
-          return categories.includes(subCategory);
-        }
-      };
-
-      return goods.filter(findGoods);
-    },
-    getSubCategoryItem(subCategoryItem, processGoods) {
-      const goods = this.getFilteredGoods(processGoods, subCategoryItem.code);
-
-      return {
-        ...subCategoryItem,
-        goods,
-      };
-    },
     getGoodImage(image) {
       if (!image) return null;
       return  {
@@ -166,6 +145,18 @@ export default {
     },
     getSoldoutStatusText(soldout) {
       return soldout ? '메뉴 품절 취소' : '매뉴 품절';
+    },
+    getBestStatusText(best) {
+      return best ? '베스트 취소' : '베스트 적용';
+    },
+    getHitStatusText(best) {
+      return best ? '히트 취소' : '히트 적용';
+    },
+    getMdStatusText(best) {
+      return best ? '추천 취소' : '추천 적용';
+    },
+    getSaleStatusText(best) {
+      return best ? '할인 취소' : '할인 적용';
     },
     getButtonStatusStyle(visble) {
       return {
@@ -207,7 +198,7 @@ export default {
         this.reqEmitProductStatus(good, arr[findIdx]);
         this.$store.commit('SET_GOODS', arr);
       } else {
-        alert('서버가 불안정하여 판매 중지 하기 실패하였습니다.');
+        this.$store.commit('pushFlashMessage', '서버가 불안정하여 판매 중지 하기 실패하였습니다.');
       }
     },
     async onSelling(good) {
@@ -236,7 +227,7 @@ export default {
         this.reqEmitProductStatus(good, arr[findIdx]);
         this.$store.commit('SET_GOODS', arr);
       } else {
-        alert('서버가 불안정하여 판매 중지 하기 실패하였습니다.');
+        this.$store.commit('pushFlashMessage', '서버가 불안정하여 판매 중지 하기 실패하였습니다.');
       }
     },
     onSoldoutStatus(good) {
@@ -274,7 +265,7 @@ export default {
         this.reqEmitProductStatus(good, arr[findIdx]);
         this.$store.commit('SET_GOODS', arr);
       } else {
-        alert('서버가 불안정하여 판매 중지 하기 실패하였습니다.');
+        this.$store.commit('pushFlashMessage', '서버가 불안정하여 판매 중지 하기 실패하였습니다.');
       }
     },
     async onSale(good) {
@@ -303,7 +294,7 @@ export default {
         this.reqEmitProductStatus(good, arr[findIdx]);
         this.$store.commit('SET_GOODS', arr);
       } else {
-        alert('서버가 불안정하여 판매 중지 하기 실패하였습니다.');
+        this.$store.commit('pushFlashMessage', '서버가 불안정하여 판매 중지 하기 실패하였습니다.');
       }
     },
     async initialize() {
@@ -360,7 +351,263 @@ export default {
         good,
         data,
       });
-    }
+    },
+    onBestStatus(good) {
+      const { best } = good;
+
+      if (best) {
+        return this.offBest(good);
+      }
+
+      return this.onBest(good);
+    },
+    async offBest(good) {
+      const { store_code } = this.$store.state.auth.store;
+
+      const params = {
+        params: {
+          store_code,
+          good_code: good.code,
+          type: 'goodOffBest',
+        },
+      };
+
+      const res = await this.$store.dispatch('updateGoodStatusType', params);
+      console.log(res);
+
+      if (res.status === 200) {
+        const arr = JSON.parse(JSON.stringify(this.$store.state.goods));
+        const findIdx = arr.findIndex((o) => o.T_order_store_good_code === good.code);
+
+        arr[findIdx] = {
+          ...arr[findIdx],
+          type_best: 0,
+        };
+
+        this.reqEmitProductStatus(good, arr[findIdx]);
+        this.$store.commit('SET_GOODS', arr);
+      } else {
+        this.$store.commit('pushFlashMessage', '서버가 불안정하여 판매 중지 하기 실패하였습니다.');
+      }
+    },
+    async onBest(good) {
+      const { store_code } = this.$store.state.auth.store;
+
+      const params = {
+        params: {
+          store_code,
+          good_code: good.code,
+          type: 'goodOnBest',
+        },
+      };
+
+      const res = await this.$store.dispatch('updateGoodStatusType', params);
+      console.log(res);
+
+      if (res.status === 200) {
+        const arr = JSON.parse(JSON.stringify(this.$store.state.goods));
+        const findIdx = arr.findIndex((o) => o.T_order_store_good_code === good.code);
+
+        arr[findIdx] = {
+          ...arr[findIdx],
+          type_best: 1,
+        };
+
+        this.reqEmitProductStatus(good, arr[findIdx]);
+        this.$store.commit('SET_GOODS', arr);
+      } else {
+        this.$store.commit('pushFlashMessage', '서버가 불안정하여 판매 중지 하기 실패하였습니다.');
+      }
+    },
+    onHitStatus(good) {
+      const { hit } = good;
+      if (hit) return this.offHit(good);
+      return this.onHit(good);
+    },
+    async offHit(good) {
+      const { store_code } = this.$store.state.auth.store;
+
+      const params = {
+        params: {
+          store_code,
+          good_code: good.code,
+          type: 'goodOffHit',
+        },
+      };
+
+      const res = await this.$store.dispatch('updateGoodStatusType', params);
+      console.log(res);
+
+      if (res.status === 200) {
+        const arr = JSON.parse(JSON.stringify(this.$store.state.goods));
+        const findIdx = arr.findIndex((o) => o.T_order_store_good_code === good.code);
+
+        arr[findIdx] = {
+          ...arr[findIdx],
+          type_hit: 0,
+        };
+
+        this.reqEmitProductStatus(good, arr[findIdx]);
+        this.$store.commit('SET_GOODS', arr);
+      } else {
+        this.$store.commit('pushFlashMessage', '서버가 불안정하여 판매 중지 하기 실패하였습니다.');
+      }
+    },
+    async onHit(good) {
+      const { store_code } = this.$store.state.auth.store;
+
+      const params = {
+        params: {
+          store_code,
+          good_code: good.code,
+          type: 'goodOnHit',
+        },
+      };
+
+      const res = await this.$store.dispatch('updateGoodStatusType', params);
+      console.log(res);
+
+      if (res.status === 200) {
+        const arr = JSON.parse(JSON.stringify(this.$store.state.goods));
+        const findIdx = arr.findIndex((o) => o.T_order_store_good_code === good.code);
+
+        arr[findIdx] = {
+          ...arr[findIdx],
+          type_hit: 1,
+        };
+
+        this.reqEmitProductStatus(good, arr[findIdx]);
+        this.$store.commit('SET_GOODS', arr);
+      } else {
+        this.$store.commit('pushFlashMessage', '서버가 불안정하여 판매 중지 하기 실패하였습니다.');
+      }
+    },
+    onMdStatus(good) {
+      const { md } = good;
+      if (md) return this.offMd(good);
+      return this.onMd(good);
+    },
+    async offMd(good) {
+      const { store_code } = this.$store.state.auth.store;
+
+      const params = {
+        params: {
+          store_code,
+          good_code: good.code,
+          type: 'goodOffMd',
+        },
+      };
+
+      const res = await this.$store.dispatch('updateGoodStatusType', params);
+      console.log(res);
+
+      if (res.status === 200) {
+        const arr = JSON.parse(JSON.stringify(this.$store.state.goods));
+        const findIdx = arr.findIndex((o) => o.T_order_store_good_code === good.code);
+
+        arr[findIdx] = {
+          ...arr[findIdx],
+          type_md: 0,
+        };
+
+        this.reqEmitProductStatus(good, arr[findIdx]);
+        this.$store.commit('SET_GOODS', arr);
+      } else {
+        this.$store.commit('pushFlashMessage', '서버가 불안정하여 판매 중지 하기 실패하였습니다.');
+      }
+    },
+    async onMd(good) {
+      const { store_code } = this.$store.state.auth.store;
+
+      const params = {
+        params: {
+          store_code,
+          good_code: good.code,
+          type: 'goodOnMd',
+        },
+      };
+
+      const res = await this.$store.dispatch('updateGoodStatusType', params);
+      console.log(res);
+
+      if (res.status === 200) {
+        const arr = JSON.parse(JSON.stringify(this.$store.state.goods));
+        const findIdx = arr.findIndex((o) => o.T_order_store_good_code === good.code);
+
+        arr[findIdx] = {
+          ...arr[findIdx],
+          type_md: 1,
+        };
+
+        this.reqEmitProductStatus(good, arr[findIdx]);
+        this.$store.commit('SET_GOODS', arr);
+      } else {
+        this.$store.commit('pushFlashMessage', '서버가 불안정하여 판매 중지 하기 실패하였습니다.');
+      }
+    },
+    onSaleStatus(good) {
+      const { sale } = good;
+      if (sale) return this.offDiscount(good);
+      return this.onDiscount(good);
+    },
+    async offDiscount(good) {
+      const { store_code } = this.$store.state.auth.store;
+
+      const params = {
+        params: {
+          store_code,
+          good_code: good.code,
+          type: 'goodOff_TypeSale',
+        },
+      };
+
+      const res = await this.$store.dispatch('updateGoodStatusType', params);
+      console.log(res);
+
+      if (res.status === 200) {
+        const arr = JSON.parse(JSON.stringify(this.$store.state.goods));
+        const findIdx = arr.findIndex((o) => o.T_order_store_good_code === good.code);
+
+        arr[findIdx] = {
+          ...arr[findIdx],
+          type_sale: 0,
+        };
+
+        this.reqEmitProductStatus(good, arr[findIdx]);
+        this.$store.commit('SET_GOODS', arr);
+      } else {
+        this.$store.commit('pushFlashMessage', '서버가 불안정하여 판매 중지 하기 실패하였습니다.');
+      }
+    },
+    async onDiscount(good) {
+      const { store_code } = this.$store.state.auth.store;
+
+      const params = {
+        params: {
+          store_code,
+          good_code: good.code,
+          type: 'goodOn_TypeSale',
+        },
+      };
+
+      const res = await this.$store.dispatch('updateGoodStatusType', params);
+      console.log(res);
+
+      if (res.status === 200) {
+        const arr = JSON.parse(JSON.stringify(this.$store.state.goods));
+        const findIdx = arr.findIndex((o) => o.T_order_store_good_code === good.code);
+
+        arr[findIdx] = {
+          ...arr[findIdx],
+          type_sale: 1,
+        };
+
+        this.reqEmitProductStatus(good, arr[findIdx]);
+        this.$store.commit('SET_GOODS', arr);
+      } else {
+        this.$store.commit('pushFlashMessage', '서버가 불안정하여 판매 중지 하기 실패하였습니다.');
+      }
+    },
   },
 };
 </script>
@@ -433,7 +680,7 @@ export default {
         flex-shrink: 0;
         .category-info {
           width: calc(33.3333% - 16px);
-          height: 50vh;
+          height: 76vh;
           display: flex;
           margin: 8px;
           color: var(--c-3);
@@ -449,6 +696,7 @@ export default {
             text-align: right;
             margin-top: 4vh;
             padding-top: 4vh;
+            white-space: nowrap;
           }
           .sub-category-text::after {
             content: "";
@@ -463,7 +711,7 @@ export default {
         .good {
           z-index: 2;
           width: calc(33.3333% - 16px);
-          height: 50vh;
+          height: 76vh;
           background-color: var(--c-9);
           display: flex;
           margin: 8px;
@@ -507,6 +755,12 @@ export default {
               background-color: var(--c-2);
               border-radius: 20px;
             }
+          }
+          .good-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            box-sizing: border-box;
           }
         }
       }
