@@ -12,6 +12,11 @@ import endpoints from './endpoints';
 
 Vue.use(Vuex);
 
+function imagePreload(url) {
+  const img = new Image();
+  img.src = url;
+}
+
 /**
 * TODO:
 * - 추후 소켓 부분 모듈화 예정
@@ -107,7 +112,7 @@ const socket = {
 
           if (payload?.data) {
             arr[findIdx] = payload.data;
-
+            commit('pushFlashMessage', `"${payload.good.displayName}" 정보가 수정되었습니다.`)
             commit('SET_GOODS', arr);
           }
 
@@ -221,7 +226,7 @@ const order = {
       const fd = new FormData();
       fd.append('shop_code', payload.auth.store.store_code);
       fd.append('key', payload.order.order_view_key);
-      fd.append('commit', !payload.order.commit ? 1:0);
+      fd.append('commit', !payload.order.commit ? 1 : 0);
 
       await axios.post(url, fd);
       // const res = await axios.post(url, fd);
@@ -415,17 +420,26 @@ const table = {
 
       if (response.data && response.data.order_info) {
         commit('SET_TABLE_CART_LIST', response.data.order_info);
-        return response.data.order_info;
+        return response.data;
       }
       return false;
+    },
+    async yesOrder(context, payload) {
+      try {
+        const res = await axios.post(endpoints.table.order, payload.params, payload.config);
+        console.log(res);
+
+        if (res.status === 200) {
+          return res;
+        }
+
+        return false;
+      } catch (error) {
+        return false;
+      }
     }
   },
 };
-
-function imagePreload(url) {
-  const img = new Image();
-  img.src = url;
-}
 
 const menu = {
   mutations: {
@@ -461,7 +475,7 @@ const menu = {
         return response.data.data;
       }
       return false;
-    }
+    },
   },
   getters: {
     getCategories(state) {
@@ -531,8 +545,48 @@ const menu = {
           openDetail: p.T_order_store_good_detail_open,
           reviews: p.menuRatingList,
           soldout: p.T_order_store_good_soldout,
+          best: p.type_best,
+          hit: p.type_hit,
+          md: p.type_md,
+          sale: p.type_sale,
         };
       }).sort((a, b) => a.sortNo - b.sortNo);
+    },
+    getCategoriesGoods(state, getters) {
+      const { processGoods, getCategories } = getters;
+
+      const findGoods = (good, subCategory) => {
+        const { categories } = good;
+
+        if (categories) {
+          return categories.includes(subCategory);
+        }
+      };
+
+      const getFilteredGoods = (products, subCategory) => {
+        return products.filter((good) => findGoods(good, subCategory));
+      }
+
+      const getSubCategoryItem = (subCategoryItem, products) => {
+        const goods = getFilteredGoods(products, subCategoryItem.code);
+        return {
+          ...subCategoryItem,
+          goods,
+        };
+      };
+
+      const getCategoryItem = (categoryItem) => {
+        const getSubCategoryObj = (subCategoryItem) => getSubCategoryItem(subCategoryItem, processGoods);
+        const subCategories = categoryItem.subCategories.map(getSubCategoryObj);
+        return {
+          ...categoryItem,
+          subCategories,
+        };
+      };
+
+      const results = getCategories.map(getCategoryItem);
+      // console.log(results);
+      return results;
     },
   },
 };
@@ -560,6 +614,38 @@ const goods = {
       console.log('update goods type response', res);
 
       return res;
+    },
+  },
+};
+
+const popup = {
+  mutations: {
+    pushFlashMessage(state, message) {
+      let time = new Date().getTime();
+      let indexLast = 0;
+
+      for (let index in state.flashMessages) {
+        index = parseInt(index);
+        const message = state.flashMessages[index];
+
+        if (message.time + 3000 < time && indexLast < index ) {
+          indexLast = index;
+        }
+      }
+
+      if (indexLast > 0) {
+        state.flashMessages = state.flashMessages.slice(0, indexLast);
+      }
+
+      let item = {
+        key: this.state.flashMessageCount,
+        message: message,
+        time: new Date().getTime(),
+      };
+
+      this.state.flashMessageCount += 1;
+
+      state.flashMessages.push(item);
     },
   },
 };
@@ -593,6 +679,8 @@ const state = {
   goods: [],
   MACAddr: '00:00:00:00:00:00',
   uCode: '',
+  flashMessages: [],
+  flashMessageCount: 0,
 };
 
 const mutations = {
@@ -604,6 +692,7 @@ const mutations = {
   ...menu.mutations,
   ...monitoring.mutations,
   ...device.mutations,
+  ...popup.mutations,
 };
 
 const actions = {
