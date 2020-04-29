@@ -370,14 +370,13 @@ export default {
         let total = 0;
 
         previousOrders.forEach((order) => {
-          total += order.good_price;
+          total += Number(order.good_price);
           if (order?.option) {
             order.option.forEach((option) => {
-              total += option.pos_price;
+              total += Number(option.pos_price);
             });
           }
         });
-
         return won(total);
       } catch (error) {
         return 0;
