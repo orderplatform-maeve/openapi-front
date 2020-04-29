@@ -84,13 +84,6 @@ const socket = {
               console.log('location', nowPath);
 
               if (!process.env.STOP_REDIRECT) {
-                const nowDevPath = `${protocol}//${hostname}:${port}${pathname}`;
-                console.log('location dev', nowDevPath === 'http://localhost:8080/');
-
-                if (nowDevPath === 'http://localhost:8080/') {
-                  return location.replace('/');
-                }
-
                 // diff version
                 if (nowPath !== nextUrl) {
                   return location.replace(nextUrl);
