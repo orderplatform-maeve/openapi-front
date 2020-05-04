@@ -631,6 +631,18 @@ const popup = {
   },
 };
 
+const tablet = {
+  actions: {
+    async resetOrder(context, params) {
+      const url = endpoints.tablet.resetOrder;
+
+      const res = await axios.post(url, params);
+
+      return res;
+    },
+  },
+};
+
 const authProto = {
   member: {
     code: '',
@@ -685,6 +697,7 @@ const actions = {
   ...table.actions,
   ...menu.actions,
   ...goods.actions,
+  ...tablet.actions,
 };
 
 const getters = {

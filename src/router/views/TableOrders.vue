@@ -73,7 +73,8 @@
           p ₩ {{ getPrice(good.price) }}
   .footer
     .button.order(@click="yesOrder") 주문
-    .button.close(@click="close") 닫기
+    .button(@click="onDeleteOrder") 삭제
+    .button(@click="close") 닫기
 </template>
 
 <script>
@@ -390,7 +391,20 @@ export default {
           last: false,
         };
       }
-    }
+    },
+    async onDeleteOrder() {
+      try {
+        const { store_code } = this.$store.state.auth.store;
+        const fd = new FormData();
+        fd.append('store_code', store_code);
+        fd.append('table_id', this.$route.params.id);
+
+        const res = await this.$store.dispatch('resetOrder', fd);
+        console.log(res);
+      } catch (error) {
+        this.$store.commit('pushFlashMessage', '주문이 이미 없습니다.');
+      }
+    },
   },
 };
 </script>
@@ -701,7 +715,7 @@ p {
   .footer {
     display: flex;
     height: 100px;
-    justify-content: center;
+    justify-content: space-around;
     align-items: center;
     border-top: 2px solid var(--c-7);
 
@@ -719,9 +733,6 @@ p {
       color: white;
     }
 
-    .button.close {
-      margin-left: 30%;
-    }
   }
 }
 </style>
