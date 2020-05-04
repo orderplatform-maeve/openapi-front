@@ -401,6 +401,16 @@ export default {
 
         const res = await this.$store.dispatch('resetOrder', fd);
         console.log(res);
+
+        try {
+          if (res.data) {
+            this.$store.commit('SET_TABLE_CART_LIST', []);
+            this.$store.commit('pushFlashMessage', '주문 삭제 되었습니다.');
+            // 동기화
+          }
+        } catch (error) {
+          this.$store.commit('pushFlashMessage', '삭제가 실패 하였습니다.');
+        }
       } catch (error) {
         this.$store.commit('pushFlashMessage', '주문이 이미 없습니다.');
       }
