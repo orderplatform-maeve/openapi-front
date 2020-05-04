@@ -110,6 +110,11 @@ const socket = {
 
         }
       }
+
+      if (payload?.type === '@reset/orders') {
+        commit('SET_TABLE_CART_LIST', []);
+        commit('pushFlashMessage', '주문 삭제 되었습니다.');
+      }
     },
   },
 };

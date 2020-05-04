@@ -404,9 +404,14 @@ export default {
 
         try {
           if (res.data) {
-            this.$store.commit('SET_TABLE_CART_LIST', []);
-            this.$store.commit('pushFlashMessage', '주문 삭제 되었습니다.');
-            // 동기화
+            // this.$store.commit('SET_TABLE_CART_LIST', []);
+            // this.$store.commit('pushFlashMessage', '주문 삭제 되었습니다.');
+            this.$socket.emit('orderview', {
+              store: {
+                code: store_code,
+              },
+              type: '@reset/orders',
+            });
           }
         } catch (error) {
           this.$store.commit('pushFlashMessage', '삭제가 실패 하였습니다.');
