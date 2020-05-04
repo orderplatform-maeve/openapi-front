@@ -178,11 +178,10 @@ export default {
               protocol,
               hostname,
               pathname,
-              port,
             } = location;
 
-            const nowPath = `${protocol}//${hostname}${pathname}`;
-            console.log('location', nowPath);
+            const nowPath = `${protocol}//${hostname}${pathname}#/`;
+            console.log('location', nowPath, nextUrl);
 
             if (!process.env.STOP_REDIRECT) {
               if (nowPath !== nextUrl) {

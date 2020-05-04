@@ -77,10 +77,9 @@ const socket = {
                 protocol,
                 hostname,
                 pathname,
-                port,
               } = location;
 
-              const nowPath = `${protocol}//${hostname}${pathname}`;
+              const nowPath = `${protocol}//${hostname}${pathname}#/`;
               console.log('location', nowPath);
 
               if (!process.env.STOP_REDIRECT) {
