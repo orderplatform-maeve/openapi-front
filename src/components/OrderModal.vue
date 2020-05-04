@@ -97,7 +97,7 @@ export default {
       this.seconds -= 1;
 
       if (this.seconds < 1) {
-        // this.closeOrder();
+        this.closeOrder();
       }
     }, 1000);
   },
