@@ -73,7 +73,7 @@
           p ₩ {{ getPrice(good.price) }}
   .footer
     .button.order(@click="yesOrder") 주문
-    .button(@click="onDeleteOrder") 삭제
+    .button(v-if="visibleDeleteButton()" @click="onDeleteOrder") 삭제
     .button(@click="close") 닫기
 </template>
 
@@ -144,7 +144,7 @@ export default {
         return [];
       }
     },
-    async getOrderData() {
+    async getOrderData() { // table id로 테이블 정보 찾게 변경
       try {
         const { store_code } = this.$store.state.auth.store;
         const fd = new FormData();
@@ -435,6 +435,10 @@ export default {
       } catch (error) {
         this.$store.commit('pushFlashMessage', '주문이 이미 없습니다.');
       }
+    },
+    visibleDeleteButton() {
+      // return process.env.UPLOAD_TYPE === 'tmp';
+      return process.env.STOP_REDIRECT;
     },
   },
 };
