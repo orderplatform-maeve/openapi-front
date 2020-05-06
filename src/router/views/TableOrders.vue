@@ -44,6 +44,17 @@
                   .title ┕▷ {{ option.display_name }}
                 .option-text.product-qty {{ option.order_qty }}
                 .option-text.product-price {{ option.pos_price }}
+            .row(v-for="(order, orderIdx) in cartList")
+              .order
+                .order-text.product-title
+                  .title {{ order.display_name }}
+                .order-text.product-qty {{ order.order_qty }}
+                .order-text.product-price {{ getPrice(order.good_price) }}
+              .option(v-for="option in order.option")
+                .option-text.product-title
+                  .title ┕▷ {{ option.display_name }}
+                .option-text.product-qty {{ option.order_qty }}
+                .option-text.product-price {{ option.pos_price }}
         .bill-footer
           .counter {{ getOrderCount() }} 건
           .total 합계: {{ getTotalPrice() }}
@@ -299,11 +310,7 @@ export default {
         };
 
         this.cartList = [...this.cartList, result];
-        const newCartList = [...this.previousOrders, result];
-
         this.billScrollBottom();
-
-        this.$store.commit('SET_TABLE_CART_LIST', newCartList);
       }
     },
     billScrollBottom() {
@@ -339,13 +346,15 @@ export default {
               await this.getOrderData();
             }
             console.log('order', this.order);
+            const newOrders = [...this.previousOrders, ...this.cartList];
             this.$socket.emit('orderview', {
               store: {
                 code: store_code,
               },
               type: '@create/orders',
-              orders: this.previousOrders,
+              orders: newOrders,
               order: this.order,
+              cartList: this.cartList,
             });
             this.cartList = [];
           } else {
@@ -363,30 +372,29 @@ export default {
         this.optionModal = false;
       }, 0);
     },
-    optionMdalConfirm(rednerOrder, requestOrder) {
-      console.log('confirm', requestOrder);
+    optionMdalConfirm(newOrder) {
+      console.log('confirm', newOrder);
 
-      this.cartList = [...this.cartList, requestOrder];
-      const newCartList = [...this.previousOrders, rednerOrder];
+      this.cartList = [...this.cartList, newOrder];
 
       this.billScrollBottom();
-      this.$store.commit('SET_TABLE_CART_LIST', newCartList);
+
       this.optionModalClose();
     },
     getOrderCount() {
-      const { previousOrders } = this;
+      const { previousOrders, cartList } = this;
       try {
-        return previousOrders.length;
+        return previousOrders.length + cartList.length;
       } catch (error) {
         return 0;
       }
     },
     getTotalPrice() {
-      const { previousOrders } = this;
+      const { previousOrders, cartList } = this;
       try {
         let total = 0;
 
-        previousOrders.forEach((order) => {
+        [...previousOrders, ...cartList].forEach((order) => {
           total += Number(order.good_price);
           if (order?.option) {
             order.option.forEach((option) => {
@@ -404,7 +412,7 @@ export default {
       const targetCount = previousOrders.length - 1;
       if (orderIdx === targetCount) {
         return {
-          last: false,
+          last: true,
         };
       }
     },
@@ -420,14 +428,13 @@ export default {
 
         try {
           if (res.data) {
-            // this.$store.commit('SET_TABLE_CART_LIST', []);
-            // this.$store.commit('pushFlashMessage', '주문 삭제 되었습니다.');
             this.$socket.emit('orderview', {
               store: {
                 code: store_code,
               },
               type: '@reset/orders',
             });
+            this.cartList = [];
           }
         } catch (error) {
           this.$store.commit('pushFlashMessage', '삭제가 실패 하였습니다.');

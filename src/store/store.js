@@ -122,16 +122,15 @@ const socket = {
 
         if (payload?.orders) {
           commit('SET_TABLE_CART_LIST', payload?.orders);
-          commit('pushFlashMessage', '주문 되었습니다.');
+        }
 
-          // if (payload.orders?.length === 1) {
-          //   commit('pushFlashMessage', `${payload.orders[0].display_name}가 주문 되었습니다.`);
-          // }
+        if (payload.cartList?.length === 1) {
+          commit('pushFlashMessage', `${payload.cartList[0].display_name}가 주문 되었습니다.`);
+        }
 
-          // if (payload.orders.length > 1) {
-          //   const anotherCount = payload.orders.length - 1;
-          //   commit('pushFlashMessage', `${payload.orders[0].display_name} 외 ${anotherCount}개 주문 되었습니다.`);
-          // }
+        if (payload.cartList.length > 1) {
+          const anotherCount = payload.cartList.length - 1;
+          commit('pushFlashMessage', `${payload.cartList[0].display_name} 외 ${anotherCount}개 주문 되었습니다.`);
         }
       }
     },
