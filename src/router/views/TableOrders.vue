@@ -152,7 +152,7 @@ export default {
         // fd.append('tablet_number', this.$route.params.id);
 
         const res = await this.$store.dispatch('setOrders', fd);
-        const currentOrder =  res.data.find((o) => o.table_number === this.$route.params.id);
+        const currentOrder = res.data.find((o) => o.table_number === this.$route.params.id);
         // console.log('currentOrder', currentOrder);
 
         const parseOrder = JSON.parse(currentOrder.json_data);
@@ -160,7 +160,7 @@ export default {
 
         this.order = parseOrder;
       } catch (error) {
-        console.log(error);
+        // console.log(error);
       }
     },
     async getMenu() {
@@ -312,34 +312,50 @@ export default {
         this.$refs.billBody.scrollTop = this.$refs.billBody.scrollHeight;
       }, 0);
     },
-    yesOrder() {
-      if (this.cartList && this.cartList.length) {
-        const config = { headers: { 'Content-Type': 'multipart/form-data' } };
-        const fd = new FormData();
-        const { store_code } = this.$store.state.auth.store;
-        fd.append('store_shop_code', store_code);
-        fd.append('tablet_number', this.$route.params.id);
+    async yesOrder() {
+      try {
+        if (this.cartList && this.cartList.length) {
+          const config = { headers: { 'Content-Type': 'multipart/form-data' } };
+          const fd = new FormData();
+          const { store_code } = this.$store.state.auth.store;
+          fd.append('store_shop_code', store_code);
+          fd.append('tablet_number', this.$route.params.id);
 
-        for (const [i, order] of this.cartList.entries()) {
-          console.log('order', order);
-          fd.append('orders['+i+'][code]', order.good_code); // 주문 코드가 필요
-          fd.append('orders['+i+'][qty]', order.order_qty);
-        }
+          for (const [i, order] of this.cartList.entries()) {
+            console.log('order', order);
+            fd.append('orders['+i+'][code]', order.good_code); // 주문 코드가 필요
+            fd.append('orders['+i+'][qty]', order.order_qty);
+          }
 
-        const payload = {
-          params: fd,
-          config,
-        };
+          const payload = {
+            params: fd,
+            config,
+          };
 
-        const res = this.$store.dispatch('yesOrder', payload);
+          const res = this.$store.dispatch('yesOrder', payload);
 
-        if (res) {
-          this.cartList = [];
+          if (res) {
+            if (!this.order) {
+              await this.getOrderData();
+            }
+            console.log('order', this.order);
+            this.$socket.emit('orderview', {
+              store: {
+                code: store_code,
+              },
+              type: '@create/orders',
+              orders: this.previousOrders,
+              order: this.order,
+            });
+            this.cartList = [];
+          } else {
+            this.$store.commit('pushFlashMessage', '주문 실패하였습니다.');
+          }
         } else {
-          this.$store.commit('pushFlashMessage', '주문 실패하였습니다.');
+          this.$store.commit('pushFlashMessage', '새로운 주문이 없습니다.');
         }
-      } else {
-        this.$store.commit('pushFlashMessage', '새로운 주문이 없습니다.');
+      } catch (error) {
+        this.$store.commit('pushFlashMessage', '주문 실패하였습니다.');
       }
     },
     optionModalClose() {

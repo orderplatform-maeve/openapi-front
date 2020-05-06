@@ -107,13 +107,32 @@ const socket = {
             commit('pushFlashMessage', `"${payload.good.displayName}" 정보가 수정되었습니다.`)
             commit('SET_GOODS', arr);
           }
-
         }
       }
 
       if (payload?.type === '@reset/orders') {
         commit('SET_TABLE_CART_LIST', []);
         commit('pushFlashMessage', '주문 삭제 되었습니다.');
+      }
+
+      if (payload?.type === '@create/orders') {
+        if (payload?.order) {
+          commit('SET_ORDER', payload.order);
+        }
+
+        if (payload?.orders) {
+          commit('SET_TABLE_CART_LIST', payload?.orders);
+          commit('pushFlashMessage', '주문 되었습니다.');
+
+          // if (payload.orders?.length === 1) {
+          //   commit('pushFlashMessage', `${payload.orders[0].display_name}가 주문 되었습니다.`);
+          // }
+
+          // if (payload.orders.length > 1) {
+          //   const anotherCount = payload.orders.length - 1;
+          //   commit('pushFlashMessage', `${payload.orders[0].display_name} 외 ${anotherCount}개 주문 되었습니다.`);
+          // }
+        }
       }
     },
   },
@@ -423,7 +442,7 @@ const table = {
       } catch (error) {
         return false;
       }
-    }
+    },
   },
 };
 
