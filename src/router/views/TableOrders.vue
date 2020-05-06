@@ -129,7 +129,7 @@ export default {
       fd.append('store_code', store_code);
       fd.append('table_id', this.$route.params.id);
 
-      this.$store.dispatch('tableReload', fd);
+      this.$store.dispatch('tabletReload', fd);
     },
     close() {
       this.$router.replace(paths.tables);

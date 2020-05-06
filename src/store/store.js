@@ -442,7 +442,7 @@ const table = {
         return false;
       }
     },
-    async tableReload(context, params) {
+    async tabletReload(context, params) {
       try {
         const url = endpoints.tablet.refresh;
 
@@ -452,6 +452,16 @@ const table = {
         return false;
       }
     },
+    async allTaletReload(context, params) {
+      try {
+        const url = endpoints.tablet.allRefresh;
+
+        const res = await axios.post(url, params);
+        console.log(res);
+      } catch (error) {
+        return false;
+      }
+    }
   },
 };
 
