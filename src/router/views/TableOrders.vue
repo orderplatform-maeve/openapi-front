@@ -85,6 +85,7 @@
   .footer
     .button.order(@click="yesOrder") 주문
     .button(v-if="visibleDeleteButton()" @click="onDeleteOrder") 삭제
+    .button(@click="reload") 리로드
     .button(@click="close") 닫기
 </template>
 
@@ -122,6 +123,14 @@ export default {
     this.$store.commit('SET_TABLE_CART_LIST', []);
   },
   methods: {
+    reload() {
+      const { store_code } = this.$store.state.auth.store;
+      const fd = new FormData();
+      fd.append('store_code', store_code);
+      fd.append('table_id', this.$route.params.id);
+
+      this.$store.dispatch('tableReload', fd);
+    },
     close() {
       this.$router.replace(paths.tables);
     },
@@ -774,7 +783,6 @@ p {
       background-color: var(--c-3);
       color: white;
     }
-
   }
 }
 </style>

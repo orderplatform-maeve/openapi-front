@@ -442,6 +442,16 @@ const table = {
         return false;
       }
     },
+    async tableReload(context, params) {
+      try {
+        const url = endpoints.tablet.refresh;
+
+        const res = await axios.post(url, params);
+        console.log(res);
+      } catch (error) {
+        return false;
+      }
+    },
   },
 };
 
