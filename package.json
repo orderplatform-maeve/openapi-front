@@ -10,9 +10,9 @@
     "dev:rest": "cross-env NODE_ENV=development SERVER_TYPE=rest webpack-dev-server --open --hot",
     "dev:stop-redirect": "cross-env NODE_ENV=development SERVER_TYPE=rest STOP_REDIRECT=true webpack-dev-server --open --hot",
     "build": "cross-env NODE_ENV=production SERVER_TYPE=rest webpack --progress --hide-modules",
-    "build-tmp": "cross-env NODE_ENV=production SERVER_TYPE=rest UPLOAD_TYPE=tmp webpack --progress --hide-modules",
-    "deploy-tmp": "npm run build-tmp && cross-env SERVER_TYPE=rest UPLOAD_TYPE=tmp node ./script/deployTmp.js",
-    "deploy": "npm run build && cross-env SERVER_TYPE=rest UPLOAD_TYPE=1 node ./script/deploy.js"
+    "build-tmp": "cross-env NODE_ENV=production SERVER_TYPE=rest webpack --progress --hide-modules",
+    "deploy-tmp": "npm run build-tmp && cross-env UPLOAD_TYPE=tmp node ./script/deployTmp.js",
+    "deploy": "npm run build && cross-env UPLOAD_TYPE=1 node ./script/deploy.js"
   },
   "dependencies": {
     "axios": "^0.19.0",
