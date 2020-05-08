@@ -119,6 +119,7 @@ export default {
       this.isConfirm = true;
 
       try {
+        // eslint-disable-next-line no-unused-vars
         const { data } = await this.$store.dispatch('commitOrder', { auth, order });
         this.closeOrder();
         this.isConfirm = false;

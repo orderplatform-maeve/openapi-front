@@ -158,7 +158,7 @@ export default {
       this.beep();
     },
     orderview(message) {
-      this.$socket.emit('res', message, (msg) => {
+      this.$socket.emit('res', message, () => {
         console.log('socket res');
       });
     }
@@ -351,7 +351,7 @@ export default {
         datetime: datetime,
       };
 
-      this.$socket.emit('event', data, (answer) => {
+      this.$socket.emit('event', data, () => {
         // console.log('event', answer.msg);
       });
     },

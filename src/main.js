@@ -1,9 +1,10 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import VueCookies from 'vue-cookies';
-import VueFilter from 'vue-filter';
 import VueSocketIO from 'vue-socket.io';
 import VueMoment from 'vue-moment';
+
+import App from './App.vue';
 
 import "@babel/polyfill";
 
@@ -22,7 +23,6 @@ Vue.config.devtools = true;
 
 Vue.use(VueCookies);
 Vue.use(VueRouter);
-Vue.use(VueFilter);
 Vue.use(VueMoment);
 
 Vue.use(new VueSocketIO(socketConfig));
@@ -34,4 +34,7 @@ Vue.component('modal-menu', MenuModal);
 Vue.component('modal-product-option', ProductOptionModal);
 Vue.component('flash-message', FlashMessage);
 
-new Vue({router}).$mount("#app");
+new Vue({
+  router,
+  render: (h) => h(App),
+}).$mount("#app");

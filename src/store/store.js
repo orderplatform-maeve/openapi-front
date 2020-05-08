@@ -104,7 +104,7 @@ const socket = {
 
           if (payload?.data) {
             arr[findIdx] = payload.data;
-            commit('pushFlashMessage', `"${payload.good.displayName}" 정보가 수정되었습니다.`)
+            commit('pushFlashMessage', `"${payload.good.displayName}" 정보가 수정되었습니다.`);
             commit('SET_GOODS', arr);
           }
         }
@@ -235,7 +235,7 @@ const order = {
     },
   },
   actions: {
-    async commitOrder({ commit }, payload) {
+    async commitOrder(context, payload) {
       const url = endpoints.orders.commitOrderViewData;
 
       const fd = new FormData();
@@ -269,7 +269,7 @@ const order = {
 
       return response;
     },
-    async requestOrder({ commit }, params) {
+    async requestOrder(context, params) {
       const url = endpoints.orders.order;
       const response = await axios.post(url, params);
 
@@ -314,7 +314,7 @@ const shop = {
         return false;
       }
     },
-    async requestStoreList({ commit }, params) {
+    async requestStoreList(context, params) {
       try {
         const fd = new FormData();
         fd.append('member_id', params.member.code);
@@ -448,6 +448,7 @@ const table = {
 
         const res = await axios.post(url, params);
         console.log(res);
+        return res;
       } catch (error) {
         return false;
       }
@@ -589,7 +590,7 @@ const menu = {
 
       const getFilteredGoods = (products, subCategory) => {
         return products.filter((good) => findGoods(good, subCategory));
-      }
+      };
 
       const getSubCategoryItem = (subCategoryItem, products) => {
         const goods = getFilteredGoods(products, subCategoryItem.code);

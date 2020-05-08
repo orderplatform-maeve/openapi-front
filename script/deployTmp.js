@@ -34,12 +34,12 @@ const uploadIndexFile = (fileName, indexKey) => {
   });
 };
 
-const indexFileName = path.basename('../index.html');
+const indexFileName = path.basename('../dist/index.html');
 
 const folderPath  = '../dist';
 const distFolderPath = path.join(__dirname, folderPath);
 
-const uploadDistFiles = (distKey) => fs.readdir(distFolderPath, (err, files) => {
+const uploadDistFiles = (distKey, indexKey) => fs.readdir(distFolderPath, (err, files) => {
   if (err) { throw err; }
 
   if(!files || files.length === 0) {
@@ -56,6 +56,21 @@ const uploadDistFiles = (distKey) => fs.readdir(distFolderPath, (err, files) => 
 
     // ignore if directory
     if (fs.lstatSync(filePath).isDirectory()) {
+      console.log('is directory', filePath, fileName);
+      fs.readdir(filePath, (e, subFiles) => {
+        if (e) { throw e; }
+
+        if(!subFiles || subFiles.length === 0) {
+          console.log(`provided folder '${filePath}' is empty or does not exist.`);
+          console.log('Make sure your project was compiled!');
+          return;
+        }
+
+        for (const subFileName of subFiles) {
+          console.log('subFileName', subFileName);
+        }
+
+      });
       continue;
     }
 
@@ -65,17 +80,33 @@ const uploadDistFiles = (distKey) => fs.readdir(distFolderPath, (err, files) => 
       if (error) { throw error; }
 
       const ContentType = mime.getType(fileName);
+
+      console.log('1@!#@#@!#!@', ContentType);
+
+      if (fileName === 'index.html') {
+        console.log('~~~~~~~~~~', indexKey);
+        s3.upload({
+          Bucket: BUCKET_NAEM,
+          Key: `${indexKey}/${fileName}`,
+          Body: fileContent,
+          ContentType,
+          CacheControl: 'no-cache',
+        }, (err) => {
+          if (err) { throw err; }
+          console.log(`File Successfully uploaded '${fileName}'!`);
+        });
+      }
       // upload file to S3
-      s3.upload({
-        Bucket: BUCKET_NAEM,
-        Key: `${distKey}/${fileName}`,
-        Body: fileContent,
-        ContentType,
-        CacheControl: 'no-cache',
-      }, (err) => {
-        if (err) { throw err; }
-        console.log(`Successfully uploaded '${fileName}'!`);
-      });
+      // s3.upload({
+      //   Bucket: BUCKET_NAEM,
+      //   Key: `${distKey}/${fileName}`,
+      //   Body: fileContent,
+      //   ContentType,
+      //   CacheControl: 'no-cache',
+      // }, (err) => {
+      //   if (err) { throw err; }
+      //   console.log(`Successfully uploaded '${fileName}'!`);
+      // });
 
     });
   }
@@ -94,8 +125,8 @@ rl.question('업로드 버젼을 입력해 주세요. ', (answer) => {
   const indexKey = `v/${UPLOAD_TYPE}/${UPLOAD_VERSION}`;
   const distKey = `${indexKey}/dist`;
 
-  uploadIndexFile(indexFileName, indexKey);
-  uploadDistFiles(distKey);
+  // uploadIndexFile(indexFileName, indexKey);
+  uploadDistFiles(distKey, indexKey);
 
   rl.close();
 });

@@ -34,7 +34,7 @@ const uploadIndexFile = (fileName, indexKey) => {
   });
 };
 
-const indexFileName = path.basename('../index.html');
+const indexFileName = path.basename('../public/index.html');
 
 const folderPath  = '../dist';
 const distFolderPath = path.join(__dirname, folderPath);
