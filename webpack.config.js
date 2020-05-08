@@ -1,5 +1,6 @@
 var path = require('path');
 var webpack = require('webpack');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 const aliases = {
   '@': '.',
@@ -115,7 +116,6 @@ module.exports = {
   performance: {
     hints: false
   },
-  devtool: '#eval-source-map'
 };
 
 if (process.env.NODE_ENV === 'production') {
@@ -126,23 +126,26 @@ if (process.env.NODE_ENV === 'production') {
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
       'process.env.STOP_REDIRECT': process.env.STOP_REDIRECT,
       'process.env.UPLOAD_TYPE': process.env.UPLOAD_TYPE,
+      'process.env.SERVER': process.env.SERVER,
     }),
-    /*
-    new webpack.optimize.UglifyJsPlugin({
-      sourceMap: true,
-      compress: {
-        warnings: false
-      }
-    }),
-    */
     new webpack.LoaderOptionsPlugin({
       minimize: true
-    })
+    }),
+    new UglifyJsPlugin({
+      uglifyOptions: {
+        compress: {
+          drop_console: true,
+        },
+      },
+    }),
   ]);
 } else {
   module.exports.plugins = (module.exports.plugins || []).concat([
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+      'process.env.STOP_REDIRECT': process.env.STOP_REDIRECT,
+      'process.env.UPLOAD_TYPE': process.env.UPLOAD_TYPE,
+      'process.env.SERVER': process.env.SERVER,
     }),
   ]);
 }
