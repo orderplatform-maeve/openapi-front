@@ -121,6 +121,7 @@ export default {
       try {
         const { data } = await this.$store.dispatch('commitOrder', { auth, order });
         this.closeOrder();
+        this.isConfirm = false;
       } catch (error) {
         this.closeOrder();
         this.$store.commit('pushFlashMessage', '네트워크 이상이 있으니 잠시 후 다시 시도 해주세요.');
