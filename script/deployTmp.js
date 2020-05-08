@@ -16,26 +16,6 @@ const {
 
 const s3 = new AWS.S3({ accessKeyId, secretAccessKey, signatureVersion });
 
-const uploadIndexFile = (fileName, indexKey) => {
-  const fileContents = fs.readFileSync(fileName);
-  const ContentType = mime.getType(fileName);
-
-  const params = {
-    Bucket: BUCKET_NAEM,
-    Key: `${indexKey}/${fileName}`,
-    Body: fileContents,
-    CacheControl: 'no-cache',
-    ContentType,
-  };
-
-  s3.upload(params, function(err, data) {
-    if (err) { throw err; }
-    console.log(`File uploaded successfully. ${data.Location}`);
-  });
-};
-
-const indexFileName = path.basename('../dist/index.html');
-
 const folderPath  = '../dist';
 const distFolderPath = path.join(__dirname, folderPath);
 
@@ -56,7 +36,7 @@ const uploadDistFiles = (distKey, indexKey) => fs.readdir(distFolderPath, (err, 
 
     // ignore if directory
     if (fs.lstatSync(filePath).isDirectory()) {
-      console.log('is directory', filePath, fileName);
+      // console.log('is directory', filePath, fileName);
       fs.readdir(filePath, (e, subFiles) => {
         if (e) { throw e; }
 
@@ -67,7 +47,28 @@ const uploadDistFiles = (distKey, indexKey) => fs.readdir(distFolderPath, (err, 
         }
 
         for (const subFileName of subFiles) {
-          console.log('subFileName', subFileName);
+          // console.log('subFileName', subFileName);
+
+          const subFilePath = `${filePath}/${subFileName}`;
+
+          fs.readFile(subFilePath, (err, fileContent) => {
+            if (err) { throw err; }
+
+            const ContentType = mime.getType(subFileName);
+
+            // upload file to S3
+            s3.upload({
+              Bucket: BUCKET_NAEM,
+              Key: `${indexKey}/${fileName}/${subFileName}`,
+              Body: fileContent,
+              ContentType,
+              CacheControl: 'no-cache',
+            }, (err) => {
+              if (err) { throw err; }
+              console.log(`Successfully uploaded '${subFileName}'`);
+            });
+
+          });
         }
 
       });
@@ -81,10 +82,10 @@ const uploadDistFiles = (distKey, indexKey) => fs.readdir(distFolderPath, (err, 
 
       const ContentType = mime.getType(fileName);
 
-      console.log('1@!#@#@!#!@', ContentType);
+      // console.log('1@!#@#@!#!@', ContentType);
 
       if (fileName === 'index.html') {
-        console.log('~~~~~~~~~~', indexKey);
+        // console.log('~~~~~~~~~~', indexKey);
         s3.upload({
           Bucket: BUCKET_NAEM,
           Key: `${indexKey}/${fileName}`,
@@ -96,18 +97,6 @@ const uploadDistFiles = (distKey, indexKey) => fs.readdir(distFolderPath, (err, 
           console.log(`File Successfully uploaded '${fileName}'!`);
         });
       }
-      // upload file to S3
-      // s3.upload({
-      //   Bucket: BUCKET_NAEM,
-      //   Key: `${distKey}/${fileName}`,
-      //   Body: fileContent,
-      //   ContentType,
-      //   CacheControl: 'no-cache',
-      // }, (err) => {
-      //   if (err) { throw err; }
-      //   console.log(`Successfully uploaded '${fileName}'!`);
-      // });
-
     });
   }
 });
