@@ -133,6 +133,11 @@ const socket = {
           commit('pushFlashMessage', `${payload.cartList[0].display_name} 외 ${anotherCount}개 주문 되었습니다.`);
         }
       }
+
+      if (payload?.type === '@show/allRefreshModal') {
+        commit('SHOW_ALL_REFRES_MODAL');
+        commit('SET_ALL_REFRESHLIST', payload.allRefreshList);
+      }
     },
   },
 };

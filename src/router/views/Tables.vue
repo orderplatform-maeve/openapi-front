@@ -71,7 +71,17 @@ export default {
         };
       };
 
-      this.$store.commit('SET_ALL_REFRESHLIST', this.tables.map(getPreparingTabletInfoData));
+      const preparingAllRefeshList = this.tables.map(getPreparingTabletInfoData);
+
+      this.$store.commit('SET_ALL_REFRESHLIST', preparingAllRefeshList);
+
+      this.$socket.emit('orderview', {
+        store: {
+          code: store_code,
+        },
+        type: '@show/allRefreshModal',
+        allRefreshList: preparingAllRefeshList,
+      });
 
       const delay = (asyncFn) => new Promise((reslove) => setTimeout(() => reslove(asyncFn), 3000));
 
@@ -104,6 +114,14 @@ export default {
       });
 
       this.$store.commit('SET_ALL_REFRESHLIST', allRefreshList);
+
+      this.$socket.emit('orderview', {
+        store: {
+          code: store_code,
+        },
+        type: '@show/allRefreshModal',
+        allRefreshList,
+      });
     },
   },
 };
