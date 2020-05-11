@@ -12,9 +12,8 @@ rl.question('업로드 버젼을 입력해 주세요. ', async (answer) => {
   process.env.UPLOAD_VERSION = answer;
   process.env.UPLOAD_TYPE = 'tmp';
   process.env.SERVER_TYPE = 'rest';
-  process.env.NODE_ENV = 'production';
 
-  const { stdout, stderr } = await exec('yarn vue-cli-service build && node ./script/s3Uploader.js');
+  const { stdout, stderr } = await exec('vue-cli-service build && node ./script/s3Uploader.js');
   if (stderr) {
     console.log(stderr);
   }

@@ -11,7 +11,7 @@
     "dev": "cross-env NODE_ENV=development SERVER_TYPE=demo vue-cli-service serve --open",
     "dev:rest": "cross-env NODE_ENV=development SERVER_TYPE=rest vue-cli-service serve --open",
     "dev:stop-redirect": "cross-env NODE_ENV=development SERVER_TYPE=rest STOP_REDIRECT=true vue-cli-service serve --open",
-    "build": "cross-env NODE_ENV=production SERVER_TYPE=rest vue-cli-service build",
+    "build": "vue-cli-service build",
     "deploy-tmp": "node ./script/deployTmp.js",
     "deploy": "node ./script/deploy.js"
   },
@@ -38,6 +38,7 @@
     "@vue/cli-service": "~4.2.0",
     "aws-sdk": "^2.653.0",
     "babel-eslint": "^10.0.3",
+    "babel-plugin-transform-remove-console": "^6.9.4",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^6.1.2",
     "express": "^4.17.1",
