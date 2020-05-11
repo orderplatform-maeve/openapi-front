@@ -1,5 +1,9 @@
 <template lang="pug">
 #orderview
+  modal-all-refresh(
+    :show="visibleAllRefreshModal"
+    :close="onCloseAllRefreshModal"
+  )
   flash-message
   modal-confirm(
     :show="confirmModal.show"
@@ -121,6 +125,9 @@ export default {
     visibleLogoutButton() {
       return !!this.userName;
     },
+    visibleAllRefreshModal() {
+      return this.$store.state.visibleAllRefreshModal;
+    },
   },
   watch: {
     '$route'(to, from) {
@@ -158,7 +165,7 @@ export default {
       this.beep();
     },
     orderview(message) {
-      this.$socket.emit('res', message, (msg) => {
+      this.$socket.emit('res', message, () => {
         console.log('socket res');
       });
     }
@@ -351,7 +358,7 @@ export default {
         datetime: datetime,
       };
 
-      this.$socket.emit('event', data, (answer) => {
+      this.$socket.emit('event', data, () => {
         // console.log('event', answer.msg);
       });
     },
@@ -427,6 +434,9 @@ export default {
           this.beep();
         }
       }, 1000);
+    },
+    onCloseAllRefreshModal() {
+      this.$store.commit('CLOSE_ALL_REFRES_MODAL');
     },
   },
 };

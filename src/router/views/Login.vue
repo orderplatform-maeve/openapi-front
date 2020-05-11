@@ -48,6 +48,10 @@ export default {
 </script>
 
 <style lang="scss">
+.top .title {
+  margin: auto;
+  margin-bottom: 12px;
+}
 .body {
   form {
     margin-top:24px;

@@ -53,6 +53,7 @@
 </template>
 
 <script>
+/* eslint-disable no-prototype-builtins */
 export default {
   props: {
     show: {
@@ -255,6 +256,8 @@ export default {
     selectProduct(product) {
       const code = product.T_order_store_good_code;
       const current_time = Date.now();
+
+      // if (Object.prototype.hasOwnProperty.call(this.select_products, code)) {
 
       if (this.select_products.hasOwnProperty(code))  {
         this.select_products[code].qty += 1;

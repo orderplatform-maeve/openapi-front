@@ -1,15 +1,21 @@
 <template lang="pug">
 #tables
-  .top
   ul.table-list
     li.table-item(v-for="table in tables" :key="table.Ta_id" )
       .table-number(@click="openTableOrders(table)" :class="'empty-table'") {{getTableName(table)}}
+  .footer
+    .button(@click="onAllRefresh") 테이블 전체 초기화
 </template>
 
 <script>
 import paths from '@router/paths';
 
 export default {
+  data() {
+    return {
+      visibleAllRefreshModal: false,
+    };
+  },
   computed: {
     tables() {
       return this.$store.state.tables;
@@ -38,6 +44,45 @@ export default {
         },
       });
     },
+    // async onAllRefresh() {
+    //   try {
+    //     const { store_code } = this.$store.state.auth.store;
+    //     const fd = new FormData();
+    //     fd.append('store_code', store_code);
+    //     fd.append('timer', 2);
+
+    //     const res = await this.$store.dispatch('allTaletReload', fd);
+    //     console.log(res);
+
+    //   } catch (error) {
+    //     this.$store.commit('pushFlashMessage', '전체 새로 고침에 실패 하였습니다.');
+    //   }
+    // },
+    async onAllRefresh() {
+      this.$store.commit('SHOW_ALL_REFRES_MODAL');
+      // console.log(this.tables);
+      const { store_code } = this.$store.state.auth.store;
+
+      const delay = (asyncFn) => new Promise((reslove) => setTimeout(() => reslove(asyncFn), 3000));
+
+      const refreshReqeust = async (item) => {
+        const fd = new FormData();
+        fd.append('store_code', store_code);
+        fd.append('table_id', item.Ta_id);
+
+        const res = await delay(this.$store.dispatch('tabletReload', fd));
+
+        return res;
+      };
+
+      const promises = await this.tables.map(refreshReqeust);
+
+      const resutls = await Promise.allSettled(promises);
+
+      resutls.forEach((item) => {
+        console.log(item);
+      });
+    },
   },
 };
 </script>
@@ -49,22 +94,25 @@ export default {
   flex-direction:column;
   width:100%;
 
-  .top {
+  .footer {
     display:flex;
-    padding:12px;
+    padding: 12px;
+    align-items: center;
+    justify-content: center;
+    border-top: solid 2px #484848;
 
     .button {
       display:flex;
       align-items: center;
       justify-content: center;
       margin:0px;
-      padding:0;
+      padding: 20px;
       height:40px;
       background-color:#fafafa;
       color:#000000;
       border-radius:100px;
-      flex-grow:1;
       font-weight:900;
+      font-size: 32px;
     }
     .button.button-dark {
       background-color:#484848;
