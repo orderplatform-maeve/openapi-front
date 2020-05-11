@@ -1,5 +1,8 @@
+const { env: { UPLOAD_TYPE, UPLOAD_VERSION } } = process;
+
 /** @type import('@vue/cli-service').ProjectOptions */
 module.exports = {
+  publicPath: process.env && !!process.env.UPLOAD_TYPE ? `/v/${UPLOAD_TYPE}/${UPLOAD_VERSION}` : '/',
   // https://github.com/neutrinojs/webpack-chain/tree/v4#getting-started
   chainWebpack(config) {
     // Set up all the aliases we use in our app.

@@ -12,10 +12,8 @@
     "dev:rest": "cross-env NODE_ENV=development SERVER_TYPE=rest vue-cli-service serve --open",
     "dev:stop-redirect": "cross-env NODE_ENV=development SERVER_TYPE=rest STOP_REDIRECT=true vue-cli-service serve --open",
     "build": "cross-env NODE_ENV=production SERVER_TYPE=rest vue-cli-service build",
-    "build-tmp": "cross-env NODE_ENV=production SERVER_TYPE=rest vue-cli-service build",
-    "deploy-tmp": "npm run build-tmp && cross-env UPLOAD_TYPE=tmp node ./script/deployTmp.js",
-    "deploy": "npm run build && cross-env UPLOAD_TYPE=1 node ./script/deploy.js",
-    "deploy-test": "cross-env UPLOAD_TYPE=tmp node ./script/deployTmp.js"
+    "deploy-tmp": "node ./script/deployTmp.js",
+    "deploy": "node ./script/deploy.js"
   },
   "dependencies": {
     "axios": "^0.19.2",
@@ -25,7 +23,6 @@
     "vue": "^2.6.11",
     "vue-axios": "^2.1.5",
     "vue-cookies": "^1.7.0",
-    "vue-filter": "^0.2.5",
     "vue-moment": "^4.0.0",
     "vue-router": "^3.1.6",
     "vue-socket.io": "^3.0.7",
