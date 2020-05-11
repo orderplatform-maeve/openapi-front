@@ -4,14 +4,11 @@
   .md-head
     .md-title 새로고침 리스트 {{ data.length }}
   .md-body
-    div(v-for="tablet in data")
-      p {{ tablet.status }}
-      p {{ tablet.tabletName }}
-      p {{ tablet.msg }}
+    .row(v-for="tablet in data") 테이블 이름: {{ tablet.tabletName }},  메세지: {{ tablet.msg }}
   .md-close-button(
     v-if="enbleCloseButton"
     @click="close()"
-  ) 확인
+  ) 닫기
   .md-disable-button(
     v-if="!enbleCloseButton"
     @click="close()"
@@ -94,18 +91,29 @@ export default {
       font-weight:100;
       color:#ffffff;
       border-bottom:solid 1px #ffffff;
-      margin-right:12px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      margin-right: 0,
     }
   }
 
   .md-body {
     display:flex;
-    flex-direction:row;
+    flex-direction: column;
     flex-grow: 1;
     overflow-y: auto;
+    padding: 12px;
+    border-bottom: 1px solid #cecece;
+    margin-bottom: 12px;
+
+    .row {
+      display: flex;
+      border-bottom: 1px dotted #cecece;
+      font-size: 24px;
+      font-weight: 100;
+      padding: 8px;
+    }
   }
 
   .md-close-button {
