@@ -11,6 +11,11 @@
 import paths from '@router/paths';
 
 export default {
+  data() {
+    return {
+      visibleAllRefreshModal: false,
+    };
+  },
   computed: {
     tables() {
       return this.$store.state.tables;
@@ -54,7 +59,8 @@ export default {
     //   }
     // },
     async onAllRefresh() {
-      console.log(this.tables);
+      this.$store.commit('SHOW_ALL_REFRES_MODAL');
+      // console.log(this.tables);
       const { store_code } = this.$store.state.auth.store;
 
       const delay = (asyncFn) => new Promise((reslove) => setTimeout(() => reslove(asyncFn), 3000));
@@ -73,7 +79,9 @@ export default {
 
       const resutls = await Promise.allSettled(promises);
 
-      console.log('results1', resutls);
+      resutls.forEach((item) => {
+        console.log(item);
+      });
     },
   },
 };

@@ -1,5 +1,9 @@
 <template lang="pug">
 #orderview
+  modal-all-refresh(
+    :show="visibleAllRefreshModal"
+    :close="onCloseAllRefreshModal"
+  )
   flash-message
   modal-confirm(
     :show="confirmModal.show"
@@ -120,6 +124,9 @@ export default {
     },
     visibleLogoutButton() {
       return !!this.userName;
+    },
+    visibleAllRefreshModal() {
+      return this.$store.state.visibleAllRefreshModal;
     },
   },
   watch: {
@@ -427,6 +434,9 @@ export default {
           this.beep();
         }
       }, 1000);
+    },
+    onCloseAllRefreshModal() {
+      this.$store.commit('CLOSE_ALL_REFRES_MODAL');
     },
   },
 };

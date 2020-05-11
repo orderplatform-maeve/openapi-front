@@ -405,6 +405,8 @@ const table = {
   mutations: {
     SET_TABLES: (state, tables) => Vue.set(state, 'tables', tables),
     SET_TABLE_CART_LIST: (state, cartList) => Vue.set(state, 'cartList', cartList),
+    SHOW_ALL_REFRES_MODAL: (state) => Vue.set(state, 'visibleAllRefreshModal', true),
+    CLOSE_ALL_REFRES_MODAL: (state) => Vue.set(state, 'visibleAllRefreshModal', false),
   },
   actions: {
     async setTables({ commit }, payload) {
@@ -447,7 +449,7 @@ const table = {
         const url = endpoints.tablet.refresh;
 
         const res = await axios.post(url, params);
-        console.log(res);
+        // console.log(res);
         return res;
       } catch (error) {
         return false;
@@ -718,6 +720,8 @@ const state = {
   uCode: '',
   flashMessages: [],
   flashMessageCount: 0,
+  visibleAllRefreshModal: false,
+  allRefreshList: [],
 };
 
 const mutations = {

@@ -17,6 +17,7 @@ import {
   MenuModal,
   ProductOptionModal,
   FlashMessage,
+  AllRefreshModal,
 } from '@components';
 
 Vue.config.devtools = true;
@@ -33,6 +34,7 @@ Vue.component('modal-table-orders', TableOrdersModal);
 Vue.component('modal-menu', MenuModal);
 Vue.component('modal-product-option', ProductOptionModal);
 Vue.component('flash-message', FlashMessage);
+Vue.component('modal-all-refresh', AllRefreshModal);
 
 new Vue({
   router,
