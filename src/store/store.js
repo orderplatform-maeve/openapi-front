@@ -407,6 +407,7 @@ const table = {
     SET_TABLE_CART_LIST: (state, cartList) => Vue.set(state, 'cartList', cartList),
     SHOW_ALL_REFRES_MODAL: (state) => Vue.set(state, 'visibleAllRefreshModal', true),
     CLOSE_ALL_REFRES_MODAL: (state) => Vue.set(state, 'visibleAllRefreshModal', false),
+    SET_ALL_REFRESHLIST: (state, allRefreshList) => Vue.set(state, 'allRefreshList', allRefreshList),
   },
   actions: {
     async setTables({ commit }, payload) {

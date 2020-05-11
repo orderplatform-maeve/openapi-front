@@ -63,6 +63,16 @@ export default {
       // console.log(this.tables);
       const { store_code } = this.$store.state.auth.store;
 
+      const getPreparingTabletInfoData = (item) => {
+        return {
+          status: 'request',
+          tabletName: item.Tablet_name,
+          msg: '요청 중입니다.',
+        };
+      };
+
+      this.$store.commit('SET_ALL_REFRESHLIST', this.tables.map(getPreparingTabletInfoData));
+
       const delay = (asyncFn) => new Promise((reslove) => setTimeout(() => reslove(asyncFn), 3000));
 
       const refreshReqeust = async (item) => {
@@ -70,18 +80,30 @@ export default {
         fd.append('store_code', store_code);
         fd.append('table_id', item.Ta_id);
 
-        const res = await delay(this.$store.dispatch('tabletReload', fd));
+        const response = await delay(this.$store.dispatch('tabletReload', fd));
 
-        return res;
+        return {
+          response,
+          item,
+        };
       };
 
       const promises = await this.tables.map(refreshReqeust);
 
       const resutls = await Promise.allSettled(promises);
 
-      resutls.forEach((item) => {
+      const allRefreshList = resutls.map((item) => {
         console.log(item);
+
+        return {
+          // requesterUCode: this.$store.state.uCode,
+          status: item.status,
+          tabletName: item.value.item.Tablet_name,
+          msg: item.value.response.data,
+        };
       });
+
+      this.$store.commit('SET_ALL_REFRESHLIST', allRefreshList);
     },
   },
 };

@@ -2,9 +2,13 @@
 .md.md-product-option(v-if="show")
   .md-background
   .md-head
-    .md-title 새로고침 리스트
+    .md-title 새로고침 리스트 {{ data.length }}
     .md-close-button(@click="close()") 닫기
   .md-body
+    div(v-for="tablet in data")
+      p {{ tablet.status }}
+      p {{ tablet.tabletName }}
+      p {{ tablet.msg }}
 </template>
 
 <script>
@@ -21,6 +25,12 @@ export default {
     onSubmit: {
       type: Function,
       default: () => {},
+    },
+    data: {
+      type: Array,
+      default() {
+        return [];
+      },
     },
   },
 };

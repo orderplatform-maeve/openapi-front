@@ -3,6 +3,7 @@
   modal-all-refresh(
     :show="visibleAllRefreshModal"
     :close="onCloseAllRefreshModal"
+    :data="allRefreshList"
   )
   flash-message
   modal-confirm(
@@ -127,6 +128,9 @@ export default {
     },
     visibleAllRefreshModal() {
       return this.$store.state.visibleAllRefreshModal;
+    },
+    allRefreshList() {
+      return this.$store.state.allRefreshList;
     },
   },
   watch: {
