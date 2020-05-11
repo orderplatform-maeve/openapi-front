@@ -3,12 +3,19 @@
   .md-background
   .md-head
     .md-title 새로고침 리스트 {{ data.length }}
-    .md-close-button(@click="close()") 닫기
   .md-body
     div(v-for="tablet in data")
       p {{ tablet.status }}
       p {{ tablet.tabletName }}
       p {{ tablet.msg }}
+  .md-close-button(
+    v-if="enbleCloseButton"
+    @click="close()"
+  ) 확인
+  .md-disable-button(
+    v-if="!enbleCloseButton"
+    @click="close()"
+  ) 새로고침 요청중
 </template>
 
 <script>
@@ -22,15 +29,26 @@ export default {
       type: Function,
       default: () => {},
     },
-    onSubmit: {
-      type: Function,
-      default: () => {},
-    },
     data: {
       type: Array,
       default() {
         return [];
       },
+    },
+  },
+  computed: {
+    enbleCloseButton() {
+      const { allRefreshList } = this.$store.state;
+
+      const currentCount = allRefreshList.length;
+
+      const findTargetCount =  allRefreshList.filter((item) => {
+        if (!item?.status) return false;
+
+        return item.status === 'fulfilled' || item.status === 'rejected';
+      }).length;
+
+      return currentCount === findTargetCount;
     },
   },
 };
@@ -81,32 +99,6 @@ export default {
       text-overflow: ellipsis;
       white-space: nowrap;
     }
-    .md-close-button {
-      display:flex;
-      align-items: center;
-      justify-content: center;
-      padding:0 30px;
-      font-size:20px;
-      color:#000000;
-      border: solid 1px #ffffff;
-      border-radius:100px;
-      height:60px;
-      box-shadow: 0 0 8px -4px #000000;
-      background-color:#ffffff;
-
-      svg {
-        margin-right:8px;
-        width:auto;
-        height:16px;
-
-        * {
-          fill: #000000;
-        }
-      }
-    }
-    .md-close-button:active {
-      opacity:0.4;
-    }
   }
 
   .md-body {
@@ -114,7 +106,34 @@ export default {
     flex-direction:row;
     flex-grow: 1;
     overflow-y: auto;
+  }
 
+  .md-close-button {
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    padding:0 30px;
+    font-size:20px;
+    color:#000000;
+    border: solid 1px #ffffff;
+    border-radius:100px;
+    height:60px;
+    box-shadow: 0 0 8px -4px #000000;
+    background-color:#ffffff;
+  }
+
+  .md-disable-button {
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    padding:0 30px;
+    font-size:20px;
+    color:#000000;
+    border: solid 1px #cecece;
+    border-radius:100px;
+    height:60px;
+    box-shadow: 0 0 8px -4px #000000;
+    background-color:#cecece;
   }
 }
 

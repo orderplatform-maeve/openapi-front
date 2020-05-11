@@ -441,6 +441,7 @@ export default {
     },
     onCloseAllRefreshModal() {
       this.$store.commit('CLOSE_ALL_REFRES_MODAL');
+      this.$store.commit('SET_ALL_REFRESHLIST', []);
     },
   },
 };
