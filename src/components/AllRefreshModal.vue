@@ -120,7 +120,7 @@ export default {
     display:flex;
     align-items: center;
     justify-content: center;
-    padding:0 30px;
+    padding:12px 30px;
     font-size:20px;
     color:#000000;
     border: solid 1px #ffffff;
@@ -134,7 +134,7 @@ export default {
     display:flex;
     align-items: center;
     justify-content: center;
-    padding:0 30px;
+    padding:12px 30px;
     font-size:20px;
     color:#000000;
     border: solid 1px #cecece;
