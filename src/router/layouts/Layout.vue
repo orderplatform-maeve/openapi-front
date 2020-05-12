@@ -117,7 +117,6 @@ export default {
     },
     userName() {
       const { auth } = this;
-      // console.log(auth);
       return auth && auth.member && auth.member.name;
     },
     visibleLoginButton() {

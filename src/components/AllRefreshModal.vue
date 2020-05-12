@@ -5,14 +5,16 @@
     .md-title 새로고침 리스트 {{ data.length }}
   .md-body
     .row(v-for="tablet in data") 테이블 이름: {{ tablet.tabletName }},  메세지: {{ tablet.msg }}
-  .md-close-button(
-    v-if="enbleCloseButton"
-    @click="close()"
-  ) 닫기
-  .md-disable-button(
-    v-if="!enbleCloseButton"
-    @click="close()"
-  ) 새로고침 요청중
+  .footer
+    .md-close-button(
+      v-if="enbleCloseButton"
+      @click="close()"
+    ) 닫기
+    .md-disable-button(
+      v-if="!enbleCloseButton"
+      @click="close()"
+    ) 새로고침 요청중
+    .md-exit-button(@click="exit()") 강제 종료
 </template>
 
 <script>
@@ -46,6 +48,11 @@ export default {
       }).length;
 
       return currentCount === findTargetCount;
+    },
+  },
+  methods: {
+    exit() {
+      location.replace('/');
     },
   },
 };
@@ -116,33 +123,53 @@ export default {
     }
   }
 
-  .md-close-button {
-    display:flex;
+  .footer {
+    display: flex;
+    justify-content: space-around;
     align-items: center;
-    justify-content: center;
-    padding:12px 30px;
-    font-size:20px;
-    color:#000000;
-    border: solid 1px #ffffff;
-    border-radius:100px;
-    height:60px;
-    box-shadow: 0 0 8px -4px #000000;
-    background-color:#ffffff;
+
+    .md-close-button {
+      display:flex;
+      align-items: center;
+      justify-content: center;
+      padding:12px 30px;
+      font-size:20px;
+      color:#000000;
+      border: solid 1px #ffffff;
+      border-radius:100px;
+      height:60px;
+      box-shadow: 0 0 8px -4px #000000;
+      background-color:#ffffff;
+    }
+
+    .md-disable-button {
+      display:flex;
+      align-items: center;
+      justify-content: center;
+      padding:12px 30px;
+      font-size:20px;
+      color:#000000;
+      border: solid 1px #cecece;
+      border-radius:100px;
+      height:60px;
+      box-shadow: 0 0 8px -4px #000000;
+      background-color:#cecece;
+    }
+
+    .md-exit-button {
+      display:flex;
+      align-items: center;
+      justify-content: center;
+      padding:12px 30px;
+      font-size:20px;
+      color:white;
+      border-radius:100px;
+      height:60px;
+      box-shadow: 0 0 8px -4px #000000;
+      background-color:red;
+    }
   }
 
-  .md-disable-button {
-    display:flex;
-    align-items: center;
-    justify-content: center;
-    padding:12px 30px;
-    font-size:20px;
-    color:#000000;
-    border: solid 1px #cecece;
-    border-radius:100px;
-    height:60px;
-    box-shadow: 0 0 8px -4px #000000;
-    background-color:#cecece;
-  }
 }
 
 </style>

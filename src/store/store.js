@@ -35,13 +35,13 @@ const socket = {
   },
   actions: {
     SOCKET_orderlog({ commit, state }, order) {
-      console.log('SOCKET_orderlog', order);
+      // console.log('SOCKET_orderlog', order);
       if (vaildShopCode(state, order)) {
         commit('PUSH_ORDER', order);
       }
     },
     async SOCKET_orderview({ commit, state, dispatch }, payload) {
-      console.log('out SOCKET_orderview', payload);
+      // console.log('out SOCKET_orderview', payload);
 
       if (payload?.type_msg === 'commit') {
         const targetOrder = {
@@ -57,8 +57,7 @@ const socket = {
       }
 
       if (payload?.type === 'reload') {
-
-        console.log('reload', payload);
+        // console.log('reload', payload);
 
         const validUCode = payload.uCode === localStorage?.uCode;
         const validMACAddr = payload.MACAddr === window.UUID?.getMacAddress();
@@ -146,7 +145,7 @@ const socket = {
       }
 
       if (payload?.type === '@show/allRefreshModal') {
-        console.log('@show/allRefreshModal', payload.allRefreshList);
+        // console.log('@show/allRefreshModal', payload.allRefreshList);
         commit('SHOW_ALL_REFRES_MODAL');
         commit('SET_ALL_REFRESH_LIST', payload.allRefreshList);
       }
