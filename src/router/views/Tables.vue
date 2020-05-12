@@ -14,11 +14,32 @@ export default {
   data() {
     return {
       visibleAllRefreshModal: false,
+      timerArr: [],
     };
   },
   computed: {
     tables() {
       return this.$store.state.tables;
+    },
+  },
+  watch: {
+    '$store.state.allRefreshList'(nextValue) {
+      const filteredDoneData = nextValue.filter((o) => o.status === 'fulfilled' || o.status === 'reject');
+      const filteredDoneDataLength = filteredDoneData.length;
+      // console.log(filteredDoneDataLength, nextValue.length);
+      // console.log('watch', nextValue);
+
+      if (filteredDoneDataLength > 0) {
+        const curTimerIdx = filteredDoneDataLength - 1;
+        const timer = this.timerArr[curTimerIdx];
+        console.log(timer);
+        clearTimeout(timer);
+      }
+
+      if (filteredDoneDataLength === nextValue.length) {
+        this.timerArr = [];
+        console.log('clean tiemr doen', this.timerArr);
+      }
     },
   },
   mounted() {
@@ -73,7 +94,7 @@ export default {
 
       const preparingAllRefeshList = this.tables.map(getPreparingTabletInfoData);
 
-      this.$store.commit('SET_ALL_REFRESHLIST', preparingAllRefeshList);
+      this.$store.commit('SET_ALL_REFRESH_LIST', preparingAllRefeshList);
 
       this.$socket.emit('orderview', {
         store: {
@@ -83,45 +104,48 @@ export default {
         allRefreshList: preparingAllRefeshList,
       });
 
-      const delay = (asyncFn) => new Promise((reslove) => setTimeout(() => reslove(asyncFn), 3000));
+      this.tables.forEach((item, i) => {
 
-      const refreshReqeust = async (item) => {
-        const fd = new FormData();
-        fd.append('store_code', store_code);
-        fd.append('table_id', item.Ta_id);
+        const timer = setTimeout(async () => {
+          const fd = new FormData();
+          fd.append('store_code', store_code);
+          fd.append('table_id', item.Ta_id);
 
-        const response = await delay(this.$store.dispatch('tabletReload', fd));
+          const res = await this.$store.dispatch('tabletReload', fd);
+          // console.log(res);
 
-        return {
-          response,
-          item,
-        };
-      };
+          const result = {
+            status: res.status === 200 ? 'fulfilled' : 'rejected',
+            tabletName: item.Tablet_name,
+            msg: res?.data,
+          };
 
-      const promises = await this.tables.map(refreshReqeust);
+          // console.log(result);
 
-      const resutls = await Promise.allSettled(promises);
+          const targetItemIndex = this.$store.state.allRefreshList.findIndex((o) => o.tabletName === result.tabletName);
 
-      const allRefreshList = resutls.map((item) => {
-        console.log(item);
+          if (targetItemIndex > -1) {
+            const allRefreshList = [...this.$store.state.allRefreshList];
 
-        return {
-          // requesterUCode: this.$store.state.uCode,
-          status: item.status,
-          tabletName: item.value.item.Tablet_name,
-          msg: item.value.response.data,
-        };
+            allRefreshList[targetItemIndex] = result;
+
+            // this.$store.commit('SET_ALL_REFRESH_LIST', allRefreshList);
+
+            this.$socket.emit('orderview', {
+              store: {
+                code: store_code,
+              },
+              type: '@show/allRefreshModal',
+              allRefreshList,
+            });
+          }
+        }, i * 3000);
+
+        this.timerArr = [...JSON.parse(JSON.stringify(this.timerArr)), timer];
       });
 
-      this.$store.commit('SET_ALL_REFRESHLIST', allRefreshList);
+      console.log(this.timerArr);
 
-      this.$socket.emit('orderview', {
-        store: {
-          code: store_code,
-        },
-        type: '@show/allRefreshModal',
-        allRefreshList,
-      });
     },
   },
 };

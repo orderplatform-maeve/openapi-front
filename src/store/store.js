@@ -136,7 +136,7 @@ const socket = {
 
       if (payload?.type === '@show/allRefreshModal') {
         commit('SHOW_ALL_REFRES_MODAL');
-        commit('SET_ALL_REFRESHLIST', payload.allRefreshList);
+        commit('SET_ALL_REFRESH_LIST', payload.allRefreshList);
       }
     },
   },
@@ -198,7 +198,7 @@ const authentication = {
         return res.data.result;
       } catch (error) {
         console.error(error);
-        alert(error);
+        commit('pushFlashMessage', error);
         return false;
       }
     },
@@ -412,7 +412,7 @@ const table = {
     SET_TABLE_CART_LIST: (state, cartList) => Vue.set(state, 'cartList', cartList),
     SHOW_ALL_REFRES_MODAL: (state) => Vue.set(state, 'visibleAllRefreshModal', true),
     CLOSE_ALL_REFRES_MODAL: (state) => Vue.set(state, 'visibleAllRefreshModal', false),
-    SET_ALL_REFRESHLIST: (state, allRefreshList) => Vue.set(state, 'allRefreshList', allRefreshList),
+    SET_ALL_REFRESH_LIST: (state, allRefreshList) => Vue.set(state, 'allRefreshList', allRefreshList),
   },
   actions: {
     async setTables({ commit }, payload) {
