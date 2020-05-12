@@ -165,7 +165,7 @@ export default {
   },
   sockets: {
     connect() {
-      console.log('connect sokets');
+      console.log('socket connected');
       this.beep();
     },
     orderview(message) {
@@ -441,7 +441,7 @@ export default {
     },
     onCloseAllRefreshModal() {
       this.$store.commit('CLOSE_ALL_REFRES_MODAL');
-      this.$store.commit('SET_ALL_REFRESHLIST', []);
+      this.$store.commit('SET_ALL_REFRESH_LIST', []);
     },
   },
 };

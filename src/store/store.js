@@ -83,6 +83,17 @@ const socket = {
               console.log('location', nowPath);
 
               if (!process.env.STOP_REDIRECT) {
+                if (state.visibleAllRefreshModal) {
+                  // commit('CLOSE_ALL_REFRES_MODAL');
+                  const { store_code } = state.auth.store;
+                  Vue.$socket.emit('orderview', {
+                    store: {
+                      code: store_code,
+                    },
+                    type: '@close/allRefreshModal',
+                  });
+                }
+
                 // diff version
                 if (nowPath !== nextUrl) {
                   return location.replace(nextUrl);
@@ -135,8 +146,13 @@ const socket = {
       }
 
       if (payload?.type === '@show/allRefreshModal') {
+        console.log('@show/allRefreshModal', payload.allRefreshList);
         commit('SHOW_ALL_REFRES_MODAL');
         commit('SET_ALL_REFRESH_LIST', payload.allRefreshList);
+      }
+
+      if (payload?.type === '@close/allRefreshModal') {
+        commit('CLOSE_ALL_REFRES_MODAL');
       }
     },
   },
