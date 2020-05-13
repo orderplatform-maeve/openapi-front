@@ -476,7 +476,7 @@ const table = {
         return false;
       }
     },
-    async allTaletReload(context, params) {
+    async allTabletReload(context, params) {
       try {
         const url = endpoints.tablet.allRefresh;
 
