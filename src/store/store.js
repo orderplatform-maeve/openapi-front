@@ -319,10 +319,12 @@ const shop = {
         // console.log(response);
 
         const target = response.data.data;
+        // console.log('target', target);
 
         const device = {
           serviceStatus: !!target.T_order_store_close,
           orderStatus: !!target.T_order_store_close_order,
+          recentOrderStatus: !!target.T_order_recent_order_hide,
         };
 
         commit('setDeviceStatus', device);
@@ -406,6 +408,36 @@ const device = {
     async setRejectOrder(context, params) {
       try {
         const url = endpoints.device.shopCloseOrder;
+        const response = await axios.post(url, params);
+
+        if (response) {
+          return true;
+        }
+
+        return false;
+      } catch (error) {
+        console.log(error);
+        return false;
+      }
+    },
+    async setShowRecentOrder(context, params) {
+      try {
+        const url = endpoints.device.showRecentOrder;
+        const response = await axios.post(url, params);
+
+        if (response) {
+          return true;
+        }
+
+        return false;
+      } catch (error) {
+        console.log(error);
+        return false;
+      }
+    },
+    async setCloseRecentOrder(context, params) {
+      try {
+        const url = endpoints.device.hideRecentOrder;
         const response = await axios.post(url, params);
 
         if (response) {
@@ -730,6 +762,7 @@ const state = {
   device: {
     serviceStatus: false,
     orderStatus: false,
+    recentOrderStatus: false,
   },
   auth: authProto,
   stores: [],

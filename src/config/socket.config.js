@@ -8,7 +8,7 @@ const PROD_SOCKET_URL = 'http://socketio.torder.co.kr';
 export const SOCKET_URL = isDemo ? DEV_SOCKET_URL : PROD_SOCKET_URL;
 
 export default {
-  debug: true,
+  debug: false,
   connection: SOCKET_URL,
   options: {
     transports: ['websocket'],
