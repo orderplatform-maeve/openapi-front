@@ -3,6 +3,7 @@
   ul.table-list
     li.table-item(v-for="table in tables" :key="table.Ta_id" )
       .table-number(@click="openTableOrders(table)" :class="'empty-table'") {{getTableName(table)}}
+        p {{table.ordering ? '주문중' : ''}}
   .footer
     .button(
       v-if="getAllRefreshDataVisible()"
@@ -46,7 +47,7 @@ export default {
     },
   },
   mounted() {
-    this.initialized();
+    // this.initialized();
   },
   methods: {
     async initialized() {
@@ -62,6 +63,8 @@ export default {
       return table?.Tablet_name;
     },
     async openTableOrders(table) {
+      if (table?.ordering) return this.$store.commit('pushFlashMessage', '다른 오더뷰 에서 주문 중입니다.');
+
       this.$router.push({
         name: paths.tableOrders.replace('/', ''),
         params: {

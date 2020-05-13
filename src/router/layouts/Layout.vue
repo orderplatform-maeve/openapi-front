@@ -166,6 +166,7 @@ export default {
     if (process.env.UPLOAD_TYPE !== 'tmp') {
       this.tagetVersionRedirect();
     }
+    this.initialized();
   },
   sockets: {
     connect() {
@@ -179,6 +180,15 @@ export default {
     }
   },
   methods: {
+    async initialized() {
+      try {
+        const params = { shop_code: this.$store.state.auth.store.store_code };
+        await this.$store.dispatch('setTables', params);
+
+      } catch (error) {
+        console.log(error);
+      }
+    },
     async tagetVersionRedirect() {
       try {
         if (this.$store.state.auth?.store?.store_code) {
