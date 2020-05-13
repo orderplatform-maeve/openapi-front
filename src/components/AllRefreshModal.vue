@@ -3,7 +3,7 @@
   .md-background
   .md-head
     .md-title 새로고침 리스트 {{ data.length }}
-  .md-body
+  .md-body-refresh
     .row(v-for="tablet in data") 테이블 이름: {{ tablet.tabletName }},  메세지: {{ tablet.msg }}
   .footer
     .md-close-button(
@@ -105,7 +105,7 @@ export default {
     }
   }
 
-  .md-body {
+  .md-body-refresh {
     display:flex;
     flex-direction: column;
     flex-grow: 1;
