@@ -50,8 +50,8 @@
         .tab-group
           .tab-name 주문 내역
           .tab-buttons
-            .tab-button(:class="getOnTabletOrderClass(device)" @click="agreeOrder") On
-            .tab-button(:class="getOffTabletOrderClass(device)" @click="rejectOrder") Off
+            .tab-button(:class="getOnTabletRecentOrderClass(device)" @click="showRecentOrder") On
+            .tab-button(:class="getOffTabletRecentOrderClass(device)" @click="hideRecentOrder") Off
         hr
         router-link.button(v-if="visibleStoresButton" :to="paths.store") 매장 보기
         router-link.button.button-red(v-if="visibleLoginButton" :to="paths.login") 로그인
@@ -260,6 +260,20 @@ export default {
       this.confirmModal.message = '태블릿을 메뉴판으로만 사용하고 주문은 안돼요';
       this.confirmModal.confirm = this.reqRejectOrder;
     },
+    showRecentOrder() {
+      this.confirmModal.show = true;
+      this.confirmModal.close = this.closeConfirmModal;
+      this.confirmModal.title = '주문 내역 표시';
+      this.confirmModal.message = '태블릿에서 주문 내역이 나타납니다';
+      this.confirmModal.confirm = this.reqShowOrder;
+    },
+    hideRecentOrder() {
+      this.confirmModal.show = true;
+      this.confirmModal.close = this.closeConfirmModal;
+      this.confirmModal.title = '주문 내역 숨김';
+      this.confirmModal.message = '태블릿에서 주문 내역이 숨겨집니다';
+      this.confirmModal.confirm = this.reqHideOrder;
+    },
     closeConfirmModal() {
       this.confirmModal.show = false;
     },
@@ -302,6 +316,26 @@ export default {
 
       if (response) {
         this.device.orderStatus = 1;
+        this.closeConfirmModal();
+      }
+    },
+    async reqShowOrder() {
+      const fd = new FormData();
+      fd.append('store_code', this.auth.store.store_code);
+      const response = await this.$store.dispatch('setShowRecentOrder', fd);
+
+      if (response) {
+        this.device.recentOrderStatus = 0;
+        this.closeConfirmModal();
+      }
+    },
+    async reqHideOrder() {
+      const fd = new FormData();
+      fd.append('store_code', this.auth.store.store_code);
+      const response = await this.$store.dispatch('setCloseRecentOrder', fd);
+
+      if (response) {
+        this.device.recentOrderStatus = 1;
         this.closeConfirmModal();
       }
     },
@@ -446,6 +480,23 @@ export default {
     onCloseAllRefreshModal() {
       this.$store.commit('CLOSE_ALL_REFRES_MODAL');
       this.$store.commit('SET_ALL_REFRESH_LIST', []);
+    },
+    getOnTabletRecentOrderClass(device) {
+      const active = !this.vaildRecentOrderStatus(device);
+
+      return {
+        active,
+      };
+    },
+    getOffTabletRecentOrderClass(device) {
+      const active = this.vaildRecentOrderStatus(device);
+
+      return {
+        active,
+      };
+    },
+    vaildRecentOrderStatus(device) {
+      return device && device.recentOrderStatus;
     },
   },
 };
