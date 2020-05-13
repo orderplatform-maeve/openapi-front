@@ -1,5 +1,10 @@
 <template lang="pug">
 #orderview
+  modal-all-refresh(
+    :show="visibleAllRefreshModal"
+    :close="onCloseAllRefreshModal"
+    :data="allRefreshList"
+  )
   flash-message
   modal-confirm(
     :show="confirmModal.show"
@@ -39,6 +44,11 @@
             .tab-button(:class="getOffTabletMonitorClass(device)" @click="closeTabletScreen") Off
         .tab-group
           .tab-name 태블릿 주문
+          .tab-buttons
+            .tab-button(:class="getOnTabletOrderClass(device)" @click="agreeOrder") On
+            .tab-button(:class="getOffTabletOrderClass(device)" @click="rejectOrder") Off
+        .tab-group
+          .tab-name 주문 내역
           .tab-buttons
             .tab-button(:class="getOnTabletOrderClass(device)" @click="agreeOrder") On
             .tab-button(:class="getOffTabletOrderClass(device)" @click="rejectOrder") Off
@@ -112,7 +122,6 @@ export default {
     },
     userName() {
       const { auth } = this;
-      // console.log(auth);
       return auth && auth.member && auth.member.name;
     },
     visibleLoginButton() {
@@ -120,6 +129,12 @@ export default {
     },
     visibleLogoutButton() {
       return !!this.userName;
+    },
+    visibleAllRefreshModal() {
+      return this.$store.state.visibleAllRefreshModal;
+    },
+    allRefreshList() {
+      return this.$store.state.allRefreshList;
     },
   },
   watch: {
@@ -154,11 +169,11 @@ export default {
   },
   sockets: {
     connect() {
-      console.log('connect sokets');
+      console.log('socket connected');
       this.beep();
     },
     orderview(message) {
-      this.$socket.emit('res', message, (msg) => {
+      this.$socket.emit('res', message, () => {
         console.log('socket res');
       });
     }
@@ -351,7 +366,7 @@ export default {
         datetime: datetime,
       };
 
-      this.$socket.emit('event', data, (answer) => {
+      this.$socket.emit('event', data, () => {
         // console.log('event', answer.msg);
       });
     },
@@ -427,6 +442,10 @@ export default {
           this.beep();
         }
       }, 1000);
+    },
+    onCloseAllRefreshModal() {
+      this.$store.commit('CLOSE_ALL_REFRES_MODAL');
+      this.$store.commit('SET_ALL_REFRESH_LIST', []);
     },
   },
 };

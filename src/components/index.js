@@ -4,3 +4,4 @@ export { default as TableOrdersModal } from './TableOrdersModal';
 export { default as MenuModal } from './MenuModal';
 export { default as ProductOptionModal } from './ProductOptionModal';
 export { default as FlashMessage } from './FlashMessage';
+export { default as AllRefreshModal } from './AllRefreshModal';

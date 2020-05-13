@@ -35,13 +35,13 @@ const socket = {
   },
   actions: {
     SOCKET_orderlog({ commit, state }, order) {
-      console.log('SOCKET_orderlog', order);
+      // console.log('SOCKET_orderlog', order);
       if (vaildShopCode(state, order)) {
         commit('PUSH_ORDER', order);
       }
     },
     async SOCKET_orderview({ commit, state, dispatch }, payload) {
-      console.log('out SOCKET_orderview', payload);
+      // console.log('out SOCKET_orderview', payload);
 
       if (payload?.type_msg === 'commit') {
         const targetOrder = {
@@ -57,8 +57,7 @@ const socket = {
       }
 
       if (payload?.type === 'reload') {
-
-        console.log('reload', payload);
+        // console.log('reload', payload);
 
         const validUCode = payload.uCode === localStorage?.uCode;
         const validMACAddr = payload.MACAddr === window.UUID?.getMacAddress();
@@ -83,6 +82,17 @@ const socket = {
               console.log('location', nowPath);
 
               if (!process.env.STOP_REDIRECT) {
+                if (state.visibleAllRefreshModal) {
+                  // commit('CLOSE_ALL_REFRES_MODAL');
+                  const { store_code } = state.auth.store;
+                  Vue.$socket.emit('orderview', {
+                    store: {
+                      code: store_code,
+                    },
+                    type: '@close/allRefreshModal',
+                  });
+                }
+
                 // diff version
                 if (nowPath !== nextUrl) {
                   return location.replace(nextUrl);
@@ -104,11 +114,44 @@ const socket = {
 
           if (payload?.data) {
             arr[findIdx] = payload.data;
-            commit('pushFlashMessage', `"${payload.good.displayName}" 정보가 수정되었습니다.`)
+            commit('pushFlashMessage', `"${payload.good.displayName}" 정보가 수정되었습니다.`);
             commit('SET_GOODS', arr);
           }
-
         }
+      }
+
+      if (payload?.type === '@reset/orders') {
+        commit('SET_TABLE_CART_LIST', []);
+        commit('pushFlashMessage', '주문 삭제 되었습니다.');
+      }
+
+      if (payload?.type === '@create/orders') {
+        if (payload?.order) {
+          commit('SET_ORDER', payload.order);
+        }
+
+        if (payload?.orders) {
+          commit('SET_TABLE_CART_LIST', payload?.orders);
+        }
+
+        if (payload.cartList?.length === 1) {
+          commit('pushFlashMessage', `${payload.cartList[0].display_name}가 주문 되었습니다.`);
+        }
+
+        if (payload.cartList.length > 1) {
+          const anotherCount = payload.cartList.length - 1;
+          commit('pushFlashMessage', `${payload.cartList[0].display_name} 외 ${anotherCount}개 주문 되었습니다.`);
+        }
+      }
+
+      if (payload?.type === '@show/allRefreshModal') {
+        // console.log('@show/allRefreshModal', payload.allRefreshList);
+        commit('SHOW_ALL_REFRES_MODAL');
+        commit('SET_ALL_REFRESH_LIST', payload.allRefreshList);
+      }
+
+      if (payload?.type === '@close/allRefreshModal') {
+        commit('CLOSE_ALL_REFRES_MODAL');
       }
     },
   },
@@ -170,7 +213,7 @@ const authentication = {
         return res.data.result;
       } catch (error) {
         console.error(error);
-        alert(error);
+        commit('pushFlashMessage', error);
         return false;
       }
     },
@@ -212,7 +255,7 @@ const order = {
     },
   },
   actions: {
-    async commitOrder({ commit }, payload) {
+    async commitOrder(context, payload) {
       const url = endpoints.orders.commitOrderViewData;
 
       const fd = new FormData();
@@ -246,7 +289,7 @@ const order = {
 
       return response;
     },
-    async requestOrder({ commit }, params) {
+    async requestOrder(context, params) {
       const url = endpoints.orders.order;
       const response = await axios.post(url, params);
 
@@ -291,7 +334,7 @@ const shop = {
         return false;
       }
     },
-    async requestStoreList({ commit }, params) {
+    async requestStoreList(context, params) {
       try {
         const fd = new FormData();
         fd.append('member_id', params.member.code);
@@ -382,6 +425,9 @@ const table = {
   mutations: {
     SET_TABLES: (state, tables) => Vue.set(state, 'tables', tables),
     SET_TABLE_CART_LIST: (state, cartList) => Vue.set(state, 'cartList', cartList),
+    SHOW_ALL_REFRES_MODAL: (state) => Vue.set(state, 'visibleAllRefreshModal', true),
+    CLOSE_ALL_REFRES_MODAL: (state) => Vue.set(state, 'visibleAllRefreshModal', false),
+    SET_ALL_REFRESH_LIST: (state, allRefreshList) => Vue.set(state, 'allRefreshList', allRefreshList),
   },
   actions: {
     async setTables({ commit }, payload) {
@@ -415,6 +461,27 @@ const table = {
         }
 
         return false;
+      } catch (error) {
+        return false;
+      }
+    },
+    async tabletReload(context, params) {
+      try {
+        const url = endpoints.tablet.refresh;
+
+        const res = await axios.post(url, params);
+        // console.log(res);
+        return res;
+      } catch (error) {
+        return false;
+      }
+    },
+    async allTabletReload(context, params) {
+      try {
+        const url = endpoints.tablet.allRefresh;
+
+        const res = await axios.post(url, params);
+        console.log(res);
       } catch (error) {
         return false;
       }
@@ -546,7 +613,7 @@ const menu = {
 
       const getFilteredGoods = (products, subCategory) => {
         return products.filter((good) => findGoods(good, subCategory));
-      }
+      };
 
       const getSubCategoryItem = (subCategoryItem, products) => {
         const goods = getFilteredGoods(products, subCategoryItem.code);
@@ -631,6 +698,18 @@ const popup = {
   },
 };
 
+const tablet = {
+  actions: {
+    async resetOrder(context, params) {
+      const url = endpoints.tablet.resetOrder;
+
+      const res = await axios.post(url, params);
+
+      return res;
+    },
+  },
+};
+
 const authProto = {
   member: {
     code: '',
@@ -662,6 +741,8 @@ const state = {
   uCode: '',
   flashMessages: [],
   flashMessageCount: 0,
+  visibleAllRefreshModal: false,
+  allRefreshList: [],
 };
 
 const mutations = {
@@ -685,6 +766,7 @@ const actions = {
   ...table.actions,
   ...menu.actions,
   ...goods.actions,
+  ...tablet.actions,
 };
 
 const getters = {
