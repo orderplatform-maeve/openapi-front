@@ -1,9 +1,10 @@
-import { isDev } from '@utils/constants';
+import { isDemo } from '@utils/constants';
 
 const DEMO_URL = 'http://demo.torder.co.kr';
 const REST_URL = 'http://rest.torder.co.kr';
+const ADMIN_URL = 'http://admin.torder.co.kr';
 
-const SERVER_URL = isDev ? DEMO_URL : REST_URL;
+const SERVER_URL = isDemo ? DEMO_URL : REST_URL;
 
 const endpoints = {
   authentication: {
@@ -19,6 +20,8 @@ const endpoints = {
     shopClose: `${SERVER_URL}/store/shop_close`,
     shopOpenOrder: `${SERVER_URL}/store/shop_open_order`,
     shopCloseOrder: `${SERVER_URL}/store/shop_close_order`,
+    showRecentOrder: `${SERVER_URL}/store/shop_open_recent_order`,
+    hideRecentOrder: `${SERVER_URL}/store/shop_close_recent_order`,
   },
   table: {
     getTableList: `${SERVER_URL}/shop/get_table_list`,
@@ -35,6 +38,11 @@ const endpoints = {
   },
   goods: {
     updateGoodStatus: `${SERVER_URL}/goods/update_goods`,
+  },
+  tablet: {
+    allRefresh: `${ADMIN_URL}/tablet/tablet_all_update`,
+    refresh: `${ADMIN_URL}/tablet/tablet_refresh`,
+    resetOrder: `${ADMIN_URL}/tablet/tablet_order_trash`,
   },
 };
 

@@ -86,7 +86,7 @@ export default {
             return location.replace(res.data.data.T_order_store_orderView_version);
           }
         } else {
-          console.error('리다이렉션 버젼 주소가 없습니다. 최신버젼을 사용합니다.');
+          console.error('리다이렉션 버젼 주소가 없습니다. 루트버젼을 사용합니다.');
           return this.$router.push(paths.order);
         }
       } catch(error) {

@@ -44,6 +44,17 @@
                   .title ┕▷ {{ option.display_name }}
                 .option-text.product-qty {{ option.order_qty }}
                 .option-text.product-price {{ option.pos_price }}
+            .row(v-for="(order, orderIdx) in cartList")
+              .order
+                .order-text.product-title
+                  .title {{ order.display_name }}
+                .order-text.product-qty {{ order.order_qty }}
+                .order-text.product-price {{ getPrice(order.good_price) }}
+              .option(v-for="option in order.option")
+                .option-text.product-title
+                  .title ┕▷ {{ option.display_name }}
+                .option-text.product-qty {{ option.order_qty }}
+                .option-text.product-price {{ option.pos_price }}
         .bill-footer
           .counter {{ getOrderCount() }} 건
           .total 합계: {{ getTotalPrice() }}
@@ -73,7 +84,9 @@
           p ₩ {{ getPrice(good.price) }}
   .footer
     .button.order(@click="yesOrder") 주문
-    .button.close(@click="close") 닫기
+    .button(v-if="visibleDeleteButton()" @click="onDeleteOrder") 삭제
+    .button(@click="reload") 리로드
+    .button(@click="close") 닫기
 </template>
 
 <script>
@@ -89,6 +102,7 @@ export default {
       order: null,
       optionModal: false,
       selectedProduct: null,
+      timer: null,
     };
   },
   computed: {
@@ -105,11 +119,40 @@ export default {
     await this.getMenu();
     await this.getPreviousOrders();
     await this.getOrderData();
+    this.emitTargetTable();
+  },
+  beforeRouteLeave(to, from, next) {
+    console.log('beforeRouteLeave', this.$route?.params?.id);
+    if (this.$route?.params?.id) {
+      const { store_code } = this.$store.state.auth.store;
+      const payload = {
+        store: {
+          code: store_code,
+        },
+        type: '@reqeust/ordering/location/table',
+        tableId: this.$route.params.id,
+        uCode: this.$store.state.uCode,
+        MACAddr: this.$store.state.MACAddr,
+        ordering: false,
+      };
+
+      this.$socket.emit('orderview', payload);
+      next();
+    }
   },
   destroyed() {
     this.$store.commit('SET_TABLE_CART_LIST', []);
+    clearInterval(this.timer);
   },
   methods: {
+    reload() {
+      const { store_code } = this.$store.state.auth.store;
+      const fd = new FormData();
+      fd.append('store_code', store_code);
+      fd.append('table_id', this.$route.params.id);
+
+      this.$store.dispatch('tabletReload', fd);
+    },
     close() {
       this.$router.replace(paths.tables);
     },
@@ -143,7 +186,7 @@ export default {
         return [];
       }
     },
-    async getOrderData() {
+    async getOrderData() { // table id로 테이블 정보 찾게 변경
       try {
         const { store_code } = this.$store.state.auth.store;
         const fd = new FormData();
@@ -151,7 +194,7 @@ export default {
         // fd.append('tablet_number', this.$route.params.id);
 
         const res = await this.$store.dispatch('setOrders', fd);
-        const currentOrder =  res.data.find((o) => o.table_number === this.$route.params.id);
+        const currentOrder = res.data.find((o) => o.table_number === this.$route.params.id);
         // console.log('currentOrder', currentOrder);
 
         const parseOrder = JSON.parse(currentOrder.json_data);
@@ -159,7 +202,7 @@ export default {
 
         this.order = parseOrder;
       } catch (error) {
-        console.log(error);
+        // console.log(error);
       }
     },
     async getMenu() {
@@ -298,11 +341,7 @@ export default {
         };
 
         this.cartList = [...this.cartList, result];
-        const newCartList = [...this.previousOrders, result];
-
         this.billScrollBottom();
-
-        this.$store.commit('SET_TABLE_CART_LIST', newCartList);
       }
     },
     billScrollBottom() {
@@ -311,34 +350,52 @@ export default {
         this.$refs.billBody.scrollTop = this.$refs.billBody.scrollHeight;
       }, 0);
     },
-    yesOrder() {
-      if (this.cartList && this.cartList.length) {
-        const config = { headers: { 'Content-Type': 'multipart/form-data' } };
-        const fd = new FormData();
-        const { store_code } = this.$store.state.auth.store;
-        fd.append('store_shop_code', store_code);
-        fd.append('tablet_number', this.$route.params.id);
+    async yesOrder() {
+      try {
+        if (this.cartList && this.cartList.length) {
+          const config = { headers: { 'Content-Type': 'multipart/form-data' } };
+          const fd = new FormData();
+          const { store_code } = this.$store.state.auth.store;
+          fd.append('store_shop_code', store_code);
+          fd.append('tablet_number', this.$route.params.id);
 
-        for (const [i, order] of this.cartList.entries()) {
-          console.log('order', order);
-          fd.append('orders['+i+'][code]', order.good_code); // 주문 코드가 필요
-          fd.append('orders['+i+'][qty]', order.order_qty);
-        }
+          for (const [i, order] of this.cartList.entries()) {
+            console.log('order', order);
+            fd.append('orders['+i+'][code]', order.good_code); // 주문 코드가 필요
+            fd.append('orders['+i+'][qty]', order.order_qty);
+          }
 
-        const payload = {
-          params: fd,
-          config,
-        };
+          const payload = {
+            params: fd,
+            config,
+          };
 
-        const res = this.$store.dispatch('yesOrder', payload);
+          const res = this.$store.dispatch('yesOrder', payload);
 
-        if (res) {
-          this.cartList = [];
+          if (res) {
+            if (!this.order) {
+              await this.getOrderData();
+            }
+            console.log('order', this.order);
+            const newOrders = [...this.previousOrders, ...this.cartList];
+            this.$socket.emit('orderview', {
+              store: {
+                code: store_code,
+              },
+              type: '@create/orders',
+              orders: newOrders,
+              order: this.order,
+              cartList: this.cartList,
+            });
+            this.cartList = [];
+          } else {
+            this.$store.commit('pushFlashMessage', '주문 실패하였습니다.');
+          }
         } else {
-          this.$store.commit('pushFlashMessage', '주문 실패하였습니다.');
+          this.$store.commit('pushFlashMessage', '새로운 주문이 없습니다.');
         }
-      } else {
-        this.$store.commit('pushFlashMessage', '새로운 주문이 없습니다.');
+      } catch (error) {
+        this.$store.commit('pushFlashMessage', '주문 실패하였습니다.');
       }
     },
     optionModalClose() {
@@ -346,30 +403,29 @@ export default {
         this.optionModal = false;
       }, 0);
     },
-    optionMdalConfirm(rednerOrder, requestOrder) {
-      console.log('confirm', requestOrder);
+    optionMdalConfirm(newOrder) {
+      console.log('confirm', newOrder);
 
-      this.cartList = [...this.cartList, requestOrder];
-      const newCartList = [...this.previousOrders, rednerOrder];
+      this.cartList = [...this.cartList, newOrder];
 
       this.billScrollBottom();
-      this.$store.commit('SET_TABLE_CART_LIST', newCartList);
+
       this.optionModalClose();
     },
     getOrderCount() {
-      const { previousOrders } = this;
+      const { previousOrders, cartList } = this;
       try {
-        return previousOrders.length;
+        return previousOrders.length + cartList.length;
       } catch (error) {
         return 0;
       }
     },
     getTotalPrice() {
-      const { previousOrders } = this;
+      const { previousOrders, cartList } = this;
       try {
         let total = 0;
 
-        previousOrders.forEach((order) => {
+        [...previousOrders, ...cartList].forEach((order) => {
           total += Number(order.good_price);
           if (order?.option) {
             order.option.forEach((option) => {
@@ -387,10 +443,59 @@ export default {
       const targetCount = previousOrders.length - 1;
       if (orderIdx === targetCount) {
         return {
-          last: false,
+          last: true,
         };
       }
-    }
+    },
+    async onDeleteOrder() {
+      try {
+        const { store_code } = this.$store.state.auth.store;
+        const fd = new FormData();
+        fd.append('store_code', store_code);
+        fd.append('table_id', this.$route.params.id);
+
+        const res = await this.$store.dispatch('resetOrder', fd);
+        console.log(res);
+
+        try {
+          if (res.data) {
+            this.$socket.emit('orderview', {
+              store: {
+                code: store_code,
+              },
+              type: '@reset/orders',
+            });
+            this.cartList = [];
+          }
+        } catch (error) {
+          this.$store.commit('pushFlashMessage', '삭제가 실패 하였습니다.');
+        }
+      } catch (error) {
+        this.$store.commit('pushFlashMessage', '주문이 이미 없습니다.');
+      }
+    },
+    visibleDeleteButton() {
+      // return process.env.UPLOAD_TYPE === 'tmp';
+      return process.env.STOP_REDIRECT;
+    },
+    emitTargetTable() {
+      const { store_code } = this.$store.state.auth.store;
+      this.timer = setInterval(() => {
+        const payload = {
+          store: {
+            code: store_code,
+          },
+          type: '@reqeust/ordering/location/table',
+          tableId: this.$route.params.id,
+          uCode: this.$store.state.uCode,
+          MACAddr: this.$store.state.MACAddr,
+          ordering: true,
+        };
+
+        this.$socket.emit('orderview', payload);
+
+      }, 1000);
+    },
   },
 };
 </script>
@@ -701,7 +806,7 @@ p {
   .footer {
     display: flex;
     height: 100px;
-    justify-content: center;
+    justify-content: space-around;
     align-items: center;
     border-top: 2px solid var(--c-7);
 
@@ -717,10 +822,6 @@ p {
     .button.order {
       background-color: var(--c-3);
       color: white;
-    }
-
-    .button.close {
-      margin-left: 30%;
     }
   }
 }

@@ -35,13 +35,13 @@ const socket = {
   },
   actions: {
     SOCKET_orderlog({ commit, state }, order) {
-      console.log('SOCKET_orderlog', order);
+      // console.log('SOCKET_orderlog', order);
       if (vaildShopCode(state, order)) {
         commit('PUSH_ORDER', order);
       }
     },
     async SOCKET_orderview({ commit, state, dispatch }, payload) {
-      console.log('out SOCKET_orderview', payload);
+      // console.log('out SOCKET_orderview', payload);
 
       if (payload?.type_msg === 'commit') {
         const targetOrder = {
@@ -57,8 +57,7 @@ const socket = {
       }
 
       if (payload?.type === 'reload') {
-
-        console.log('reload', payload);
+        // console.log('reload', payload);
 
         const validUCode = payload.uCode === localStorage?.uCode;
         const validMACAddr = payload.MACAddr === window.UUID?.getMacAddress();
@@ -67,37 +66,41 @@ const socket = {
 
         try {
           if (isRedirection) {
-
             const params = new FormData();
             params.append('store_code', state.auth.store.store_code);
             const res = await dispatch('setStoreInit', params);
 
-            if (res.data.data.T_order_store_orderView_version) {
+            const nextUrl = res.data.data.T_order_store_orderView_version;
+            if (nextUrl) {
               const {
                 protocol,
                 hostname,
                 pathname,
-                port,
               } = location;
 
-              const nowPath = `${protocol}//${hostname}${pathname}`;
-
+              const nowPath = `${protocol}//${hostname}${pathname}#/`;
               console.log('location', nowPath);
 
               if (!process.env.STOP_REDIRECT) {
-                const nowDevPath = `${protocol}//${hostname}:${port}${pathname}`;
-                console.log('location dev', nowDevPath === 'http://localhost:8080/');
+                const { store_code } = state.auth.store;
 
-                if (nowDevPath !== 'http://localhost:8080/') {
-                  return location.replace('/');
+                if (state.visibleAllRefreshModal) {
+                  // commit('CLOSE_ALL_REFRES_MODAL');
+                  Vue.$socket.emit('orderview', {
+                    store: {
+                      code: store_code,
+                    },
+                    type: '@close/allRefreshModal',
+                  });
                 }
-              } else {
-                if (nowPath !== res.data.data.T_order_store_orderView_version) {
-                  return location.replace(res.data.data.T_order_store_orderView_version);
+
+                // diff version
+                if (nowPath !== nextUrl) {
+                  return location.replace(nextUrl);
                 }
+                return location.replace('/');
               }
             }
-
           }
         } catch (error) {
           console.log(error);
@@ -112,11 +115,61 @@ const socket = {
 
           if (payload?.data) {
             arr[findIdx] = payload.data;
-            commit('pushFlashMessage', `"${payload.good.displayName}" 정보가 수정되었습니다.`)
+            commit('pushFlashMessage', `"${payload.good.displayName}" 정보가 수정되었습니다.`);
             commit('SET_GOODS', arr);
           }
-
         }
+      }
+
+      if (payload?.type === '@reset/orders') {
+        commit('SET_TABLE_CART_LIST', []);
+        commit('pushFlashMessage', '주문 삭제 되었습니다.');
+      }
+
+      if (payload?.type === '@create/orders') {
+        if (payload?.order) {
+          commit('SET_ORDER', payload.order);
+        }
+
+        if (payload?.orders) {
+          commit('SET_TABLE_CART_LIST', payload?.orders);
+        }
+
+        if (payload.cartList?.length === 1) {
+          commit('pushFlashMessage', `${payload.cartList[0].display_name}가 주문 되었습니다.`);
+        }
+
+        if (payload.cartList.length > 1) {
+          const anotherCount = payload.cartList.length - 1;
+          commit('pushFlashMessage', `${payload.cartList[0].display_name} 외 ${anotherCount}개 주문 되었습니다.`);
+        }
+      }
+
+      if (payload?.type === '@show/allRefreshModal') {
+        // console.log('@show/allRefreshModal', payload.allRefreshList);
+        commit('SHOW_ALL_REFRES_MODAL');
+        commit('SET_ALL_REFRESH_LIST', payload.allRefreshList);
+      }
+
+      if (payload?.type === '@close/allRefreshModal') {
+        commit('CLOSE_ALL_REFRES_MODAL');
+      }
+
+      if (payload?.type === '@reqeust/ordering/location/table') {
+        // console.log('object', state.tables);
+        const findTargetIdx = state.tables.findIndex((o) => o.Ta_id === payload.tableId);
+
+        if (findTargetIdx === -1) return commit('pushFlashMessage', '일치하는 테이블 아이디를 찾지 못했습니다.');
+        // if (findTargetIdx === -1) return false;
+
+        const deepCopyArr = JSON.parse(JSON.stringify(state.tables));
+
+        deepCopyArr[findTargetIdx] = {
+          ...deepCopyArr[findTargetIdx],
+          ordering: payload.ordering,
+        };
+
+        commit('SET_TABLES', deepCopyArr);
       }
     },
   },
@@ -178,7 +231,7 @@ const authentication = {
         return res.data.result;
       } catch (error) {
         console.error(error);
-        alert(error);
+        commit('pushFlashMessage', error);
         return false;
       }
     },
@@ -220,7 +273,7 @@ const order = {
     },
   },
   actions: {
-    async commitOrder({ commit }, payload) {
+    async commitOrder(context, payload) {
       const url = endpoints.orders.commitOrderViewData;
 
       const fd = new FormData();
@@ -228,19 +281,8 @@ const order = {
       fd.append('key', payload.order.order_view_key);
       fd.append('commit', !payload.order.commit ? 1 : 0);
 
-      await axios.post(url, fd);
-      // const res = await axios.post(url, fd);
-
-      // if (res && res.data && res.data.result) {
-
-      //   const order = {
-      //     ...payload.order,
-      //     // commit: true,
-      //   };
-
-      //   // commit('UPDATE_ORDERS', order);
-      //   // commit('UNSET_ORDER');
-      // }
+      const res = await axios.post(url, fd, { timeout: 5000 });
+      return res;
     },
     setOrder: (context, order) => {
       context.commit('SET_ORDER', order);
@@ -265,7 +307,7 @@ const order = {
 
       return response;
     },
-    async requestOrder({ commit }, params) {
+    async requestOrder(context, params) {
       const url = endpoints.orders.order;
       const response = await axios.post(url, params);
 
@@ -295,10 +337,12 @@ const shop = {
         // console.log(response);
 
         const target = response.data.data;
+        // console.log('target', target);
 
         const device = {
           serviceStatus: !!target.T_order_store_close,
           orderStatus: !!target.T_order_store_close_order,
+          recentOrderStatus: !!target.T_order_recent_order_hide,
         };
 
         commit('setDeviceStatus', device);
@@ -310,7 +354,7 @@ const shop = {
         return false;
       }
     },
-    async requestStoreList({ commit }, params) {
+    async requestStoreList(context, params) {
       try {
         const fd = new FormData();
         fd.append('member_id', params.member.code);
@@ -394,6 +438,36 @@ const device = {
         return false;
       }
     },
+    async setShowRecentOrder(context, params) {
+      try {
+        const url = endpoints.device.showRecentOrder;
+        const response = await axios.post(url, params);
+
+        if (response) {
+          return true;
+        }
+
+        return false;
+      } catch (error) {
+        console.log(error);
+        return false;
+      }
+    },
+    async setCloseRecentOrder(context, params) {
+      try {
+        const url = endpoints.device.hideRecentOrder;
+        const response = await axios.post(url, params);
+
+        if (response) {
+          return true;
+        }
+
+        return false;
+      } catch (error) {
+        console.log(error);
+        return false;
+      }
+    },
   },
 };
 
@@ -401,6 +475,9 @@ const table = {
   mutations: {
     SET_TABLES: (state, tables) => Vue.set(state, 'tables', tables),
     SET_TABLE_CART_LIST: (state, cartList) => Vue.set(state, 'cartList', cartList),
+    SHOW_ALL_REFRES_MODAL: (state) => Vue.set(state, 'visibleAllRefreshModal', true),
+    CLOSE_ALL_REFRES_MODAL: (state) => Vue.set(state, 'visibleAllRefreshModal', false),
+    SET_ALL_REFRESH_LIST: (state, allRefreshList) => Vue.set(state, 'allRefreshList', allRefreshList),
   },
   actions: {
     async setTables({ commit }, payload) {
@@ -411,7 +488,8 @@ const table = {
       const response = await axios.get(url);
 
       if (response.data && response.data.data) {
-        commit('SET_TABLES', response.data.data);
+        const results = response.data.data.map((item) => ({ ...item, ordering: false }));
+        commit('SET_TABLES', results);
       }
     },
     async setTableCartList({ commit }, params) {
@@ -434,6 +512,27 @@ const table = {
         }
 
         return false;
+      } catch (error) {
+        return false;
+      }
+    },
+    async tabletReload(context, params) {
+      try {
+        const url = endpoints.tablet.refresh;
+
+        const res = await axios.post(url, params);
+        // console.log(res);
+        return res;
+      } catch (error) {
+        return false;
+      }
+    },
+    async allTabletReload(context, params) {
+      try {
+        const url = endpoints.tablet.allRefresh;
+
+        const res = await axios.post(url, params);
+        console.log(res);
       } catch (error) {
         return false;
       }
@@ -565,7 +664,7 @@ const menu = {
 
       const getFilteredGoods = (products, subCategory) => {
         return products.filter((good) => findGoods(good, subCategory));
-      }
+      };
 
       const getSubCategoryItem = (subCategoryItem, products) => {
         const goods = getFilteredGoods(products, subCategoryItem.code);
@@ -650,6 +749,18 @@ const popup = {
   },
 };
 
+const tablet = {
+  actions: {
+    async resetOrder(context, params) {
+      const url = endpoints.tablet.resetOrder;
+
+      const res = await axios.post(url, params);
+
+      return res;
+    },
+  },
+};
+
 const authProto = {
   member: {
     code: '',
@@ -670,6 +781,7 @@ const state = {
   device: {
     serviceStatus: false,
     orderStatus: false,
+    recentOrderStatus: false,
   },
   auth: authProto,
   stores: [],
@@ -681,6 +793,8 @@ const state = {
   uCode: '',
   flashMessages: [],
   flashMessageCount: 0,
+  visibleAllRefreshModal: false,
+  allRefreshList: [],
 };
 
 const mutations = {
@@ -704,6 +818,7 @@ const actions = {
   ...table.actions,
   ...menu.actions,
   ...goods.actions,
+  ...tablet.actions,
 };
 
 const getters = {

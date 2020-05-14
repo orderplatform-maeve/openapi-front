@@ -1,5 +1,10 @@
 <template lang="pug">
 #orderview
+  modal-all-refresh(
+    :show="visibleAllRefreshModal"
+    :close="onCloseAllRefreshModal"
+    :data="allRefreshList"
+  )
   flash-message
   modal-confirm(
     :show="confirmModal.show"
@@ -42,6 +47,11 @@
           .tab-buttons
             .tab-button(:class="getOnTabletOrderClass(device)" @click="agreeOrder") On
             .tab-button(:class="getOffTabletOrderClass(device)" @click="rejectOrder") Off
+        .tab-group
+          .tab-name 주문 내역
+          .tab-buttons
+            .tab-button(:class="getOnTabletRecentOrderClass(device)" @click="showRecentOrder") On
+            .tab-button(:class="getOffTabletRecentOrderClass(device)" @click="hideRecentOrder") Off
         hr
         router-link.button(v-if="visibleStoresButton" :to="paths.store") 매장 보기
         router-link.button.button-red(v-if="visibleLoginButton" :to="paths.login") 로그인
@@ -112,7 +122,6 @@ export default {
     },
     userName() {
       const { auth } = this;
-      // console.log(auth);
       return auth && auth.member && auth.member.name;
     },
     visibleLoginButton() {
@@ -120,6 +129,12 @@ export default {
     },
     visibleLogoutButton() {
       return !!this.userName;
+    },
+    visibleAllRefreshModal() {
+      return this.$store.state.visibleAllRefreshModal;
+    },
+    allRefreshList() {
+      return this.$store.state.allRefreshList;
     },
   },
   watch: {
@@ -144,6 +159,7 @@ export default {
   },
   created() {
     this.getAuthentication();
+    this.observableRefresh();
   },
   mounted() {
     this.getUCode();
@@ -151,50 +167,71 @@ export default {
     if (process.env.UPLOAD_TYPE !== 'tmp') {
       this.tagetVersionRedirect();
     }
+    this.initialized();
   },
   sockets: {
     connect() {
-      console.log('connect sokets');
+      console.log('socket connected');
       this.beep();
     },
     orderview(message) {
-      this.$socket.emit('res', message, (msg) => {
+      this.$socket.emit('res', message, () => {
         console.log('socket res');
       });
     }
   },
   methods: {
+    observableRefresh() {
+      window.addEventListener('beforeunload', () => {
+        if (this.$route?.params?.id) {
+          const { store_code } = this.$store.state.auth.store;
+          const payload = {
+            store: {
+              code: store_code,
+            },
+            type: '@reqeust/ordering/location/table',
+            tableId: this.$route.params.id,
+            uCode: this.$store.state.uCode,
+            MACAddr: this.$store.state.MACAddr,
+            ordering: false,
+          };
+
+          this.$socket.emit('orderview', payload);
+        }
+      // event.returnValue = 'Write something';
+      });
+    },
+    async initialized() {
+      try {
+        const params = { shop_code: this.$store.state.auth.store.store_code };
+        await this.$store.dispatch('setTables', params);
+
+      } catch (error) {
+        console.log(error);
+      }
+    },
     async tagetVersionRedirect() {
       try {
         if (this.$store.state.auth?.store?.store_code) {
           const params = new FormData();
           params.append('store_code', this.$store.state.auth.store.store_code);
           const res = await this.$store.dispatch('setStoreInit', params);
-
           // console.log('tagetVersionRedirect', res);
 
-          if (res.data.data.T_order_store_orderView_version) {
+          const nextUrl = res.data.data.T_order_store_orderView_version;
+          if (nextUrl) {
             const {
               protocol,
               hostname,
               pathname,
-              port,
             } = location;
 
-            const nowPath = `${protocol}//${hostname}${pathname}`;
+            const nowPath = `${protocol}//${hostname}${pathname}#/`;
+            console.log('location', nowPath, nextUrl);
 
-            // console.log('location', nowPath);
-
-            if (process.env.STOP_REDIRECT) {
-              const nowDevPath = `${protocol}//${hostname}:${port}${pathname}`;
-              // console.log('location dev', nowDevPath === 'http://localhost:8080/');
-
-              if (nowDevPath !== 'http://localhost:8080/') {
-                return location.replace('/');
-              }
-            } else {
-              if (nowPath !== res.data.data.T_order_store_orderView_version) {
-                return location.replace(res.data.data.T_order_store_orderView_version);
+            if (!process.env.STOP_REDIRECT) {
+              if (nowPath !== nextUrl) {
+                return location.replace(nextUrl);
               }
             }
           }
@@ -254,6 +291,20 @@ export default {
       this.confirmModal.message = '태블릿을 메뉴판으로만 사용하고 주문은 안돼요';
       this.confirmModal.confirm = this.reqRejectOrder;
     },
+    showRecentOrder() {
+      this.confirmModal.show = true;
+      this.confirmModal.close = this.closeConfirmModal;
+      this.confirmModal.title = '주문 내역 표시';
+      this.confirmModal.message = '태블릿에서 주문 내역이 나타납니다';
+      this.confirmModal.confirm = this.reqShowOrder;
+    },
+    hideRecentOrder() {
+      this.confirmModal.show = true;
+      this.confirmModal.close = this.closeConfirmModal;
+      this.confirmModal.title = '주문 내역 숨김';
+      this.confirmModal.message = '태블릿에서 주문 내역이 숨겨집니다';
+      this.confirmModal.confirm = this.reqHideOrder;
+    },
     closeConfirmModal() {
       this.confirmModal.show = false;
     },
@@ -296,6 +347,26 @@ export default {
 
       if (response) {
         this.device.orderStatus = 1;
+        this.closeConfirmModal();
+      }
+    },
+    async reqShowOrder() {
+      const fd = new FormData();
+      fd.append('store_code', this.auth.store.store_code);
+      const response = await this.$store.dispatch('setShowRecentOrder', fd);
+
+      if (response) {
+        this.device.recentOrderStatus = 0;
+        this.closeConfirmModal();
+      }
+    },
+    async reqHideOrder() {
+      const fd = new FormData();
+      fd.append('store_code', this.auth.store.store_code);
+      const response = await this.$store.dispatch('setCloseRecentOrder', fd);
+
+      if (response) {
+        this.device.recentOrderStatus = 1;
         this.closeConfirmModal();
       }
     },
@@ -360,7 +431,7 @@ export default {
         datetime: datetime,
       };
 
-      this.$socket.emit('event', data, (answer) => {
+      this.$socket.emit('event', data, () => {
         // console.log('event', answer.msg);
       });
     },
@@ -436,6 +507,27 @@ export default {
           this.beep();
         }
       }, 1000);
+    },
+    onCloseAllRefreshModal() {
+      this.$store.commit('CLOSE_ALL_REFRES_MODAL');
+      this.$store.commit('SET_ALL_REFRESH_LIST', []);
+    },
+    getOnTabletRecentOrderClass(device) {
+      const active = !this.vaildRecentOrderStatus(device);
+
+      return {
+        active,
+      };
+    },
+    getOffTabletRecentOrderClass(device) {
+      const active = this.vaildRecentOrderStatus(device);
+
+      return {
+        active,
+      };
+    },
+    vaildRecentOrderStatus(device) {
+      return device && device.recentOrderStatus;
     },
   },
 };
