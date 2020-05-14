@@ -159,24 +159,7 @@ export default {
   },
   created() {
     this.getAuthentication();
-    window.addEventListener('beforeunload', () => {
-      if (this.$route?.params?.id) {
-        const { store_code } = this.$store.state.auth.store;
-        const payload = {
-          store: {
-            code: store_code,
-          },
-          type: '@reqeust/ordering/location/table',
-          tableId: this.$route.params.id,
-          uCode: this.$store.state.uCode,
-          MACAddr: this.$store.state.MACAddr,
-          ordering: false,
-        };
-
-        this.$socket.emit('orderview', payload);
-      }
-      // event.returnValue = 'Write something';
-    });
+    this.observableRefresh();
   },
   mounted() {
     this.getUCode();
@@ -198,6 +181,26 @@ export default {
     }
   },
   methods: {
+    observableRefresh() {
+      window.addEventListener('beforeunload', () => {
+        if (this.$route?.params?.id) {
+          const { store_code } = this.$store.state.auth.store;
+          const payload = {
+            store: {
+              code: store_code,
+            },
+            type: '@reqeust/ordering/location/table',
+            tableId: this.$route.params.id,
+            uCode: this.$store.state.uCode,
+            MACAddr: this.$store.state.MACAddr,
+            ordering: false,
+          };
+
+          this.$socket.emit('orderview', payload);
+        }
+      // event.returnValue = 'Write something';
+      });
+    },
     async initialized() {
       try {
         const params = { shop_code: this.$store.state.auth.store.store_code };
