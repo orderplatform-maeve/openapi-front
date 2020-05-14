@@ -82,9 +82,10 @@ const socket = {
               console.log('location', nowPath);
 
               if (!process.env.STOP_REDIRECT) {
+                const { store_code } = state.auth.store;
+
                 if (state.visibleAllRefreshModal) {
                   // commit('CLOSE_ALL_REFRES_MODAL');
-                  const { store_code } = state.auth.store;
                   Vue.$socket.emit('orderview', {
                     store: {
                       code: store_code,

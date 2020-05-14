@@ -121,6 +121,25 @@ export default {
     await this.getOrderData();
     this.emitTargetTable();
   },
+  beforeRouteLeave(to, from, next) {
+    console.log('beforeRouteLeave', this.$route?.params?.id);
+    if (this.$route?.params?.id) {
+      const { store_code } = this.$store.state.auth.store;
+      const payload = {
+        store: {
+          code: store_code,
+        },
+        type: '@reqeust/ordering/location/table',
+        tableId: this.$route.params.id,
+        uCode: this.$store.state.uCode,
+        MACAddr: this.$store.state.MACAddr,
+        ordering: false,
+      };
+
+      this.$socket.emit('orderview', payload);
+      next();
+    }
+  },
   destroyed() {
     this.$store.commit('SET_TABLE_CART_LIST', []);
     clearInterval(this.timer);
@@ -135,20 +154,6 @@ export default {
       this.$store.dispatch('tabletReload', fd);
     },
     close() {
-      const { store_code } = this.$store.state.auth.store;
-      const payload = {
-        store: {
-          code: store_code,
-        },
-        type: '@reqeust/ordering/location/table',
-        tableId: this.$route.params.id,
-        uCode: this.$store.state.uCode,
-        MACAddr: this.$store.state.MACAddr,
-        ordering: false,
-      };
-
-      this.$socket.emit('orderview', payload);
-
       this.$router.replace(paths.tables);
     },
     getPrice(price) {

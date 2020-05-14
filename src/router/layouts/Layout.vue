@@ -159,6 +159,24 @@ export default {
   },
   created() {
     this.getAuthentication();
+    window.addEventListener('beforeunload', () => {
+      if (this.$route?.params?.id) {
+        const { store_code } = this.$store.state.auth.store;
+        const payload = {
+          store: {
+            code: store_code,
+          },
+          type: '@reqeust/ordering/location/table',
+          tableId: this.$route.params.id,
+          uCode: this.$store.state.uCode,
+          MACAddr: this.$store.state.MACAddr,
+          ordering: false,
+        };
+
+        this.$socket.emit('orderview', payload);
+      }
+      // event.returnValue = 'Write something';
+    });
   },
   mounted() {
     this.getUCode();
