@@ -162,12 +162,13 @@ export default {
 
         const code = [this.product.code].concat(Array.from(sortedOptions, o => o.code +':' + o.qty)).join('-');
 
-        const requestOrder = {
+        const newOrder = {
+          ...rednerOrder,
           good_code: code,
           order_qty: 1,
         };
 
-        this.onSubmit(rednerOrder, requestOrder);
+        this.onSubmit(newOrder);
       }
     },
     select(option) {

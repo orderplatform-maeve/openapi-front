@@ -3,12 +3,8 @@
   ul.table-list
     li.table-item(v-for="table in tables" :key="table.Ta_id" )
       .table-number(@click="openTableOrders(table)" :class="'empty-table'") {{getTableName(table)}}
-        p {{table.ordering ? '주문중' : ''}}
   .footer
-    .button(
-      v-if="getAllRefreshDataVisible()"
-      @click="onAllRefresh"
-    ) 테이블 전체 초기화
+    .button(@click="onAllRefresh") 테이블 전체 초기화
 </template>
 
 <script>
@@ -18,7 +14,6 @@ export default {
   data() {
     return {
       visibleAllRefreshModal: false,
-      timerArr: [],
     };
   },
   computed: {
@@ -26,35 +21,14 @@ export default {
       return this.$store.state.tables;
     },
   },
-  watch: {
-    '$store.state.allRefreshList'(nextValue) {
-      const filteredDoneData = nextValue.filter((o) => o.status === 'fulfilled' || o.status === 'reject');
-      const filteredDoneDataLength = filteredDoneData.length;
-      // console.log(filteredDoneDataLength, nextValue.length);
-      // console.log('watch', nextValue);
-
-      if (filteredDoneDataLength > 0) {
-        const curTimerIdx = filteredDoneDataLength - 1;
-        const timer = this.timerArr[curTimerIdx];
-        console.log(timer);
-        clearTimeout(timer);
-      }
-
-      if (filteredDoneDataLength === nextValue.length) {
-        this.timerArr = [];
-        console.log('clean timer done', this.timerArr);
-      }
-    },
-  },
   mounted() {
-    // this.initialized();
+    this.initialized();
   },
   methods: {
     async initialized() {
       try {
         const params = { shop_code: this.$store.state.auth.store.store_code };
-        await this.$store.dispatch('setTables', params);
-
+        this.$store.dispatch('setTables', params);
       } catch (error) {
         console.log(error);
       }
@@ -63,8 +37,6 @@ export default {
       return table?.Tablet_name;
     },
     async openTableOrders(table) {
-      if (table?.ordering) return this.$store.commit('pushFlashMessage', '다른 오더뷰 에서 주문 중입니다.');
-
       this.$router.push({
         name: paths.tableOrders.replace('/', ''),
         params: {
@@ -72,7 +44,23 @@ export default {
         },
       });
     },
+    // async onAllRefresh() {
+    //   try {
+    //     const { store_code } = this.$store.state.auth.store;
+    //     const fd = new FormData();
+    //     fd.append('store_code', store_code);
+    //     fd.append('timer', 2);
+
+    //     const res = await this.$store.dispatch('allTaletReload', fd);
+    //     console.log(res);
+
+    //   } catch (error) {
+    //     this.$store.commit('pushFlashMessage', '전체 새로 고침에 실패 하였습니다.');
+    //   }
+    // },
     async onAllRefresh() {
+      this.$store.commit('SHOW_ALL_REFRES_MODAL');
+      // console.log(this.tables);
       const { store_code } = this.$store.state.auth.store;
 
       const getPreparingTabletInfoData = (item) => {
@@ -85,11 +73,9 @@ export default {
 
       const preparingAllRefeshList = this.tables.map(getPreparingTabletInfoData);
 
-      // console.log('preparingAllRefeshList', preparingAllRefeshList);
-      // this.$store.commit('SET_ALL_REFRESH_LIST', preparingAllRefeshList);
-      // this.$store.commit('SHOW_ALL_REFRES_MODAL');
+      this.$store.commit('SET_ALL_REFRESH_LIST', preparingAllRefeshList);
 
-      const nowSoketInfo = this.$socket.emit('orderview', {
+      this.$socket.emit('orderview', {
         store: {
           code: store_code,
         },
@@ -97,56 +83,45 @@ export default {
         allRefreshList: preparingAllRefeshList,
       });
 
-      console.log('nowSoketInfo', nowSoketInfo);
+      const delay = (asyncFn) => new Promise((reslove) => setTimeout(() => reslove(asyncFn), 3000));
 
-      const { disconnected, connected } = nowSoketInfo;
+      const refreshReqeust = async (item) => {
+        const fd = new FormData();
+        fd.append('store_code', store_code);
+        fd.append('table_id', item.Ta_id);
 
-      if (disconnected) return this.$store.dispatch('pushFlashMessage', '소켓 통신이 원활하지 않습니다. 잠시후 시도해주세요.');
+        const response = await delay(this.$store.dispatch('tabletReload', fd));
 
-      if (connected) {
-        this.tables.forEach((item, i) => {
-          const timer = setTimeout(async () => {
-            const fd = new FormData();
-            fd.append('store_code', store_code);
-            fd.append('table_id', item.Ta_id);
+        return {
+          response,
+          item,
+        };
+      };
 
-            const res = await this.$store.dispatch('tabletReload', fd);
-            // console.log(res);
+      const promises = await this.tables.map(refreshReqeust);
 
-            const result = {
-              status: res.status === 200 ? 'fulfilled' : 'rejected',
-              tabletName: item.Tablet_name,
-              msg: res?.data,
-            };
-            // console.log(result);
+      const resutls = await Promise.allSettled(promises);
 
-            const targetItemIndex = this.$store.state.allRefreshList.findIndex((o) => o.tabletName === result.tabletName);
+      const allRefreshList = resutls.map((item) => {
+        console.log(item);
 
-            if (targetItemIndex > -1) {
-              const allRefreshList = [...this.$store.state.allRefreshList];
+        return {
+          // requesterUCode: this.$store.state.uCode,
+          status: item.status,
+          tabletName: item.value.item.Tablet_name,
+          msg: item.value.response.data,
+        };
+      });
 
-              allRefreshList[targetItemIndex] = result;
+      this.$store.commit('SET_ALL_REFRESH_LIST', allRefreshList);
 
-              // this.$store.commit('SET_ALL_REFRESH_LIST', allRefreshList);
-
-              this.$socket.emit('orderview', {
-                store: {
-                  code: store_code,
-                },
-                type: '@show/allRefreshModal',
-                allRefreshList,
-              });
-            }
-          }, i * 3000);
-
-          this.timerArr = [...JSON.parse(JSON.stringify(this.timerArr)), timer];
-        });
-
-        console.log(this.timerArr);
-      }
-    },
-    getAllRefreshDataVisible() {
-      return this.$store.state.tables.length > 0;
+      this.$socket.emit('orderview', {
+        store: {
+          code: store_code,
+        },
+        type: '@show/allRefreshModal',
+        allRefreshList,
+      });
     },
   },
 };
