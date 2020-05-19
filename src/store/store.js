@@ -82,9 +82,10 @@ const socket = {
               console.log('location', nowPath);
 
               if (!process.env.STOP_REDIRECT) {
+                const { store_code } = state.auth.store;
+
                 if (state.visibleAllRefreshModal) {
                   // commit('CLOSE_ALL_REFRES_MODAL');
-                  const { store_code } = state.auth.store;
                   Vue.$socket.emit('orderview', {
                     store: {
                       code: store_code,
@@ -152,6 +153,23 @@ const socket = {
 
       if (payload?.type === '@close/allRefreshModal') {
         commit('CLOSE_ALL_REFRES_MODAL');
+      }
+
+      if (payload?.type === '@reqeust/ordering/location/table') {
+        // console.log('object', state.tables);
+        const findTargetIdx = state.tables.findIndex((o) => o.Ta_id === payload.tableId);
+
+        if (findTargetIdx === -1) return commit('pushFlashMessage', '일치하는 테이블 아이디를 찾지 못했습니다.');
+        // if (findTargetIdx === -1) return false;
+
+        const deepCopyArr = JSON.parse(JSON.stringify(state.tables));
+
+        deepCopyArr[findTargetIdx] = {
+          ...deepCopyArr[findTargetIdx],
+          ordering: payload.ordering,
+        };
+
+        commit('SET_TABLES', deepCopyArr);
       }
     },
   },
@@ -470,7 +488,8 @@ const table = {
       const response = await axios.get(url);
 
       if (response.data && response.data.data) {
-        commit('SET_TABLES', response.data.data);
+        const results = response.data.data.map((item) => ({ ...item, ordering: false }));
+        commit('SET_TABLES', results);
       }
     },
     async setTableCartList({ commit }, params) {

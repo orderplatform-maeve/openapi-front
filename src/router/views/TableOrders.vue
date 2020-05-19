@@ -102,6 +102,7 @@ export default {
       order: null,
       optionModal: false,
       selectedProduct: null,
+      timer: null,
     };
   },
   computed: {
@@ -118,9 +119,30 @@ export default {
     await this.getMenu();
     await this.getPreviousOrders();
     await this.getOrderData();
+    this.emitTargetTable();
+  },
+  beforeRouteLeave(to, from, next) {
+    console.log('beforeRouteLeave', this.$route?.params?.id);
+    if (this.$route?.params?.id) {
+      const { store_code } = this.$store.state.auth.store;
+      const payload = {
+        store: {
+          code: store_code,
+        },
+        type: '@reqeust/ordering/location/table',
+        tableId: this.$route.params.id,
+        uCode: this.$store.state.uCode,
+        MACAddr: this.$store.state.MACAddr,
+        ordering: false,
+      };
+
+      this.$socket.emit('orderview', payload);
+      next();
+    }
   },
   destroyed() {
     this.$store.commit('SET_TABLE_CART_LIST', []);
+    clearInterval(this.timer);
   },
   methods: {
     reload() {
@@ -455,6 +477,24 @@ export default {
     visibleDeleteButton() {
       // return process.env.UPLOAD_TYPE === 'tmp';
       return process.env.STOP_REDIRECT;
+    },
+    emitTargetTable() {
+      const { store_code } = this.$store.state.auth.store;
+      this.timer = setInterval(() => {
+        const payload = {
+          store: {
+            code: store_code,
+          },
+          type: '@reqeust/ordering/location/table',
+          tableId: this.$route.params.id,
+          uCode: this.$store.state.uCode,
+          MACAddr: this.$store.state.MACAddr,
+          ordering: true,
+        };
+
+        this.$socket.emit('orderview', payload);
+
+      }, 1000);
     },
   },
 };

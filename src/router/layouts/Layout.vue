@@ -159,6 +159,7 @@ export default {
   },
   created() {
     this.getAuthentication();
+    this.observableRefresh();
   },
   mounted() {
     this.getUCode();
@@ -166,6 +167,7 @@ export default {
     if (process.env.UPLOAD_TYPE !== 'tmp') {
       this.tagetVersionRedirect();
     }
+    this.initialized();
   },
   sockets: {
     connect() {
@@ -179,6 +181,35 @@ export default {
     }
   },
   methods: {
+    observableRefresh() {
+      window.addEventListener('beforeunload', () => {
+        if (this.$route?.params?.id) {
+          const { store_code } = this.$store.state.auth.store;
+          const payload = {
+            store: {
+              code: store_code,
+            },
+            type: '@reqeust/ordering/location/table',
+            tableId: this.$route.params.id,
+            uCode: this.$store.state.uCode,
+            MACAddr: this.$store.state.MACAddr,
+            ordering: false,
+          };
+
+          this.$socket.emit('orderview', payload);
+        }
+      // event.returnValue = 'Write something';
+      });
+    },
+    async initialized() {
+      try {
+        const params = { shop_code: this.$store.state.auth.store.store_code };
+        await this.$store.dispatch('setTables', params);
+
+      } catch (error) {
+        console.log(error);
+      }
+    },
     async tagetVersionRedirect() {
       try {
         if (this.$store.state.auth?.store?.store_code) {
