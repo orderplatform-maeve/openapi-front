@@ -1,5 +1,6 @@
 <template lang="pug">
 #orderview
+  modal-disconnect
   modal-all-refresh(
     :show="visibleAllRefreshModal"
     :close="onCloseAllRefreshModal"
@@ -178,7 +179,7 @@ export default {
       this.$socket.emit('res', message, () => {
         console.log('socket res');
       });
-    }
+    },
   },
   methods: {
     observableRefresh() {

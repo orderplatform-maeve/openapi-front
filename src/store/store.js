@@ -172,6 +172,12 @@ const socket = {
         commit('SET_TABLES', deepCopyArr);
       }
     },
+    SOCKET_disconnect({ commit }) {
+      commit('setDisconnectModalVisible', true);
+    },
+    SOCKET_connect({ commit }) {
+      commit('setDisconnectModalVisible', false);
+    },
   },
 };
 
@@ -746,6 +752,9 @@ const popup = {
 
       state.flashMessages.push(item);
     },
+    setDisconnectModalVisible(state, isDisconnectModal) {
+      Vue.set(state, 'isDisconnectModal', isDisconnectModal);
+    },
   },
 };
 
@@ -795,6 +804,7 @@ const state = {
   flashMessageCount: 0,
   visibleAllRefreshModal: false,
   allRefreshList: [],
+  isDisconnectModal: false,
 };
 
 const mutations = {

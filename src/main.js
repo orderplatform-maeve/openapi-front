@@ -18,6 +18,7 @@ import {
   ProductOptionModal,
   FlashMessage,
   AllRefreshModal,
+  DisconnectModal,
 } from '@components';
 
 Vue.config.devtools = true;
@@ -35,6 +36,7 @@ Vue.component('modal-menu', MenuModal);
 Vue.component('modal-product-option', ProductOptionModal);
 Vue.component('flash-message', FlashMessage);
 Vue.component('modal-all-refresh', AllRefreshModal);
+Vue.component('modal-disconnect', DisconnectModal);
 
 new Vue({
   router,
