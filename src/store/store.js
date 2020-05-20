@@ -173,10 +173,20 @@ const socket = {
       }
     },
     SOCKET_disconnect({ commit }) {
-      commit('setDisconnectModalVisible', true);
+      const payload = {
+        visible: true,
+        message: '소켓 서버 연결 실패입니다. 인터넷 연결 확인 후 새로고침 해주세요.',
+      };
+
+      commit('setSignBoardStatus', payload);
     },
     SOCKET_connect({ commit }) {
-      commit('setDisconnectModalVisible', false);
+      const payload = {
+        visible: false,
+        message: '',
+      };
+
+      commit('setSignBoardStatus', payload);
     },
   },
 };
@@ -759,6 +769,12 @@ const popup = {
 };
 
 const tablet = {
+  mutations: {
+    setSignBoardStatus(state, status) {
+      Vue.set(state, 'isDisConnectNetwork', status.visible);
+      Vue.set(state, 'signboardMessage', status.message);
+    },
+  },
   actions: {
     async resetOrder(context, params) {
       const url = endpoints.tablet.resetOrder;
@@ -804,7 +820,8 @@ const state = {
   flashMessageCount: 0,
   visibleAllRefreshModal: false,
   allRefreshList: [],
-  isDisconnectModal: false,
+  isDisConnectNetwork: false,
+  signboardMessage: '',
 };
 
 const mutations = {
@@ -817,6 +834,7 @@ const mutations = {
   ...monitoring.mutations,
   ...device.mutations,
   ...popup.mutations,
+  ...tablet.mutations,
 };
 
 const actions = {

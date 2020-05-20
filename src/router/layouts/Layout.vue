@@ -1,6 +1,5 @@
 <template lang="pug">
 #orderview
-  modal-disconnect
   modal-all-refresh(
     :show="visibleAllRefreshModal"
     :close="onCloseAllRefreshModal"
@@ -15,6 +14,9 @@
     :confirm="confirmModal.confirm"
   )
   modal-order(v-if="order")
+  transition(name="signboard")
+    .top(v-if="isDisConnectNetwork")
+      .alert {{ signboardMessage }}
   .body
     .left
       router-view(
@@ -137,6 +139,12 @@ export default {
     allRefreshList() {
       return this.$store.state.allRefreshList;
     },
+    isDisConnectNetwork() {
+      return this.$store.state.isDisConnectNetwork;
+    },
+    signboardMessage() {
+      return this.$store.state.signboardMessage;
+    },
   },
   watch: {
     '$route'(to, from) {
@@ -163,6 +171,8 @@ export default {
     this.observableRefresh();
   },
   mounted() {
+    this.catchOffline();
+    this.catchOnline();
     this.getUCode();
     this.loopBeep();
     if (process.env.UPLOAD_TYPE !== 'tmp') {
@@ -182,6 +192,28 @@ export default {
     },
   },
   methods: {
+    catchOffline() {
+      window.addEventListener('offline', () => {
+        console.log("you're offline");
+        const payload = {
+          visible: true,
+          message: '인터넷이 연결 되지 않았습니다. 인터넷 연결 확인 후 새로고침 해주세요.',
+        };
+
+        this.$store.commit('setSignBoardStatus', payload);
+      });
+    },
+    catchOnline() {
+      window.addEventListener('online', () => {
+        console.log("you're online");
+        const payload = {
+          visible: false,
+          message: '',
+        };
+
+        this.$store.commit('setSignBoardStatus', payload);
+      });
+    },
     observableRefresh() {
       window.addEventListener('beforeunload', () => {
         if (this.$route?.params?.id) {
@@ -208,7 +240,7 @@ export default {
         await this.$store.dispatch('setTables', params);
 
       } catch (error) {
-        console.log(error);
+        console.log();
       }
     },
     async tagetVersionRedirect() {
@@ -546,9 +578,17 @@ export default {
   font-family: 'NanumSquare', sans-serif;
 }
 #orderview > .top {
-  display:flex;
-  flex-direction:row;
-  padding:12px;
+  display: flex;
+  flex-direction: row;
+  .alert {
+    background-color: #ff0000;
+    font-size: 28px;
+    padding: 12px;
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+  }
 }
 #orderview > .body {
   display:flex;
@@ -769,5 +809,22 @@ export default {
       box-shadow: 0px 0px 12px -4px #000000;
     }
   }
+}
+
+@keyframes mdHead {
+  0% {
+    transform: translateY(-100vh);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.signboard-enter-active {
+  animation: mdHead .5s;
+}
+
+.signboard-leave-active {
+  animation: mdHead .5s reverse;
 }
 </style>
