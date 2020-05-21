@@ -5,8 +5,6 @@ import querystring from 'querystring';
 
 import { vaildShopCode } from './store.helper';
 import { isEmpty } from '@utils/CheckedType';
-import { COOKIE_AUTH_NAME } from '@config';
-import { COOKIE_DOMAIN } from '@config/auth.constant';
 
 import endpoints from './endpoints';
 
@@ -241,7 +239,6 @@ const authentication = {
         commit('SET_STORES', res.data.shop_data);
         commit('SET_AUTH', auth);
 
-        Vue.$cookies.set(COOKIE_AUTH_NAME, auth, '1y', null, COOKIE_DOMAIN);
         localStorage.auth = JSON.stringify(auth);
 
         return res.data.result;
