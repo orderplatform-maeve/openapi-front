@@ -472,8 +472,12 @@ export default {
     },
     getAuthentication() {
       const params = { store_code: this.auth.store.store_code };
-      console.log('getAuthentication', params);
+
+      const auth = JSON.parse(localStorage.auth);
+      console.log('getAuthentication', auth);
+
       this.$socket.emit('reqStoreInfo', params);
+      this.$store.commit('SET_AUTH', auth);
     },
     getUCode() {
       // get uCode from localStorage
