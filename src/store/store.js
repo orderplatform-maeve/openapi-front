@@ -246,7 +246,6 @@ const authentication = {
 
         return res.data.result;
       } catch (error) {
-        console.error(error);
         commit('pushFlashMessage', error);
         return false;
       }
@@ -365,7 +364,6 @@ const shop = {
 
         return response;
       } catch (error) {
-        // alert('서버 에러: 매장 정보를 가져올수 없습니다.');
         console.error(error);
         return false;
       }
@@ -721,11 +719,8 @@ const monitoring = {
 const goods = {
   actions: {
     async updateGoodStatusType(context, payload) {
-
       const url = endpoints.goods.updateGoodStatus;
-
       const res = await axios.get(url, payload);
-
       console.log('update goods type response', res);
 
       return res;
