@@ -493,8 +493,9 @@ export default {
         }
         // set uCode to localStorage
         localStorage.setItem('uCode', uCode);
-        this.$store.commit('updateUCode', uCode);
+        // this.$store.commit('updateUCode', uCode);
       }
+      this.$store.commit('updateUCode', uCode);
     },
     loopBeep() {
       this.beep();
