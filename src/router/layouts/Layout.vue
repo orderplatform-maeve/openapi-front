@@ -50,11 +50,11 @@
           .tab-buttons
             .tab-button(:class="getOnTabletOrderClass(device)" @click="agreeOrder") On
             .tab-button(:class="getOffTabletOrderClass(device)" @click="rejectOrder") Off
-        .tab-group
-          .tab-name 주문 내역
-          .tab-buttons
-            .tab-button(:class="getOnTabletRecentOrderClass(device)" @click="showRecentOrder") On
-            .tab-button(:class="getOffTabletRecentOrderClass(device)" @click="hideRecentOrder") Off
+        //- .tab-group
+        //-   .tab-name 주문 내역
+        //-   .tab-buttons
+        //-     .tab-button(:class="getOnTabletRecentOrderClass(device)" @click="showRecentOrder") On
+        //-     .tab-button(:class="getOffTabletRecentOrderClass(device)" @click="hideRecentOrder") Off
         hr
         router-link.button(v-if="visibleStoresButton" :to="paths.store") 매장 보기
         router-link.button.button-red(v-if="visibleLoginButton" :to="paths.login") 로그인
