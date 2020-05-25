@@ -157,14 +157,10 @@ const socket = {
         // // console.log('object', state.tables);
         const findTargetIdx = state.tables.findIndex((o) => o.Ta_id === payload.tableId);
 
-        let maxCount = 1;
+        console.log('findTargetIdx', payload.tableId, findTargetIdx, state.tables);
 
         if (findTargetIdx === -1) {
-          if (maxCount) {
-            maxCount = 0;
-            return commit('pushFlashMessage', '일치하는 테이블 아이디를 찾지 못했습니다.');
-          }
-          return null;
+          return commit('pushFlashMessage', '일치하는 테이블 아이디를 찾지 못했습니다.');
         }
         // if (findTargetIdx === -1) return false;
 

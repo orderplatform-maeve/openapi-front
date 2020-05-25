@@ -479,22 +479,25 @@ export default {
       return process.env.STOP_REDIRECT;
     },
     emitTargetTable() {
-      const { store_code } = this.$store.state.auth.store;
-      this.timer = setInterval(() => {
-        const payload = {
-          store: {
-            code: store_code,
-          },
-          type: '@reqeust/ordering/location/table',
-          tableId: this.$route.params.id,
-          uCode: this.$store.state.uCode,
-          MACAddr: this.$store.state.MACAddr,
-          ordering: true,
-        };
+      if (this.$route?.params?.id) {
+        const { store_code } = this.$store.state.auth.store;
+        this.timer = setInterval(() => {
+          console.log('emitTargetTable', this.$route.params.id);
+          const payload = {
+            store: {
+              code: store_code,
+            },
+            type: '@reqeust/ordering/location/table',
+            tableId: this.$route.params.id,
+            uCode: this.$store.state.uCode,
+            MACAddr: this.$store.state.MACAddr,
+            ordering: true,
+          };
 
-        this.$socket.emit('orderview', payload);
+          this.$socket.emit('orderview', payload);
 
-      }, 1000);
+        }, 1000);
+      }
     },
   },
 };
