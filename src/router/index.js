@@ -17,7 +17,7 @@ router.beforeEach((to, from, next) => {
         },
       } = JSON.parse(localStorage.auth);
 
-      console.log(JSON.parse(localStorage.auth));
+      // console.log(JSON.parse(localStorage.auth));
 
       if (code) {
         next();

@@ -30,19 +30,19 @@ export default {
     '$store.state.allRefreshList'(nextValue) {
       const filteredDoneData = nextValue.filter((o) => o.status === 'fulfilled' || o.status === 'reject');
       const filteredDoneDataLength = filteredDoneData.length;
-      // console.log(filteredDoneDataLength, nextValue.length);
-      // console.log('watch', nextValue);
+      // // console.log(filteredDoneDataLength, nextValue.length);
+      // // console.log('watch', nextValue);
 
       if (filteredDoneDataLength > 0) {
         const curTimerIdx = filteredDoneDataLength - 1;
         const timer = this.timerArr[curTimerIdx];
-        console.log(timer);
+        // console.log(timer);
         clearTimeout(timer);
       }
 
       if (filteredDoneDataLength === nextValue.length) {
         this.timerArr = [];
-        console.log('clean timer done', this.timerArr);
+        // console.log('clean timer done', this.timerArr);
       }
     },
   },
@@ -56,7 +56,7 @@ export default {
         await this.$store.dispatch('setTables', params);
 
       } catch (error) {
-        console.log(error);
+        // console.log(error);
       }
     },
     getTableName(table) {
@@ -85,7 +85,7 @@ export default {
 
       const preparingAllRefeshList = this.tables.map(getPreparingTabletInfoData);
 
-      // console.log('preparingAllRefeshList', preparingAllRefeshList);
+      // // console.log('preparingAllRefeshList', preparingAllRefeshList);
       // this.$store.commit('SET_ALL_REFRESH_LIST', preparingAllRefeshList);
       // this.$store.commit('SHOW_ALL_REFRES_MODAL');
 
@@ -97,7 +97,7 @@ export default {
         allRefreshList: preparingAllRefeshList,
       });
 
-      console.log('nowSoketInfo', nowSoketInfo);
+      // console.log('nowSoketInfo', nowSoketInfo);
 
       const { disconnected, connected } = nowSoketInfo;
 
@@ -111,14 +111,14 @@ export default {
             fd.append('table_id', item.Ta_id);
 
             const res = await this.$store.dispatch('tabletReload', fd);
-            // console.log(res);
+            // // console.log(res);
 
             const result = {
               status: res.status === 200 ? 'fulfilled' : 'rejected',
               tabletName: item.Tablet_name,
               msg: res?.data,
             };
-            // console.log(result);
+            // // console.log(result);
 
             const targetItemIndex = this.$store.state.allRefreshList.findIndex((o) => o.tabletName === result.tabletName);
 
@@ -142,7 +142,7 @@ export default {
           this.timerArr = [...JSON.parse(JSON.stringify(this.timerArr)), timer];
         });
 
-        console.log(this.timerArr);
+        // console.log(this.timerArr);
       }
     },
     getAllRefreshDataVisible() {

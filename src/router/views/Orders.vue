@@ -82,7 +82,7 @@ export default {
     const fd = new FormData();
     fd.append('shop_code', this.$store.state.auth.store.store_code);
     const res = await this.$store.dispatch('setOrders', fd);
-    console.log(res);
+    // console.log(res);
 
     if (res) {
       setTimeout(() => {

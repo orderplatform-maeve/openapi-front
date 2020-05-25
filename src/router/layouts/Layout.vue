@@ -159,7 +159,7 @@ export default {
         MACAddr = window.UUID.getMacAddress();
       }
     } catch(e) {
-      console.log(e);
+      // console.log(e);
     }
 
     this.$store.commit('updateMACAddr', MACAddr);
@@ -180,19 +180,19 @@ export default {
   },
   sockets: {
     connect() {
-      console.log('socket connected');
+      // console.log('socket connected');
       this.beep();
     },
     orderview(message) {
       this.$socket.emit('res', message, () => {
-        console.log('socket res');
+        // console.log('socket res');
       });
     },
   },
   methods: {
     catchOffline() {
       window.addEventListener('offline', () => {
-        console.log("you're offline");
+        // console.log("you're offline");
         const payload = {
           visible: true,
           message: '인터넷이 연결 되지 않았습니다. 인터넷 연결 확인 후 새로고침 해주세요.',
@@ -203,7 +203,7 @@ export default {
     },
     catchOnline() {
       window.addEventListener('online', () => {
-        console.log("you're online");
+        // console.log("you're online");
         const payload = {
           visible: false,
           message: '',
@@ -215,7 +215,7 @@ export default {
     observableRefresh() {
       // close web tab
       window.addEventListener('beforeunload', () => {
-        console.log('beforeunload', this.$route?.params?.id);
+        // console.log('beforeunload', this.$route?.params?.id);
         if (this.$route?.params?.id) {
           const { store_code } = this.$store.state.auth.store;
           const payload = {
@@ -240,7 +240,7 @@ export default {
         await this.$store.dispatch('setTables', params);
 
       } catch (error) {
-        console.log(error);
+        // console.log(error);
       }
     },
     async tagetVersionRedirect() {
@@ -249,7 +249,7 @@ export default {
           const params = new FormData();
           params.append('store_code', this.$store.state.auth.store.store_code);
           const res = await this.$store.dispatch('setStoreInit', params);
-          // console.log('tagetVersionRedirect', res);
+          // // console.log('tagetVersionRedirect', res);
 
           const nextUrl = res.data.data.T_order_store_orderView_version;
           if (nextUrl) {
@@ -260,7 +260,7 @@ export default {
             } = location;
 
             const nowPath = `${protocol}//${hostname}${pathname}#/`;
-            console.log('location', nowPath, nextUrl);
+            // console.log('location', nowPath, nextUrl);
 
             if (!process.env.STOP_REDIRECT) {
               if (nowPath !== nextUrl) {
@@ -447,7 +447,7 @@ export default {
           deviceUsage = JSON.parse(window.UUID.getDeviceUsage());
         }
       } catch(e) {
-        //console.log(e);
+        //// console.log(e);
       }
 
       const data = {
@@ -465,14 +465,14 @@ export default {
       };
 
       this.$socket.emit('event', data, () => {
-        // console.log('event', answer.msg);
+        // // console.log('event', answer.msg);
       });
     },
     getAuthentication() {
       const params = { store_code: this.auth.store.store_code };
 
       const auth = JSON.parse(localStorage.auth);
-      console.log('getAuthentication', auth);
+      // console.log('getAuthentication', auth);
 
       this.$socket.emit('reqStoreInfo', params);
       this.$store.commit('SET_AUTH', auth);
@@ -504,7 +504,7 @@ export default {
         const term = lap < 1;
 
         if (term) {
-          // console.log('term', new Date());
+          // // console.log('term', new Date());
           this.beep();
         }
       }, 1000);

@@ -58,7 +58,7 @@ export default {
     data(newData) {
 
       if (!this.selectSubCategoryItem) {
-        console.log(newData[0].subCategories[0]);
+        // console.log(newData[0].subCategories[0]);
         this.selectSubCategoryItem = newData[0].subCategories[0];
       }
     },
@@ -184,7 +184,7 @@ export default {
       };
 
       const res = await this.$store.dispatch('updateGoodStatusType', params);
-      console.log(res);
+      // console.log(res);
 
       if (res.status === 200) {
         const arr = JSON.parse(JSON.stringify(this.$store.state.goods));
@@ -213,7 +213,7 @@ export default {
       };
 
       const res = await this.$store.dispatch('updateGoodStatusType', params);
-      console.log(res);
+      // console.log(res);
 
       if (res.status === 200) {
         const arr = JSON.parse(JSON.stringify(this.$store.state.goods));
@@ -251,7 +251,7 @@ export default {
       };
 
       const res = await this.$store.dispatch('updateGoodStatusType', params);
-      console.log(res);
+      // console.log(res);
 
       if (res.status === 200) {
         const arr = JSON.parse(JSON.stringify(this.$store.state.goods));
@@ -280,7 +280,7 @@ export default {
       };
 
       const res = await this.$store.dispatch('updateGoodStatusType', params);
-      console.log(res);
+      // console.log(res);
 
       if (res.status === 200) {
         const arr = JSON.parse(JSON.stringify(this.$store.state.goods));
@@ -321,9 +321,9 @@ export default {
         elBottom += el.offsetHeight;
         const { scrollTop } = e.target;
 
-        // console.log(i, elTop, elBottom, scrollTop, el.id, targetId);
+        // // console.log(i, elTop, elBottom, scrollTop, el.id, targetId);
         if (elTop <= scrollTop && elBottom >= scrollTop) {
-          // console.log(i, elTop, elBottom, scrollTop, el.id);
+          // // console.log(i, elTop, elBottom, scrollTop, el.id);
 
           const findItem = this.data.find((o) => o.code === el.id);
           this.selectMainCategoryItem = findItem;
@@ -334,7 +334,7 @@ export default {
           subElBottom += element.offsetHeight;
 
           if (subElTop <= scrollTop && subElBottom >= scrollTop) {
-            // console.log(subElTop, subElBottom, scrollTop, element.id);
+            // // console.log(subElTop, subElBottom, scrollTop, element.id);
             const findSubItem = this.getSubCategories().find((o) => o.code === element.id);
             this.selectSubCategoryItem = findSubItem;
           }
@@ -373,7 +373,7 @@ export default {
       };
 
       const res = await this.$store.dispatch('updateGoodStatusType', params);
-      console.log(res);
+      // console.log(res);
 
       if (res.status === 200) {
         const arr = JSON.parse(JSON.stringify(this.$store.state.goods));
@@ -402,7 +402,7 @@ export default {
       };
 
       const res = await this.$store.dispatch('updateGoodStatusType', params);
-      console.log(res);
+      // console.log(res);
 
       if (res.status === 200) {
         const arr = JSON.parse(JSON.stringify(this.$store.state.goods));
@@ -436,7 +436,7 @@ export default {
       };
 
       const res = await this.$store.dispatch('updateGoodStatusType', params);
-      console.log(res);
+      // console.log(res);
 
       if (res.status === 200) {
         const arr = JSON.parse(JSON.stringify(this.$store.state.goods));
@@ -465,7 +465,7 @@ export default {
       };
 
       const res = await this.$store.dispatch('updateGoodStatusType', params);
-      console.log(res);
+      // console.log(res);
 
       if (res.status === 200) {
         const arr = JSON.parse(JSON.stringify(this.$store.state.goods));
@@ -499,7 +499,7 @@ export default {
       };
 
       const res = await this.$store.dispatch('updateGoodStatusType', params);
-      console.log(res);
+      // console.log(res);
 
       if (res.status === 200) {
         const arr = JSON.parse(JSON.stringify(this.$store.state.goods));
@@ -528,7 +528,7 @@ export default {
       };
 
       const res = await this.$store.dispatch('updateGoodStatusType', params);
-      console.log(res);
+      // console.log(res);
 
       if (res.status === 200) {
         const arr = JSON.parse(JSON.stringify(this.$store.state.goods));
@@ -562,7 +562,7 @@ export default {
       };
 
       const res = await this.$store.dispatch('updateGoodStatusType', params);
-      console.log(res);
+      // console.log(res);
 
       if (res.status === 200) {
         const arr = JSON.parse(JSON.stringify(this.$store.state.goods));
@@ -591,7 +591,7 @@ export default {
       };
 
       const res = await this.$store.dispatch('updateGoodStatusType', params);
-      console.log(res);
+      // console.log(res);
 
       if (res.status === 200) {
         const arr = JSON.parse(JSON.stringify(this.$store.state.goods));

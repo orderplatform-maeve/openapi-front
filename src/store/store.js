@@ -33,13 +33,13 @@ const socket = {
   },
   actions: {
     SOCKET_orderlog({ commit, state }, order) {
-      // console.log('SOCKET_orderlog', order);
+      // // console.log('SOCKET_orderlog', order);
       if (vaildShopCode(state, order)) {
         commit('PUSH_ORDER', order);
       }
     },
     async SOCKET_orderview({ commit, state, dispatch }, payload) {
-      // console.log('out SOCKET_orderview', payload);
+      // // console.log('out SOCKET_orderview', payload);
 
       if (payload?.type_msg === 'commit') {
         const targetOrder = {
@@ -47,20 +47,20 @@ const socket = {
           order_view_key: payload.key,
         };
 
-        console.log('targetOrder', targetOrder);
-        console.log('SOCKET_orderview', payload);
+        // console.log('targetOrder', targetOrder);
+        // console.log('SOCKET_orderview', payload);
 
         commit('UPDATE_ORDERS', targetOrder);
         return commit('UNSET_ORDER');
       }
 
       if (payload?.type === 'reload') {
-        // console.log('reload', payload);
+        // // console.log('reload', payload);
 
         const validUCode = payload.uCode === localStorage?.uCode;
         const validMACAddr = payload.MACAddr === window.UUID?.getMacAddress();
         const isRedirection = validUCode || validMACAddr;
-        console.log('reload SOCKET_orderview', payload, isRedirection);
+        // console.log('reload SOCKET_orderview', payload, isRedirection);
 
         try {
           if (isRedirection) {
@@ -77,7 +77,7 @@ const socket = {
               } = location;
 
               const nowPath = `${protocol}//${hostname}${pathname}#/`;
-              console.log('location', nowPath);
+              // console.log('location', nowPath);
 
               if (!process.env.STOP_REDIRECT) {
                 const { store_code } = state.auth.store;
@@ -101,13 +101,13 @@ const socket = {
             }
           }
         } catch (error) {
-          console.log(error);
+          // console.log(error);
         }
       }
 
       if (payload?.type === '@put/product/status') {
         if (payload?.good?.code) {
-          // console.log('sync product data', payload.data);
+          // // console.log('sync product data', payload.data);
           const arr = JSON.parse(JSON.stringify(state.goods));
           const findIdx = arr.findIndex((o) => o.T_order_store_good_code === payload.good.code);
 
@@ -144,7 +144,7 @@ const socket = {
       }
 
       if (payload?.type === '@show/allRefreshModal') {
-        // console.log('@show/allRefreshModal', payload.allRefreshList);
+        // // console.log('@show/allRefreshModal', payload.allRefreshList);
         commit('SHOW_ALL_REFRES_MODAL');
         commit('SET_ALL_REFRESH_LIST', payload.allRefreshList);
       }
@@ -154,7 +154,7 @@ const socket = {
       }
 
       if (payload?.type === '@reqeust/ordering/location/table') {
-        // console.log('object', state.tables);
+        // // console.log('object', state.tables);
         const findTargetIdx = state.tables.findIndex((o) => o.Ta_id === payload.tableId);
 
         if (findTargetIdx === -1) return commit('pushFlashMessage', '일치하는 테이블 아이디를 찾지 못했습니다.');
@@ -194,6 +194,11 @@ const socket = {
       commit('setSignBoardStatus', payload);
     },
     SOCKET_connect({ commit }) {
+      const now = new Date(Date.now());
+      const log = `connected socket ${now}`;
+
+      console.log(log);
+
       const payload = {
         visible: false,
         message: '',
@@ -214,7 +219,7 @@ const authentication = {
       try {
         const url = endpoints.authentication.login;
         const res = await axios.post(url, params);
-        console.log('res', res);
+        // console.log('res', res);
 
         if (!res) {
           throw 'response 값이 없습니다.';
@@ -284,14 +289,14 @@ const order = {
       state.orders.push(order);
     },
     SET_ORDERS: (state, orders) => {
-      // console.log('orders!!!!!!!', orders);
+      // // console.log('orders!!!!!!!', orders);
       Vue.set(state, 'orders', orders);
     },
     UPDATE_ORDERS: (state, order) => {
       const { orders } = state;
       const idx = orders.findIndex((item) => item.order_view_key === order.order_view_key);
 
-      console.log('UPDATE_ORDERS', idx);
+      // console.log('UPDATE_ORDERS', idx);
 
       if (idx > -1) {
         orders[idx].commit = order.commit;
@@ -349,7 +354,7 @@ const order = {
 const shop = {
   mutations: {
     SET_STORES: (state, stores) => {
-      console.log('stores', stores);
+      // console.log('stores', stores);
       Vue.set(state, 'stores', stores);
     },
   },
@@ -361,10 +366,10 @@ const shop = {
       try {
         const url = endpoints.shop.init;
         const response = await axios.post(url, params);
-        // console.log(response);
+        // // console.log(response);
 
         const target = response.data.data;
-        // console.log('target', target);
+        // // console.log('target', target);
 
         const device = {
           serviceStatus: !!target.T_order_store_close,
@@ -399,7 +404,7 @@ const shop = {
 const device = {
   mutations: {
     setDeviceStatus(state, device) {
-      // console.log('commit setDeviceStatus', device);
+      // // console.log('commit setDeviceStatus', device);
       Vue.set(state, 'device', device);
     }
   },
@@ -415,7 +420,7 @@ const device = {
 
         return false;
       } catch (error) {
-        console.log(error);
+        // console.log(error);
         return false;
       }
     },
@@ -430,7 +435,7 @@ const device = {
 
         return false;
       } catch (error) {
-        console.log(error);
+        // console.log(error);
         return false;
       }
     },
@@ -445,7 +450,7 @@ const device = {
 
         return false;
       } catch (error) {
-        console.log(error);
+        // console.log(error);
         return false;
       }
     },
@@ -460,7 +465,7 @@ const device = {
 
         return false;
       } catch (error) {
-        console.log(error);
+        // console.log(error);
         return false;
       }
     },
@@ -475,7 +480,7 @@ const device = {
 
         return false;
       } catch (error) {
-        console.log(error);
+        // console.log(error);
         return false;
       }
     },
@@ -490,7 +495,7 @@ const device = {
 
         return false;
       } catch (error) {
-        console.log(error);
+        // console.log(error);
         return false;
       }
     },
@@ -531,7 +536,7 @@ const table = {
     async yesOrder(context, payload) {
       try {
         const res = await axios.post(endpoints.table.order, payload.params, payload.config);
-        console.log(res);
+        // console.log(res);
 
         if (res.status === 200) {
           return res;
@@ -547,7 +552,7 @@ const table = {
         const url = endpoints.tablet.refresh;
 
         const res = await axios.post(url, params);
-        // console.log(res);
+        // // console.log(res);
         return res;
       } catch (error) {
         return false;
@@ -557,8 +562,9 @@ const table = {
       try {
         const url = endpoints.tablet.allRefresh;
 
-        const res = await axios.post(url, params);
-        console.log(res);
+        await axios.post(url, params);
+        // const res = await axios.post(url, params);
+        // console.log(res);
       } catch (error) {
         return false;
       }
@@ -641,7 +647,7 @@ const menu = {
             categories = JSON.parse(categories);
           }
         } catch(e) {
-          console.log(e);
+          // console.log(e);
         }
 
         if (p.T_order_store_good_image) {
@@ -710,7 +716,7 @@ const menu = {
       };
 
       const results = getCategories.map(getCategoryItem);
-      // console.log(results);
+      // // console.log(results);
       return results;
     },
   },
@@ -733,7 +739,7 @@ const goods = {
     async updateGoodStatusType(context, payload) {
       const url = endpoints.goods.updateGoodStatus;
       const res = await axios.get(url, payload);
-      console.log('update goods type response', res);
+      // console.log('update goods type response', res);
 
       return res;
     },

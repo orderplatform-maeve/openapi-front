@@ -87,7 +87,7 @@ export default {
           return this.$router.push(paths.order);
         }
       } catch(error) {
-        console.log('리다이렉션 버젼 주소가 없습니다.');
+        // console.log('리다이렉션 버젼 주소가 없습니다.');
         return this.$router.push(paths.order);
       }
 

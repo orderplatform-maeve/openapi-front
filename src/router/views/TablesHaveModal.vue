@@ -45,7 +45,7 @@ export default {
 
     // const categories = await this.$store.dispatch('setCategories', fd);
     // const goods = await this.$store.dispatch('setGooods', fd);
-    // console.log('categories', categories, goods);
+    // // console.log('categories', categories, goods);
   },
   methods: {
     showMenuModal() {
@@ -76,7 +76,7 @@ export default {
       fd.append('store_code', store_code);
       fd.append('tablet_number', this.getTableId());
 
-      console.log(store_code, this.getTableId());
+      // console.log(store_code, this.getTableId());
 
       this.$store.dispatch('setTableCartList', fd);
     },

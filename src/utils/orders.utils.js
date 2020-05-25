@@ -120,7 +120,7 @@ export function vaildCommitText(order) {
 }
 
 export function checkedCommit(order) {
-  // console.log(order.commit);
+  // // console.log(order.commit);
   return order && order.commit;
 }
 

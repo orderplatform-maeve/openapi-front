@@ -22,8 +22,8 @@ const uploadDistFiles = (distKey, indexKey) => fs.readdir(distFolderPath, (err, 
   if (err) { throw err; }
 
   if(!files || files.length === 0) {
-    console.log(`provided folder '${distFolderPath}' is empty or does not exist.`);
-    console.log('Make sure your project was compiled!');
+    // console.log(`provided folder '${distFolderPath}' is empty or does not exist.`);
+    // console.log('Make sure your project was compiled!');
     return;
   }
 
@@ -35,18 +35,18 @@ const uploadDistFiles = (distKey, indexKey) => fs.readdir(distFolderPath, (err, 
 
     // ignore if directory
     if (fs.lstatSync(filePath).isDirectory()) {
-      // console.log('is directory', filePath, fileName);
+      // // console.log('is directory', filePath, fileName);
       fs.readdir(filePath, (e, subFiles) => {
         if (e) { throw e; }
 
         if(!subFiles || subFiles.length === 0) {
-          console.log(`provided folder '${filePath}' is empty or does not exist.`);
-          console.log('Make sure your project was compiled!');
+          // console.log(`provided folder '${filePath}' is empty or does not exist.`);
+          // console.log('Make sure your project was compiled!');
           return;
         }
 
         for (const subFileName of subFiles) {
-          // console.log('subFileName', subFileName);
+          // // console.log('subFileName', subFileName);
 
           const subFilePath = `${filePath}/${subFileName}`;
 
@@ -64,7 +64,7 @@ const uploadDistFiles = (distKey, indexKey) => fs.readdir(distFolderPath, (err, 
               CacheControl: 'no-cache',
             }, (err) => {
               if (err) { throw err; }
-              console.log(`Successfully uploaded '${subFileName}'`);
+              // console.log(`Successfully uploaded '${subFileName}'`);
             });
 
           });
@@ -81,10 +81,10 @@ const uploadDistFiles = (distKey, indexKey) => fs.readdir(distFolderPath, (err, 
 
       const ContentType = mime.getType(fileName);
 
-      // console.log('1@!#@#@!#!@', ContentType);
+      // // console.log('1@!#@#@!#!@', ContentType);
 
       if (fileName === 'index.html') {
-        // console.log('~~~~~~~~~~', indexKey);
+        // // console.log('~~~~~~~~~~', indexKey);
         s3.upload({
           Bucket: BUCKET_NAEM,
           Key: `${indexKey}/${fileName}`,
@@ -93,7 +93,7 @@ const uploadDistFiles = (distKey, indexKey) => fs.readdir(distFolderPath, (err, 
           CacheControl: 'no-cache',
         }, (err) => {
           if (err) { throw err; }
-          console.log(`File Successfully uploaded '${fileName}'!`);
+          // console.log(`File Successfully uploaded '${fileName}'!`);
         });
       }
     });
