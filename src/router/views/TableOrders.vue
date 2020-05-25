@@ -482,7 +482,7 @@ export default {
       if (this.$route?.params?.id) {
         const { store_code } = this.$store.state.auth.store;
         this.timer = setInterval(() => {
-          console.log('emitTargetTable', this.$route.params.id);
+          // console.log('emitTargetTable', this.$route.params.id);
           const payload = {
             store: {
               code: store_code,
