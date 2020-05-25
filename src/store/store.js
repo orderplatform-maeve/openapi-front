@@ -171,20 +171,23 @@ const socket = {
       }
     },
     SOCKET_disconnect({ commit }, message) {
+
+      if (process.env.NODE_ENV === 'development') {
+        const now = new Date(Date.now());
+        const log = `disconnected socket ${now}`;
+
+        if (!localStorage.networkLog) {
+          localStorage.networkLog = JSON.stringify([log]);
+        } else {
+          const parse = JSON.parse(localStorage.networkLog);
+          localStorage.networkLog = JSON.stringify([...parse, log]);
+        }
+      }
+
       const payload = {
         visible: true,
         message: '소켓 서버 연결 실패입니다. 인터넷 연결 확인 후 새로고침 해주세요.',
       };
-
-      const now = new Date(Date.now());
-      const log = `disconnected socket ${now}`;
-
-      if (!localStorage.networkLog) {
-        localStorage.networkLog = JSON.stringify([log]);
-      } else {
-        const parse = JSON.parse(localStorage.networkLog);
-        localStorage.networkLog = JSON.stringify([...parse, log]);
-      }
 
       console.log('disconnected socket', message);
 
