@@ -31,7 +31,7 @@
           @click="restart()"
         ) 새로고침
         .datetime
-          span {{ time.now | moment("MM.DD HH:mm:ss") }}
+          span {{ getNowDate() }}
         img.logo(:src="logo")
         .store_name {{storeName}}
         router-link.button(v-if="visibleOrderButton" :to="paths.order") 주문 보기
@@ -439,7 +439,8 @@ export default {
     },
     beep() {
       const time = Date.now();
-      const datetime = this.$moment(time).format();
+      const ISONow = new Date(time).toISOString();
+      const datetime = this.$moment(ISONow).format();
 
       let deviceUsage = {};
       try {
@@ -497,7 +498,7 @@ export default {
     loopBeep() {
       this.beep();
       setInterval(() => {
-        this.time.now = Date();
+        this.time.now = parseInt(Date.now());
 
         const timestemp = parseInt(Date.now() / 1000);
         const lap = timestemp % 30;
@@ -529,6 +530,15 @@ export default {
     },
     vaildRecentOrderStatus(device) {
       return device && device.recentOrderStatus;
+    },
+    getNowDate() {
+      if (!this.time.now) {
+        return '';
+      }
+      const now = new Date(this.time.now);
+      const ISONow = now.toISOString();
+
+      return this.$moment(ISONow).format('MM.DD HH:mm:ss');
     },
   },
 };

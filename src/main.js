@@ -31,8 +31,6 @@ const momentPlugins = {
 };
 Vue.use(momentPlugins);
 
-Vue.use(moment);
-
 Vue.use(new VueSocketIO(socketConfig));
 
 Vue.filter('moment', function (value, format) {
