@@ -86,7 +86,7 @@ export default {
   },
   computed: {
     order() {
-      console.log(this.$store.state.order.rating_type);
+      // console.log(this.$store.state.order.rating_type);
       return this.$store.state.order;
     },
   },
@@ -107,7 +107,7 @@ export default {
   sockets: {
     orderview(payload) {
       if (payload?.type_msg === 'commit') {
-        console.log('local');
+        // console.log('local');
         clearInterval(this.interval);
         this.isConfirm = false;
       }

@@ -11,8 +11,6 @@
 
 <script>
 import paths from '@router/paths';
-import { COOKIE_AUTH_NAME } from '@config';
-import { COOKIE_DOMAIN } from '@config/auth.constant';
 
 export default {
   props: {
@@ -66,7 +64,6 @@ export default {
         },
       };
 
-      this.$cookies.set(COOKIE_AUTH_NAME, auth, '1y', null, COOKIE_DOMAIN);
       localStorage.auth = JSON.stringify(auth);
       await this.$store.dispatch('updateAuth', auth);
 
@@ -90,7 +87,7 @@ export default {
           return this.$router.push(paths.order);
         }
       } catch(error) {
-        console.log('리다이렉션 버젼 주소가 없습니다.');
+        // console.log('리다이렉션 버젼 주소가 없습니다.');
         return this.$router.push(paths.order);
       }
 

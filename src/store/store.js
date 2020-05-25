@@ -5,8 +5,6 @@ import querystring from 'querystring';
 
 import { vaildShopCode } from './store.helper';
 import { isEmpty } from '@utils/CheckedType';
-import { COOKIE_AUTH_NAME } from '@config';
-import { COOKIE_DOMAIN } from '@config/auth.constant';
 
 import endpoints from './endpoints';
 
@@ -35,13 +33,13 @@ const socket = {
   },
   actions: {
     SOCKET_orderlog({ commit, state }, order) {
-      // console.log('SOCKET_orderlog', order);
+      // // console.log('SOCKET_orderlog', order);
       if (vaildShopCode(state, order)) {
         commit('PUSH_ORDER', order);
       }
     },
     async SOCKET_orderview({ commit, state, dispatch }, payload) {
-      // console.log('out SOCKET_orderview', payload);
+      // // console.log('out SOCKET_orderview', payload);
 
       if (payload?.type_msg === 'commit') {
         const targetOrder = {
@@ -49,20 +47,20 @@ const socket = {
           order_view_key: payload.key,
         };
 
-        console.log('targetOrder', targetOrder);
-        console.log('SOCKET_orderview', payload);
+        // console.log('targetOrder', targetOrder);
+        // console.log('SOCKET_orderview', payload);
 
         commit('UPDATE_ORDERS', targetOrder);
         return commit('UNSET_ORDER');
       }
 
       if (payload?.type === 'reload') {
-        // console.log('reload', payload);
+        // // console.log('reload', payload);
 
         const validUCode = payload.uCode === localStorage?.uCode;
         const validMACAddr = payload.MACAddr === window.UUID?.getMacAddress();
         const isRedirection = validUCode || validMACAddr;
-        console.log('reload SOCKET_orderview', payload, isRedirection);
+        // console.log('reload SOCKET_orderview', payload, isRedirection);
 
         try {
           if (isRedirection) {
@@ -79,7 +77,7 @@ const socket = {
               } = location;
 
               const nowPath = `${protocol}//${hostname}${pathname}#/`;
-              console.log('location', nowPath);
+              // console.log('location', nowPath);
 
               if (!process.env.STOP_REDIRECT) {
                 const { store_code } = state.auth.store;
@@ -103,13 +101,13 @@ const socket = {
             }
           }
         } catch (error) {
-          console.log(error);
+          // console.log(error);
         }
       }
 
       if (payload?.type === '@put/product/status') {
         if (payload?.good?.code) {
-          // console.log('sync product data', payload.data);
+          // // console.log('sync product data', payload.data);
           const arr = JSON.parse(JSON.stringify(state.goods));
           const findIdx = arr.findIndex((o) => o.T_order_store_good_code === payload.good.code);
 
@@ -146,7 +144,7 @@ const socket = {
       }
 
       if (payload?.type === '@show/allRefreshModal') {
-        // console.log('@show/allRefreshModal', payload.allRefreshList);
+        // // console.log('@show/allRefreshModal', payload.allRefreshList);
         commit('SHOW_ALL_REFRES_MODAL');
         commit('SET_ALL_REFRESH_LIST', payload.allRefreshList);
       }
@@ -156,10 +154,18 @@ const socket = {
       }
 
       if (payload?.type === '@reqeust/ordering/location/table') {
-        // console.log('object', state.tables);
+        // // console.log('object', state.tables);
         const findTargetIdx = state.tables.findIndex((o) => o.Ta_id === payload.tableId);
 
-        if (findTargetIdx === -1) return commit('pushFlashMessage', '일치하는 테이블 아이디를 찾지 못했습니다.');
+        let maxCount = 1;
+
+        if (findTargetIdx === -1) {
+          if (maxCount) {
+            maxCount = 0;
+            return commit('pushFlashMessage', '일치하는 테이블 아이디를 찾지 못했습니다.');
+          }
+          return null;
+        }
         // if (findTargetIdx === -1) return false;
 
         const deepCopyArr = JSON.parse(JSON.stringify(state.tables));
@@ -171,6 +177,42 @@ const socket = {
 
         commit('SET_TABLES', deepCopyArr);
       }
+    },
+    SOCKET_disconnect({ commit }, message) {
+
+      if (process.env.NODE_ENV === 'development') {
+        const now = new Date(Date.now());
+        const log = `disconnected socket ${now}`;
+
+        if (!localStorage.networkLog) {
+          localStorage.networkLog = JSON.stringify([log]);
+        } else {
+          const parse = JSON.parse(localStorage.networkLog);
+          localStorage.networkLog = JSON.stringify([...parse, log]);
+        }
+      }
+
+      const payload = {
+        visible: true,
+        message: '소켓 서버 연결 실패입니다. 인터넷 연결 확인 후 새로고침 해주세요.',
+      };
+
+      console.log('disconnected socket', message);
+
+      commit('setSignBoardStatus', payload);
+    },
+    SOCKET_connect({ commit }) {
+      const now = new Date(Date.now());
+      const log = `connected socket ${now}`;
+
+      console.log(log);
+
+      const payload = {
+        visible: false,
+        message: '',
+      };
+
+      commit('setSignBoardStatus', payload);
     },
   },
 };
@@ -185,7 +227,7 @@ const authentication = {
       try {
         const url = endpoints.authentication.login;
         const res = await axios.post(url, params);
-        console.log('res', res);
+        // console.log('res', res);
 
         if (!res) {
           throw 'response 값이 없습니다.';
@@ -225,12 +267,10 @@ const authentication = {
         commit('SET_STORES', res.data.shop_data);
         commit('SET_AUTH', auth);
 
-        Vue.$cookies.set(COOKIE_AUTH_NAME, auth, '1y', null, COOKIE_DOMAIN);
         localStorage.auth = JSON.stringify(auth);
 
         return res.data.result;
       } catch (error) {
-        console.error(error);
         commit('pushFlashMessage', error);
         return false;
       }
@@ -257,14 +297,14 @@ const order = {
       state.orders.push(order);
     },
     SET_ORDERS: (state, orders) => {
-      // console.log('orders!!!!!!!', orders);
+      // // console.log('orders!!!!!!!', orders);
       Vue.set(state, 'orders', orders);
     },
     UPDATE_ORDERS: (state, order) => {
       const { orders } = state;
       const idx = orders.findIndex((item) => item.order_view_key === order.order_view_key);
 
-      console.log('UPDATE_ORDERS', idx);
+      // console.log('UPDATE_ORDERS', idx);
 
       if (idx > -1) {
         orders[idx].commit = order.commit;
@@ -322,7 +362,7 @@ const order = {
 const shop = {
   mutations: {
     SET_STORES: (state, stores) => {
-      console.log('stores', stores);
+      // console.log('stores', stores);
       Vue.set(state, 'stores', stores);
     },
   },
@@ -334,10 +374,10 @@ const shop = {
       try {
         const url = endpoints.shop.init;
         const response = await axios.post(url, params);
-        // console.log(response);
+        // // console.log(response);
 
         const target = response.data.data;
-        // console.log('target', target);
+        // // console.log('target', target);
 
         const device = {
           serviceStatus: !!target.T_order_store_close,
@@ -349,7 +389,6 @@ const shop = {
 
         return response;
       } catch (error) {
-        // alert('서버 에러: 매장 정보를 가져올수 없습니다.');
         console.error(error);
         return false;
       }
@@ -373,7 +412,7 @@ const shop = {
 const device = {
   mutations: {
     setDeviceStatus(state, device) {
-      // console.log('commit setDeviceStatus', device);
+      // // console.log('commit setDeviceStatus', device);
       Vue.set(state, 'device', device);
     }
   },
@@ -389,7 +428,7 @@ const device = {
 
         return false;
       } catch (error) {
-        console.log(error);
+        // console.log(error);
         return false;
       }
     },
@@ -404,7 +443,7 @@ const device = {
 
         return false;
       } catch (error) {
-        console.log(error);
+        // console.log(error);
         return false;
       }
     },
@@ -419,7 +458,7 @@ const device = {
 
         return false;
       } catch (error) {
-        console.log(error);
+        // console.log(error);
         return false;
       }
     },
@@ -434,7 +473,7 @@ const device = {
 
         return false;
       } catch (error) {
-        console.log(error);
+        // console.log(error);
         return false;
       }
     },
@@ -449,7 +488,7 @@ const device = {
 
         return false;
       } catch (error) {
-        console.log(error);
+        // console.log(error);
         return false;
       }
     },
@@ -464,7 +503,7 @@ const device = {
 
         return false;
       } catch (error) {
-        console.log(error);
+        // console.log(error);
         return false;
       }
     },
@@ -505,7 +544,7 @@ const table = {
     async yesOrder(context, payload) {
       try {
         const res = await axios.post(endpoints.table.order, payload.params, payload.config);
-        console.log(res);
+        // console.log(res);
 
         if (res.status === 200) {
           return res;
@@ -521,7 +560,7 @@ const table = {
         const url = endpoints.tablet.refresh;
 
         const res = await axios.post(url, params);
-        // console.log(res);
+        // // console.log(res);
         return res;
       } catch (error) {
         return false;
@@ -531,8 +570,9 @@ const table = {
       try {
         const url = endpoints.tablet.allRefresh;
 
-        const res = await axios.post(url, params);
-        console.log(res);
+        await axios.post(url, params);
+        // const res = await axios.post(url, params);
+        // console.log(res);
       } catch (error) {
         return false;
       }
@@ -615,7 +655,7 @@ const menu = {
             categories = JSON.parse(categories);
           }
         } catch(e) {
-          console.log(e);
+          // console.log(e);
         }
 
         if (p.T_order_store_good_image) {
@@ -684,7 +724,7 @@ const menu = {
       };
 
       const results = getCategories.map(getCategoryItem);
-      // console.log(results);
+      // // console.log(results);
       return results;
     },
   },
@@ -705,12 +745,9 @@ const monitoring = {
 const goods = {
   actions: {
     async updateGoodStatusType(context, payload) {
-
       const url = endpoints.goods.updateGoodStatus;
-
       const res = await axios.get(url, payload);
-
-      console.log('update goods type response', res);
+      // console.log('update goods type response', res);
 
       return res;
     },
@@ -746,10 +783,19 @@ const popup = {
 
       state.flashMessages.push(item);
     },
+    setDisconnectModalVisible(state, isDisconnectModal) {
+      Vue.set(state, 'isDisconnectModal', isDisconnectModal);
+    },
   },
 };
 
 const tablet = {
+  mutations: {
+    setSignBoardStatus(state, status) {
+      Vue.set(state, 'isDisConnectNetwork', status.visible);
+      Vue.set(state, 'signboardMessage', status.message);
+    },
+  },
   actions: {
     async resetOrder(context, params) {
       const url = endpoints.tablet.resetOrder;
@@ -795,6 +841,8 @@ const state = {
   flashMessageCount: 0,
   visibleAllRefreshModal: false,
   allRefreshList: [],
+  isDisConnectNetwork: false,
+  signboardMessage: '',
 };
 
 const mutations = {
@@ -807,6 +855,7 @@ const mutations = {
   ...monitoring.mutations,
   ...device.mutations,
   ...popup.mutations,
+  ...tablet.mutations,
 };
 
 const actions = {

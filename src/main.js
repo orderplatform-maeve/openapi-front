@@ -1,8 +1,7 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import VueCookies from 'vue-cookies';
 import VueSocketIO from 'vue-socket.io';
-import VueMoment from 'vue-moment';
+import moment from 'moment';
 
 import App from './App.vue';
 
@@ -22,11 +21,27 @@ import {
 
 Vue.config.devtools = true;
 
-Vue.use(VueCookies);
 Vue.use(VueRouter);
-Vue.use(VueMoment);
+
+const momentPlugins = {
+  install: (Vue, name) => {
+    name = name || '$moment';
+    Object.defineProperty(Vue.prototype, name, { value: moment });
+  },
+};
+Vue.use(momentPlugins);
 
 Vue.use(new VueSocketIO(socketConfig));
+
+Vue.filter('moment', function (value, format) {
+  if (value === null || value === undefined || format === undefined) {
+    return '';
+  }
+  if (format === 'from') {
+    return moment(value).fromNow();
+  }
+  return moment(value).format(format);
+});
 
 Vue.component('modal-order', OrderModal);
 Vue.component('modal-confirm', ConfirmModal);

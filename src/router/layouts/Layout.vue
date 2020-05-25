@@ -14,6 +14,9 @@
     :confirm="confirmModal.confirm"
   )
   modal-order(v-if="order")
+  transition(name="signboard")
+    .top(v-if="isDisConnectNetwork")
+      .alert {{ signboardMessage }}
   .body
     .left
       router-view(
@@ -28,7 +31,7 @@
           @click="restart()"
         ) 새로고침
         .datetime
-          span {{ time.now | moment("MM.DD HH:mm:ss") }}
+          span {{ getNowDate() }}
         img.logo(:src="logo")
         .store_name {{storeName}}
         router-link.button(v-if="visibleOrderButton" :to="paths.order") 주문 보기
@@ -47,11 +50,11 @@
           .tab-buttons
             .tab-button(:class="getOnTabletOrderClass(device)" @click="agreeOrder") On
             .tab-button(:class="getOffTabletOrderClass(device)" @click="rejectOrder") Off
-        .tab-group
-          .tab-name 주문 내역
-          .tab-buttons
-            .tab-button(:class="getOnTabletRecentOrderClass(device)" @click="showRecentOrder") On
-            .tab-button(:class="getOffTabletRecentOrderClass(device)" @click="hideRecentOrder") Off
+        //- .tab-group
+        //-   .tab-name 주문 내역
+        //-   .tab-buttons
+        //-     .tab-button(:class="getOnTabletRecentOrderClass(device)" @click="showRecentOrder") On
+        //-     .tab-button(:class="getOffTabletRecentOrderClass(device)" @click="hideRecentOrder") Off
         hr
         router-link.button(v-if="visibleStoresButton" :to="paths.store") 매장 보기
         router-link.button.button-red(v-if="visibleLoginButton" :to="paths.login") 로그인
@@ -66,8 +69,6 @@
 <script>
 import store from '@store/store';
 import paths from '@router/paths';
-import { COOKIE_AUTH_NAME } from '@config';
-import { COOKIE_DOMAIN } from '@config/auth.constant';
 import { version } from '@utils/constants';
 
 export default {
@@ -136,6 +137,12 @@ export default {
     allRefreshList() {
       return this.$store.state.allRefreshList;
     },
+    isDisConnectNetwork() {
+      return this.$store.state.isDisConnectNetwork;
+    },
+    signboardMessage() {
+      return this.$store.state.signboardMessage;
+    },
   },
   watch: {
     '$route'(to, from) {
@@ -152,7 +159,7 @@ export default {
         MACAddr = window.UUID.getMacAddress();
       }
     } catch(e) {
-      console.log(e);
+      // console.log(e);
     }
 
     this.$store.commit('updateMACAddr', MACAddr);
@@ -162,6 +169,8 @@ export default {
     this.observableRefresh();
   },
   mounted() {
+    this.catchOffline();
+    this.catchOnline();
     this.getUCode();
     this.loopBeep();
     if (process.env.UPLOAD_TYPE !== 'tmp') {
@@ -171,18 +180,42 @@ export default {
   },
   sockets: {
     connect() {
-      console.log('socket connected');
+      // console.log('socket connected');
       this.beep();
     },
     orderview(message) {
       this.$socket.emit('res', message, () => {
-        console.log('socket res');
+        // console.log('socket res');
       });
-    }
+    },
   },
   methods: {
+    catchOffline() {
+      window.addEventListener('offline', () => {
+        // console.log("you're offline");
+        const payload = {
+          visible: true,
+          message: '인터넷이 연결 되지 않았습니다. 인터넷 연결 확인 후 새로고침 해주세요.',
+        };
+
+        this.$store.commit('setSignBoardStatus', payload);
+      });
+    },
+    catchOnline() {
+      window.addEventListener('online', () => {
+        // console.log("you're online");
+        const payload = {
+          visible: false,
+          message: '',
+        };
+
+        this.$store.commit('setSignBoardStatus', payload);
+      });
+    },
     observableRefresh() {
+      // close web tab
       window.addEventListener('beforeunload', () => {
+        // console.log('beforeunload', this.$route?.params?.id);
         if (this.$route?.params?.id) {
           const { store_code } = this.$store.state.auth.store;
           const payload = {
@@ -207,7 +240,7 @@ export default {
         await this.$store.dispatch('setTables', params);
 
       } catch (error) {
-        console.log(error);
+        // console.log(error);
       }
     },
     async tagetVersionRedirect() {
@@ -216,7 +249,7 @@ export default {
           const params = new FormData();
           params.append('store_code', this.$store.state.auth.store.store_code);
           const res = await this.$store.dispatch('setStoreInit', params);
-          // console.log('tagetVersionRedirect', res);
+          // // console.log('tagetVersionRedirect', res);
 
           const nextUrl = res.data.data.T_order_store_orderView_version;
           if (nextUrl) {
@@ -227,7 +260,7 @@ export default {
             } = location;
 
             const nowPath = `${protocol}//${hostname}${pathname}#/`;
-            console.log('location', nowPath, nextUrl);
+            // console.log('location', nowPath, nextUrl);
 
             if (!process.env.STOP_REDIRECT) {
               if (nowPath !== nextUrl) {
@@ -255,7 +288,7 @@ export default {
     },
     logout() {
       this.$store.dispatch('logout');
-      this.$cookies.remove(COOKIE_AUTH_NAME, null, COOKIE_DOMAIN);
+
       localStorage.removeItem('auth');
       this.$router.replace(paths.login);
     },
@@ -406,7 +439,8 @@ export default {
     },
     beep() {
       const time = Date.now();
-      const datetime = this.$moment(time).format();
+      const ISONow = new Date(time).toISOString();
+      const datetime = this.$moment(ISONow).format();
 
       let deviceUsage = {};
       try {
@@ -414,7 +448,7 @@ export default {
           deviceUsage = JSON.parse(window.UUID.getDeviceUsage());
         }
       } catch(e) {
-        //console.log(e);
+        //// console.log(e);
       }
 
       const data = {
@@ -432,51 +466,21 @@ export default {
       };
 
       this.$socket.emit('event', data, () => {
-        // console.log('event', answer.msg);
+        // // console.log('event', answer.msg);
       });
     },
     getAuthentication() {
-      console.log('getAuthentication', this.$cookies.get('auth'));
-
       const params = { store_code: this.auth.store.store_code };
+
+      const auth = JSON.parse(localStorage.auth);
+      // console.log('getAuthentication', auth);
+
       this.$socket.emit('reqStoreInfo', params);
-
-      const cookieAuth = this.$cookies.get(COOKIE_AUTH_NAME);
-      if (cookieAuth) {
-        localStorage.auth = JSON.stringify(cookieAuth);
-
-        try {
-          const fd = new FormData();
-          fd.append('store_code', cookieAuth.store.store_code);
-          this.$store.dispatch('setStoreInit', fd);
-        } catch (error) {
-          console.log(error);
-        }
-        this.$store.commit('SET_AUTH', cookieAuth);
-      }
-
-      if (localStorage.auth) {
-        this.$cookies.set(COOKIE_AUTH_NAME, localStorage.auth, '1y', null, COOKIE_DOMAIN);
-
-        try {
-          const fd = new FormData();
-          fd.append('store_code', JSON.parse(localStorage.auth).store.store_code);
-          this.$store.dispatch('setStoreInit', fd);
-        } catch (error) {
-          console.log(error);
-        }
-
-        this.$store.commit('SET_AUTH', JSON.parse(localStorage.auth));
-      }
+      this.$store.commit('SET_AUTH', auth);
     },
     getUCode() {
       // get uCode from localStorage
       let uCode = localStorage.getItem('uCode');
-
-      // get uCode from cookie
-      if (!uCode) {
-        uCode = this.$cookies.get('uCode');
-      }
 
       // create uCode if no code
       if (!uCode) {
@@ -486,24 +490,22 @@ export default {
         for (let i = 0; i < 5; i++ ) {
           uCode += characters.charAt(Math.floor(Math.random() * charactersLength));
         }
-        this.$cookies.set("uCode", uCode, "3y");
+        // set uCode to localStorage
+        localStorage.setItem('uCode', uCode);
       }
-
-      // set uCode to localStorage
-      localStorage.setItem('uCode', uCode);
       this.$store.commit('updateUCode', uCode);
     },
     loopBeep() {
       this.beep();
       setInterval(() => {
-        this.time.now = Date();
+        this.time.now = parseInt(Date.now());
 
         const timestemp = parseInt(Date.now() / 1000);
         const lap = timestemp % 30;
         const term = lap < 1;
 
         if (term) {
-          // console.log('term', new Date());
+          // // console.log('term', new Date());
           this.beep();
         }
       }, 1000);
@@ -529,6 +531,15 @@ export default {
     vaildRecentOrderStatus(device) {
       return device && device.recentOrderStatus;
     },
+    getNowDate() {
+      if (!this.time.now) {
+        return '';
+      }
+      const now = new Date(this.time.now);
+      const ISONow = now.toISOString();
+
+      return this.$moment(ISONow).format('MM.DD HH:mm:ss');
+    },
   },
 };
 </script>
@@ -545,9 +556,17 @@ export default {
   font-family: 'NanumSquare', sans-serif;
 }
 #orderview > .top {
-  display:flex;
-  flex-direction:row;
-  padding:12px;
+  display: flex;
+  flex-direction: row;
+  .alert {
+    background-color: #ff0000;
+    font-size: 28px;
+    padding: 12px;
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+  }
 }
 #orderview > .body {
   display:flex;
@@ -768,5 +787,22 @@ export default {
       box-shadow: 0px 0px 12px -4px #000000;
     }
   }
+}
+
+@keyframes mdHead {
+  0% {
+    transform: translateY(-100vh);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.signboard-enter-active {
+  animation: mdHead .5s;
+}
+
+.signboard-leave-active {
+  animation: mdHead .5s reverse;
 }
 </style>
