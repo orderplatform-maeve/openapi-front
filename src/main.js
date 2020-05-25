@@ -1,6 +1,5 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import VueCookies from 'vue-cookies';
 import VueSocketIO from 'vue-socket.io';
 import VueMoment from 'vue-moment';
 
@@ -22,7 +21,6 @@ import {
 
 Vue.config.devtools = true;
 
-Vue.use(VueCookies);
 Vue.use(VueRouter);
 Vue.use(VueMoment);
 

@@ -1,7 +1,4 @@
-// import Vue from 'vue';
 import VueRouter from 'vue-router';
-
-// import { COOKIE_AUTH_NAME } from '@config';
 
 import routes from './routes';
 import paths from './paths';

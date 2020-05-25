@@ -69,8 +69,6 @@
 <script>
 import store from '@store/store';
 import paths from '@router/paths';
-import { COOKIE_AUTH_NAME } from '@config';
-import { COOKIE_DOMAIN } from '@config/auth.constant';
 import { version } from '@utils/constants';
 
 export default {
@@ -290,7 +288,7 @@ export default {
     },
     logout() {
       this.$store.dispatch('logout');
-      this.$cookies.remove(COOKIE_AUTH_NAME, null, COOKIE_DOMAIN);
+
       localStorage.removeItem('auth');
       this.$router.replace(paths.login);
     },
@@ -493,7 +491,6 @@ export default {
         }
         // set uCode to localStorage
         localStorage.setItem('uCode', uCode);
-        // this.$store.commit('updateUCode', uCode);
       }
       this.$store.commit('updateUCode', uCode);
     },
