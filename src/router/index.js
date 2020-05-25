@@ -1,7 +1,4 @@
-import Vue from 'vue';
 import VueRouter from 'vue-router';
-
-import { COOKIE_AUTH_NAME } from '@config';
 
 import routes from './routes';
 import paths from './paths';
@@ -18,7 +15,9 @@ router.beforeEach((to, from, next) => {
         member: {
           code,
         },
-      } = Vue.$cookies.get(COOKIE_AUTH_NAME);
+      } = JSON.parse(localStorage.auth);
+
+      // console.log(JSON.parse(localStorage.auth));
 
       if (code) {
         next();

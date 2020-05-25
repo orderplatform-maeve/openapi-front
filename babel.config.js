@@ -7,8 +7,8 @@ module.exports = {
     '@babel/plugin-proposal-nullish-coalescing-operator',
   ],
   env: {
-    production: {
-      plugins: ['transform-remove-console'],
-    },
+    // production: {
+    //   plugins: ['transform-remove-console'],
+    // },
   },
 };

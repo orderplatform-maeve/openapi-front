@@ -113,7 +113,7 @@ export default {
           return a.group.sort_number - b.group.sort_number;
         });
 
-        // console.log(sortedOptions);
+        // // console.log(sortedOptions);
 
         const optionProducts = sortedOptions.map((o) => {
           return {
@@ -122,7 +122,7 @@ export default {
           };
         });
 
-        // console.log('optionProducts', [...optionProducts]);
+        // // console.log('optionProducts', [...optionProducts]);
 
         const currentOption = optionProducts.map((o) => ({
           img_url: o.T_order_store_good_image,
@@ -136,7 +136,7 @@ export default {
           display_name: o.T_order_store_good_display_name,
         }));
 
-        // console.log('currentOption', [...currentOption]);
+        // // console.log('currentOption', [...currentOption]);
 
         const processProdct = (good) => ({
           option: good.options,

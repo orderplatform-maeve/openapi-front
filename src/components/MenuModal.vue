@@ -143,7 +143,7 @@ export default {
       const { auth } = this.$store.state;
       const store_shop_code = auth.store.store_code;
       const tablet_number = this.tableId;
-      console.log('tablet_number', this.tableId);
+      // console.log('tablet_number', this.tableId);
       const store_good_code = [];
       const store_good_qty = [];
 
@@ -161,9 +161,10 @@ export default {
         frm.append('store_good_code[]', code);
         frm.append('store_good_qty[]', qty);
       }
+      await this.$store.dispatch('requestOrder', frm);
 
-      const res = await this.$store.dispatch('requestOrder', frm);
-      console.log(res);
+      // const res = await this.$store.dispatch('requestOrder', frm);
+      // console.log(res);
     },
     openTableOrders() {
       this.onTableOrder();

@@ -84,7 +84,7 @@
           p ₩ {{ getPrice(good.price) }}
   .footer
     .button.order(@click="yesOrder") 주문
-    .button(v-if="visibleDeleteButton()" @click="onDeleteOrder") 삭제
+    .button(v-if="visibleDeleteButton()" @click="onDeleteOrder") 초기화
     .button(@click="reload") 리로드
     .button(@click="close") 닫기
 </template>
@@ -107,7 +107,7 @@ export default {
   },
   computed: {
     previousOrders() {
-      // console.log(this.$store.state.cartList);
+      // // console.log(this.$store.state.cartList);
       return this.$store.state.cartList;
     },
     menu() {
@@ -122,7 +122,7 @@ export default {
     this.emitTargetTable();
   },
   beforeRouteLeave(to, from, next) {
-    console.log('beforeRouteLeave', this.$route?.params?.id);
+    // console.log('beforeRouteLeave', this.$route?.params?.id);
     if (this.$route?.params?.id) {
       const { store_code } = this.$store.state.auth.store;
       const payload = {
@@ -195,14 +195,14 @@ export default {
 
         const res = await this.$store.dispatch('setOrders', fd);
         const currentOrder = res.data.find((o) => o.table_number === this.$route.params.id);
-        // console.log('currentOrder', currentOrder);
+        // // console.log('currentOrder', currentOrder);
 
         const parseOrder = JSON.parse(currentOrder.json_data);
-        // console.log(parseOrder);
+        // // console.log(parseOrder);
 
         this.order = parseOrder;
       } catch (error) {
-        // console.log(error);
+        // // console.log(error);
       }
     },
     async getMenu() {
@@ -212,7 +212,7 @@ export default {
 
       const categories = await this.$store.dispatch('setCategories', fd);
       const goods = await this.$store.dispatch('setGooods', fd);
-      // console.log('categories', categories, goods);
+      // // console.log('categories', categories, goods);
 
       const noData = !categories || !goods;
 
@@ -227,7 +227,7 @@ export default {
       fd.append('tablet_number', this.$route.params.id);
 
       const order = await this.$store.dispatch('setTableCartList', fd);
-      // console.log(orders);
+      // // console.log(orders);
       if (!order) return false;
 
       return true;
@@ -320,7 +320,7 @@ export default {
         }
 
         this.selectedProduct = clone;
-        console.log('options', this.selectedProduct);
+        // console.log('options', this.selectedProduct);
 
         this.optionModal = true;
       } else {
@@ -360,7 +360,7 @@ export default {
           fd.append('tablet_number', this.$route.params.id);
 
           for (const [i, order] of this.cartList.entries()) {
-            console.log('order', order);
+            // console.log('order', order);
             fd.append('orders['+i+'][code]', order.good_code); // 주문 코드가 필요
             fd.append('orders['+i+'][qty]', order.order_qty);
           }
@@ -376,7 +376,7 @@ export default {
             if (!this.order) {
               await this.getOrderData();
             }
-            console.log('order', this.order);
+            // console.log('order', this.order);
             const newOrders = [...this.previousOrders, ...this.cartList];
             this.$socket.emit('orderview', {
               store: {
@@ -404,7 +404,7 @@ export default {
       }, 0);
     },
     optionMdalConfirm(newOrder) {
-      console.log('confirm', newOrder);
+      // console.log('confirm', newOrder);
 
       this.cartList = [...this.cartList, newOrder];
 
@@ -455,7 +455,7 @@ export default {
         fd.append('table_id', this.$route.params.id);
 
         const res = await this.$store.dispatch('resetOrder', fd);
-        console.log(res);
+        // console.log(res);
 
         try {
           if (res.data) {
