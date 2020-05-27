@@ -174,12 +174,12 @@ const socket = {
         commit('SET_TABLES', deepCopyArr);
       }
     },
-    SOCKET_disconnect({ commit }, message) {
+    SOCKET_disconnect({ commit }) {
+
+      const now = new Date(Date.now());
+      const log = `disconnected socket ${now}`;
 
       if (process.env.NODE_ENV === 'development') {
-        const now = new Date(Date.now());
-        const log = `disconnected socket ${now}`;
-
         if (!localStorage.networkLog) {
           localStorage.networkLog = JSON.stringify([log]);
         } else {
@@ -193,13 +193,22 @@ const socket = {
         message: '소켓 서버 연결 실패입니다. 인터넷 연결 확인 후 새로고침 해주세요.',
       };
 
-      console.log('disconnected socket', message);
+      console.log(log);
 
       commit('setSignBoardStatus', payload);
     },
     SOCKET_connect({ commit }) {
       const now = new Date(Date.now());
       const log = `connected socket ${now}`;
+
+      if (process.env.NODE_ENV === 'development') {
+        if (!localStorage.networkLog) {
+          localStorage.networkLog = JSON.stringify([log]);
+        } else {
+          const parse = JSON.parse(localStorage.networkLog);
+          localStorage.networkLog = JSON.stringify([...parse, log]);
+        }
+      }
 
       console.log(log);
 
