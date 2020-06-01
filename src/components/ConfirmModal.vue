@@ -1,4 +1,4 @@
-<template lang="pug" functional>
+<template lang="pug">
 #ModalConfirm(v-if="show")
   .background
   .container
