@@ -190,7 +190,7 @@ const socket = {
 
       const payload = {
         visible: true,
-        message: '소켓 서버 연결 실패입니다. 인터넷 연결 확인 후 새로고침 해주세요.',
+        message: '소켓 서버 연결 요청 중 입니다. 잠시만 기달려 주십시요.',
       };
 
       console.log(log);
