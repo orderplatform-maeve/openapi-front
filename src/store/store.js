@@ -25,6 +25,9 @@ function imagePreload(url) {
 */
 const socket = {
   mutations: {
+    SOCKET_res(state, message) {
+      console.log(message);
+    },
     SOCKET_orderlog(state, order) {
       if (vaildShopCode(state, order)) {
         Vue.set(state, 'order', order);
@@ -157,14 +160,10 @@ const socket = {
         // // console.log('object', state.tables);
         const findTargetIdx = state.tables.findIndex((o) => o.Ta_id === payload.tableId);
 
-        let maxCount = 1;
+        // console.log('findTargetIdx', payload.tableId, findTargetIdx, state.tables);
 
         if (findTargetIdx === -1) {
-          if (maxCount) {
-            maxCount = 0;
-            return commit('pushFlashMessage', '일치하는 테이블 아이디를 찾지 못했습니다.');
-          }
-          return null;
+          return commit('pushFlashMessage', '일치하는 테이블 아이디를 찾지 못했습니다.');
         }
         // if (findTargetIdx === -1) return false;
 
@@ -178,12 +177,12 @@ const socket = {
         commit('SET_TABLES', deepCopyArr);
       }
     },
-    SOCKET_disconnect({ commit }, message) {
+    SOCKET_disconnect({ commit }) {
+
+      const now = new Date(Date.now());
+      const log = `disconnected socket ${now}`;
 
       if (process.env.NODE_ENV === 'development') {
-        const now = new Date(Date.now());
-        const log = `disconnected socket ${now}`;
-
         if (!localStorage.networkLog) {
           localStorage.networkLog = JSON.stringify([log]);
         } else {
@@ -194,16 +193,25 @@ const socket = {
 
       const payload = {
         visible: true,
-        message: '소켓 서버 연결 실패입니다. 인터넷 연결 확인 후 새로고침 해주세요.',
+        message: '소켓 서버 연결 요청 중 입니다. 잠시만 대기 해주십시요.',
       };
 
-      console.log('disconnected socket', message);
+      console.log(log);
 
       commit('setSignBoardStatus', payload);
     },
     SOCKET_connect({ commit }) {
       const now = new Date(Date.now());
       const log = `connected socket ${now}`;
+
+      if (process.env.NODE_ENV === 'development') {
+        if (!localStorage.networkLog) {
+          localStorage.networkLog = JSON.stringify([log]);
+        } else {
+          const parse = JSON.parse(localStorage.networkLog);
+          localStorage.networkLog = JSON.stringify([...parse, log]);
+        }
+      }
 
       console.log(log);
 

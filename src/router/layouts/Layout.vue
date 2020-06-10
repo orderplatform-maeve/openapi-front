@@ -38,6 +38,8 @@
         router-link.button(v-if="visibleOrderButton" :to="paths.products") 상품 관리
         router-link.button(v-if="visibleOrderButton" :to="paths.tables") 테이블 주문
           <br> (테스트)
+        router-link.button(v-if="visibleOrderButton" :to="paths.pickUpTables") 픽업 요청
+          <br> (테스트)
       .bottom
         hr
         .tab-group
@@ -50,11 +52,11 @@
           .tab-buttons
             .tab-button(:class="getOnTabletOrderClass(device)" @click="agreeOrder") On
             .tab-button(:class="getOffTabletOrderClass(device)" @click="rejectOrder") Off
-        //- .tab-group
-        //-   .tab-name 주문 내역
-        //-   .tab-buttons
-        //-     .tab-button(:class="getOnTabletRecentOrderClass(device)" @click="showRecentOrder") On
-        //-     .tab-button(:class="getOffTabletRecentOrderClass(device)" @click="hideRecentOrder") Off
+        .tab-group
+          .tab-name 주문 내역
+          .tab-buttons
+            .tab-button(:class="getOnTabletRecentOrderClass(device)" @click="showRecentOrder") On
+            .tab-button(:class="getOffTabletRecentOrderClass(device)" @click="hideRecentOrder") Off
         hr
         router-link.button(v-if="visibleStoresButton" :to="paths.store") 매장 보기
         router-link.button.button-red(v-if="visibleLoginButton" :to="paths.login") 로그인
@@ -470,13 +472,17 @@ export default {
       });
     },
     getAuthentication() {
-      const params = { store_code: this.auth.store.store_code };
+      try {
+        const params = { store_code: this.auth.store.store_code };
 
-      const auth = JSON.parse(localStorage.auth);
-      // console.log('getAuthentication', auth);
+        const auth = JSON.parse(localStorage.auth);
+        console.log('getAuthentication', auth);
 
-      this.$socket.emit('reqStoreInfo', params);
-      this.$store.commit('SET_AUTH', auth);
+        this.$socket.emit('reqStoreInfo', params);
+        this.$store.commit('SET_AUTH', auth);
+      } catch (error) {
+        // console.log(error);
+      }
     },
     getUCode() {
       // get uCode from localStorage

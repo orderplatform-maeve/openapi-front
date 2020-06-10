@@ -84,7 +84,8 @@
           p ₩ {{ getPrice(good.price) }}
   .footer
     .button.order(@click="yesOrder") 주문
-    .button(v-if="visibleDeleteButton()" @click="onDeleteOrder") 초기화
+    //- .button(v-if="visibleDeleteButton()" @click="onDeleteOrder") 초기화
+    .button(@click="onDeleteOrder") 리셋
     .button(@click="reload") 리로드
     .button(@click="close") 닫기
 </template>
@@ -479,22 +480,25 @@ export default {
       return process.env.STOP_REDIRECT;
     },
     emitTargetTable() {
-      const { store_code } = this.$store.state.auth.store;
-      this.timer = setInterval(() => {
-        const payload = {
-          store: {
-            code: store_code,
-          },
-          type: '@reqeust/ordering/location/table',
-          tableId: this.$route.params.id,
-          uCode: this.$store.state.uCode,
-          MACAddr: this.$store.state.MACAddr,
-          ordering: true,
-        };
+      if (this.$route?.params?.id) {
+        const { store_code } = this.$store.state.auth.store;
+        this.timer = setInterval(() => {
+          // console.log('emitTargetTable', this.$route.params.id);
+          const payload = {
+            store: {
+              code: store_code,
+            },
+            type: '@reqeust/ordering/location/table',
+            tableId: this.$route.params.id,
+            uCode: this.$store.state.uCode,
+            MACAddr: this.$store.state.MACAddr,
+            ordering: true,
+          };
 
-        this.$socket.emit('orderview', payload);
+          this.$socket.emit('orderview', payload);
 
-      }, 1000);
+        }, 1000);
+      }
     },
   },
 };

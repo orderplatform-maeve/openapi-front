@@ -47,16 +47,18 @@ export default {
     },
   },
   mounted() {
-    // this.initialized();
+    this.initialized();
   },
   methods: {
     async initialized() {
-      try {
-        const params = { shop_code: this.$store.state.auth.store.store_code };
-        await this.$store.dispatch('setTables', params);
+      if (this.$store.state.tables.length === 0) {
+        try {
+          const params = { shop_code: this.$store.state.auth.store.store_code };
+          await this.$store.dispatch('setTables', params);
 
-      } catch (error) {
+        } catch (error) {
         // console.log(error);
+        }
       }
     },
     getTableName(table) {

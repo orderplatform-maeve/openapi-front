@@ -6,4 +6,5 @@ export default {
   tables: '/tables',
   tableOrders: '/tableOrders',
   products: '/products',
+  pickUpTables: '/pickUpTables',
 };
