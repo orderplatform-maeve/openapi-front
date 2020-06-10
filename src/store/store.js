@@ -25,6 +25,9 @@ function imagePreload(url) {
 */
 const socket = {
   mutations: {
+    SOCKET_res(state, message) {
+      console.log(message);
+    },
     SOCKET_orderlog(state, order) {
       if (vaildShopCode(state, order)) {
         Vue.set(state, 'order', order);
