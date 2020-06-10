@@ -15,9 +15,9 @@ rl.question('업로드 버젼을 입력해 주세요. ', async (answer) => {
 
   const { stdout, stderr } = await exec('vue-cli-service build && node ./script/s3Uploader.js');
   if (stderr) {
-    // console.log(stderr);
+    console.log(stderr);
   }
 
-  // console.log(stdout);
+  console.log(stdout);
   rl.close();
 });
