@@ -40,7 +40,11 @@ export default {
     async openTableOrders(table) {
       console.log(table.Ta_id);
 
-      this.$socket.emit('torder', {
+      // 맘맘분식
+      const {
+        // connected,
+        disconnected,
+      } = this.$socket.emit('torder', {
         store: {
           code: this.$store.state.auth.store.store_code,
         },
@@ -48,8 +52,11 @@ export default {
           code: table.Ta_id
         },
         type: 'message',
-        message: 'test<br/><b>test</b>',
+        message: '주문하신 메뉴가 나왔습니다.',
       });
+
+      if (disconnected) return this.$store.dispatch('pushFlashMessage', '네트워크가 불안정 합니다. 다시 시도 해주세요.');
+
     },
   },
 };
