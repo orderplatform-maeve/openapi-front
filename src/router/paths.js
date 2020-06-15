@@ -7,4 +7,5 @@ export default {
   tableOrders: '/tableOrders',
   products: '/products',
   pickUpTables: '/pickUpTables',
+  updateCategories: '/updateCategories',
 };

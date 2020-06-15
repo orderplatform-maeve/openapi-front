@@ -44,6 +44,10 @@ const endpoints = {
     refresh: `${ADMIN_URL}/tablet/tablet_refresh`,
     resetOrder: `${ADMIN_URL}/tablet/tablet_order_trash`,
   },
+  categories: {
+    updateCategoryOpen: `${ADMIN_URL}/category/update_categroty_open`,
+    updateCategoryClose: `${ADMIN_URL}/category/update_categroty_close`,
+  },
 };
 
 export default endpoints;
