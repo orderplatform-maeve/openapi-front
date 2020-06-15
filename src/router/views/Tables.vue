@@ -8,7 +8,7 @@
     .button(
       v-if="getAllRefreshDataVisible()"
       @click="onAllRefresh"
-    ) 테이블 전체 초기화
+    ) 테이블 전체 새로고침
 </template>
 
 <script>
