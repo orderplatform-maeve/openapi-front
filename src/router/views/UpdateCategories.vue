@@ -1,6 +1,6 @@
 <template lang="pug">
 .container
-  .main-category(
+  .main-card(
     v-for="ctgItem in data"
     :key="ctgItem.code"
   ) {{ ctgItem.name }}
@@ -9,6 +9,8 @@
       :key="subCtgItem.code"
       :name="subCtgItem.code"
     ) {{ subCtgItem.name }}
+      .button open
+      .button close
 </template>
 
 <script>
@@ -16,7 +18,6 @@ export default {
   data() {
     return {
       selectMainCategoryItem: null,
-      selectSubCategoryItem: null,
     };
   },
   computed: {
@@ -26,34 +27,20 @@ export default {
       return getCategoriesGoods;
     },
   },
-  watch: {
-    data(newData) {
-      if (!this.selectSubCategoryItem) {
-        // console.log(newData[0].subCategories[0]);
-        this.selectSubCategoryItem = newData[0].subCategories[0];
-      }
-    },
-  },
   async mounted() {
     await this.initialize();
   },
   methods: {
     async initialize() {
-
       const fd = new FormData();
       fd.append('store_code', this.$store.state.auth.store.store_code);
-      const ctgRes = await this.$store.dispatch('setCategories', fd);
-
-      console.log(ctgRes);
+      await this.$store.dispatch('setCategories', fd);
     },
     getSubCategories() {
       try {
         const { data, selectMainCategoryItem } = this;
-
         if (selectMainCategoryItem) return selectMainCategoryItem.subCategories;
-
         return data[0].subCategories;
-
       } catch (error) {
         return [];
       }
@@ -72,7 +59,7 @@ export default {
   --c-9: #efefef;
   --c-10: #000000;
 
-  .main-category {
+  .main-card {
     display: flex;
     flex-direction: column;
     justify-content: center;
