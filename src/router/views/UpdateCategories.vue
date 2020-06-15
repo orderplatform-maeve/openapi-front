@@ -7,10 +7,9 @@
     .sub-category(
       v-for="subCtgItem in ctgItem.subCategories"
       :key="subCtgItem.code"
-      :name="subCtgItem.code"
     ) {{ subCtgItem.name }}
-      .button open
-      .button close
+      .button(@click="() => subOpen(subCtgItem.code)") open
+      .button(@click="() => subClose(subCtgItem.code)") close
 </template>
 
 <script>
@@ -44,6 +43,22 @@ export default {
       } catch (error) {
         return [];
       }
+    },
+    async subOpen(code) {
+      const fd = new FormData();
+      fd.append('store_code', this.$store.state.auth.store.store_code);
+      fd.append('good_categroty_code', code);
+
+      const res = await this.$store.dispatch('updateCategoryOpne', fd);
+      console.log(res);
+    },
+    async subClose(code) {
+      const fd = new FormData();
+      fd.append('store_code', this.$store.state.auth.store.store_code);
+      fd.append('good_categroty_code', code);
+
+      const res = await this.$store.dispatch('updateCategoryClose', fd);
+      console.log(res);
     },
   },
 };

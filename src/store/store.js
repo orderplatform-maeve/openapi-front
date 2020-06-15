@@ -609,19 +609,23 @@ const menu = {
       const response = await axios.post(url, params);
 
       if (response.data && response.data.data) {
-        // const array = JSON.parse(JSON.stringify(response.data.data));
-
-        // for (let index = 0; index < array.length; index++) {
-        //   const element = array[index];
-        //   if (element.T_order_store_good_image) {
-        //     imagePreload(element.T_order_store_good_image);
-        //   }
-        // }
 
         commit('SET_GOODS', response.data.data);
         return response.data.data;
       }
       return false;
+    },
+    async updateCategoryOpne(context, params) {
+      const url = endpoints.menu.updateCategoryOpen;
+      const response = await axios.post(url, params);
+
+      return response;
+    },
+    async updateCategoryClose(context, params) {
+      const url = endpoints.menu.updateCategoryClose;
+      const response = await axios.post(url, params);
+
+      return response;
     },
   },
   getters: {

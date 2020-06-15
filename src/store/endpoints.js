@@ -31,6 +31,8 @@ const endpoints = {
   menu: {
     categories: `${SERVER_URL}/shop/categorys`,
     getGoodsList: `${SERVER_URL}/goods/get_goods_list`,
+    updateCategoryOpen: `${ADMIN_URL}/category/update_categroty_open`,
+    updateCategoryClose: `${ADMIN_URL}/category/update_categroty_close`,
   },
   shop: {
     init: `${SERVER_URL}/shop/init`,
@@ -43,10 +45,6 @@ const endpoints = {
     allRefresh: `${ADMIN_URL}/tablet/tablet_all_update`,
     refresh: `${ADMIN_URL}/tablet/tablet_refresh`,
     resetOrder: `${ADMIN_URL}/tablet/tablet_order_trash`,
-  },
-  categories: {
-    updateCategoryOpen: `${ADMIN_URL}/category/update_categroty_open`,
-    updateCategoryClose: `${ADMIN_URL}/category/update_categroty_close`,
   },
 };
 
