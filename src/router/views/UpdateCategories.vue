@@ -1,19 +1,13 @@
 <template lang="pug">
 .container
-  .main-categories
-    .main-category(
-      v-for="ctgItem in data"
-      :key="ctgItem.code"
-      @click="() => onSelectMainCtg(ctgItem)"
-      :class="getActiveMainCategory(ctgItem.code)"
-    ) {{ ctgItem.name }}
-  .sub-categories
+  .main-category(
+    v-for="ctgItem in data"
+    :key="ctgItem.code"
+  ) {{ ctgItem.name }}
     .sub-category(
-      v-for="subCtgItem in getSubCategories()"
+      v-for="subCtgItem in ctgItem.subCategories"
       :key="subCtgItem.code"
       :name="subCtgItem.code"
-      @click="() => onSelectSubCtg(subCtgItem)"
-      :class="getActiveSubCategory(subCtgItem.code)"
     ) {{ subCtgItem.name }}
 </template>
 
@@ -28,6 +22,7 @@ export default {
   computed: {
     data() {
       const { getCategoriesGoods } = this.$store.getters;
+      console.log(getCategoriesGoods);
       return getCategoriesGoods;
     },
   },
@@ -51,13 +46,6 @@ export default {
 
       console.log(ctgRes);
     },
-    onSelectMainCtg(item) {
-      this.selectMainCategoryItem = item;
-      this.selectSubCategoryItem = item.subCategories[0];
-
-      const elTop = this.$refs[item.code][0].offsetTop - this.$refs.scroll.offsetTop;
-      this.$refs.scroll.scrollTo(0, elTop);
-    },
     getSubCategories() {
       try {
         const { data, selectMainCategoryItem } = this;
@@ -70,65 +58,12 @@ export default {
         return [];
       }
     },
-    onSelectSubCtg(item) {
-      this.selectSubCategoryItem = item;
-
-      const elTop = this.$refs[item.code][0].offsetTop - this.$refs.scroll.offsetTop;
-      this.$refs.scroll.scrollTo(0, elTop);
-    },
-    getActiveMainCategory(targetCode) {
-      try {
-        const { data, selectMainCategoryItem } = this;
-
-        if (!selectMainCategoryItem) {
-          const isDefaultActive = targetCode === data[0].code;
-          if (isDefaultActive) {
-            return 'active';
-          }
-          return '';
-        }
-
-        const isSelectedActive = selectMainCategoryItem.code === targetCode;
-        if (isSelectedActive) return 'active';
-
-        return '';
-      } catch (error) {
-        console.error(error);
-        return '';
-      }
-    },
-    getActiveSubCategory(targetCode) {
-      try {
-        const { data, selectSubCategoryItem } = this;
-
-        if (!selectSubCategoryItem) {
-          const isDefaultActive = targetCode === data[0].subCategories[0].code;
-          if (isDefaultActive) {
-            return 'active';
-          }
-          return '';
-        }
-
-        const isSelectedActive = selectSubCategoryItem.code === targetCode;
-        if (isSelectedActive) return 'active';
-
-        return '';
-      } catch (error) {
-        console.error(error);
-        return '';
-      }
-    },
   },
 };
 </script>
 
 <style lang="scss">
 .container{
-  a {
-    text-decoration: none;
-    color: var(--c-1);
-  }
-
   --c-1: #ffffff;
   --c-2: #202020;
   --c-3: #ff0000;
@@ -137,46 +72,26 @@ export default {
   --c-9: #efefef;
   --c-10: #000000;
 
-  overflow: auto;
-  .main-categories {
+  .main-category {
     display: flex;
-    justify-content: space-between;
-    flex-shrink: 0;
-    .main-category {
-      display: flex;
-      flex-grow: 1;
-      justify-content: center;
-      font-weight: 900;
-      font-size: 32px;
-      height: 60px;
-      align-items: center;
-      padding: 0 20px;
-    }
-    .active {
-      color: var(--c-3);
-    }
-  }
-  .sub-categories {
-    display: flex;
-    justify-content: space-between;
-    flex-shrink: 0;
+    flex-direction: column;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 32px;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid var(--c-7);
+
     .sub-category {
       display: flex;
-      flex-grow: 1;
+      flex-direction: column;
       justify-content: center;
       margin: 4px;
-      height: 44px;
       font-weight: 900;
-      font-size: 16px;
+      font-size: 24px;
       align-items: center;
-      padding: 0 20px;
-    }
-    .active {
-      color: var(--c-3);
-      border-radius: 24px;
-      border: solid 2px var(--c-3);
+      padding: 20px;
     }
   }
-
 }
 </style>
