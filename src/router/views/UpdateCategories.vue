@@ -1,15 +1,19 @@
 <template lang="pug">
 .container
-  .main-card(
+  .card(
     v-for="ctgItem in data"
     :key="ctgItem.code"
-  ) {{ ctgItem.name }}
+  )
+    .header {{ ctgItem.name }} (메인 카테고리)
+      .toggles
+        button(@click="() => open(subCtgItem.code)") open
+        button(@click="() => close(subCtgItem.code)") close
     .sub-category(
       v-for="subCtgItem in ctgItem.subCategories"
       :key="subCtgItem.code"
     ) {{ subCtgItem.name }}
-      .button(@click="() => subOpen(subCtgItem.code)") open
-      .button(@click="() => subClose(subCtgItem.code)") close
+      button(@click="() => open(subCtgItem.code)") open
+      button(@click="() => close(subCtgItem.code)") close
 </template>
 
 <script>
@@ -44,7 +48,7 @@ export default {
         return [];
       }
     },
-    async subOpen(code) {
+    async open(code) {
       const fd = new FormData();
       fd.append('store_code', this.$store.state.auth.store.store_code);
       fd.append('good_categroty_code', code);
@@ -52,7 +56,7 @@ export default {
       const res = await this.$store.dispatch('updateCategoryOpne', fd);
       console.log(res);
     },
-    async subClose(code) {
+    async close(code) {
       const fd = new FormData();
       fd.append('store_code', this.$store.state.auth.store.store_code);
       fd.append('good_categroty_code', code);
@@ -74,15 +78,31 @@ export default {
   --c-9: #efefef;
   --c-10: #000000;
 
-  .main-card {
+  .card {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    font-weight: 900;
-    font-size: 32px;
     align-items: center;
-    padding: 20px;
-    border-bottom: 1px solid var(--c-7);
+    background-color: var(--c-9);
+    border-radius: 8px;
+    color: var(--c-2);
+    padding: 16px;
+    box-sizing: border-box;
+
+    .header {
+      display: flex;
+      font-weight: 900;
+      font-size: 32px;
+      justify-content: space-between;
+      width: 100%;
+      align-items: center;
+      border-bottom: .8px solid var(--c-2);
+
+      .toggles {
+        display: flex;
+        align-items: center;
+      }
+    }
 
     .sub-category {
       display: flex;
