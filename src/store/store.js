@@ -3,7 +3,10 @@ import Vuex from 'vuex';
 import axios from 'axios';
 import querystring from 'querystring';
 
-import { vaildShopCode } from './store.helper';
+import {
+  vaildShopCode,
+  getCategories,
+} from './store.helper';
 import { isEmpty } from '@utils/CheckedType';
 
 import endpoints from './endpoints';
@@ -592,6 +595,7 @@ const menu = {
   mutations: {
     SET_CATEGORIES: (state, categories) => Vue.set(state, 'categories', categories),
     SET_GOODS: (state, goods) => Vue.set(state, 'goods', goods),
+    SET_ALL_CATEGORIES: (state, categories) => Vue.set(state, 'allCategories', categories),
   },
   actions: {
     async setCategories({ commit }, params) {
@@ -627,36 +631,21 @@ const menu = {
 
       return response;
     },
+    async setAllCategories({ commit }, params) {
+      const url = endpoints.menu.categories;
+      const response = await axios.post(url, params);
+
+      if (response.data && response.data.data) {
+        commit('SET_ALL_CATEGORIES', response.data.data);
+
+        return response.data.data;
+      }
+      return false;
+    },
   },
   getters: {
     getCategories(state) {
-      const processCategories = state.categories.map((item) => ({
-        code: item.T_order_store_menu_code,
-        parentCodes: JSON.parse(item.T_order_store_menu_depth),
-        name: item.T_order_store_menu_name,
-        names: item.T_order_store_menu_name_array,
-        sortNo: Number(item.T_order_store_menu_sort_number),
-        serviceFlag: item.T_order_store_menu_serviceUse,
-        startTime: item.T_order_store_menu_starttime,
-        endTime: item.T_order_store_menu_endtime,
-      }));
-
-      const firstCategories = processCategories.filter((category) => {
-        return category.parentCodes.includes('1');
-      }).sort((a, b) => a.sortNo - b.sortNo);
-
-      const secondCategories = firstCategories.map((fCtg) => {
-        return processCategories.filter((ctg) => {
-          return ctg.parentCodes.includes(fCtg.code);
-        }).sort((a, b) => a.sortNo - b.sortNo);
-      });
-
-      const results = firstCategories.map((item, idx) => ({
-        ...item,
-        subCategories: secondCategories[idx],
-      }));
-
-      return results;
+      return getCategories(state.categories);
     },
     processGoods(state) {
       return state.goods.map( p => {
@@ -738,6 +727,9 @@ const menu = {
       const results = getCategories.map(getCategoryItem);
       // // console.log(results);
       return results;
+    },
+    getAllCategories(state) {
+      return getCategories(state.allCategories);
     },
   },
 };
@@ -846,6 +838,7 @@ const state = {
   tables: [],
   cartList: [],
   categories: [],
+  allCategories: [],
   goods: [],
   MACAddr: '00:00:00:00:00:00',
   uCode: '',

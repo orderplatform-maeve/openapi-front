@@ -25,9 +25,9 @@ export default {
   },
   computed: {
     data() {
-      const { getCategoriesGoods } = this.$store.getters;
-      console.log(getCategoriesGoods);
-      return getCategoriesGoods;
+      const { getAllCategories } = this.$store.getters;
+      console.log(getAllCategories);
+      return getAllCategories;
     },
   },
   async mounted() {
@@ -37,7 +37,7 @@ export default {
     async initialize() {
       const fd = new FormData();
       fd.append('store_code', this.$store.state.auth.store.store_code);
-      await this.$store.dispatch('setCategories', fd);
+      await this.$store.dispatch('setAllCategories', fd);
     },
     getSubCategories() {
       try {
