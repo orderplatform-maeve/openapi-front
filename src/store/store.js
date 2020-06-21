@@ -26,7 +26,8 @@ function imagePreload(url) {
 const socket = {
   mutations: {
     SOCKET_res(state, message) {
-      console.log(message);
+      // console.log(message);
+      message;
     },
     SOCKET_orderlog(state, order) {
       if (vaildShopCode(state, order)) {
