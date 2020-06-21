@@ -14,9 +14,9 @@
     :confirm="confirmModal.confirm"
   )
   modal-order(v-if="order")
-  transition(name="signboard")
-    .top(v-if="isDisConnectNetwork")
-      .alert {{ signboardMessage }}
+  //- transition(name="signboard")
+  //-   .top(v-if="isDisConnectNetwork")
+  //-     .alert {{ signboardMessage }}
   .body
     .left
       router-view(
