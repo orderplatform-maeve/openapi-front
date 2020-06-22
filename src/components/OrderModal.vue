@@ -118,6 +118,13 @@ export default {
       const auth = this.$store.state.auth;
       this.isConfirm = true;
 
+      const targetOrder = {
+        commit: !order.commit,
+        order_view_key: order.order_view_key,
+      };
+
+      this.$store.commit('UPDATE_ORDERS', targetOrder);
+
       try {
         // eslint-disable-next-line no-unused-vars
         const { data } = await this.$store.dispatch('commitOrder', { auth, order });
