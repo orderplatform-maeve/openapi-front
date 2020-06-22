@@ -5,3 +5,4 @@ export { default as Tables } from './Tables';
 export { default as TableOrders } from './TableOrders';
 export { default as Products } from './Products';
 export { default as PickUpTables } from './PickUpTables';
+export { default as UpdateCategories } from './UpdateCategories';
