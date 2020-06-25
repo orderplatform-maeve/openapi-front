@@ -433,13 +433,13 @@ const device = {
       Vue.set(state, 'device', device);
     },
     setDeviceOrderStatus(state, orderStatus) {
-      state.device.orderStatus = orderStatus;
+      state.device.orderStatus = Boolean(orderStatus);
     },
     setDeviceServiceStatus(state, serviceStatus) {
-      state.device.serviceStatus = serviceStatus;
+      state.device.serviceStatus = Boolean(serviceStatus);
     },
     setDeviceRecentOrderStatus(state, recentOrderStatus) {
-      state.device.recentOrderStatus = recentOrderStatus;
+      state.device.recentOrderStatus = Boolean(recentOrderStatus);
     },
   },
   actions: {

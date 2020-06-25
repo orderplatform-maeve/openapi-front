@@ -39,6 +39,10 @@ export default {
   },
   methods: {
     openTabletScreen() {
+      if (!this.$store.state.device.serviceStatus) {
+        return this.$store.commit('pushFlashMessage', '이미 태블릿 열기 상태로 되어있습니다.');
+      }
+
       const confirmModal = {};
 
       confirmModal.show = true;
@@ -50,6 +54,10 @@ export default {
       this.$store.commit('showConfirmModal', confirmModal);
     },
     closeTabletScreen() {
+      if (this.$store.state.device.serviceStatus) {
+        return this.$store.commit('pushFlashMessage', '이미 태블릿 닫기 상태로 되어있습니다.');
+      }
+
       const confirmModal = {};
 
       confirmModal.show = true;
@@ -61,6 +69,10 @@ export default {
       this.$store.commit('showConfirmModal', confirmModal);
     },
     agreeOrder() {
+      if (!this.$store.state.device.orderStatus) {
+        return this.$store.commit('pushFlashMessage', '이미 주문 받기 상태로 되어있습니다.');
+      }
+
       const confirmModal = {};
 
       confirmModal.show = true;
@@ -72,6 +84,10 @@ export default {
       this.$store.commit('showConfirmModal', confirmModal);
     },
     rejectOrder() {
+      if (this.$store.state.device.orderStatus) {
+        return this.$store.commit('pushFlashMessage', '이미 주문 중단 상태로 되어있습니다.');
+      }
+
       const confirmModal = {};
 
       confirmModal.show = true;
@@ -83,6 +99,10 @@ export default {
       this.$store.commit('showConfirmModal', confirmModal);
     },
     showRecentOrder() {
+      if (!this.$store.state.device.recentOrderStatus) {
+        return this.$store.commit('pushFlashMessage', '이미 주문 내역 표시 상태로 되어있습니다.');
+      }
+
       const confirmModal = {};
 
       confirmModal.show = true;
@@ -94,6 +114,10 @@ export default {
       this.$store.commit('showConfirmModal', confirmModal);
     },
     hideRecentOrder() {
+      if (this.$store.state.device.recentOrderStatus) {
+        return this.$store.commit('pushFlashMessage', '이미 주문 내역 숨김 상태로 되어있습니다.');
+      }
+
       const confirmModal = {};
 
       confirmModal.show = true;
@@ -116,6 +140,7 @@ export default {
       if (response) {
         this.$store.commit('setDeviceServiceStatus', 0);
         this.closeConfirmModal();
+        this.$store.commit('pushFlashMessage', '태블릿 화면 열기 상태로 변경 되었습니다.');
       }
     },
     async reqCloseTablet() {
@@ -127,6 +152,7 @@ export default {
       if (response) {
         this.$store.commit('setDeviceServiceStatus', 1);
         this.closeConfirmModal();
+        this.$store.commit('pushFlashMessage', '태블릿 화면 닫기 상태로 변경 되었습니다.');
       }
     },
     async reqAgreeOrder() {
@@ -137,6 +163,7 @@ export default {
       if (response) {
         this.$store.commit('setDeviceOrderStatus', 0);
         this.closeConfirmModal();
+        this.$store.commit('pushFlashMessage', '태블릿 주문 받기 상태로 변경 되었습니다.');
       }
     },
     async reqRejectOrder() {
@@ -147,6 +174,7 @@ export default {
       if (response) {
         this.$store.commit('setDeviceOrderStatus', 1);
         this.closeConfirmModal();
+        this.$store.commit('pushFlashMessage', '태블릿 주문 중단 상태로 변경 되었습니다.');
       }
     },
     async reqShowOrder() {
@@ -157,6 +185,7 @@ export default {
       if (response) {
         this.$store.commit('setDeviceRecentOrderStatus', 0);
         this.closeConfirmModal();
+        this.$store.commit('pushFlashMessage', '태블릿 주문 내역 표시 상태로 변경 되었습니다.');
       }
     },
     async reqHideOrder() {
@@ -167,6 +196,7 @@ export default {
       if (response) {
         this.$store.commit('setDeviceRecentOrderStatus', 1);
         this.closeConfirmModal();
+        this.$store.commit('pushFlashMessage', '태블릿 주문 내역 숨김 상태로 변경 되었습니다.');
       }
     },
     getOnTabletMonitorClass(device) {
