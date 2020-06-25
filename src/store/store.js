@@ -615,8 +615,10 @@ const menu = {
 
       if (response.data && response.data.data) {
 
-        commit('SET_GOODS', response.data.data);
-        return response.data.data;
+        const data = response.data.data.filter(o => o.T_order_store_good_posYN === 0);
+
+        commit('SET_GOODS', data);
+        return data;
       }
       return false;
     },

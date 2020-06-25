@@ -12,6 +12,7 @@ const aliases = {
   '@store': 'src/store',
   '@scss': 'src/scss',
   '@config': 'src/config',
+  '@svg': 'src/svg',
 };
 
 module.exports = {

@@ -32,7 +32,7 @@
         ) 새로고침
         .datetime
           span {{ getNowDate() }}
-        img.logo(:src="logo")
+        torder
         .store_name {{storeName}}
         router-link.button(v-if="visibleOrderButton" :to="paths.order") 주문 보기
         router-link.button(v-if="visibleOrderButton" :to="paths.products") 상품 관리
@@ -74,8 +74,12 @@
 import store from '@store/store';
 import paths from '@router/paths';
 import { version } from '@utils/constants';
+import { Torder } from '@svg';
 
 export default {
+  components: {
+    Torder,
+  },
   store,
   data() {
     return {
@@ -92,7 +96,6 @@ export default {
         message: '',
       },
       paths,
-      logo: 'https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/logo/torder_color_white.png',
       version,
     };
   },
