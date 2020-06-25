@@ -180,6 +180,11 @@ const socket = {
 
         commit('SET_TABLES', deepCopyArr);
       }
+
+      if (payload?.type === '@update/categories/useStatus') {
+        commit('SET_MENU_USE', payload.target);
+        commit('pushFlashMessage', `${payload.target.name} ${payload.target.depthStr} 카테고리 상태가 ${payload.target.T_order_store_menu_use === 'Y' ? '개방' : '닫힘'}으로 변경이 되었습니다.`);
+      }
     },
     SOCKET_disconnect({ commit }) {
 

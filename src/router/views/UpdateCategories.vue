@@ -83,15 +83,36 @@ export default {
     renewCategoriesState(targetCode, visible) {
       const currentIdx = this.$store.state.allCategories.findIndex((o) => o.T_order_store_menu_code === targetCode);
 
+      const target = this.$store.state.allCategories[currentIdx];
       if (currentIdx > -1) {
         const results = {
           index: currentIdx,
           T_order_store_menu_use: visible ? 'Y' : 'N',
+          name: target.T_order_store_menu_name,
+          depthStr: JSON.parse(target.T_order_store_menu_depth).includes('1') ? '메인' : '서브',
         };
 
-        this.$store.commit('SET_MENU_USE', results);
-        this.$store.commit('pushFlashMessage', `해당 카테고리는 상태가 ${visible ? '개방' : '닫힘'}으로 변경이 되었습니다.`);
+        const { disconnected } = this.emmitSocket(results);
+
+        if (disconnected) {
+          this.$store.commit('SET_MENU_USE', results);
+          this.$store.commit('pushFlashMessage', `${results.name} ${results.depthStr} 카테고리 상태가 ${visible ? '개방' : '닫힘'}으로 변경이 되었습니다.`);
+        }
       }
+    },
+    emmitSocket(target) {
+      const { store_code } = this.$store.state.auth.store;
+      const payload = {
+        store: {
+          code: store_code,
+        },
+        type: '@update/categories/useStatus',
+        target,
+      };
+
+      console.log('payload', payload);
+
+      return this.$socket.emit('orderview', payload);
     },
     getAbleButtonColor(isOk) {
       if (isOk) {
