@@ -6,8 +6,8 @@
   )
     .header {{ ctgItem.name }} (메인 카테고리)
       .toggles
-        button(@click="() => open(subCtgItem.code)") open
-        button(@click="() => close(subCtgItem.code)") close
+        button(@click="() => open(ctgItem.code)") open
+        button(@click="() => close(ctgItem.code)") close
     .sub-category(
       v-for="subCtgItem in ctgItem.subCategories"
       :key="subCtgItem.code"
@@ -26,7 +26,6 @@ export default {
   computed: {
     data() {
       const { getAllCategories } = this.$store.getters;
-      console.log(getAllCategories);
       return getAllCategories;
     },
   },
@@ -79,6 +78,7 @@ export default {
   --c-10: #000000;
 
   .card {
+    margin-top: 16px;
     display: flex;
     flex-direction: column;
     justify-content: center;

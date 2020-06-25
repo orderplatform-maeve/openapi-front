@@ -24,31 +24,35 @@ export const vaildShopCode = (state, order) => {
 };
 
 export const getCategories = (categories) => {
-  const processCategories = categories.map((item) => ({
-    code: item.T_order_store_menu_code,
-    parentCodes: JSON.parse(item.T_order_store_menu_depth),
-    name: item.T_order_store_menu_name,
-    names: item.T_order_store_menu_name_array,
-    sortNo: Number(item.T_order_store_menu_sort_number),
-    serviceFlag: item.T_order_store_menu_serviceUse,
-    startTime: item.T_order_store_menu_starttime,
-    endTime: item.T_order_store_menu_endtime,
-  }));
+  try {
+    const processCategories = categories.map((item) => ({
+      code: item.T_order_store_menu_code,
+      parentCodes: JSON.parse(item.T_order_store_menu_depth),
+      name: item.T_order_store_menu_name,
+      names: item.T_order_store_menu_name_array,
+      sortNo: Number(item.T_order_store_menu_sort_number),
+      serviceFlag: item.T_order_store_menu_serviceUse,
+      startTime: item.T_order_store_menu_starttime,
+      endTime: item.T_order_store_menu_endtime,
+    }));
 
-  const firstCategories = processCategories.filter((category) => {
-    return category.parentCodes.includes('1');
-  }).sort((a, b) => a.sortNo - b.sortNo);
-
-  const secondCategories = firstCategories.map((fCtg) => {
-    return processCategories.filter((ctg) => {
-      return ctg.parentCodes.includes(fCtg.code);
+    const firstCategories = processCategories.filter((category) => {
+      return category.parentCodes.includes('1');
     }).sort((a, b) => a.sortNo - b.sortNo);
-  });
 
-  const results = firstCategories.map((item, idx) => ({
-    ...item,
-    subCategories: secondCategories[idx],
-  }));
+    const secondCategories = firstCategories.map((fCtg) => {
+      return processCategories.filter((ctg) => {
+        return ctg.parentCodes.includes(fCtg.code);
+      }).sort((a, b) => a.sortNo - b.sortNo);
+    });
 
-  return results;
+    const results = firstCategories.map((item, idx) => ({
+      ...item,
+      subCategories: secondCategories[idx],
+    }));
+
+    return results;
+  } catch (error) {
+    return [];
+  }
 };

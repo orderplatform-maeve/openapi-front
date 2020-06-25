@@ -635,13 +635,12 @@ const menu = {
       return response;
     },
     async setAllCategories({ commit }, params) {
-      const url = endpoints.menu.categories;
+      const url = endpoints.menu.getAllCategories;
       const response = await axios.post(url, params);
 
-      if (response.data && response.data.data) {
-        commit('SET_ALL_CATEGORIES', response.data.data);
-
-        return response.data.data;
+      if (response && response.data) {
+        commit('SET_ALL_CATEGORIES', response.data);
+        return response.data;
       }
       return false;
     },
