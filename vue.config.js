@@ -2,6 +2,7 @@ const { env: { UPLOAD_TYPE, UPLOAD_VERSION } } = process;
 
 /** @type import('@vue/cli-service').ProjectOptions */
 module.exports = {
+  filenameHashing: false,
   publicPath: process.env && !!process.env.UPLOAD_TYPE ? `/v/${UPLOAD_TYPE}/${UPLOAD_VERSION}` : '/',
   // publicPath: '/v/1/0/8',
   // https://github.com/neutrinojs/webpack-chain/tree/v4#getting-started

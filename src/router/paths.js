@@ -8,4 +8,5 @@ export default {
   products: '/products',
   pickUpTables: '/pickUpTables',
   updateCategories: '/updateCategories',
+  torderControl: '/torderControl',
 };
