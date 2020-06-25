@@ -597,6 +597,9 @@ const menu = {
     SET_CATEGORIES: (state, categories) => Vue.set(state, 'categories', categories),
     SET_GOODS: (state, goods) => Vue.set(state, 'goods', goods),
     SET_ALL_CATEGORIES: (state, categories) => Vue.set(state, 'allCategories', categories),
+    SET_MENU_USE: (state, targetCategory) => {
+      state.allCategories[targetCategory.index].T_order_store_menu_use = targetCategory.T_order_store_menu_use;
+    },
   },
   actions: {
     async setCategories({ commit }, params) {

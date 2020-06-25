@@ -58,7 +58,11 @@ export default {
       fd.append('good_categroty_code', code);
 
       const res = await this.$store.dispatch('updateCategoryOpne', fd);
-      console.log(res);
+
+      if (res.status === 200) {
+        this.renewCategoriesState(code, true);
+      }
+      this.apiException(res.status);
     },
     async close(code, useCategory) {
       if (useCategory) {
@@ -70,7 +74,24 @@ export default {
       fd.append('good_categroty_code', code);
 
       const res = await this.$store.dispatch('updateCategoryClose', fd);
-      console.log(res);
+
+      if (res.status === 200) {
+        this.renewCategoriesState(code, false);
+      }
+      this.apiException(res.status);
+    },
+    renewCategoriesState(targetCode, visible) {
+      const currentIdx = this.$store.state.allCategories.findIndex((o) => o.T_order_store_menu_code === targetCode);
+
+      if (currentIdx > -1) {
+        const results = {
+          index: currentIdx,
+          T_order_store_menu_use: visible ? 'Y' : 'N',
+        };
+
+        this.$store.commit('SET_MENU_USE', results);
+        this.$store.commit('pushFlashMessage', `해당 카테고리는 상태가 ${visible ? '개방' : '닫힘'}으로 변경이 되었습니다.`);
+      }
     },
     getAbleButtonColor(isOk) {
       if (isOk) {
@@ -85,6 +106,11 @@ export default {
         color: 'black',
       };
     },
+    apiException(status) {
+      if (status !== 200) {
+        return this.$store.commit('pushFlashMessage', '네트워크 상태가 불완전 합니다. 잠시후 시도 해주세요.');
+      }
+    }
   },
 };
 </script>
