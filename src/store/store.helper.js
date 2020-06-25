@@ -34,6 +34,8 @@ export const getCategories = (categories) => {
       serviceFlag: item.T_order_store_menu_serviceUse,
       startTime: item.T_order_store_menu_starttime,
       endTime: item.T_order_store_menu_endtime,
+      serviceUse: item.T_order_store_menu_serviceUse,
+      useCategory: item.T_order_store_menu_use === 'Y',
     }));
 
     const firstCategories = processCategories.filter((category) => {

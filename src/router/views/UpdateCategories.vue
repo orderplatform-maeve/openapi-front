@@ -6,14 +6,15 @@
   )
     .header {{ ctgItem.name }} (메인 카테고리)
       .toggles
-        button(@click="() => open(ctgItem.code)") open
-        button(@click="() => close(ctgItem.code)") close
+        button(@click="() => open(ctgItem.code, ctgItem.useCategory)" :style="getAbleButtonColor(ctgItem.useCategory)") open
+        button(@click="() => close(ctgItem.code, !ctgItem.useCategory)" :style="getAbleButtonColor(!ctgItem.useCategory)") close
     .sub-category(
       v-for="subCtgItem in ctgItem.subCategories"
       :key="subCtgItem.code"
-    ) {{ subCtgItem.name }}
-      button(@click="() => open(subCtgItem.code)") open
-      button(@click="() => close(subCtgItem.code)") close
+    ) {{ subCtgItem.name }} (서브 카테고리)
+      .toggles
+        button(@click="() => open(subCtgItem.code, subCtgItem.useCategory)" :style="getAbleButtonColor(subCtgItem.useCategory)") open
+        button(@click="() => close(subCtgItem.code, !subCtgItem.useCategory)" :style="getAbleButtonColor(!subCtgItem.useCategory)") close
 </template>
 
 <script>
@@ -47,7 +48,11 @@ export default {
         return [];
       }
     },
-    async open(code) {
+    async open(code, useCategory) {
+      if (useCategory) {
+        return this.$store.commit('pushFlashMessage', '해당 카테고리는 이미 개방이 되었습니다.');
+      }
+
       const fd = new FormData();
       fd.append('store_code', this.$store.state.auth.store.store_code);
       fd.append('good_categroty_code', code);
@@ -55,13 +60,30 @@ export default {
       const res = await this.$store.dispatch('updateCategoryOpne', fd);
       console.log(res);
     },
-    async close(code) {
+    async close(code, useCategory) {
+      if (useCategory) {
+        return this.$store.commit('pushFlashMessage', '해당 카테고리는 이미 닫혀있습니다.');
+      }
+
       const fd = new FormData();
       fd.append('store_code', this.$store.state.auth.store.store_code);
       fd.append('good_categroty_code', code);
 
       const res = await this.$store.dispatch('updateCategoryClose', fd);
       console.log(res);
+    },
+    getAbleButtonColor(isOk) {
+      if (isOk) {
+        return {
+          backgroundColor: 'black',
+          color: 'white',
+        };
+      }
+
+      return {
+        backgroundColor: 'white',
+        color: 'black',
+      };
     },
   },
 };
