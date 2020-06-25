@@ -37,28 +37,27 @@
         router-link.button(v-if="visibleOrderButton" :to="paths.order") 주문 보기
         router-link.button(v-if="visibleOrderButton" :to="paths.products") 상품 관리
         router-link.button(v-if="visibleOrderButton" :to="paths.tables") 테이블 주문
-          <br> (테스트)
         router-link.button(v-if="visibleOrderButton" :to="paths.pickUpTables") 픽업 요청
-          <br> (테스트)
         router-link.button(v-if="visibleOrderButton" :to="paths.updateCategories") 분류 관리
           <br> (테스트)
+        router-link.button(v-if="visibleOrderButton" :to="paths.torderControl") 티오더 제어
       .bottom
-        hr
-        .tab-group
-          .tab-name 태블릿 화면
-          .tab-buttons
-            .tab-button(:class="getOnTabletMonitorClass(device)" @click="openTabletScreen") On
-            .tab-button(:class="getOffTabletMonitorClass(device)" @click="closeTabletScreen") Off
-        .tab-group
-          .tab-name 태블릿 주문
-          .tab-buttons
-            .tab-button(:class="getOnTabletOrderClass(device)" @click="agreeOrder") On
-            .tab-button(:class="getOffTabletOrderClass(device)" @click="rejectOrder") Off
-        .tab-group
-          .tab-name 주문 내역
-          .tab-buttons
-            .tab-button(:class="getOnTabletRecentOrderClass(device)" @click="showRecentOrder") On
-            .tab-button(:class="getOffTabletRecentOrderClass(device)" @click="hideRecentOrder") Off
+        //- hr
+        //- .tab-group
+        //-   .tab-name 태블릿 화면
+        //-   .tab-buttons
+        //-     .tab-button(:class="getOnTabletMonitorClass(device)" @click="openTabletScreen") On
+        //-     .tab-button(:class="getOffTabletMonitorClass(device)" @click="closeTabletScreen") Off
+        //- .tab-group
+        //-   .tab-name 태블릿 주문
+        //-   .tab-buttons
+        //-     .tab-button(:class="getOnTabletOrderClass(device)" @click="agreeOrder") On
+        //-     .tab-button(:class="getOffTabletOrderClass(device)" @click="rejectOrder") Off
+        //- .tab-group
+        //-   .tab-name 주문 내역
+        //-   .tab-buttons
+        //-     .tab-button(:class="getOnTabletRecentOrderClass(device)" @click="showRecentOrder") On
+        //-     .tab-button(:class="getOffTabletRecentOrderClass(device)" @click="hideRecentOrder") Off
         hr
         router-link.button(v-if="visibleStoresButton" :to="paths.store") 매장 보기
         router-link.button.button-red(v-if="visibleLoginButton" :to="paths.login") 로그인
