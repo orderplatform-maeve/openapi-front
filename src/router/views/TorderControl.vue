@@ -1,16 +1,16 @@
 <template lang="pug">
   .container
-    .tab-group
+    .tab-groups
       .tab-name 태블릿 화면
       .tab-buttons
         .tab-button(:class="getOnTabletMonitorClass(device)" @click="openTabletScreen") On
         .tab-button(:class="getOffTabletMonitorClass(device)" @click="closeTabletScreen") Off
-    .tab-group
+    .tab-groups
       .tab-name 태블릿 주문
       .tab-buttons
         .tab-button(:class="getOnTabletOrderClass(device)" @click="agreeOrder") On
         .tab-button(:class="getOffTabletOrderClass(device)" @click="rejectOrder") Off
-    .tab-group
+    .tab-groups
       .tab-name 주문 내역
       .tab-buttons
         .tab-button(:class="getOnTabletRecentOrderClass(device)" @click="showRecentOrder") On
@@ -225,10 +225,83 @@ export default {
 </script>
 
 <style lang="scss">
-@import "../../scss/global.scss";
-@include tab-group;
 
-.tab-group {
+  .tab-groups {
+    display:flex;
+    overflow:scroll;
+    width: 100%;
+    width: -webkit-fill-available;
+
+    .tab-name {
+      align-items: center;
+      justify-content: center;
+      display:flex;
+      flex-direction: row;
+      font-weight:400;
+      font-size:20px;
+      height:40px;
+    }
+    .tab-buttons {
+      display:inline-flex;
+      margin:0px;
+      padding:0;
+      height:52px;
+      background-color:#484848;
+      border-radius:100px;
+      flex-grow:1;
+
+      .tab-button {
+        display:flex;
+        height:100%;
+        flex-grow:1;
+        flex-shrink:0;
+        align-items: center;
+        justify-content: center;
+        text-align:center;
+        font-weight:900;
+        background-color:#484848;
+        color:#ffffff;
+        padding:0 12px;
+        white-space: nowrap;
+        font-size: 20px;
+
+        .count {
+          margin-left:8px;
+          display:flex;
+          align-items: center;
+          justify-content: center;
+          padding:2px 8px;
+          background-color:#ffffff;
+          color:#000000;
+          border-radius:100px;
+          font-size:20px;
+        }
+      }
+      .tab-button:first-child {
+        border-top-left-radius: 100px;
+        border-bottom-left-radius: 100px;
+      }
+      .tab-button:last-child {
+        border-top-right-radius: 100px;
+        border-bottom-right-radius: 100px;
+      }
+      .tab-button.active {
+        background-color:#fafafa;
+        color:#000000;
+        border-radius:100px;
+
+        .count {
+        background-color:#000000;
+        color:#fafafa;
+        }
+      }
+    }
+
+  }
+
+
+
+.tab-groups {
   flex-direction:column;
   margin-top:24px;
   flex-grow:0;
@@ -239,7 +312,7 @@ export default {
     font-size:28px;
     font-weight:900;
     border-radius:200px;
-    background-color:#121212;
+    background-color: transparent;
     color:#ffffff;
     align-items: center;
     justify-content: center;
