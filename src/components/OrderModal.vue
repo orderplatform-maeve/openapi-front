@@ -115,7 +115,6 @@ export default {
   },
   methods: {
     async commitOrder(order) {
-      console.log(order);
       const auth = this.$store.state.auth;
       this.isConfirm = true;
 

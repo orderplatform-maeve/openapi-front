@@ -8,7 +8,7 @@
     .button(
       v-if="getAllRefreshDataVisible()"
       @click="onAllRefresh"
-    ) 테이블 전체 새로고침
+    ) 테이블 전체 새로고침 (테스트)
 </template>
 
 <script>
@@ -118,7 +118,7 @@ export default {
             const result = {
               status: res.status === 200 ? 'fulfilled' : 'rejected',
               tabletName: item.Tablet_name,
-              msg: res?.data,
+              msg: '새로고침이 되었습니다.',
             };
             // // console.log(result);
 
