@@ -138,9 +138,15 @@ export default {
       const response = await this.$store.dispatch('setOpenTablet', fd);
 
       if (response) {
-        this.$store.commit('setDeviceServiceStatus', 0);
+        const value = 0;
+        const { disconnected } = this.emitServiceStatus(value);
+
+        if (disconnected) {
+          this.$store.commit('setDeviceServiceStatus', value);
+          this.$store.commit('pushFlashMessage', '태블릿 화면 열기 상태로 변경 되었습니다.');
+        }
+
         this.closeConfirmModal();
-        this.$store.commit('pushFlashMessage', '태블릿 화면 열기 상태로 변경 되었습니다.');
       }
     },
     async reqCloseTablet() {
@@ -150,9 +156,15 @@ export default {
       const response = await this.$store.dispatch('setCloseTablet', fd);
 
       if (response) {
-        this.$store.commit('setDeviceServiceStatus', 1);
+        const value = 1;
+        const { disconnected } = this.emitServiceStatus(value);
+
+        if (disconnected) {
+          this.$store.commit('setDeviceServiceStatus', value);
+          this.$store.commit('pushFlashMessage', '태블릿 화면 닫기 상태로 변경 되었습니다.');
+        }
+
         this.closeConfirmModal();
-        this.$store.commit('pushFlashMessage', '태블릿 화면 닫기 상태로 변경 되었습니다.');
       }
     },
     async reqAgreeOrder() {
@@ -161,9 +173,15 @@ export default {
       const response = await this.$store.dispatch('setAgreeOrder', fd);
 
       if (response) {
-        this.$store.commit('setDeviceOrderStatus', 0);
+        const value = 0;
+        const { disconnected } = this.emitAgreeOrder(value);
+
+        if (disconnected) {
+          this.$store.commit('setDeviceOrderStatus', value);
+          this.$store.commit('pushFlashMessage', '태블릿 주문 받기 상태로 변경 되었습니다.');
+        }
+
         this.closeConfirmModal();
-        this.$store.commit('pushFlashMessage', '태블릿 주문 받기 상태로 변경 되었습니다.');
       }
     },
     async reqRejectOrder() {
@@ -172,9 +190,15 @@ export default {
       const response = await this.$store.dispatch('setRejectOrder', fd);
 
       if (response) {
-        this.$store.commit('setDeviceOrderStatus', 1);
+        const value = 1;
+        const { disconnected } = this.emitAgreeOrder(value);
+
+        if (disconnected) {
+          this.$store.commit('setDeviceOrderStatus', value);
+          this.$store.commit('pushFlashMessage', '태블릿 주문 중단 상태로 변경 되었습니다.');
+        }
+
         this.closeConfirmModal();
-        this.$store.commit('pushFlashMessage', '태블릿 주문 중단 상태로 변경 되었습니다.');
       }
     },
     async reqShowOrder() {
@@ -183,9 +207,15 @@ export default {
       const response = await this.$store.dispatch('setShowRecentOrder', fd);
 
       if (response) {
-        this.$store.commit('setDeviceRecentOrderStatus', 0);
+        const value = 0;
+        const { disconnected } = this.emitRecentOrder(value);
+
+        if (disconnected) {
+          this.$store.commit('setDeviceRecentOrderStatus', value);
+          this.$store.commit('pushFlashMessage', '태블릿 주문 내역 표시 상태로 변경 되었습니다.');
+        }
+
         this.closeConfirmModal();
-        this.$store.commit('pushFlashMessage', '태블릿 주문 내역 표시 상태로 변경 되었습니다.');
       }
     },
     async reqHideOrder() {
@@ -194,9 +224,15 @@ export default {
       const response = await this.$store.dispatch('setCloseRecentOrder', fd);
 
       if (response) {
-        this.$store.commit('setDeviceRecentOrderStatus', 1);
+        const value = 1;
+        const { disconnected } = this.emitRecentOrder(value);
+
+        if (disconnected) {
+          this.$store.commit('setDeviceRecentOrderStatus', value);
+          this.$store.commit('pushFlashMessage', '태블릿 주문 내역 숨김 상태로 변경 되었습니다.');
+        }
+
         this.closeConfirmModal();
-        this.$store.commit('pushFlashMessage', '태블릿 주문 내역 숨김 상태로 변경 되었습니다.');
       }
     },
     getOnTabletMonitorClass(device) {
@@ -249,6 +285,39 @@ export default {
     },
     vaildRecentOrderStatus(device) {
       return device && device.recentOrderStatus;
+    },
+    emitServiceStatus(value) {
+      const { store_code } = this.$store.state.auth.store;
+      const payload = {
+        store: {
+          code: store_code,
+        },
+        type: '@update/device/serviceStatus',
+        value,
+      };
+      return this.$socket.emit('orderview', payload);
+    },
+    emitAgreeOrder(value) {
+      const { store_code } = this.$store.state.auth.store;
+      const payload = {
+        store: {
+          code: store_code,
+        },
+        type: '@update/device/agreeOrder',
+        value,
+      };
+      return this.$socket.emit('orderview', payload);
+    },
+    emitRecentOrder(value) {
+      const { store_code } = this.$store.state.auth.store;
+      const payload = {
+        store: {
+          code: store_code,
+        },
+        type: '@update/device/recentOrder',
+        value,
+      };
+      return this.$socket.emit('orderview', payload);
     },
   },
 };

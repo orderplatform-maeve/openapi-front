@@ -185,6 +185,33 @@ const socket = {
         commit('SET_MENU_USE', payload.target);
         commit('pushFlashMessage', `${payload.target.name} ${payload.target.depthStr} 카테고리 상태가 ${payload.target.T_order_store_menu_use === 'Y' ? '개방' : '닫힘'}으로 변경이 되었습니다.`);
       }
+
+      if (payload?.type === '@update/device/serviceStatus') {
+        commit('setDeviceServiceStatus', payload.value);
+        if (payload.value) {
+          commit('pushFlashMessage', '태블릿 화면 닫기 상태로 변경 되었습니다.');
+        } else {
+          commit('pushFlashMessage', '태블릿 화면 열기 상태로 변경 되었습니다.');
+        }
+      }
+
+      if (payload?.type === '@update/device/agreeOrder') {
+        commit('setDeviceOrderStatus', payload.value);
+        if (payload.value) {
+          commit('pushFlashMessage', '태블릿 주문 중단 상태로 변경 되었습니다.');
+        } else {
+          commit('pushFlashMessage', '태블릿 주문 받기 상태로 변경 되었습니다.');
+        }
+      }
+
+      if (payload?.type === '@update/device/recentOrder') {
+        commit('setDeviceRecentOrderStatus', payload.value);
+        if (payload.value) {
+          commit('pushFlashMessage', '태블릿 주문 내역 숨김 상태로 변경 되었습니다.');
+        } else {
+          commit('pushFlashMessage', '태블릿 주문 내역 표시 상태로 변경 되었습니다.');
+        }
+      }
     },
     SOCKET_disconnect({ commit }) {
 
