@@ -431,7 +431,16 @@ const device = {
     setDeviceStatus(state, device) {
       // // console.log('commit setDeviceStatus', device);
       Vue.set(state, 'device', device);
-    }
+    },
+    setDeviceOrderStatus(state, orderStatus) {
+      state.device.orderStatus = orderStatus;
+    },
+    setDeviceServiceStatus(state, serviceStatus) {
+      state.device.serviceStatus = serviceStatus;
+    },
+    setDeviceRecentOrderStatus(state, recentOrderStatus) {
+      state.device.recentOrderStatus = recentOrderStatus;
+    },
   },
   actions: {
     async setOpenTablet(context, params) {
@@ -800,6 +809,12 @@ const popup = {
     setDisconnectModalVisible(state, isDisconnectModal) {
       Vue.set(state, 'isDisconnectModal', isDisconnectModal);
     },
+    closeConfirmModal(state) {
+      state.confirmModal.show = false;
+    },
+    showConfirmModal(state, confirmModal) {
+      state.confirmModal = confirmModal;
+    },
   },
 };
 
@@ -835,6 +850,14 @@ const authProto = {
   },
 };
 
+const confirmModalProto = {
+  show: false,
+  close: () => {},
+  title: '',
+  message: '',
+  confirm: () => {},
+};
+
 const state = {
   order: undefined,
   orders: [],
@@ -858,6 +881,7 @@ const state = {
   allRefreshList: [],
   isDisConnectNetwork: false,
   signboardMessage: '',
+  confirmModal: confirmModalProto,
 };
 
 const mutations = {

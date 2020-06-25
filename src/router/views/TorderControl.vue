@@ -30,55 +30,82 @@ export default {
     };
   },
   computed: {
+    auth() {
+      return this.$store.state.auth;
+    },
     device() {
       return this.$store.state.device;
     },
   },
   methods: {
     openTabletScreen() {
-      this.confirmModal.show = true;
-      this.confirmModal.close = this.closeConfirmModal;
-      this.confirmModal.title = '태블릿 열기';
-      this.confirmModal.message = '모든 태블릿의 화면을 열어요';
-      this.confirmModal.confirm = this.reqOpenTablet;
+      const confirmModal = {};
+
+      confirmModal.show = true;
+      confirmModal.close = this.closeConfirmModal;
+      confirmModal.title = '태블릿 열기';
+      confirmModal.message = '모든 태블릿의 화면을 열어요';
+      confirmModal.confirm = this.reqOpenTablet;
+
+      this.$store.commit('showConfirmModal', confirmModal);
     },
     closeTabletScreen() {
-      this.confirmModal.show = true;
-      this.confirmModal.close = this.closeConfirmModal;
-      this.confirmModal.title = '태블릿 닫기';
-      this.confirmModal.message = '모든 태블릿의 화면을 닫아요';
-      this.confirmModal.confirm = this.reqCloseTablet;
+      const confirmModal = {};
+
+      confirmModal.show = true;
+      confirmModal.close = this.closeConfirmModal;
+      confirmModal.title = '태블릿 닫기';
+      confirmModal.message = '모든 태블릿의 화면을 닫아요';
+      confirmModal.confirm = this.reqCloseTablet;
+
+      this.$store.commit('showConfirmModal', confirmModal);
     },
     agreeOrder() {
-      this.confirmModal.show = true;
-      this.confirmModal.close = this.closeConfirmModal;
-      this.confirmModal.title = '주문 받기';
-      this.confirmModal.message = '태블릿에서 주문을 받아요';
-      this.confirmModal.confirm = this.reqAgreeOrder;
+      const confirmModal = {};
+
+      confirmModal.show = true;
+      confirmModal.close = this.closeConfirmModal;
+      confirmModal.title = '주문 받기';
+      confirmModal.message = '태블릿에서 주문을 받아요';
+      confirmModal.confirm = this.reqAgreeOrder;
+
+      this.$store.commit('showConfirmModal', confirmModal);
     },
     rejectOrder() {
-      this.confirmModal.show = true;
-      this.confirmModal.close = this.closeConfirmModal;
-      this.confirmModal.title = '주문 중단';
-      this.confirmModal.message = '태블릿을 메뉴판으로만 사용하고 주문은 안돼요';
-      this.confirmModal.confirm = this.reqRejectOrder;
+      const confirmModal = {};
+
+      confirmModal.show = true;
+      confirmModal.close = this.closeConfirmModal;
+      confirmModal.title = '주문 중단';
+      confirmModal.message = '태블릿을 메뉴판으로만 사용하고 주문은 안돼요';
+      confirmModal.confirm = this.reqRejectOrder;
+
+      this.$store.commit('showConfirmModal', confirmModal);
     },
     showRecentOrder() {
-      this.confirmModal.show = true;
-      this.confirmModal.close = this.closeConfirmModal;
-      this.confirmModal.title = '주문 내역 표시';
-      this.confirmModal.message = '태블릿에서 주문 내역이 나타납니다';
-      this.confirmModal.confirm = this.reqShowOrder;
+      const confirmModal = {};
+
+      confirmModal.show = true;
+      confirmModal.close = this.closeConfirmModal;
+      confirmModal.title = '주문 내역 표시';
+      confirmModal.message = '태블릿에서 주문 내역이 나타납니다';
+      confirmModal.confirm = this.reqShowOrder;
+
+      this.$store.commit('showConfirmModal', confirmModal);
     },
     hideRecentOrder() {
-      this.confirmModal.show = true;
-      this.confirmModal.close = this.closeConfirmModal;
-      this.confirmModal.title = '주문 내역 숨김';
-      this.confirmModal.message = '태블릿에서 주문 내역이 숨겨집니다';
-      this.confirmModal.confirm = this.reqHideOrder;
+      const confirmModal = {};
+
+      confirmModal.show = true;
+      confirmModal.close = this.closeConfirmModal;
+      confirmModal.title = '주문 내역 숨김';
+      confirmModal.message = '태블릿에서 주문 내역이 숨겨집니다';
+      confirmModal.confirm = this.reqHideOrder;
+
+      this.$store.commit('showConfirmModal', confirmModal);
     },
     closeConfirmModal() {
-      this.confirmModal.show = false;
+      this.$store.commit('closeConfirmModal');
     },
     async reqOpenTablet() {
       const fd = new FormData();
@@ -87,7 +114,7 @@ export default {
       const response = await this.$store.dispatch('setOpenTablet', fd);
 
       if (response) {
-        this.device.serviceStatus = 0;
+        this.$store.commit('setDeviceServiceStatus', 0);
         this.closeConfirmModal();
       }
     },
@@ -98,7 +125,7 @@ export default {
       const response = await this.$store.dispatch('setCloseTablet', fd);
 
       if (response) {
-        this.device.serviceStatus = 1;
+        this.$store.commit('setDeviceServiceStatus', 1);
         this.closeConfirmModal();
       }
     },
@@ -108,7 +135,7 @@ export default {
       const response = await this.$store.dispatch('setAgreeOrder', fd);
 
       if (response) {
-        this.device.orderStatus = 0;
+        this.$store.commit('setDeviceOrderStatus', 0);
         this.closeConfirmModal();
       }
     },
@@ -118,7 +145,7 @@ export default {
       const response = await this.$store.dispatch('setRejectOrder', fd);
 
       if (response) {
-        this.device.orderStatus = 1;
+        this.$store.commit('setDeviceOrderStatus', 1);
         this.closeConfirmModal();
       }
     },
@@ -128,7 +155,7 @@ export default {
       const response = await this.$store.dispatch('setShowRecentOrder', fd);
 
       if (response) {
-        this.device.recentOrderStatus = 0;
+        this.$store.commit('setDeviceRecentOrderStatus', 0);
         this.closeConfirmModal();
       }
     },
@@ -138,7 +165,7 @@ export default {
       const response = await this.$store.dispatch('setCloseRecentOrder', fd);
 
       if (response) {
-        this.device.recentOrderStatus = 1;
+        this.$store.commit('setDeviceRecentOrderStatus', 1);
         this.closeConfirmModal();
       }
     },

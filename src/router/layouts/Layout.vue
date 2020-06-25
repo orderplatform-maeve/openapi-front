@@ -88,17 +88,21 @@ export default {
         start: 0,
         end: 0,
       },
-      confirmModal: {
-        show: false,
-        close: () => {},
-        title: '',
-        message: '',
-      },
+      // confirmModal: {
+      //   show: false,
+      //   close: () => {},
+      //   title: '',
+      //   message: '',
+      //   confirm: () => {},
+      // },
       paths,
       version,
     };
   },
   computed: {
+    confirmModal() {
+      return this.$store.state.confirmModal;
+    },
     uCode() {
       return this.$store.state.uCode;
     },
