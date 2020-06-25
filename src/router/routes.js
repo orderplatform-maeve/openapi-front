@@ -6,6 +6,8 @@ import {
   Tables,
   TableOrders,
   Products,
+  PickUpTables,
+  UpdateCategories,
 } from '@views';
 
 import paths from './paths';
@@ -53,6 +55,18 @@ const routes = [{
     path: `${paths.tableOrders}/:id`,
     name: paths.tableOrders.replace('/',''),
     component: TableOrders,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: paths.pickUpTables,
+    name: paths.pickUpTables.replace('/',''),
+    component: PickUpTables,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: paths.updateCategories,
+    name: paths.updateCategories.replace('/',''),
+    component: UpdateCategories,
     meta: { requiresAuth: true },
   }],
 }];

@@ -84,8 +84,9 @@
           p ₩ {{ getPrice(good.price) }}
   .footer
     .button.order(@click="yesOrder") 주문
-    .button(v-if="visibleDeleteButton()" @click="onDeleteOrder") 초기화
-    .button(@click="reload") 리로드
+    //- .button(v-if="visibleDeleteButton()" @click="onDeleteOrder") 초기화
+    .button(@click="onDeleteOrder") 초기화
+    .button(@click="reload") 새로고침
     .button(@click="close") 닫기
 </template>
 

@@ -31,6 +31,9 @@ const endpoints = {
   menu: {
     categories: `${SERVER_URL}/shop/categorys`,
     getGoodsList: `${SERVER_URL}/goods/get_goods_list`,
+    updateCategoryOpen: `${ADMIN_URL}/category/update_categroty_open`,
+    updateCategoryClose: `${ADMIN_URL}/category/update_categroty_close`,
+    getAllCategories: `${ADMIN_URL}/category/get_all_categorys`,
   },
   shop: {
     init: `${SERVER_URL}/shop/init`,

@@ -3,7 +3,10 @@ import Vuex from 'vuex';
 import axios from 'axios';
 import querystring from 'querystring';
 
-import { vaildShopCode } from './store.helper';
+import {
+  vaildShopCode,
+  getCategories,
+} from './store.helper';
 import { isEmpty } from '@utils/CheckedType';
 
 import endpoints from './endpoints';
@@ -25,6 +28,10 @@ function imagePreload(url) {
 */
 const socket = {
   mutations: {
+    SOCKET_res(state, message) {
+      // console.log(message);
+      message;
+    },
     SOCKET_orderlog(state, order) {
       if (vaildShopCode(state, order)) {
         Vue.set(state, 'order', order);
@@ -172,6 +179,11 @@ const socket = {
         };
 
         commit('SET_TABLES', deepCopyArr);
+      }
+
+      if (payload?.type === '@update/categories/useStatus') {
+        commit('SET_MENU_USE', payload.target);
+        commit('pushFlashMessage', `${payload.target.name} ${payload.target.depthStr} 카테고리 상태가 ${payload.target.T_order_store_menu_use === 'Y' ? '개방' : '닫힘'}으로 변경이 되었습니다.`);
       }
     },
     SOCKET_disconnect({ commit }) {
@@ -589,6 +601,10 @@ const menu = {
   mutations: {
     SET_CATEGORIES: (state, categories) => Vue.set(state, 'categories', categories),
     SET_GOODS: (state, goods) => Vue.set(state, 'goods', goods),
+    SET_ALL_CATEGORIES: (state, categories) => Vue.set(state, 'allCategories', categories),
+    SET_MENU_USE: (state, targetCategory) => {
+      state.allCategories[targetCategory.index].T_order_store_menu_use = targetCategory.T_order_store_menu_use;
+    },
   },
   actions: {
     async setCategories({ commit }, params) {
@@ -606,50 +622,40 @@ const menu = {
       const response = await axios.post(url, params);
 
       if (response.data && response.data.data) {
-        // const array = JSON.parse(JSON.stringify(response.data.data));
 
-        // for (let index = 0; index < array.length; index++) {
-        //   const element = array[index];
-        //   if (element.T_order_store_good_image) {
-        //     imagePreload(element.T_order_store_good_image);
-        //   }
-        // }
+        const data = response.data.data.filter(o => o.T_order_store_good_posYN === 0);
 
-        commit('SET_GOODS', response.data.data);
-        return response.data.data;
+        commit('SET_GOODS', data);
+        return data;
+      }
+      return false;
+    },
+    async updateCategoryOpne(context, params) {
+      const url = endpoints.menu.updateCategoryOpen;
+      const response = await axios.post(url, params);
+
+      return response;
+    },
+    async updateCategoryClose(context, params) {
+      const url = endpoints.menu.updateCategoryClose;
+      const response = await axios.post(url, params);
+
+      return response;
+    },
+    async setAllCategories({ commit }, params) {
+      const url = endpoints.menu.getAllCategories;
+      const response = await axios.post(url, params);
+
+      if (response && response.data) {
+        commit('SET_ALL_CATEGORIES', response.data);
+        return response.data;
       }
       return false;
     },
   },
   getters: {
     getCategories(state) {
-      const processCategories = state.categories.map((item) => ({
-        code: item.T_order_store_menu_code,
-        parentCodes: JSON.parse(item.T_order_store_menu_depth),
-        name: item.T_order_store_menu_name,
-        names: item.T_order_store_menu_name_array,
-        sortNo: Number(item.T_order_store_menu_sort_number),
-        serviceFlag: item.T_order_store_menu_serviceUse,
-        startTime: item.T_order_store_menu_starttime,
-        endTime: item.T_order_store_menu_endtime,
-      }));
-
-      const firstCategories = processCategories.filter((category) => {
-        return category.parentCodes.includes('1');
-      }).sort((a, b) => a.sortNo - b.sortNo);
-
-      const secondCategories = firstCategories.map((fCtg) => {
-        return processCategories.filter((ctg) => {
-          return ctg.parentCodes.includes(fCtg.code);
-        }).sort((a, b) => a.sortNo - b.sortNo);
-      });
-
-      const results = firstCategories.map((item, idx) => ({
-        ...item,
-        subCategories: secondCategories[idx],
-      }));
-
-      return results;
+      return getCategories(state.categories);
     },
     processGoods(state) {
       return state.goods.map( p => {
@@ -731,6 +737,9 @@ const menu = {
       const results = getCategories.map(getCategoryItem);
       // // console.log(results);
       return results;
+    },
+    getAllCategories(state) {
+      return getCategories(state.allCategories);
     },
   },
 };
@@ -839,6 +848,7 @@ const state = {
   tables: [],
   cartList: [],
   categories: [],
+  allCategories: [],
   goods: [],
   MACAddr: '00:00:00:00:00:00',
   uCode: '',
