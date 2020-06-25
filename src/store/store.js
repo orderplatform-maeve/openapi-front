@@ -54,10 +54,13 @@ const socket = {
           order_view_key: payload.key,
         };
 
+        const target = state.orders.find((o) => o.order_view_key === payload.key);
+
         // console.log('targetOrder', targetOrder);
-        // console.log('SOCKET_orderview', payload);
+        // console.log('SOCKET_orderview', payload, target);
 
         commit('UPDATE_ORDERS', targetOrder);
+        commit('pushFlashMessage', `${target.T_order_order_tablet_number} 테이블 주문이(${target.order_time}) ${targetOrder.commit ? '확인' : '미확인'} 상태로 변경 되었습니다.`);
         return commit('UNSET_ORDER');
       }
 
@@ -179,6 +182,38 @@ const socket = {
         };
 
         commit('SET_TABLES', deepCopyArr);
+      }
+
+      if (payload?.type === '@update/categories/useStatus') {
+        commit('SET_MENU_USE', payload.target);
+        commit('pushFlashMessage', `${payload.target.name} ${payload.target.depthStr} 카테고리 상태가 ${payload.target.T_order_store_menu_use === 'Y' ? '개방' : '닫힘'}으로 변경이 되었습니다.`);
+      }
+
+      if (payload?.type === '@update/device/serviceStatus') {
+        commit('setDeviceServiceStatus', payload.value);
+        if (payload.value) {
+          commit('pushFlashMessage', '태블릿 화면 닫기 상태로 변경 되었습니다.');
+        } else {
+          commit('pushFlashMessage', '태블릿 화면 열기 상태로 변경 되었습니다.');
+        }
+      }
+
+      if (payload?.type === '@update/device/agreeOrder') {
+        commit('setDeviceOrderStatus', payload.value);
+        if (payload.value) {
+          commit('pushFlashMessage', '태블릿 주문 중단 상태로 변경 되었습니다.');
+        } else {
+          commit('pushFlashMessage', '태블릿 주문 받기 상태로 변경 되었습니다.');
+        }
+      }
+
+      if (payload?.type === '@update/device/recentOrder') {
+        commit('setDeviceRecentOrderStatus', payload.value);
+        if (payload.value) {
+          commit('pushFlashMessage', '태블릿 주문 내역 숨김 상태로 변경 되었습니다.');
+        } else {
+          commit('pushFlashMessage', '태블릿 주문 내역 표시 상태로 변경 되었습니다.');
+        }
       }
     },
     SOCKET_disconnect({ commit }) {
@@ -426,7 +461,16 @@ const device = {
     setDeviceStatus(state, device) {
       // // console.log('commit setDeviceStatus', device);
       Vue.set(state, 'device', device);
-    }
+    },
+    setDeviceOrderStatus(state, orderStatus) {
+      state.device.orderStatus = Boolean(orderStatus);
+    },
+    setDeviceServiceStatus(state, serviceStatus) {
+      state.device.serviceStatus = Boolean(serviceStatus);
+    },
+    setDeviceRecentOrderStatus(state, recentOrderStatus) {
+      state.device.recentOrderStatus = Boolean(recentOrderStatus);
+    },
   },
   actions: {
     async setOpenTablet(context, params) {
@@ -597,6 +641,9 @@ const menu = {
     SET_CATEGORIES: (state, categories) => Vue.set(state, 'categories', categories),
     SET_GOODS: (state, goods) => Vue.set(state, 'goods', goods),
     SET_ALL_CATEGORIES: (state, categories) => Vue.set(state, 'allCategories', categories),
+    SET_MENU_USE: (state, targetCategory) => {
+      state.allCategories[targetCategory.index].T_order_store_menu_use = targetCategory.T_order_store_menu_use;
+    },
   },
   actions: {
     async setCategories({ commit }, params) {
@@ -615,8 +662,10 @@ const menu = {
 
       if (response.data && response.data.data) {
 
-        commit('SET_GOODS', response.data.data);
-        return response.data.data;
+        const data = response.data.data.filter(o => o.T_order_store_good_posYN === 0);
+
+        commit('SET_GOODS', data);
+        return data;
       }
       return false;
     },
@@ -633,13 +682,12 @@ const menu = {
       return response;
     },
     async setAllCategories({ commit }, params) {
-      const url = endpoints.menu.categories;
+      const url = endpoints.menu.getAllCategories;
       const response = await axios.post(url, params);
 
-      if (response.data && response.data.data) {
-        commit('SET_ALL_CATEGORIES', response.data.data);
-
-        return response.data.data;
+      if (response && response.data) {
+        commit('SET_ALL_CATEGORIES', response.data);
+        return response.data;
       }
       return false;
     },
@@ -791,6 +839,12 @@ const popup = {
     setDisconnectModalVisible(state, isDisconnectModal) {
       Vue.set(state, 'isDisconnectModal', isDisconnectModal);
     },
+    closeConfirmModal(state) {
+      state.confirmModal.show = false;
+    },
+    showConfirmModal(state, confirmModal) {
+      state.confirmModal = confirmModal;
+    },
   },
 };
 
@@ -826,6 +880,14 @@ const authProto = {
   },
 };
 
+const confirmModalProto = {
+  show: false,
+  close: () => {},
+  title: '',
+  message: '',
+  confirm: () => {},
+};
+
 const state = {
   order: undefined,
   orders: [],
@@ -849,6 +911,7 @@ const state = {
   allRefreshList: [],
   isDisConnectNetwork: false,
   signboardMessage: '',
+  confirmModal: confirmModalProto,
 };
 
 const mutations = {

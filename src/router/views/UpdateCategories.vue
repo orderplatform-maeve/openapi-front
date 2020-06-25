@@ -6,14 +6,15 @@
   )
     .header {{ ctgItem.name }} (메인 카테고리)
       .toggles
-        button(@click="() => open(subCtgItem.code)") open
-        button(@click="() => close(subCtgItem.code)") close
+        button.btn(@click="() => open(ctgItem.code, ctgItem.useCategory)" :style="getAbleButtonColor(ctgItem.useCategory)") 표시
+        button.btn(@click="() => close(ctgItem.code, !ctgItem.useCategory)" :style="getAbleButtonColor(!ctgItem.useCategory)") 숨김
     .sub-category(
       v-for="subCtgItem in ctgItem.subCategories"
       :key="subCtgItem.code"
-    ) {{ subCtgItem.name }}
-      button(@click="() => open(subCtgItem.code)") open
-      button(@click="() => close(subCtgItem.code)") close
+    ) {{ subCtgItem.name }} (서브 카테고리)
+      .toggles
+        button.btn(@click="() => open(subCtgItem.code, subCtgItem.useCategory)" :style="getAbleButtonColor(subCtgItem.useCategory)") 표시
+        button.btn(@click="() => close(subCtgItem.code, !subCtgItem.useCategory)" :style="getAbleButtonColor(!subCtgItem.useCategory)") 숨김
 </template>
 
 <script>
@@ -26,7 +27,6 @@ export default {
   computed: {
     data() {
       const { getAllCategories } = this.$store.getters;
-      console.log(getAllCategories);
       return getAllCategories;
     },
   },
@@ -48,22 +48,90 @@ export default {
         return [];
       }
     },
-    async open(code) {
+    async open(code, useCategory) {
+      if (useCategory) {
+        return this.$store.commit('pushFlashMessage', '해당 카테고리는 이미 개방이 되었습니다.');
+      }
+
       const fd = new FormData();
       fd.append('store_code', this.$store.state.auth.store.store_code);
       fd.append('good_categroty_code', code);
 
       const res = await this.$store.dispatch('updateCategoryOpne', fd);
-      console.log(res);
+
+      if (res.status === 200) {
+        this.renewCategoriesState(code, true);
+      }
+      this.apiException(res.status);
     },
-    async close(code) {
+    async close(code, useCategory) {
+      if (useCategory) {
+        return this.$store.commit('pushFlashMessage', '해당 카테고리는 이미 닫혀있습니다.');
+      }
+
       const fd = new FormData();
       fd.append('store_code', this.$store.state.auth.store.store_code);
       fd.append('good_categroty_code', code);
 
       const res = await this.$store.dispatch('updateCategoryClose', fd);
-      console.log(res);
+
+      if (res.status === 200) {
+        this.renewCategoriesState(code, false);
+      }
+      this.apiException(res.status);
     },
+    renewCategoriesState(targetCode, visible) {
+      const currentIdx = this.$store.state.allCategories.findIndex((o) => o.T_order_store_menu_code === targetCode);
+
+      const target = this.$store.state.allCategories[currentIdx];
+      if (currentIdx > -1) {
+        const results = {
+          index: currentIdx,
+          T_order_store_menu_use: visible ? 'Y' : 'N',
+          name: target.T_order_store_menu_name,
+          depthStr: JSON.parse(target.T_order_store_menu_depth).includes('1') ? '메인' : '서브',
+        };
+
+        const { disconnected } = this.emmitSocket(results);
+
+        if (disconnected) {
+          this.$store.commit('SET_MENU_USE', results);
+          this.$store.commit('pushFlashMessage', `${results.name} ${results.depthStr} 카테고리 상태가 ${visible ? '개방' : '닫힘'}으로 변경이 되었습니다.`);
+        }
+      }
+    },
+    emmitSocket(target) {
+      const { store_code } = this.$store.state.auth.store;
+      const payload = {
+        store: {
+          code: store_code,
+        },
+        type: '@update/categories/useStatus',
+        target,
+      };
+
+      console.log('payload', payload);
+
+      return this.$socket.emit('orderview', payload);
+    },
+    getAbleButtonColor(isOk) {
+      if (isOk) {
+        return {
+          backgroundColor: 'black',
+          color: 'white',
+        };
+      }
+
+      return {
+        backgroundColor: 'white',
+        color: 'black',
+      };
+    },
+    apiException(status) {
+      if (status !== 200) {
+        return this.$store.commit('pushFlashMessage', '네트워크 상태가 불완전 합니다. 잠시후 시도 해주세요.');
+      }
+    }
   },
 };
 </script>
@@ -79,6 +147,7 @@ export default {
   --c-10: #000000;
 
   .card {
+    margin-top: 16px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -97,10 +166,13 @@ export default {
       width: 100%;
       align-items: center;
       border-bottom: .8px solid var(--c-2);
+      padding-bottom: 8px;
 
       .toggles {
+        width: 220px;
         display: flex;
         align-items: center;
+        justify-content: space-between;
       }
     }
 
@@ -113,7 +185,18 @@ export default {
       font-size: 24px;
       align-items: center;
       padding: 20px;
+
+      .toggles {
+        width: 220px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
     }
   }
+}
+.btn {
+  width: 100px;
+  height: 40px;
 }
 </style>
