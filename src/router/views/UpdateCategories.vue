@@ -6,15 +6,15 @@
   )
     .header {{ ctgItem.name }} (메인 카테고리)
       .toggles
-        button(@click="() => open(ctgItem.code, ctgItem.useCategory)" :style="getAbleButtonColor(ctgItem.useCategory)") open
-        button(@click="() => close(ctgItem.code, !ctgItem.useCategory)" :style="getAbleButtonColor(!ctgItem.useCategory)") close
+        button.btn(@click="() => open(ctgItem.code, ctgItem.useCategory)" :style="getAbleButtonColor(ctgItem.useCategory)") 표시
+        button.btn(@click="() => close(ctgItem.code, !ctgItem.useCategory)" :style="getAbleButtonColor(!ctgItem.useCategory)") 숨김
     .sub-category(
       v-for="subCtgItem in ctgItem.subCategories"
       :key="subCtgItem.code"
     ) {{ subCtgItem.name }} (서브 카테고리)
       .toggles
-        button(@click="() => open(subCtgItem.code, subCtgItem.useCategory)" :style="getAbleButtonColor(subCtgItem.useCategory)") open
-        button(@click="() => close(subCtgItem.code, !subCtgItem.useCategory)" :style="getAbleButtonColor(!subCtgItem.useCategory)") close
+        button.btn(@click="() => open(subCtgItem.code, subCtgItem.useCategory)" :style="getAbleButtonColor(subCtgItem.useCategory)") 표시
+        button.btn(@click="() => close(subCtgItem.code, !subCtgItem.useCategory)" :style="getAbleButtonColor(!subCtgItem.useCategory)") 숨김
 </template>
 
 <script>
@@ -166,10 +166,13 @@ export default {
       width: 100%;
       align-items: center;
       border-bottom: .8px solid var(--c-2);
+      padding-bottom: 8px;
 
       .toggles {
+        width: 220px;
         display: flex;
         align-items: center;
+        justify-content: space-between;
       }
     }
 
@@ -182,7 +185,18 @@ export default {
       font-size: 24px;
       align-items: center;
       padding: 20px;
+
+      .toggles {
+        width: 220px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
     }
   }
+}
+.btn {
+  width: 100px;
+  height: 40px;
 }
 </style>
