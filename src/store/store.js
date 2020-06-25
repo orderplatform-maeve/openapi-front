@@ -54,10 +54,13 @@ const socket = {
           order_view_key: payload.key,
         };
 
+        const target = state.orders.find((o) => o.order_view_key === payload.key);
+
         // console.log('targetOrder', targetOrder);
-        // console.log('SOCKET_orderview', payload);
+        // console.log('SOCKET_orderview', payload, target);
 
         commit('UPDATE_ORDERS', targetOrder);
+        commit('pushFlashMessage', `${target.T_order_order_tablet_number} 테이블 주문이(${target.order_time}) ${targetOrder.commit ? '확인' : '미확인'} 상태로 변경 되었습니다.`);
         return commit('UNSET_ORDER');
       }
 
