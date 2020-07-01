@@ -9,6 +9,7 @@ import {
   PickUpTables,
   UpdateCategories,
   TorderControl,
+  Additional,
 } from '@views';
 
 import paths from './paths';
@@ -74,6 +75,12 @@ const routes = [{
     path: paths.torderControl,
     name: paths.torderControl.replace('/',''),
     component: TorderControl,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: paths.additional,
+    name: paths.additional.replace('/',''),
+    component: Additional,
     meta: { requiresAuth: true },
   }],
 }];

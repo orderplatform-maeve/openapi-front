@@ -6,15 +6,15 @@
   )
     .header {{ ctgItem.name }} (메인 카테고리)
       .toggles
-        button.btn(@click="() => open(ctgItem.code, ctgItem.useCategory)" :style="getAbleButtonColor(ctgItem.useCategory)") 표시
-        button.btn(@click="() => close(ctgItem.code, !ctgItem.useCategory)" :style="getAbleButtonColor(!ctgItem.useCategory)") 숨김
+        .btn(@click="() => open(ctgItem.code, ctgItem.useCategory)" :style="getAbleButtonColor(ctgItem.useCategory)") 표시
+        .btn(@click="() => close(ctgItem.code, !ctgItem.useCategory)" :style="getAbleButtonColor(!ctgItem.useCategory)") 숨김
     .sub-category(
       v-for="subCtgItem in ctgItem.subCategories"
       :key="subCtgItem.code"
     ) {{ subCtgItem.name }} (서브 카테고리)
       .toggles
-        button.btn(@click="() => open(subCtgItem.code, subCtgItem.useCategory)" :style="getAbleButtonColor(subCtgItem.useCategory)") 표시
-        button.btn(@click="() => close(subCtgItem.code, !subCtgItem.useCategory)" :style="getAbleButtonColor(!subCtgItem.useCategory)") 숨김
+        .btn(@click="() => open(subCtgItem.code, subCtgItem.useCategory)" :style="getAbleButtonColor(subCtgItem.useCategory)") 표시
+        .btn(@click="() => close(subCtgItem.code, !subCtgItem.useCategory)" :style="getAbleButtonColor(!subCtgItem.useCategory)") 숨김
 </template>
 
 <script>
@@ -145,8 +145,11 @@ export default {
   --c-8: #fafafa;
   --c-9: #efefef;
   --c-10: #000000;
+  overflow-y: auto;
 
   .card {
+    flex-grow: 1;
+    flex-shrink: 0;
     margin-top: 16px;
     display: flex;
     flex-direction: column;
@@ -156,9 +159,11 @@ export default {
     border-radius: 8px;
     color: var(--c-2);
     padding: 16px;
-    box-sizing: border-box;
+    height: auto;
 
     .header {
+      flex-grow: 1;
+      height: 50px;
       display: flex;
       font-weight: 900;
       font-size: 32px;
@@ -177,14 +182,16 @@ export default {
     }
 
     .sub-category {
+      height: 110px;
       display: flex;
       flex-direction: column;
-      justify-content: center;
+      justify-content: space-around;
       margin: 4px;
       font-weight: 900;
       font-size: 24px;
       align-items: center;
       padding: 20px;
+      flex-grow: 1;
 
       .toggles {
         width: 220px;
@@ -198,5 +205,13 @@ export default {
 .btn {
   width: 100px;
   height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 16px;
+  font-weight: 900;
+  margin-top: 8px;
+  color: var(--c-9);
+  background-color: var(--c-2);
 }
 </style>
