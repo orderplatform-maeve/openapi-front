@@ -9,4 +9,5 @@ export default {
   pickUpTables: '/pickUpTables',
   updateCategories: '/updateCategories',
   torderControl: '/torderControl',
+  additional: '/additional',
 };

@@ -120,6 +120,8 @@ export default {
 
       const { disconnected } = this.$socket.emit('any');
 
+      console.log(disconnected);
+
       if (disconnected) {
         const targetOrder = {
           commit: !order.commit,
