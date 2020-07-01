@@ -89,18 +89,15 @@ export default {
         start: 0,
         end: 0,
       },
-      confirmModal: {
-        show: false,
-        close: () => {},
-        title: '',
-        message: '',
-      },
       paths,
       logo: 'https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/logo/torder_color_white.png',
       version,
     };
   },
   computed: {
+    confirmModal() {
+      return this.$store.state.confirmModal;
+    },
     uCode() {
       return this.$store.state.uCode;
     },
@@ -305,49 +302,97 @@ export default {
       location.replace('/'); // cache 파일을 로드하지 않는다.
     },
     openTabletScreen() {
-      this.confirmModal.show = true;
-      this.confirmModal.close = this.closeConfirmModal;
-      this.confirmModal.title = '태블릿 열기';
-      this.confirmModal.message = '모든 태블릿의 화면을 열어요';
-      this.confirmModal.confirm = this.reqOpenTablet;
+      if (!this.$store.state.device.serviceStatus) {
+        return this.$store.commit('pushFlashMessage', '이미 태블릿 열기 상태로 되어있습니다.');
+      }
+
+      const confirmModal = {};
+
+      confirmModal.show = true;
+      confirmModal.close = this.closeConfirmModal;
+      confirmModal.title = '태블릿 열기';
+      confirmModal.message = '모든 태블릿의 화면을 열어요';
+      confirmModal.confirm = this.reqOpenTablet;
+
+      this.$store.commit('showConfirmModal', confirmModal);
     },
     closeTabletScreen() {
-      this.confirmModal.show = true;
-      this.confirmModal.close = this.closeConfirmModal;
-      this.confirmModal.title = '태블릿 닫기';
-      this.confirmModal.message = '모든 태블릿의 화면을 닫아요';
-      this.confirmModal.confirm = this.reqCloseTablet;
+      if (this.$store.state.device.serviceStatus) {
+        return this.$store.commit('pushFlashMessage', '이미 태블릿 닫기 상태로 되어있습니다.');
+      }
+
+      const confirmModal = {};
+
+      confirmModal.show = true;
+      confirmModal.close = this.closeConfirmModal;
+      confirmModal.title = '태블릿 닫기';
+      confirmModal.message = '모든 태블릿의 화면을 닫아요';
+      confirmModal.confirm = this.reqCloseTablet;
+
+      this.$store.commit('showConfirmModal', confirmModal);
     },
     agreeOrder() {
-      this.confirmModal.show = true;
-      this.confirmModal.close = this.closeConfirmModal;
-      this.confirmModal.title = '주문 받기';
-      this.confirmModal.message = '태블릿에서 주문을 받아요';
-      this.confirmModal.confirm = this.reqAgreeOrder;
+      if (!this.$store.state.device.orderStatus) {
+        return this.$store.commit('pushFlashMessage', '이미 주문 받기 상태로 되어있습니다.');
+      }
+
+      const confirmModal = {};
+
+      confirmModal.show = true;
+      confirmModal.close = this.closeConfirmModal;
+      confirmModal.title = '주문 받기';
+      confirmModal.message = '태블릿에서 주문을 받아요';
+      confirmModal.confirm = this.reqAgreeOrder;
+
+      this.$store.commit('showConfirmModal', confirmModal);
     },
     rejectOrder() {
-      this.confirmModal.show = true;
-      this.confirmModal.close = this.closeConfirmModal;
-      this.confirmModal.title = '주문 중단';
-      this.confirmModal.message = '태블릿을 메뉴판으로만 사용하고 주문은 안돼요';
-      this.confirmModal.confirm = this.reqRejectOrder;
+      if (this.$store.state.device.orderStatus) {
+        return this.$store.commit('pushFlashMessage', '이미 주문 중단 상태로 되어있습니다.');
+      }
+
+      const confirmModal = {};
+
+      confirmModal.show = true;
+      confirmModal.close = this.closeConfirmModal;
+      confirmModal.title = '주문 중단';
+      confirmModal.message = '태블릿을 메뉴판으로만 사용하고 주문은 안돼요';
+      confirmModal.confirm = this.reqRejectOrder;
+
+      this.$store.commit('showConfirmModal', confirmModal);
     },
     showRecentOrder() {
-      this.confirmModal.show = true;
-      this.confirmModal.close = this.closeConfirmModal;
-      this.confirmModal.title = '주문 내역 표시';
-      this.confirmModal.message = '태블릿에서 주문 내역이 나타납니다';
-      this.confirmModal.confirm = this.reqShowOrder;
+      if (!this.$store.state.device.recentOrderStatus) {
+        return this.$store.commit('pushFlashMessage', '이미 주문 내역 표시 상태로 되어있습니다.');
+      }
+
+      const confirmModal = {};
+
+      confirmModal.show = true;
+      confirmModal.close = this.closeConfirmModal;
+      confirmModal.title = '주문 내역 표시';
+      confirmModal.message = '태블릿에서 주문 내역이 나타납니다';
+      confirmModal.confirm = this.reqShowOrder;
+
+      this.$store.commit('showConfirmModal', confirmModal);
     },
     hideRecentOrder() {
-      this.confirmModal.show = true;
-      this.confirmModal.close = this.closeConfirmModal;
-      this.confirmModal.title = '주문 내역 숨김';
-      this.confirmModal.message = '태블릿에서 주문 내역이 숨겨집니다';
-      this.confirmModal.confirm = this.reqHideOrder;
+      if (this.$store.state.device.recentOrderStatus) {
+        return this.$store.commit('pushFlashMessage', '이미 주문 내역 숨김 상태로 되어있습니다.');
+      }
+
+      const confirmModal = {};
+
+      confirmModal.show = true;
+      confirmModal.close = this.closeConfirmModal;
+      confirmModal.title = '주문 내역 숨김';
+      confirmModal.message = '태블릿에서 주문 내역이 숨겨집니다';
+      confirmModal.confirm = this.reqHideOrder;
+
+      this.$store.commit('showConfirmModal', confirmModal);
     },
     closeConfirmModal() {
-      this.confirmModal.show = false;
+      this.$store.commit('closeConfirmModal');
     },
     async reqOpenTablet() {
       const fd = new FormData();
@@ -356,7 +401,14 @@ export default {
       const response = await this.$store.dispatch('setOpenTablet', fd);
 
       if (response) {
-        this.device.serviceStatus = 0;
+        const value = 0;
+        const { disconnected } = this.emitServiceStatus(value);
+
+        if (disconnected) {
+          this.$store.commit('setDeviceServiceStatus', value);
+          this.$store.commit('pushFlashMessage', '태블릿 화면 열기 상태로 변경 되었습니다.');
+        }
+
         this.closeConfirmModal();
       }
     },
@@ -367,7 +419,14 @@ export default {
       const response = await this.$store.dispatch('setCloseTablet', fd);
 
       if (response) {
-        this.device.serviceStatus = 1;
+        const value = 1;
+        const { disconnected } = this.emitServiceStatus(value);
+
+        if (disconnected) {
+          this.$store.commit('setDeviceServiceStatus', value);
+          this.$store.commit('pushFlashMessage', '태블릿 화면 닫기 상태로 변경 되었습니다.');
+        }
+
         this.closeConfirmModal();
       }
     },
@@ -377,7 +436,14 @@ export default {
       const response = await this.$store.dispatch('setAgreeOrder', fd);
 
       if (response) {
-        this.device.orderStatus = 0;
+        const value = 0;
+        const { disconnected } = this.emitAgreeOrder(value);
+
+        if (disconnected) {
+          this.$store.commit('setDeviceOrderStatus', value);
+          this.$store.commit('pushFlashMessage', '태블릿 주문 받기 상태로 변경 되었습니다.');
+        }
+
         this.closeConfirmModal();
       }
     },
@@ -387,7 +453,14 @@ export default {
       const response = await this.$store.dispatch('setRejectOrder', fd);
 
       if (response) {
-        this.device.orderStatus = 1;
+        const value = 1;
+        const { disconnected } = this.emitAgreeOrder(value);
+
+        if (disconnected) {
+          this.$store.commit('setDeviceOrderStatus', value);
+          this.$store.commit('pushFlashMessage', '태블릿 주문 중단 상태로 변경 되었습니다.');
+        }
+
         this.closeConfirmModal();
       }
     },
@@ -397,7 +470,14 @@ export default {
       const response = await this.$store.dispatch('setShowRecentOrder', fd);
 
       if (response) {
-        this.device.recentOrderStatus = 0;
+        const value = 0;
+        const { disconnected } = this.emitRecentOrder(value);
+
+        if (disconnected) {
+          this.$store.commit('setDeviceRecentOrderStatus', value);
+          this.$store.commit('pushFlashMessage', '태블릿 주문 내역 표시 상태로 변경 되었습니다.');
+        }
+
         this.closeConfirmModal();
       }
     },
@@ -407,9 +487,49 @@ export default {
       const response = await this.$store.dispatch('setCloseRecentOrder', fd);
 
       if (response) {
-        this.device.recentOrderStatus = 1;
+        const value = 1;
+        const { disconnected } = this.emitRecentOrder(value);
+
+        if (disconnected) {
+          this.$store.commit('setDeviceRecentOrderStatus', value);
+          this.$store.commit('pushFlashMessage', '태블릿 주문 내역 숨김 상태로 변경 되었습니다.');
+        }
+
         this.closeConfirmModal();
       }
+    },
+    emitServiceStatus(value) {
+      const { store_code } = this.$store.state.auth.store;
+      const payload = {
+        store: {
+          code: store_code,
+        },
+        type: '@update/device/serviceStatus',
+        value,
+      };
+      return this.$socket.emit('orderview', payload);
+    },
+    emitAgreeOrder(value) {
+      const { store_code } = this.$store.state.auth.store;
+      const payload = {
+        store: {
+          code: store_code,
+        },
+        type: '@update/device/agreeOrder',
+        value,
+      };
+      return this.$socket.emit('orderview', payload);
+    },
+    emitRecentOrder(value) {
+      const { store_code } = this.$store.state.auth.store;
+      const payload = {
+        store: {
+          code: store_code,
+        },
+        type: '@update/device/recentOrder',
+        value,
+      };
+      return this.$socket.emit('orderview', payload);
     },
     getOnTabletMonitorClass(device) {
       const active = !this.vaildServiceStatus(device);
