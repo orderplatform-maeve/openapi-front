@@ -35,7 +35,8 @@
         img.logo(:src="logo")
         .store_name {{storeName}}
         router-link.button(v-if="visibleOrderButton" :to="paths.order") 주문 보기
-        router-link.button(v-if="visibleOrderButton" :to="paths.order") 추가 기능
+        router-link.button(v-if="visibleOrderButton" :to="paths.additional") 추가 기능
+          <br> (테스트)
 
         //- router-link.button(v-if="visibleOrderButton" :to="paths.products") 상품 관리
         //-   <br> (테스트)

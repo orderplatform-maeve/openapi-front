@@ -7,3 +7,4 @@ export { default as Products } from './Products';
 export { default as PickUpTables } from './PickUpTables';
 export { default as UpdateCategories } from './UpdateCategories';
 export { default as TorderControl } from './TorderControl';
+export { default as Additional } from './Additional';
