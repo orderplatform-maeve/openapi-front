@@ -57,7 +57,7 @@ export default {
       fd.append('store_code', this.$store.state.auth.store.store_code);
       fd.append('good_categroty_code', code);
 
-      const res = await this.$store.dispatch('updateCategoryOpne', fd);
+      const res = await this.$store.dispatch('updateCategoryOpen', fd);
 
       if (res.status === 200) {
         this.renewCategoriesState(code, true);

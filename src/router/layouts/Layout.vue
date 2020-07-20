@@ -231,7 +231,7 @@ export default {
             store: {
               code: store_code,
             },
-            type: '@reqeust/ordering/location/table',
+            type: '@request/ordering/location/table',
             tableId: this.$route.params.id,
             uCode: this.$store.state.uCode,
             MACAddr: this.$store.state.MACAddr,
@@ -641,13 +641,13 @@ export default {
         const term = lap < 1;
 
         if (term) {
-          // // console.log('term', new Date());
+          console.log('term', new Date());
           this.beep();
         }
       }, 1000);
     },
     onCloseAllRefreshModal() {
-      this.$store.commit('CLOSE_ALL_REFRES_MODAL');
+      this.$store.commit('CLOSE_ALL_REFRESH_MODAL');
       this.$store.commit('SET_ALL_REFRESH_LIST', []);
     },
     getOnTabletRecentOrderClass(device) {

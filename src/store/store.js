@@ -93,7 +93,7 @@ const socket = {
                 const { store_code } = state.auth.store;
 
                 if (state.visibleAllRefreshModal) {
-                  // commit('CLOSE_ALL_REFRES_MODAL');
+                  // commit('CLOSE_ALL_REFRESH_MODAL');
                   Vue.$socket.emit('orderview', {
                     store: {
                       code: store_code,
@@ -155,15 +155,15 @@ const socket = {
 
       if (payload?.type === '@show/allRefreshModal') {
         // // console.log('@show/allRefreshModal', payload.allRefreshList);
-        commit('SHOW_ALL_REFRES_MODAL');
+        commit('SHOW_ALL_REFRESH_MODAL');
         commit('SET_ALL_REFRESH_LIST', payload.allRefreshList);
       }
 
       if (payload?.type === '@close/allRefreshModal') {
-        commit('CLOSE_ALL_REFRES_MODAL');
+        commit('CLOSE_ALL_REFRESH_MODAL');
       }
 
-      if (payload?.type === '@reqeust/ordering/location/table') {
+      if (payload?.type === '@request/ordering/location/table') {
         // // console.log('object', state.tables);
         const findTargetIdx = state.tables.findIndex((o) => o.Ta_id === payload.tableId);
 
@@ -570,8 +570,8 @@ const table = {
   mutations: {
     SET_TABLES: (state, tables) => Vue.set(state, 'tables', tables),
     SET_TABLE_CART_LIST: (state, cartList) => Vue.set(state, 'cartList', cartList),
-    SHOW_ALL_REFRES_MODAL: (state) => Vue.set(state, 'visibleAllRefreshModal', true),
-    CLOSE_ALL_REFRES_MODAL: (state) => Vue.set(state, 'visibleAllRefreshModal', false),
+    SHOW_ALL_REFRESH_MODAL: (state) => Vue.set(state, 'visibleAllRefreshModal', true),
+    CLOSE_ALL_REFRESH_MODAL: (state) => Vue.set(state, 'visibleAllRefreshModal', false),
     SET_ALL_REFRESH_LIST: (state, allRefreshList) => Vue.set(state, 'allRefreshList', allRefreshList),
   },
   actions: {
@@ -656,7 +656,7 @@ const menu = {
       }
       return false;
     },
-    async setGooods({ commit }, params) {
+    async setGoods({ commit }, params) {
       const url = endpoints.menu.getGoodsList;
       const response = await axios.post(url, params);
 
@@ -669,7 +669,7 @@ const menu = {
       }
       return false;
     },
-    async updateCategoryOpne(context, params) {
+    async updateCategoryOpen(context, params) {
       const url = endpoints.menu.updateCategoryOpen;
       const response = await axios.post(url, params);
 
