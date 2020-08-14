@@ -131,7 +131,7 @@ export default {
         };
 
         this.$store.commit('UPDATE_ORDERS', targetOrder);
-        this.$store.commit('pushFlashMessage', `${targetOrder.T_order_order_tablet_number} 테이블 주문이(${targetOrder.order_time}) ${targetOrder.commit ? '확인' : '미확인'} 상태로 변경 되었습니다.`);
+        // this.$store.commit('pushFlashMessage', `${targetOrder.T_order_order_tablet_number} 테이블 주문이(${targetOrder.order_time}) ${targetOrder.commit ? '확인' : '미확인'} 상태로 변경 되었습니다.`);
       }
 
       try {
