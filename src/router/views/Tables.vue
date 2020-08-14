@@ -89,7 +89,7 @@ export default {
 
       // // console.log('preparingAllRefeshList', preparingAllRefeshList);
       // this.$store.commit('SET_ALL_REFRESH_LIST', preparingAllRefeshList);
-      // this.$store.commit('SHOW_ALL_REFRES_MODAL');
+      // this.$store.commit('SHOW_ALL_REFRESH_MODAL');
 
       const nowSoketInfo = this.$socket.emit('orderview', {
         store: {

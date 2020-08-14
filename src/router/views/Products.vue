@@ -144,7 +144,7 @@ export default {
       return noUse ? '메뉴 재개' : '메뉴 중지';
     },
     getSoldoutStatusText(soldout) {
-      return soldout ? '메뉴 품절 취소' : '매뉴 품절';
+      return soldout ? '메뉴 품절 취소' : '메뉴 품절';
     },
     getBestStatusText(best) {
       return best ? '베스트 취소' : '베스트 적용';
@@ -303,7 +303,7 @@ export default {
       const fd = new FormData();
       fd.append('store_code', this.$store.state.auth.store.store_code);
       const ctgRes = await this.$store.dispatch('setCategories', fd);
-      const goodsRes = await this.$store.dispatch('setGooods', fd);
+      const goodsRes = await this.$store.dispatch('setGoods', fd);
 
       if (ctgRes && goodsRes) {
         setTimeout(() => {

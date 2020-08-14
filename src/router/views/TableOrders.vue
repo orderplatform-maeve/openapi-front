@@ -130,7 +130,7 @@ export default {
         store: {
           code: store_code,
         },
-        type: '@reqeust/ordering/location/table',
+        type: '@request/ordering/location/table',
         tableId: this.$route.params.id,
         uCode: this.$store.state.uCode,
         MACAddr: this.$store.state.MACAddr,
@@ -212,7 +212,7 @@ export default {
       fd.append('store_code', store_code);
 
       const categories = await this.$store.dispatch('setCategories', fd);
-      const goods = await this.$store.dispatch('setGooods', fd);
+      const goods = await this.$store.dispatch('setGoods', fd);
       // // console.log('categories', categories, goods);
 
       const noData = !categories || !goods;
@@ -488,7 +488,7 @@ export default {
             store: {
               code: store_code,
             },
-            type: '@reqeust/ordering/location/table',
+            type: '@request/ordering/location/table',
             tableId: this.$route.params.id,
             uCode: this.$store.state.uCode,
             MACAddr: this.$store.state.MACAddr,

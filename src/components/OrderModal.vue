@@ -118,9 +118,9 @@ export default {
       const auth = this.$store.state.auth;
       this.isConfirm = true;
 
-      const { disconnected } = this.$socket.emit('any');
+      const { disconnected } = this.$socket.connect();
 
-      console.log(disconnected);
+      console.log('disconnected', disconnected);
 
       if (disconnected) {
         const targetOrder = {
@@ -131,13 +131,27 @@ export default {
         };
 
         this.$store.commit('UPDATE_ORDERS', targetOrder);
-        this.$store.commit('pushFlashMessage', `${targetOrder.T_order_order_tablet_number} 테이블 주문이(${targetOrder.order_time}) ${targetOrder.commit ? '확인' : '미확인'} 상태로 변경 되었습니다.`);
+        // this.$store.commit('pushFlashMessage', `${targetOrder.T_order_order_tablet_number} 테이블 주문이(${targetOrder.order_time}) ${targetOrder.commit ? '확인' : '미확인'} 상태로 변경 되었습니다.`);
       }
 
       try {
         // eslint-disable-next-line no-unused-vars
         const { data } = await this.$store.dispatch('commitOrder', { auth, order });
-        console.log(data);
+        console.log('commitOrder', data);
+
+        if (!data.result) {
+          console.log('주문 확인 응답값 실패');
+
+          const targetOrder = {
+            commit: !order.commit,
+            order_view_key: order.order_view_key,
+            T_order_order_tablet_number: order.T_order_order_tablet_number,
+            order_time: order.order_time,
+          };
+
+          this.$store.commit('UPDATE_ORDERS', targetOrder);
+        }
+
         this.closeOrder();
         this.isConfirm = false;
       } catch (error) {
