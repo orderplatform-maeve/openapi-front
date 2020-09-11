@@ -10,6 +10,7 @@ import {
   UpdateCategories,
   TorderControl,
   Additional,
+  NewProducts,
 } from '@views';
 
 import paths from './paths';
@@ -81,6 +82,12 @@ const routes = [{
     path: paths.additional,
     name: paths.additional.replace('/',''),
     component: Additional,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: paths.newProducts,
+    name: paths.newProducts.replace('/',''),
+    component: NewProducts,
     meta: { requiresAuth: true },
   }],
 }];

@@ -3,6 +3,7 @@ import { isDemo } from '@utils/constants';
 const DEMO_URL = 'http://demo.torder.co.kr';
 const REST_URL = 'http://rest.torder.co.kr';
 const ADMIN_URL = 'http://admin.torder.co.kr';
+const API_URL = 'http://api.torder.co.kr';
 
 const SERVER_URL = isDemo ? DEMO_URL : REST_URL;
 
@@ -34,6 +35,7 @@ const endpoints = {
     updateCategoryOpen: `${ADMIN_URL}/category/update_categroty_open`,
     updateCategoryClose: `${ADMIN_URL}/category/update_categroty_close`,
     getAllCategories: `${ADMIN_URL}/category/get_all_categorys`,
+    getMenuConfig: `${API_URL}/tablet_data/init`,
   },
   shop: {
     init: `${SERVER_URL}/shop/init`,

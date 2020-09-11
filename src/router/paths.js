@@ -10,4 +10,5 @@ export default {
   updateCategories: '/updateCategories',
   torderControl: '/torderControl',
   additional: '/additional',
+  newProducts: '/newProducts',
 };

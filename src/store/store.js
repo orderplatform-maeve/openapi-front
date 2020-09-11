@@ -6,6 +6,7 @@ import querystring from 'querystring';
 import {
   vaildShopCode,
   getCategories,
+  getNewCategories,
 } from './store.helper';
 import { isEmpty } from '@utils/CheckedType';
 
@@ -644,6 +645,7 @@ const menu = {
     SET_MENU_USE: (state, targetCategory) => {
       state.allCategories[targetCategory.index].T_order_store_menu_use = targetCategory.T_order_store_menu_use;
     },
+    SET_MENU_CONFIG: (state, config) => Vue.set(state, 'menuConfig', config),
   },
   actions: {
     async setCategories({ commit }, params) {
@@ -688,6 +690,21 @@ const menu = {
       if (response && response.data) {
         commit('SET_ALL_CATEGORIES', response.data);
         return response.data;
+      }
+      return false;
+    },
+    async setMenuConfig({ commit }, params) {
+      const config = {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      };
+      const url = endpoints.menu.getMenuConfig;
+      const response = await axios.post(url, params, config);
+      console.log('set', response, response?.data?.result);
+
+      if (response?.data?.result) {
+        const { data } = response;
+        commit('SET_MENU_CONFIG', data);
+        return data;
       }
       return false;
     },
@@ -780,6 +797,100 @@ const menu = {
     getAllCategories(state) {
       return getCategories(state.allCategories);
     },
+
+    getNewCategories(state) {
+      try {
+        const defineCtgs = getNewCategories(state.menuConfig.categorys);
+        return defineCtgs;
+      } catch (error) {
+        return [];
+      }
+    },
+    processNewGoods(state) {
+      try {
+        return state.goods.map( p => {
+          let categories = p.T_order_store_good_category;
+
+          try {
+            if (typeof categories === "string") {
+              categories = JSON.parse(categories);
+            }
+          } catch(e) {
+            // console.log(e);
+          }
+
+          if (p.T_order_store_good_image) {
+            imagePreload(p.T_order_store_good_image);
+          }
+
+          return {
+            categories,
+            code: p.T_order_store_good_code,
+            price: p.T_order_store_good_defualt_price,
+            displayName: p.T_order_store_good_display_name,
+            displayNameOneLine: p.T_order_store_good_display_name.replace(/\/\//gi, " "),
+            displayNameNewLine: p.T_order_store_good_display_name.replace(/\/\//gi, "<br/>"),
+            image: p.T_order_store_good_image,
+            name: p.T_order_store_good_name,
+            names: p.T_order_store_good_name_array,
+            sortNo: p.T_order_store_good_sort_number,
+            updated_dt: p.T_order_store_good_update_date,
+            noUse: p.T_order_store_good_use,
+            keyword: p.T_order_store_keyword,
+            hideInCart: p.T_order_store_non_show_cart,
+            posCode: p.T_order_store_pos_code,
+            options: p.option_group,
+            description: p.T_order_store_good_html,
+            descriptionFlag: p.T_order_store_good_html_flag.toLowerCase(),
+            openDetail: p.T_order_store_good_detail_open,
+            reviews: p.menuRatingList,
+            soldout: p.T_order_store_good_soldout,
+            best: p.type_best,
+            hit: p.type_hit,
+            md: p.type_md,
+            sale: p.type_sale,
+          };
+        }).sort((a, b) => a.sortNo - b.sortNo);
+
+      } catch (error) {
+        console.log(error);
+        return [];
+      }
+    },
+    getNewCategoriesGoods(state, getters) {
+      const { processNewGoods, getNewCategories } = getters;
+
+      const getSubCategoryItem = (subCategoryItem, products) => {
+        const goods = subCategoryItem.goods.map((o) => {
+          const product = products.filter((item) => o.code === item.code)[0];
+          const defineProduct = {
+            ...product,
+            sortNo: o.sort,
+          };
+          return defineProduct;
+        });
+
+        return {
+          ...subCategoryItem,
+          goods,
+        };
+      };
+
+      const getCategoryItem = (categoryItem) => {
+        const getSubCategoryObj = (subCategoryItem) => getSubCategoryItem(subCategoryItem, processNewGoods);
+        const subCategories = categoryItem.subCategories.map(getSubCategoryObj);
+        return {
+          ...categoryItem,
+          subCategories,
+        };
+      };
+
+      const results = getNewCategories.map(getCategoryItem);
+      return results;
+    },
+
+
+
   },
 };
 
