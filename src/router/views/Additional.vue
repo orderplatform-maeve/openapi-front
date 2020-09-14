@@ -1,13 +1,15 @@
 <template lang="pug">
 #orderview
-  router-link.button-added(v-if="visibleOrderButton" :to="paths.products") 상품 관리
+  //- router-link.button-added(v-if="visibleOrderButton" :to="paths.products") 상품 관리(구)
+  //-   <br> (테스트)
+  router-link.button-added(v-if="visibleOrderButton" :to="paths.newProducts") 상품 관리(신)
     <br> (테스트)
   router-link.button-added(v-if="visibleOrderButton" :to="paths.tables") 테이블 주문
     <br> (테스트)
   router-link.button-added(v-if="visibleOrderButton" :to="paths.pickUpTables") 픽업 요청
     <br> (테스트)
-  //-   router-link.button(v-if="visibleOrderButton" :to="paths.updateCategories") 분류 관리
-  //-     <br> (테스트)
+  //- router-link.button-added(v-if="visibleOrderButton" :to="paths.updateCategories") 분류 관리
+  //-   <br> (테스트)
 </template>
 
 <script>
