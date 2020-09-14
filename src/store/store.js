@@ -800,15 +800,15 @@ const menu = {
 
     getNewCategories(state) {
       try {
-        const defineCtgs = getNewCategories(state.menuConfig.categorys);
-        return defineCtgs;
+        const defineCategories = getNewCategories(state.menuConfig.categorys);
+        return defineCategories;
       } catch (error) {
         return [];
       }
     },
     processNewGoods(state) {
       try {
-        return state.goods.map( p => {
+        return state.menuConfig.goods.map( p => {
           let categories = p.T_order_store_good_category;
 
           try {
@@ -849,26 +849,29 @@ const menu = {
             hit: p.type_hit,
             md: p.type_md,
             sale: p.type_sale,
+            posDeleteStatus: p.T_order_store_good_posYN === "1",
           };
         }).sort((a, b) => a.sortNo - b.sortNo);
 
       } catch (error) {
-        console.log(error);
+        // console.log(error);
         return [];
       }
     },
     getNewCategoriesGoods(state, getters) {
       const { processNewGoods, getNewCategories } = getters;
 
-      const getSubCategoryItem = (subCategoryItem, products) => {
-        const goods = subCategoryItem.goods.map((o) => {
-          const product = products.filter((item) => o.code === item.code)[0];
+      const getSubCategoryItem = (subCategoryItem) => {
+        const defineItems = subCategoryItem.goods.map((o) => {
+          const product = processNewGoods.filter((item) => String(o.code) === String(item.code) && !item.posDeleteStatus)[0];
           const defineProduct = {
             ...product,
             sortNo: o.sort,
           };
           return defineProduct;
         });
+
+        const goods = defineItems.filter(o => o.code);
 
         return {
           ...subCategoryItem,
@@ -877,7 +880,7 @@ const menu = {
       };
 
       const getCategoryItem = (categoryItem) => {
-        const getSubCategoryObj = (subCategoryItem) => getSubCategoryItem(subCategoryItem, processNewGoods);
+        const getSubCategoryObj = (subCategoryItem) => getSubCategoryItem(subCategoryItem);
         const subCategories = categoryItem.subCategories.map(getSubCategoryObj);
         return {
           ...categoryItem,
@@ -888,9 +891,6 @@ const menu = {
       const results = getNewCategories.map(getCategoryItem);
       return results;
     },
-
-
-
   },
 };
 
