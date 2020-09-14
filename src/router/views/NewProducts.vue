@@ -305,16 +305,16 @@ export default {
 
       const config = await this.$store.dispatch('setMenuConfig', fd);
 
-      const { categorys } = config;
+      const { categorys, goods } = config;
       const categories = categorys;
 
       // console.log( goods[0]);
       // const ctgRes = await this.$store.dispatch('setCategories', fd);
-      const goodsRes = await this.$store.dispatch('setGoods', fd);
+      // const goodsRes = await this.$store.dispatch('setGoods', fd);
       // console.log(ctgRes[0], categories[0]);
       // console.log(goodsRes[0], goods[0]);
 
-      if (categories && goodsRes) {
+      if (categories && goods) {
         setTimeout(() => {
           this.isLoading = false;
         }, 0);

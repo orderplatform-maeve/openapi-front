@@ -704,6 +704,7 @@ const menu = {
       if (response?.data?.result) {
         const { data } = response;
         commit('SET_MENU_CONFIG', data);
+        commit('SET_GOODS', data.goods);
         return data;
       }
       return false;
@@ -808,7 +809,7 @@ const menu = {
     },
     processNewGoods(state) {
       try {
-        return state.menuConfig.goods.map( p => {
+        return state.goods.map( p => {
           let categories = p.T_order_store_good_category;
 
           try {
