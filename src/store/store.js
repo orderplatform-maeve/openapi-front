@@ -216,6 +216,26 @@ const socket = {
           commit('pushFlashMessage', '태블릿 주문 내역 표시 상태로 변경 되었습니다.');
         }
       }
+
+      if (payload?.type === 'suspendSale') {
+        // console.log('suspend', payload);
+        const findTargetIdx = state.tables.findIndex((o) => o.Ta_id === payload.table.code);
+        const { suspendSale } = payload;
+        const orderStatus = !suspendSale;
+
+        const deepCopyArr = JSON.parse(JSON.stringify(state.tables));
+
+        const beforeOrderStatus = deepCopyArr[findTargetIdx].orderStatus;
+
+        if (orderStatus !== beforeOrderStatus) {
+          deepCopyArr[findTargetIdx] = {
+            ...deepCopyArr[findTargetIdx],
+            orderStatus,
+          };
+
+          commit('SET_TABLES', deepCopyArr);
+        }
+      }
     },
     SOCKET_disconnect({ commit }) {
 
