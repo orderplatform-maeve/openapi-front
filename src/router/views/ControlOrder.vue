@@ -35,8 +35,19 @@ export default {
       return orderStatus ? 'connect': 'disconnected';
     },
     async openTableOrders(table) {
-      console.log(table.Ta_id);
+      console.log(table);
       const tables = JSON.parse(JSON.stringify(this.tables));
+
+      this.$socket.emit('event', {
+        store: {
+          code: this.$store.state.auth.store.store_code,
+        },
+        table: {
+          code: table.Ta_id,
+        },
+        type: 'setSuspendSale',
+        suspendSale: Number(table.orderStatus),
+      }, (ask) => console.log(ask));
 
       const defineTabels = tables.map((o) => {
         if (o.Ta_id === table.Ta_id) {
