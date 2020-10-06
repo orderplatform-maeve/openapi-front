@@ -584,7 +584,7 @@ const table = {
       const response = await axios.get(url);
 
       if (response.data && response.data.data) {
-        const results = response.data.data.map((item) => ({ ...item, ordering: false }));
+        const results = response.data.data.map((item) => ({ ...item, ordering: false, orderStatus: true, }));
         commit('SET_TABLES', results);
       }
     },
