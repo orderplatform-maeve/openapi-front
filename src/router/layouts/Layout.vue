@@ -246,7 +246,19 @@ export default {
     async initialized() {
       try {
         const params = { shop_code: this.$store.state.auth.store.store_code };
-        await this.$store.dispatch('setTables', params);
+        const tables = await this.$store.dispatch('setTables', params);
+
+        tables.forEach((table) => {
+          this.$socket.emit('event', {
+            store: {
+              code: this.$store.state.auth.store.store_code,
+            },
+            table: {
+              code: table.Ta_id,
+            },
+            type: 'getSuspendSale',
+          });
+        });
 
       } catch (error) {
         // console.log(error);

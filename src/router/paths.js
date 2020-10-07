@@ -11,4 +11,5 @@ export default {
   torderControl: '/torderControl',
   additional: '/additional',
   newProducts: '/newProducts',
+  controlOrder: '/controlOrder',
 };

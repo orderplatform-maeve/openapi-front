@@ -9,3 +9,4 @@ export { default as UpdateCategories } from './UpdateCategories';
 export { default as TorderControl } from './TorderControl';
 export { default as Additional } from './Additional';
 export { default as NewProducts } from './NewProducts';
+export { default as ControlOrder } from './ControlOrder';
