@@ -246,9 +246,9 @@ export default {
     async initialized() {
       try {
         const params = { shop_code: this.$store.state.auth.store.store_code };
-        await this.$store.dispatch('setTables', params);
+        const tables = await this.$store.dispatch('setTables', params);
 
-        this.$store.state.tables.forEach((table) => {
+        tables.forEach((table) => {
           this.$socket.emit('event', {
             store: {
               code: this.$store.state.auth.store.store_code,
