@@ -218,7 +218,7 @@ const socket = {
       }
 
       if (payload?.type === 'suspendSale') {
-        // console.log('suspend', payload);
+        // console.log('suspendSale', payload);
         const findTargetIdx = state.tables.findIndex((o) => o.Ta_id === payload.table.code);
         const { suspendSale } = payload;
         const orderStatus = !suspendSale;
