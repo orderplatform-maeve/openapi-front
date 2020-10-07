@@ -248,6 +248,18 @@ export default {
         const params = { shop_code: this.$store.state.auth.store.store_code };
         await this.$store.dispatch('setTables', params);
 
+        this.$store.state.tables.forEach((table) => {
+          this.$socket.emit('event', {
+            store: {
+              code: this.$store.state.auth.store.store_code,
+            },
+            table: {
+              code: table.Ta_id,
+            },
+            type: 'getSuspendSale',
+          });
+        });
+
       } catch (error) {
         // console.log(error);
       }
