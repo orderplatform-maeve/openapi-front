@@ -45,7 +45,7 @@ export default {
       if (target === idx) return 'button-red';
       return '';
     },
-    setLastOrder() {
+    async setLastOrder() {
       const fd = new FormData();
 
       const { store_code } = this.$store.state.auth.store;
@@ -62,11 +62,15 @@ export default {
       };
       const timestamp = this.$moment.utc(getTimestamp()).valueOf();
 
-      console.log('timestamp', timestamp);
+      // console.log('timestamp', timestamp);
 
       fd.append('time', timestamp);
 
-      this.$store.dispatch('requestLastOrder', fd);
+      const response = await this.$store.dispatch('requestLastOrder', fd);
+      // console.log(response);
+      if (response.result) {
+        this.$store.commit('pushFlashMessage', '라스트오더 설정이 완료 되었습니다.');
+      }
     },
     confirm() {
       const {
