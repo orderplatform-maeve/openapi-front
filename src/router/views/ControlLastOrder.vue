@@ -54,17 +54,11 @@ export default {
       fd.append('end_message', this.endMessage);
 
       const time = Date.now();
-      const ISONow = new Date(time).toISOString();
-      const currnetTime = this.$moment(ISONow);
-      const getTimestamp = () => {
-        currnetTime.add(this.hour, 'h');
-        return currnetTime.toString();
-      };
-      const timestamp = this.$moment.utc(getTimestamp()).valueOf();
+      const getHours = (h) => (h * 60 * 60 * 1000);
+      const utcTimestamp = this.$moment.utc(time + getHours(this.hour)).valueOf();
 
-      // console.log('timestamp', timestamp);
-
-      fd.append('time', timestamp);
+      console.log('time', new Date(time + getHours(this.hour)), this.$moment.utc(time + getHours(this.hour)).format('MM.DD HH:mm:ss'));
+      fd.append('time', utcTimestamp);
 
       const response = await this.$store.dispatch('requestLastOrder', fd);
       // console.log(response);
