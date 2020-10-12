@@ -58,10 +58,10 @@ export default {
 
       const time = Date.now();
       const getHours = (h) => (h * 60 * 60 * 1000);
-      const utcTimestamp = this.$moment.utc(time + getHours(this.hour)).valueOf();
+      const timestamp = this.$moment(time + getHours(this.hour)).valueOf();
 
-      console.log('time', new Date(time + getHours(this.hour)), this.$moment.utc(time + getHours(this.hour)).format('MM.DD HH:mm:ss'));
-      fd.append('time', utcTimestamp);
+      console.log('time', new Date(time + getHours(this.hour)));
+      fd.append('time', timestamp);
 
       const response = await this.$store.dispatch('requestLastOrder', fd);
       // console.log(response);
