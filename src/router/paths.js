@@ -12,4 +12,5 @@ export default {
   additional: '/additional',
   newProducts: '/newProducts',
   controlOrder: '/controlOrder',
+  controlLastOrder: '/controlLastOrder',
 };

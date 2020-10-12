@@ -424,6 +424,15 @@ const order = {
       }
       return false;
     },
+    async requestLastOrder(context, params) {
+      const url = endpoints.orders.controlLastOrder;
+      const response = await axios.post(url,params);
+
+      if (response.data) {
+        return response.data;
+      }
+      return false;
+    },
   },
 };
 
