@@ -1,5 +1,8 @@
 <template lang="pug">
 .top-container
+  .title 타이머 제거
+  .justifyBetween
+    .button(@click="removeTimer") 제거하기
   .title 기본 메세지 설정
   .justifyBetween
     .button(@click="setBaseMesage('기본 메세지 1', 1)" :class="getActive(baseTabIndex, 1)") 기본 메세지 1
@@ -17,7 +20,7 @@
     .button(@click="setHour(3)" :class="getActive(hour, 3)") 3 시간 뒤
   .justifyBetween
     .button(@click="confirm") 확인
-    .button.button-cancel(@click="cancel") 취소
+    //- .button.button-cancel(@click="cancel") 취소
 </template>
 
 <script>
@@ -64,6 +67,21 @@ export default {
       // console.log(response);
       if (response.result) {
         this.$store.commit('pushFlashMessage', '라스트오더 설정이 완료 되었습니다.');
+      }
+    },
+    async removeTimer() {
+      const fd = new FormData();
+
+      const { store_code } = this.$store.state.auth.store;
+      fd.append('store_code', store_code);
+      fd.append('base_message', ' ');
+      fd.append('end_message', ' ');
+      fd.append('time', 0);
+
+      const response = await this.$store.dispatch('requestLastOrder', fd);
+      // console.log(response);
+      if (response.result) {
+        this.$store.commit('pushFlashMessage', '타이머 설정이 제거 되었습니다.');
       }
     },
     confirm() {
