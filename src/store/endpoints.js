@@ -15,6 +15,7 @@ const endpoints = {
     todayRedisData: `${SERVER_URL}/logs/Today_redis_data`,
     commitOrderViewData: `${SERVER_URL}/logs/commit_orderView_data`,
     order: `${SERVER_URL}/shop/order`,
+    controlLastOrder: `${SERVER_URL}/message/_Post_message`,
   },
   device: {
     shopOpen: `${SERVER_URL}/store/shop_open`,

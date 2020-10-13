@@ -8,10 +8,12 @@
     <br> (테스트)
   router-link.button-added(v-if="visibleOrderButton" :to="paths.pickUpTables") 픽업 요청
     <br> (테스트)
-  router-link.button-added(v-if="visibleOrderButton" :to="paths.controlOrder") 주문 관리
+  router-link.button-added(v-if="visibleOrderButton" :to="paths.controlOrder") 테이블 주문 관리
     <br> (테스트)
   //- router-link.button-added(v-if="visibleOrderButton" :to="paths.updateCategories") 분류 관리
   //-   <br> (테스트)
+  router-link.button-added(v-if="visibleOrderButton" :to="paths.controlLastOrder") 라스트 오더 관리
+    <br> (테스트)
 </template>
 
 <script>

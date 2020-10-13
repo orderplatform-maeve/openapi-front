@@ -12,6 +12,7 @@ import {
   Additional,
   NewProducts,
   ControlOrder,
+  ControlLastOrder,
 } from '@views';
 
 import paths from './paths';
@@ -93,15 +94,15 @@ const routes = [{
       meta: { requiresAuth: true },
     },
     {
-      path: paths.newProducts,
-      name: paths.newProducts.replace('/',''),
-      component: NewProducts,
-      meta: { requiresAuth: true },
-    },
-    {
       path: paths.controlOrder,
       name: paths.controlOrder.replace('/',''),
       component: ControlOrder,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: paths.controlLastOrder,
+      name: paths.controlLastOrder.replace('/',''),
+      component: ControlLastOrder,
       meta: { requiresAuth: true },
     },
   ],
