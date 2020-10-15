@@ -47,7 +47,11 @@ export default {
         },
         type: 'setSuspendSale',
         suspendSale: Number(table.orderStatus),
-      }, (ask) => console.log(ask));
+      }, (ask) => {
+        if (ask.resultPush) {
+          this.$store.commit('pushFlashMessage', '테이블 주류 주문 상태를 변경 했습니다.');
+        }
+      });
 
       const defineTabels = tables.map((o) => {
         if (o.Ta_id === table.Ta_id) {
