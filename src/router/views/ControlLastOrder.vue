@@ -3,18 +3,39 @@
   .title 타이머 제거
   .justifyBetween
     .button(@click="removeTimer") 제거하기
-  .title 기본 메세지 설정
+  .title 메세지 설정
   .justifyBetween
+    .button(@click="setMessage('기본 메세지 1', '종료 메세지 1', 1)" :class="getActive(tabIndex, 1)")
+      div
+        p 기본 메세지 1
+        p 종료 메세지 1
+    .button(@click="setMessage('기본 메세지 2', '종료 메세지 2', 2)" :class="getActive(tabIndex, 2)")
+      div
+        p 기본 메세지 2
+        p 종료 메세지 2
+    .button(@click="setMessage('기본 메세지 3', '종료 메세지 3', 3)" :class="getActive(tabIndex, 3)")
+      div
+        p 기본 메세지 3
+        p 종료 메세지 3
+  //- .title 기본 메세지 설정
+  //- .justifyBetween
     .button(@click="setBaseMesage('기본 메세지 1', 1)" :class="getActive(baseTabIndex, 1)") 기본 메세지 1
     .button(@click="setBaseMesage('기본 메세지 2', 2)" :class="getActive(baseTabIndex, 2)") 기본 메세지 2
     .button(@click="setBaseMesage('기본 메세지 3', 3)" :class="getActive(baseTabIndex, 3)") 기본 메세지 3
-  .title 종료 메세지 설정
-  .justifyBetween
+  //- .title 종료 메세지 설정
+  //- .justifyBetween
     .button(@click="setEndMessage('종료 메세지 1', 1)" :class="getActive(endTabIndex, 1)") 종료 메세지 1
     .button(@click="setEndMessage('종료 메세지 2', 2)" :class="getActive(endTabIndex, 2)") 종료 메세지 2
     .button(@click="setEndMessage('종료 메세지 3', 3)" :class="getActive(endTabIndex, 3)") 종료 메세지 3
-  .title 마감 알림 시간 설정
+  .title 설정 시간
+    span &nbsp;{{minute}}분 뒤
   .justifyBetween
+    .button(@click="calMinute(5)") +5분
+    .button(@click="calMinute(-5)") -5분
+    .button(@click="calMinute(10)") +10분
+    .button(@click="calMinute(-10)") -10분
+    .button(@click="resetMinute()") 리셋
+  //- .justifyBetween
     .button(@click="setHour(1)" :class="getActive(hour, 1)") 1 시간 뒤
     .button(@click="setHour(2)" :class="getActive(hour, 2)") 2 시간 뒤
     .button(@click="setHour(3)" :class="getActive(hour, 3)") 3 시간 뒤
@@ -31,6 +52,8 @@ export default {
     endMessage: '',
     endTabIndex: 0,
     hour: 0,
+    tabIndex: 0,
+    minute: 0,
   }),
   methods: {
     setBaseMesage(msg, idx) {
@@ -41,13 +64,46 @@ export default {
       this.endMessage = msg;
       this.endTabIndex = idx;
     },
+    setMessage(baseMsg, endMsg, tabIndex) {
+      this.baseMessage = baseMsg;
+      this.endMessage = endMsg;
+      this.tabIndex = tabIndex;
+    },
     setHour(hour) {
       this.hour = hour;
+    },
+    calMinute(min) {
+      if (this.minute + min < 0) return this.$store.commit('pushFlashMessage', '0분 보다 아래 일수 없습니다.');
+      this.minute = this.minute + min;
+    },
+    resetMinute() {
+      this.minute = 0;
     },
     getActive(target, idx) {
       if (target === idx) return 'button-red';
       return '';
     },
+    // async setLastOrder() {
+    //   const fd = new FormData();
+
+    //   const { store_code } = this.$store.state.auth.store;
+    //   fd.append('store_code', store_code);
+    //   fd.append('base_message', this.baseMessage);
+    //   fd.append('end_message', this.endMessage);
+
+    //   const time = Date.now();
+    //   const getHours = (h) => (h * 60 * 60 * 1000);
+    //   const timestamp = this.$moment(time + getHours(this.hour)).valueOf();
+
+    //   console.log('time', new Date(time + getHours(this.hour)));
+    //   fd.append('time', timestamp);
+
+    //   const response = await this.$store.dispatch('requestLastOrder', fd);
+    //   // console.log(response);
+    //   if (response.result) {
+    //     this.$store.commit('pushFlashMessage', '라스트오더 설정이 완료 되었습니다.');
+    //   }
+    // },
     async setLastOrder() {
       const fd = new FormData();
 
@@ -57,16 +113,16 @@ export default {
       fd.append('end_message', this.endMessage);
 
       const time = Date.now();
-      const getHours = (h) => (h * 60 * 60 * 1000);
-      const timestamp = this.$moment(time + getHours(this.hour)).valueOf();
+      const getMinutes = (m) => (m * 60 * 1000);
+      const timestamp = this.$moment(time + getMinutes(this.minute)).valueOf();
 
-      console.log('time', new Date(time + getHours(this.hour)));
+      console.log('time', new Date(time + getMinutes(this.minute)));
       fd.append('time', timestamp);
 
       const response = await this.$store.dispatch('requestLastOrder', fd);
       // console.log(response);
       if (response.result) {
-        this.$store.commit('pushFlashMessage', '라스트오더 설정이 완료 되었습니다.');
+        this.$store.commit('pushFlashMessage', '시간 설정이 완료 되었습니다.');
       }
     },
     async removeTimer() {
@@ -88,7 +144,8 @@ export default {
       const {
         baseMessage,
         endMessage,
-        hour,
+        // hour,
+        minute,
       } = this;
 
       if (!baseMessage) {
@@ -99,7 +156,11 @@ export default {
         return this.$store.commit('pushFlashMessage', '종료 메세지를 선택해 주세요');
       }
 
-      if (!hour) {
+      // if (!hour) {
+      //   return this.$store.commit('pushFlashMessage', '마감 알림 시간을 선택해 주세요');
+      // }
+
+      if (!minute) {
         return this.$store.commit('pushFlashMessage', '마감 알림 시간을 선택해 주세요');
       }
 
@@ -144,7 +205,7 @@ export default {
       color:#202020;
       margin-right:24px;
       box-shadow: 0 0 8px -4px #000000;
-      padding: 0px 12px 0px 12px;
+      padding: 12px;
       margin-bottom: 24px;
     }
 
