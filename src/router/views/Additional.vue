@@ -12,7 +12,7 @@
     <br> (테스트)
   //- router-link.button-added(v-if="visibleOrderButton" :to="paths.updateCategories") 분류 관리
   //-   <br> (테스트)
-  router-link.button-added(v-if="visibleOrderButton" :to="paths.controlLastOrder") 라스트 오더 관리
+  router-link.button-added(v-if="visibleOrderButton" :to="paths.controlLastOrder") 타이머 관리
     <br> (테스트)
 </template>
 
