@@ -788,6 +788,7 @@ const menu = {
           hit: p.type_hit,
           md: p.type_md,
           sale: p.type_sale,
+          new: p.type_new,
         };
       }).sort((a, b) => a.sortNo - b.sortNo);
     },
@@ -883,6 +884,7 @@ const menu = {
             md: p.type_md,
             sale: p.type_sale,
             posDeleteStatus: p.T_order_store_good_posYN === "1",
+            new: p.type_new,
           };
         }).sort((a, b) => a.sortNo - b.sortNo);
 

@@ -5,7 +5,7 @@ const mime = require('mime');
 
 const config = require('../s3-credentials.json');
 
-const BUCKET_NAEM = config.bucketName;
+const BUCKET_NAME = config.bucketName;
 
 const {
   accessKeyId,
@@ -57,7 +57,7 @@ const uploadDistFiles = (distKey, indexKey) => fs.readdir(distFolderPath, (err, 
 
             // upload file to S3
             s3.upload({
-              Bucket: BUCKET_NAEM,
+              Bucket: BUCKET_NAME,
               Key: `${indexKey}/${fileName}/${subFileName}`,
               Body: fileContent,
               ContentType,
@@ -86,7 +86,7 @@ const uploadDistFiles = (distKey, indexKey) => fs.readdir(distFolderPath, (err, 
       if (fileName === 'index.html') {
         // // console.log('~~~~~~~~~~', indexKey);
         s3.upload({
-          Bucket: BUCKET_NAEM,
+          Bucket: BUCKET_NAME,
           Key: `${indexKey}/${fileName}`,
           Body: fileContent,
           ContentType,
