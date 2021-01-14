@@ -11,4 +11,5 @@ yarn-error.log
 *.njsproj
 *.sln
 s3-credentials.json
+s3-credentials.dev.json
 backups

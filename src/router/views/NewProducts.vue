@@ -37,6 +37,7 @@
               .button(@click="() => onHitStatus(good)" :style="getButtonStatusStyle(good.hit)") {{ getHitStatusText(good.hit) }}
               .button(@click="() => onMdStatus(good)" :style="getButtonStatusStyle(good.md)") {{ getMdStatusText(good.md) }}
               .button(@click="() => onSaleStatus(good)" :style="getButtonStatusStyle(good.sale)") {{ getSaleStatusText(good.sale) }}
+              .button(@click="() => onNewStatus(good)" :style="getButtonStatusStyle(good.new)") {{ getNewStatusText(good.new) }}
 </template>
 
 <script>
@@ -149,14 +150,17 @@ export default {
     getBestStatusText(best) {
       return best ? '베스트 취소' : '베스트 적용';
     },
-    getHitStatusText(best) {
-      return best ? '히트 취소' : '히트 적용';
+    getHitStatusText(isVisivle) {
+      return isVisivle ? '히트 취소' : '히트 적용';
     },
-    getMdStatusText(best) {
-      return best ? '추천 취소' : '추천 적용';
+    getMdStatusText(isVisivle) {
+      return isVisivle ? '추천 취소' : '추천 적용';
     },
-    getSaleStatusText(best) {
-      return best ? '할인 취소' : '할인 적용';
+    getSaleStatusText(isVisivle) {
+      return isVisivle ? '할인 취소' : '할인 적용';
+    },
+    getNewStatusText(isVisivle) {
+      return isVisivle ? '신제품 취소' : '신제품 적용';
     },
     getButtonStatusStyle(visble) {
       return {
@@ -609,6 +613,69 @@ export default {
         arr[findIdx] = {
           ...arr[findIdx],
           type_sale: 1,
+        };
+
+        this.reqEmitProductStatus(good, arr[findIdx]);
+        this.$store.commit('SET_GOODS', arr);
+      } else {
+        this.$store.commit('pushFlashMessage', '서버가 불안정하여 판매 중지 하기 실패하였습니다.');
+      }
+    },
+    onNewStatus(good) {
+      const isNew = good.new;
+      if (isNew) return this.offNew(good);
+      return this.onNew(good);
+    },
+    async offNew(good) {
+      const { store_code } = this.$store.state.auth.store;
+
+      const params = {
+        params: {
+          store_code,
+          good_code: good.code,
+          type: 'goodOffNew',
+        },
+      };
+
+      const res = await this.$store.dispatch('updateGoodStatusType', params);
+      // console.log(res);
+
+      if (res.status === 200) {
+        const arr = JSON.parse(JSON.stringify(this.$store.state.goods));
+        const findIdx = arr.findIndex((o) => o.T_order_store_good_code === good.code);
+
+        arr[findIdx] = {
+          ...arr[findIdx],
+          type_new: 0,
+        };
+
+        this.reqEmitProductStatus(good, arr[findIdx]);
+        this.$store.commit('SET_GOODS', arr);
+      } else {
+        this.$store.commit('pushFlashMessage', '서버가 불안정하여 판매 중지 하기 실패하였습니다.');
+      }
+    },
+    async onNew(good) {
+      const { store_code } = this.$store.state.auth.store;
+
+      const params = {
+        params: {
+          store_code,
+          good_code: good.code,
+          type: 'goodOnNew',
+        },
+      };
+
+      const res = await this.$store.dispatch('updateGoodStatusType', params);
+      // console.log(res);
+
+      if (res.status === 200) {
+        const arr = JSON.parse(JSON.stringify(this.$store.state.goods));
+        const findIdx = arr.findIndex((o) => o.T_order_store_good_code === good.code);
+
+        arr[findIdx] = {
+          ...arr[findIdx],
+          type_new: 1,
         };
 
         this.reqEmitProductStatus(good, arr[findIdx]);

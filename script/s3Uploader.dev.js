@@ -3,7 +3,7 @@ const AWS = require('aws-sdk');
 const path = require('path');
 const mime = require('mime');
 
-const config = require('../s3-credentials.json');
+const config = require('../s3-credentials.dev.json');
 
 const BUCKET_NAME = config.bucketName;
 
@@ -18,7 +18,7 @@ const s3 = new AWS.S3({ accessKeyId, secretAccessKey, signatureVersion });
 const folderPath  = '../dist';
 const distFolderPath = path.join(__dirname, folderPath);
 
-const uploadDistFiles = (distKey, indexKey) => fs.readdir(distFolderPath, (err, files) => {
+const uploadDistFiles = () => fs.readdir(distFolderPath, (err, files) => {
   if (err) { throw err; }
 
   if(!files || files.length === 0) {
@@ -58,7 +58,7 @@ const uploadDistFiles = (distKey, indexKey) => fs.readdir(distFolderPath, (err, 
             // upload file to S3
             s3.upload({
               Bucket: BUCKET_NAME,
-              Key: `${indexKey}/${fileName}/${subFileName}`,
+              Key: `${fileName}/${subFileName}`,
               Body: fileContent,
               ContentType,
               CacheControl: 'no-cache',
@@ -87,7 +87,7 @@ const uploadDistFiles = (distKey, indexKey) => fs.readdir(distFolderPath, (err, 
         // // console.log('~~~~~~~~~~', indexKey);
         s3.upload({
           Bucket: BUCKET_NAME,
-          Key: `${indexKey}/${fileName}`,
+          Key: `${fileName}`,
           Body: fileContent,
           ContentType,
           CacheControl: 'no-cache',
@@ -100,9 +100,4 @@ const uploadDistFiles = (distKey, indexKey) => fs.readdir(distFolderPath, (err, 
   }
 });
 
-const { env: { UPLOAD_TYPE, UPLOAD_VERSION } } = process;
-
-const indexKey = `v/${UPLOAD_TYPE}/${UPLOAD_VERSION}`;
-const distKey = `${indexKey}/dist`;
-
-uploadDistFiles(distKey, indexKey);
+uploadDistFiles();

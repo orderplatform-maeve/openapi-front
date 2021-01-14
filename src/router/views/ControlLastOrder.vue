@@ -5,10 +5,10 @@
     .button(@click="removeTimer") 제거하기
   .title 메세지 설정
   .justifyBetween
-    .button(@click="setMessage('기본 메세지 1', '종료 메세지 1', 1)" :class="getActive(tabIndex, 1)")
+    .button(@click="setMessage('후 주방이 마감됩니다.', '주류 주문만 가능', 1)" :class="getActive(tabIndex, 1)")
       div
-        p 기본 메세지 1
-        p 종료 메세지 1
+        p 후 주방이 마감됩니다.
+        p 주류 주문만 가능
     .button(@click="setMessage('기본 메세지 2', '종료 메세지 2', 2)" :class="getActive(tabIndex, 2)")
       div
         p 기본 메세지 2
@@ -116,13 +116,13 @@ export default {
       const getMinutes = (m) => (m * 60 * 1000);
       const timestamp = this.$moment(time + getMinutes(this.minute)).valueOf();
 
-      console.log('time', new Date(time + getMinutes(this.minute)));
+      console.log('time', new Date(timestamp), timestamp);
       fd.append('time', timestamp);
 
       const response = await this.$store.dispatch('requestLastOrder', fd);
       // console.log(response);
       if (response.result) {
-        this.$store.commit('pushFlashMessage', '시간 설정이 완료 되었습니다.');
+        this.$store.commit('pushFlashMessage', `${new Date(timestamp).toLocaleString('ko-KR')} 시간 설정이 완료 되었습니다.`);
       }
     },
     async removeTimer() {
