@@ -30,7 +30,7 @@
         .icon.visit(v-if="isFirstEntered(order)") 입장
         .icon.first(v-if="isFirstOrder(order)") 첫 주문
       .msg-time
-        .commit(:class="getMsgTimeClass(order)") {{vaildCommitText(order)}}
+        .commit(:class="getMsgTimeClass(order)") {{validCommitText(order)}}
         .time {{getOrderTiem(order)}}
 </template>
 
@@ -100,9 +100,9 @@ export default {
     },
     visibleOrderItem(order) {
       const commit = this.checkedCommit(order);
-      return this.vaildViewMode(commit);
+      return this.validViewMode(commit);
     },
-    vaildViewMode(commit) {
+    validViewMode(commit) {
       const { viewMode } = this;
 
       const isAll = viewMode === 'a';

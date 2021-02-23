@@ -4,7 +4,7 @@ import axios from 'axios';
 import querystring from 'querystring';
 
 import {
-  vaildShopCode,
+  validShopCode,
   getCategories,
   getNewCategories,
 } from './store.helper';
@@ -34,7 +34,7 @@ const socket = {
       message;
     },
     SOCKET_orderlog(state, order) {
-      if (vaildShopCode(state, order)) {
+      if (validShopCode(state, order)) {
         Vue.set(state, 'order', order);
       }
     },
@@ -42,7 +42,7 @@ const socket = {
   actions: {
     SOCKET_orderlog({ commit, state }, order) {
       // // console.log('SOCKET_orderlog', order);
-      if (vaildShopCode(state, order)) {
+      if (validShopCode(state, order)) {
         commit('PUSH_ORDER', order);
       }
     },

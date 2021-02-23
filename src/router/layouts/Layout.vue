@@ -553,37 +553,37 @@ export default {
       return this.$socket.emit('orderview', payload);
     },
     getOnTabletMonitorClass(device) {
-      const active = !this.vaildServiceStatus(device);
+      const active = !this.validServiceStatus(device);
 
       return {
         active,
       };
     },
     getOffTabletMonitorClass(device) {
-      const active = this.vaildServiceStatus(device);
+      const active = this.validServiceStatus(device);
 
       return {
         active,
       };
     },
-    vaildServiceStatus(device) {
+    validServiceStatus(device) {
       return device && device.serviceStatus;
     },
     getOnTabletOrderClass(device) {
-      const active = !this.vaildOrderStatus(device);
+      const active = !this.validOrderStatus(device);
 
       return {
         active,
       };
     },
     getOffTabletOrderClass(device) {
-      const active = this.vaildOrderStatus(device);
+      const active = this.validOrderStatus(device);
 
       return {
         active,
       };
     },
-    vaildOrderStatus(device) {
+    validOrderStatus(device) {
       return device && device.orderStatus;
     },
     beep() {
@@ -668,20 +668,20 @@ export default {
       this.$store.commit('SET_ALL_REFRESH_LIST', []);
     },
     getOnTabletRecentOrderClass(device) {
-      const active = !this.vaildRecentOrderStatus(device);
+      const active = !this.validRecentOrderStatus(device);
 
       return {
         active,
       };
     },
     getOffTabletRecentOrderClass(device) {
-      const active = this.vaildRecentOrderStatus(device);
+      const active = this.validRecentOrderStatus(device);
 
       return {
         active,
       };
     },
-    vaildRecentOrderStatus(device) {
+    validRecentOrderStatus(device) {
       return device && device.recentOrderStatus;
     },
     getNowDate() {
