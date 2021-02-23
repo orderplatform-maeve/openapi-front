@@ -217,6 +217,15 @@ const socket = {
         }
       }
 
+      if (payload?.type === '@update/device/kitchenOrder') {
+        commit('setDeviceKitchenOrderStatus', payload.value);
+        if (payload.value) {
+          commit('pushFlashMessage', '태블릿 주문 내역 숨김 상태로 변경 되었습니다.');
+        } else {
+          commit('pushFlashMessage', '태블릿 주문 내역 표시 상태로 변경 되었습니다.');
+        }
+      }
+
       if (payload?.type === 'suspendSale') {
         // console.log('suspendSale', payload);
         const findTargetIdx = state.tables.findIndex((o) => o.Ta_id === payload.table.code);
@@ -489,7 +498,6 @@ const shop = {
 const device = {
   mutations: {
     setDeviceStatus(state, device) {
-      // // console.log('commit setDeviceStatus', device);
       Vue.set(state, 'device', device);
     },
     setDeviceOrderStatus(state, orderStatus) {
@@ -500,6 +508,9 @@ const device = {
     },
     setDeviceRecentOrderStatus(state, recentOrderStatus) {
       state.device.recentOrderStatus = Boolean(recentOrderStatus);
+    },
+    setDeviceKitchenOrderStatus(state, kitchenOrderStatus) {
+      state.device.kitchenOrderStatus = Boolean(kitchenOrderStatus);
     },
   },
   actions: {
@@ -581,6 +592,36 @@ const device = {
     async setCloseRecentOrder(context, params) {
       try {
         const url = endpoints.device.hideRecentOrder;
+        const response = await axios.post(url, params);
+
+        if (response) {
+          return true;
+        }
+
+        return false;
+      } catch (error) {
+        // console.log(error);
+        return false;
+      }
+    },
+    async setShowKitchenOrder(context, params) {
+      try {
+        const url = endpoints.device.showKitchenOrder;
+        const response = await axios.post(url, params);
+
+        if (response) {
+          return true;
+        }
+
+        return false;
+      } catch (error) {
+        // console.log(error);
+        return false;
+      }
+    },
+    async setCloseKitchenOrder(context, params) {
+      try {
+        const url = endpoints.device.hideKitchenOrder;
         const response = await axios.post(url, params);
 
         if (response) {
@@ -1041,6 +1082,7 @@ const state = {
     serviceStatus: false,
     orderStatus: false,
     recentOrderStatus: false,
+    kitchenOrderStatus: false,
   },
   auth: authProto,
   stores: [],

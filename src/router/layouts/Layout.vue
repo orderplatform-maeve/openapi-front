@@ -63,6 +63,11 @@
           .tab-buttons
             .tab-button(:class="getOnTabletRecentOrderClass(device)" @click="showRecentOrder") On
             .tab-button(:class="getOffTabletRecentOrderClass(device)" @click="hideRecentOrder") Off
+        .tab-group
+          .tab-name 주방 마감
+          .tab-buttons
+            .tab-button(:class="getOnKitchenOrderClass(device)" @click="showKitchenOrder") On
+            .tab-button(:class="getOffKitchenOrderClass(device)" @click="hideKitchenOrder") Off
         hr
         router-link.button(v-if="visibleStoresButton" :to="paths.store") 매장 보기
         router-link.button.button-red(v-if="visibleLoginButton" :to="paths.login") 로그인
@@ -687,6 +692,93 @@ export default {
       const ISONow = now.toISOString();
 
       return this.$moment(ISONow).format('MM.DD HH:mm:ss');
+    },
+    showKitchenOrder() {
+      if (!this.$store.state.device.kitchenOrderStatus) {
+        return this.$store.commit('pushFlashMessage', '이미 주문 내역 표시 상태로 되어있습니다.');
+      }
+      const confirmModal = {};
+
+      confirmModal.show = true;
+      confirmModal.close = this.closeConfirmModal;
+      confirmModal.title = '주방 마감 메뉴 표시';
+      confirmModal.message = '태블릿에서 주방 마감 메뉴가 나타납니다';
+      confirmModal.confirm = this.reqShowKitchenOrder;
+
+      this.$store.commit('showConfirmModal', confirmModal);
+    },
+    hideKitchenOrder() {
+      if (this.$store.state.device.kitchenOrderStatus) {
+        return this.$store.commit('pushFlashMessage', '이미 주문 내역 표시 상태로 되어있습니다.');
+      }
+      const confirmModal = {};
+
+      confirmModal.show = true;
+      confirmModal.close = this.closeConfirmModal;
+      confirmModal.title = '주방 마감 메뉴 표시';
+      confirmModal.message = '태블릿에서 주방 마감 메뉴가 사라집니다.';
+      confirmModal.confirm = this.reqHideKitchenOrder;
+
+      this.$store.commit('showConfirmModal', confirmModal);
+    },
+    emitKitchenOrder(value) {
+      const { store_code } = this.$store.state.auth.store;
+      const payload = {
+        store: {
+          code: store_code,
+        },
+        type: '@update/device/kitchenOrder',
+        value,
+      };
+      return this.$socket.emit('orderview', payload);
+    },
+    async reqShowKitchenOrder() {
+      const fd = new FormData();
+      fd.append('store_code', this.auth.store.store_code);
+      const response = await this.$store.dispatch('setShowKitchenOrder', fd);
+
+      if (response) {
+        const value = 0;
+        const { disconnected } = this.emitKitchenOrder(value);
+
+        if (disconnected) {
+          this.$store.commit('setDeviceKitchenOrderStatus', value);
+          this.$store.commit('pushFlashMessage', '태블릿 주문 내역 표시 상태로 변경 되었습니다.');
+        }
+
+        this.closeConfirmModal();
+      }
+    },
+    async reqHideKitchenOrder() {
+      const fd = new FormData();
+      fd.append('store_code', this.auth.store.store_code);
+      const response = await this.$store.dispatch('setCloseKitchenOrder', fd);
+
+      if (response) {
+        const value = 1;
+        const { disconnected } = this.emitKitchenOrder(value);
+
+        if (disconnected) {
+          this.$store.commit('setDeviceKitchenOrderStatus', value);
+          this.$store.commit('pushFlashMessage', '태블릿 주문 내역 표시 상태로 변경 되었습니다.');
+        }
+
+        this.closeConfirmModal();
+      }
+    },
+    getOnKitchenOrderClass() {
+      const active = !this.device?.kitchenOrderStatus;
+
+      return {
+        active,
+      };
+    },
+    getOffKitchenOrderClass() {
+      const active = this.device?.kitchenOrderStatus;
+
+      return {
+        active,
+      };
     },
   },
 };
