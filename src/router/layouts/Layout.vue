@@ -1,17 +1,17 @@
 <template lang="pug">
 #orderview
   .popup.item.cashOutstanding(v-if="requestCashItem")
-    p.tit 현금미결제 
-    .content 
+    p.tit 현금미결제
+    .content
       .row
         .left
-          dl 
+          dl
             dt 주문금액 :
             dd {{requestCashItem.amount}}
-          dl 
+          dl
             dt 승인번호 :
             dd {{requestCashItem.paymentId}}
-          dl 
+          dl
             dt 주문일시 :
             dd {{requestCashItem.orderdateTime}}
         .right
@@ -213,21 +213,21 @@
               path(d='M21.909,4V8.909H17' transform='translate(-2.909 -0.182)' fill='none' stroke='#fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1')
               path(d='M1,18.909V14H5.909' transform='translate(0 -2)' fill='none' stroke='#fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1')
               path(d='M3.054,7.909A7.364,7.364,0,0,1,15.2,5.16L19,8.727M1,12l3.8,3.567a7.364,7.364,0,0,0,12.15-2.749' transform='translate(0 0)' fill='none' stroke='#fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1')
-          | 새로고침 
+          | 새로고침
       li
         router-link(v-if="visibleOrderButton" :to="paths.order")
           svg(xmlns='http://www.w3.org/2000/svg' width='19' height='21' viewbox='0 0 19 21')
             g(transform='translate(-3.5 -1.5)')
               path(d='M17.5,4h2.25A2.135,2.135,0,0,1,22,6V20a2.135,2.135,0,0,1-2.25,2H6.25A2.135,2.135,0,0,1,4,20V6A2.135,2.135,0,0,1,6.25,4H8.5' fill='none' stroke='#fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1')
               rect(width='8' height='4' rx='1' transform='translate(9 2)' fill='none' stroke='#fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1')
-          | 주문보기 
+          | 주문보기
       li
         router-link(v-if="visibleOrderButton" :to="paths.additional")
           svg(xmlns='http://www.w3.org/2000/svg' width='19' height='19' viewbox='0 0 19 19')
             g(transform='translate(-0.5 -0.5)')
               circle(cx='2' cy='2' r='2' transform='translate(8 8)' fill='none' stroke='#fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1')
               path(d='M16.055,12.455a1.35,1.35,0,0,0,.27,1.489l.049.049a1.637,1.637,0,0,1,0,2.314l0,0a1.637,1.637,0,0,1-2.314,0l0,0-.049-.049a1.361,1.361,0,0,0-2.307.965v.139a1.636,1.636,0,1,1-3.273,0V17.29a1.35,1.35,0,0,0-.884-1.235,1.35,1.35,0,0,0-1.489.27l-.049.049a1.637,1.637,0,0,1-2.314,0l0,0a1.637,1.637,0,0,1,0-2.314l0,0,.049-.049A1.361,1.361,0,0,0,2.775,11.7H2.636a1.636,1.636,0,1,1,0-3.273H2.71a1.35,1.35,0,0,0,1.235-.884,1.35,1.35,0,0,0-.27-1.489l-.049-.049a1.637,1.637,0,0,1,0-2.314l0,0a1.637,1.637,0,0,1,2.314,0l0,0,.049.049a1.35,1.35,0,0,0,1.489.27h.065a1.351,1.351,0,0,0,.818-1.235V2.636a1.636,1.636,0,1,1,3.273,0V2.71a1.361,1.361,0,0,0,2.307.965l.049-.049a1.637,1.637,0,0,1,2.314,0l0,0a1.637,1.637,0,0,1,0,2.314l0,0-.049.049a1.35,1.35,0,0,0-.27,1.489v.065a1.351,1.351,0,0,0,1.235.818h.139a1.636,1.636,0,1,1,0,3.273H17.29A1.351,1.351,0,0,0,16.055,12.455Z' fill='none' stroke='#fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1')
-          | 추가기능(테스트) 
+          | 추가기능(테스트)
       li
         router-link(v-if="visibleOrderButton" :to="paths.paymentManagement")
           svg(xmlns='http://www.w3.org/2000/svg' width='19' height='21' viewbox='0 0 19 21')
@@ -237,17 +237,17 @@
               line(x1='8' transform='translate(9 13)' fill='none' stroke='#fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1')
               line(x1='8' transform='translate(9 17)' fill='none' stroke='#fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1')
               path(d='M10,9H8' transform='translate(0.571)' fill='none' stroke='#fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1')
-          | 결제내역 
+          | 결제내역
     .view_setting
-      p 테블릿 화면 
+      p 테블릿 화면
       label.switch(v-on:click.stop="toggleTabletScreen")
         input(type='checkbox' v-bind:checked="statusTabletScreen" disabled="disabled" )
         span.slider.round
-      p 테블릿 주문 
+      p 테블릿 주문
       label.switch(v-on:click.stop="toggleOrder")
         input(type='checkbox' v-bind:checked="statusOrder" disabled="disabled")
         span.slider.round
-      p 주문내역 
+      p 주문내역
       label.switch(v-on:click.stop="toggleRecentOrder")
         input(type='checkbox' v-bind:checked="statusRecentOrder" disabled="disabled")
         span.slider.round
@@ -256,7 +256,7 @@
         | {{storeName}}
         br
         | {{version}}
-      a.btn_logout(v-if="visibleLogoutButton" @click="logout") 로그아웃 
+      a.btn_logout(v-if="visibleLogoutButton" @click="logout") 로그아웃
 
 //#orderview
   //- transition(name="signboard")
@@ -282,7 +282,7 @@
         router-link.button(v-if="visibleOrderButton" :to="paths.order") 주문 보기
         router-link.button(v-if="visibleOrderButton" :to="paths.additional") 추가 기능
           <br> (테스트)
-        router-link.button(v-if="visibleOrderButton" :to="paths.paymentManagement") 결제 내역 
+        router-link.button(v-if="visibleOrderButton" :to="paths.paymentManagement") 결제 내역
 
         //- router-link.button(v-if="visibleOrderButton" :to="paths.products") 상품 관리
         //-   <br> (테스트)

@@ -1,17 +1,17 @@
 <template lang="pug">
 .list_box
   .popup.item.cashOutstanding(v-if="itemModal.currName == 'cashOutstanding'")
-    p.tit 현금미결제 
-    .content 
+    p.tit 현금미결제
+    .content
       .row
         .left
-          dl 
+          dl
             dt 주문금액 :
             dd {{item.amount}}
-          dl 
+          dl
             dt 승인번호 :
             dd {{item.paymentId}}
-          dl 
+          dl
             dt 주문일시 :
             dd {{item.orderdateTime}}
         .right
@@ -30,40 +30,40 @@
 
   .popup.item.cancelCashPayment(v-if="itemModal.currName == 'cancelCashPayment'")
     .tit 현금결제 취소
-    .content 
+    .content
       p 현금결제 환불 처리하시겠습니까?
     .button-group
       .button(v-on:click.stop="closeItemModal()") 닫기
-      .button.on(v-on:click.stop="cashCancelCommit(item);") 확인 
+      .button.on(v-on:click.stop="cashCancelCommit(item);") 확인
 
   .popup.item.cancelCreditCardPayment(v-if="itemModal.currName == 'cancelCreditCardPayment'")
-    p.tit 신용카드 결제 취소 
-    .content  
-      dl 
+    p.tit 신용카드 결제 취소
+    .content
+      dl
         dt 카드번호 :
         dd {{item.cardNumber}}
-      dl 
+      dl
         dt 카드사명 :
         dd {{item.issuer}}
-      dl 
+      dl
         dt 결제금액 :
         dd {{item.amount}}
-      dl 
+      dl
         dt 할부개월 :
         dd {{item.ApprovalMonth}}
-      dl 
+      dl
         dt 승인번호 :
         dd {{item.paymentId}}
-      dl 
+      dl
         dt 승인일시 :
         dd {{item.creditDateTime}}
     .button-group
       .button(v-on:click.stop="closeItemModal()") 닫기
-      .button.on(v-on:click.stop="cardCancelCommit") 승인취소
+      .button.on(v-on:click.stop="() => cardCancelCommit(item)") 승인취소
 
   .popup.item.orderProductDetail(v-if="itemModal.currName == 'orderProductsDetail'")
-    p.tit 주문상품 상세 
-    .content  
+    p.tit 주문상품 상세
+    .content
       dl(v-for="p in item.orderInfo")
         dt {{p.display_name}}
         dd {{p.good_qty}}개
@@ -71,30 +71,30 @@
       .button(v-on:click.stop="closeItemModal()") 닫기
 
   .popup.dateSelect(v-if="currentSearchModal == 'type'")
-    p.tit 주문/승인 선택 
+    p.tit 주문/승인 선택
     ul.btn_list
-      li(v-for="(value, name) in searchOptions.type.list") 
-        a(v-on:click.stop="selectOption('type', name)" v-bind:class="{on: searchOptions.type.selected == name}") {{value.name}} 
+      li(v-for="(value, name) in searchOptions.type.list")
+        a(v-on:click.stop="selectOption('type', name)" v-bind:class="{on: searchOptions.type.selected == name}") {{value.name}}
   .popup.payment(v-if="currentSearchModal == 'method'")
-    p.tit 결제방식 선택 
+    p.tit 결제방식 선택
     ul.btn_list
-      li(v-for="(value, name) in searchOptions.method.list") 
-        a(v-on:click.stop="selectOption('method', name)" v-bind:class="{on: searchOptions.method.selected == name}") {{value.name}} 
+      li(v-for="(value, name) in searchOptions.method.list")
+        a(v-on:click.stop="selectOption('method', name)" v-bind:class="{on: searchOptions.method.selected == name}") {{value.name}}
   .popup.sortCount(v-if="currentSearchModal == 'filter'")
     ul.btn_list
-      li(v-for="(value, name) in searchOptions.filter.list") 
-        a(v-on:click.stop="selectOption('filter', name)" v-bind:class="{on: searchOptions.filter.selected == name}") {{value.name}} 
+      li(v-for="(value, name) in searchOptions.filter.list")
+        a(v-on:click.stop="selectOption('filter', name)" v-bind:class="{on: searchOptions.filter.selected == name}") {{value.name}}
   .popup.sortDate(v-if="currentSearchModal == 'sort'")
     ul.btn_list
-      li(v-for="(value, name) in searchOptions.sort.list") 
-        a(v-on:click.stop="selectOption('sort', name)" v-bind:class="{on: searchOptions.sort.selected == name}") {{value.name}} 
+      li(v-for="(value, name) in searchOptions.sort.list")
+        a(v-on:click.stop="selectOption('sort', name)" v-bind:class="{on: searchOptions.sort.selected == name}") {{value.name}}
   .popup.cardCompany(v-if="currentSearchModal == 'company'")
-    p.tit 카드사 선택  
+    p.tit 카드사 선택
     ul.list
-      li(v-for="(value, name) in searchOptions.company.list") 
-        a(v-on:click.stop="selectOption('company', name)" v-bind:class="{on: searchOptions.company.selected == name}") {{value.name}} 
+      li(v-for="(value, name) in searchOptions.company.list")
+        a(v-on:click.stop="selectOption('company', name)" v-bind:class="{on: searchOptions.company.selected == name}") {{value.name}}
   .popup.cardCompany(v-if="currentSearchModal == 'table'")
-    p.tit 테이블 선택 
+    p.tit 테이블 선택
     ul.list
       li(v-for="table in searchOptions.table.list")
         a(v-on:click.stop="toggleTable(table)"  v-bind:class="{'on': table.selected}") {{table.Tablet_name}}
@@ -105,9 +105,9 @@
     .left_box.fleft
       ul.quick_date.clearfix
         li
-          a(v-on:click.stop="pickerSelectToday") 오늘 
+          a(v-on:click.stop="pickerSelectToday") 오늘
         li
-          a(v-on:click.stop="pickerSelectWeek") 1주일 
+          a(v-on:click.stop="pickerSelectWeek") 1주일
         li
           a(v-on:click.stop="pickerSelectMonth") 1개월
         li
@@ -121,23 +121,23 @@
           |  시
         dd
           input(type='text' name='' v-bind:value="$moment(searchOptions.datetime.start).format('mm')" readonly v-on:click.stop="pickerSelectStartMinute")
-          |  분 
+          |  분
       dl.date_time.clearfix
-        dt 종료일 
+        dt 종료일
         dd
           input(type='text' name='' v-bind:value="$moment(searchOptions.datetime.end).format('YYYY-MM-DD')" readonly v-on:click.stop="pickerSelectEndDate")
         dd
           input(type='text' name='' v-bind:value="$moment(searchOptions.datetime.end).format('HH')" readonly v-on:click.stop="pickerSelectEndHour")
-          |  시 
+          |  시
         dd
           input(type='text' name='' v-bind:value="$moment(searchOptions.datetime.end).format('mm')" readonly v-on:click.stop="pickerSelectEndMinute")
-          |  분 
-      a.select_done(v-on:click.stop="closeSearchModal()") 선택완료 
+          |  분
+      a.select_done(v-on:click.stop="closeSearchModal()") 선택완료
     .right_box.fleft
       .date_select(v-if="['startHour', 'startMinute', 'endMinute', 'endHour'].includes(picker.selected)")
         ul.num
           li
-            a(v-on:click.stop="pickerDownNumber") 이전 
+            a(v-on:click.stop="pickerDownNumber") 이전
           li {{picker.number}}
           li
             a(v-on:click.stop="pickerUpNumber") 다음
@@ -157,12 +157,12 @@
       .date_select(v-if="['startDate', 'enddate'].includes(picker.selected)")
         ul.month
           li
-            a(v-on:click.stop="pickerPrevMonth") 이전 
+            a(v-on:click.stop="pickerPrevMonth") 이전
           li {{calendarYear}}년 {{calendarMonth}}월
           li
             a(v-on:click.stop="pickerNextMonth") 다음
         ul.weekdays
-          li 월 
+          li 월
           li 화
           li 수
           li 목
@@ -170,7 +170,7 @@
           li 토
           li 일
         ul.days
-          li(v-for="date in calendarFirstDayOfMonth") 
+          li(v-for="date in calendarFirstDayOfMonth")
           li(v-for="date in calendarDaysInMonth" v-bind:class="{'active': date == initialDate && calendarMonth == initialMonth && calendarYear == initialYear}" v-on:click.stop="pickerSelectDate(calendarYear, calendarMonth, date)") {{date}}
 
   .dimBg(v-if="currentSearchModal || itemModal.currName" v-on:click.stop="closeSearchModal()")
@@ -180,33 +180,33 @@
     //.search-modal-content(v-if="currentSearchModal == 'type'")
       .title 주문/승인 선택
       .button-group
-        .button(v-for="(value, name) in searchOptions.type.list" v-on:click.stop="selectOption('type', name)") {{value.name}} 
-        //.button(v-on:click.stop="selectType(2)") 현금승인날짜<br/>(현금영수증발행) 
+        .button(v-for="(value, name) in searchOptions.type.list" v-on:click.stop="selectOption('type', name)") {{value.name}}
+        //.button(v-on:click.stop="selectType(2)") 현금승인날짜<br/>(현금영수증발행)
     //.search-modal-content(v-if="currentSearchModal == 'date'")
-      .title 날짜/시간별 조회 
+      .title 날짜/시간별 조회
       vc-date-picker(v-model='searchOptions.datetime' is-range  :masks="masks")
       .button-group
         .button(v-on:click="closeSearchModal();") 확인
     //.search-modal-content(v-if="currentSearchModal == 'method'")
-      .title 결제방식 선택 
+      .title 결제방식 선택
       .button-group
-        .button(v-for="(value, name) in searchOptions.method.list" v-on:click.stop="selectOption('method', name)") {{value.name}} 
+        .button(v-for="(value, name) in searchOptions.method.list" v-on:click.stop="selectOption('method', name)") {{value.name}}
     //.search-modal-content(v-if="currentSearchModal == 'company'")
-      .title 카드사 선택 
+      .title 카드사 선택
       .button-group.company
-        .button(v-for="(value, name) in searchOptions['company'].list" v-on:click.stop="selectOption('company', name)") {{value.name}} 
+        .button(v-for="(value, name) in searchOptions['company'].list" v-on:click.stop="selectOption('company', name)") {{value.name}}
     //.search-modal-content(v-if="currentSearchModal == 'table'")
-      .title 테이블 선택(중복선택 가능) 
-      .table-group 
+      .title 테이블 선택(중복선택 가능)
+      .table-group
         .table(v-for="table in searchOptions.table.list" v-on:click.stop="toggleTable(table)") {{table.Tablet_name}} {{table.selected}}
       .button(v-on:click.stop="closeSearchModal()") 선택완료
     //.search-modal-content(v-if="currentSearchModal == 'sort'")
       .button-group
-        .button(v-for="(value, name) in searchOptions['sort'].list" v-on:click.stop="selectOption('sort', name); search();") {{value.name}} 
+        .button(v-for="(value, name) in searchOptions['sort'].list" v-on:click.stop="selectOption('sort', name); search();") {{value.name}}
     //.search-modal-content(v-if="currentSearchModal == 'filter'")
       .button-group
-        .button(v-for="(value, name) in searchOptions['filter'].list" v-on:click.stop="selectOption('filter', name);  search();") {{value.name}} 
-  h1 결제내역(건별) 
+        .button(v-for="(value, name) in searchOptions['filter'].list" v-on:click.stop="selectOption('filter', name);  search();") {{value.name}}
+  h1 결제내역(건별)
   .filter_wrap
     a.select(v-on:click.stop="openSearchModal('type')") {{optionName('type')}}
     a.select(v-on:click.stop="openSearchModal('date')") 날짜/시간별 조회
@@ -256,16 +256,16 @@
             th(scope='row') 증빙방법
             th(scope='row') 결제방식
             th(scope='row') 할부개월
-            th(scope='row') 부가세 
+            th(scope='row') 부가세
             th(scope='row') 매입사명
             th(scope='row') 오류내용
         tbody
           tr(v-for="item in paymentList")
             td.fixed-side {{item.id}}
-            td.fixed-side {{item.tableName}}  
+            td.fixed-side {{item.tableName}}
             td.fixed-side
               a.btn1(v-if="item.creditStat == 0" v-on:click.stop="openItemModal(item, 'cashOutstanding')") 현금미결제
-              a.btn2(v-else-if="item.creditStat == 1" v-on:click.stop="openItemModal(item, 'cancelCashPayment')") 현금 결제 취소 
+              a.btn2(v-else-if="item.creditStat == 1" v-on:click.stop="openItemModal(item, 'cancelCashPayment')") 현금 결제 취소
               a.btn1(v-else-if="item.creditStat == 2" v-on:click.stop="openItemModal(item, 'cancelCreditCardPayment')") 결제 취소
             td.fixed-side {{item.creditTypeString}}
             td.fixed-side {{item.orderdateTime}}
@@ -277,7 +277,7 @@
             td {{item.cardNumber}}
             td {{item.issuer}}
             td {{item.cashbillType}}
-            td  
+            td
             td {{item.creditTypeString}}
             td {{item.ApprovalMonth}}
             td {{item.vat}}
@@ -320,16 +320,16 @@
           th(scope='row') 증빙방법
           th(scope='row') 결제방식
           th(scope='row') 할부개월
-          th(scope='row') 부가세 
+          th(scope='row') 부가세
           th(scope='row') 매입사명
           th(scope='row') 오류내용
       tbody
         tr(v-for="item in paymentList")
           td.fixed-side {{item.id}}
-          td.fixed-side {{item.tableName}}  
+          td.fixed-side {{item.tableName}}
           td.fixed-side
             a.btn1(v-if="item.creditStat == 0" v-on:click.stop="openItemModal(item, 'cashOutstanding')") 현금미결제
-            a.btn2(v-else-if="item.creditStat == 1" v-on:click.stop="openItemModal(item, 'cancelCashPayment')") 현금 결제 취소 
+            a.btn2(v-else-if="item.creditStat == 1" v-on:click.stop="openItemModal(item, 'cancelCashPayment')") 현금 결제 취소
             a.btn1(v-else-if="item.creditStat == 2" v-on:click.stop="openItemModal(item, 'cancelCreditCardPayment')") 결제 취소
           td.fixed-side {{item.creditTypeString}}
           td.fixed-side {{item.orderdateTime}}
@@ -340,7 +340,7 @@
           td {{item.cardNumber}}
           td {{item.issuer}}
           td {{item.cashbillType}}
-          td 
+          td
           td {{item.creditTypeString}}
           td {{item.ApprovalMonth}}
           td {{item.vat}}
@@ -361,45 +361,45 @@
     .search-modal-content(v-if="currentSearchModal == 'type'")
       .title 주문/승인 선택
       .button-group
-        .button(v-for="(value, name) in searchOptions.type.list" v-on:click.stop="selectOption('type', name)") {{value.name}} 
-        //.button(v-on:click.stop="selectType(2)") 현금승인날짜<br/>(현금영수증발행) 
+        .button(v-for="(value, name) in searchOptions.type.list" v-on:click.stop="selectOption('type', name)") {{value.name}}
+        //.button(v-on:click.stop="selectType(2)") 현금승인날짜<br/>(현금영수증발행)
     .search-modal-content(v-if="currentSearchModal == 'date'")
-      .title 날짜/시간별 조회 
+      .title 날짜/시간별 조회
       vc-date-picker(v-model='searchOptions.datetime' is-range  :masks="masks")
       .button-group
         .button(v-on:click="closeSearchModal();") 확인
     .search-modal-content(v-if="currentSearchModal == 'method'")
-      .title 결제방식 선택 
+      .title 결제방식 선택
       .button-group
-        .button(v-for="(value, name) in searchOptions.method.list" v-on:click.stop="selectOption('method', name)") {{value.name}} 
+        .button(v-for="(value, name) in searchOptions.method.list" v-on:click.stop="selectOption('method', name)") {{value.name}}
     .search-modal-content(v-if="currentSearchModal == 'company'")
-      .title 카드사 선택 
+      .title 카드사 선택
       .button-group.company
-        .button(v-for="(value, name) in searchOptions['company'].list" v-on:click.stop="selectOption('company', name)") {{value.name}} 
+        .button(v-for="(value, name) in searchOptions['company'].list" v-on:click.stop="selectOption('company', name)") {{value.name}}
     .search-modal-content(v-if="currentSearchModal == 'table'")
-      .title 테이블 선택(중복선택 가능) 
-      .table-group 
+      .title 테이블 선택(중복선택 가능)
+      .table-group
         .table(v-for="table in searchOptions.table.list" v-on:click.stop="toggleTable(table)") {{table.Tablet_name}} {{table.selected}}
       .button(v-on:click.stop="closeSearchModal()") 선택완료
     .search-modal-content(v-if="currentSearchModal == 'sort'")
       .button-group
-        .button(v-for="(value, name) in searchOptions['sort'].list" v-on:click.stop="selectOption('sort', name); search();") {{value.name}} 
+        .button(v-for="(value, name) in searchOptions['sort'].list" v-on:click.stop="selectOption('sort', name); search();") {{value.name}}
     .search-modal-content(v-if="currentSearchModal == 'filter'")
       .button-group
-        .button(v-for="(value, name) in searchOptions['filter'].list" v-on:click.stop="selectOption('filter', name);  search();") {{value.name}} 
+        .button(v-for="(value, name) in searchOptions['filter'].list" v-on:click.stop="selectOption('filter', name);  search();") {{value.name}}
 
   .default-modal(v-if="itemModal.currName")
     .default-modal-background(v-on:click.stop="closeItemModal()")
     .default-modal-content(v-if="itemModal.currName == 'cashOutstanding'")
-      .title 현금미결제 
-      .content 
-        dl 
+      .title 현금미결제
+      .content
+        dl
           dt 주문금액
           dd {{item.amount}}
-        dl 
+        dl
           dt 승인번호
           dd {{item.paymentId}}
-        dl 
+        dl
           dt 주문일시
           dd {{item.orderdateTime}}
         .message 테이블에서<br/>현금 수납이 확인되었습니까?
@@ -410,37 +410,37 @@
       .title
         | 현금결제 취소
         .button-close X
-      .content 
+      .content
         .message 현금결제 환불 처리하시겠습니까?
       .button-group
         .button(v-on:click.stop="cashCancelCommit(item);") 확인
         .button(v-on:click.stop="closeItemModal()") 취소
     .default-modal-content(v-if="itemModal.currName == 'cancelCreditCardPayment'")
-      .title 신용카드 결제 취소 
+      .title 신용카드 결제 취소
         //.button-close X
-      .content  
-        dl 
+      .content
+        dl
           dt 카드번호
           dd {{item.cardNumber}}
-        dl 
-          dt 카드사명 
+        dl
+          dt 카드사명
           dd {{item.issuer}}
-        dl 
+        dl
           dt 결제금액
           dd {{item.amount}}
-        dl 
+        dl
           dt 할부개월
           dd {{item.ApprovalMonth}}
-        dl 
-          dt 승인번호 
+        dl
+          dt 승인번호
           dd {{item.paymentId}}
-        dl 
-          dt 승인일시 
+        dl
+          dt 승인일시
           dd {{item.creditDateTime}}
       .button-group
         .button(v-on:click.stop="closeItemModal()") 닫기
         .button(v-on:click.stop="cardCancelCommit") 승인취소
-  
+
   .search-control
     .button(v-on:click.stop="openSearchModal('type')") {{optionName('type')}}
     .button(v-on:click.stop="openSearchModal('date')") {{searchOptions.datetime.start | moment("YYYY년 MM월 DD일") }} ~ {{searchOptions.datetime.end | moment("YYYY년 MM월 DD일")}}
@@ -470,16 +470,16 @@
           th 증빙방법
           th 결제방식
           th 할부개월
-          th 부가세 
+          th 부가세
           th 매입사명
           th 오류내용
       tbody
         tr(v-for="item in items")
           td {{item.id}}
-          td {{item.tableName}}  
+          td {{item.tableName}}
           td
             .button(v-if="item.creditStat == 0" v-on:click.stop="openItemModal(item, 'cashOutstanding')") 현금미결제
-            .button(v-else-if="item.creditStat == 1" v-on:click.stop="openItemModal(item, 'cancelCashPayment')") 현금 결제 취소 
+            .button(v-else-if="item.creditStat == 1" v-on:click.stop="openItemModal(item, 'cancelCashPayment')") 현금 결제 취소
             .button(v-else-if="item.creditStat == 2" v-on:click.stop="openItemModal(item, 'cancelCreditCardPayment')") 결제 취소
           td {{item.creditTypeString}}
           td {{item.orderdateTime}}
@@ -489,7 +489,7 @@
           td {{item.cardNumber}}
           td {{item.issuer}}
           td {{item.cashbillType}}
-          td 
+          td
           td {{item.creditType}}
           td {{item.ApprovalMonth}}
           td {{item.vat}}
@@ -498,7 +498,7 @@
   .wrap-pagination
      .page(v-for="page in pagination.pages" v-bind:class="{'current': page.current}" v-on:click="selectPage(page)") {{page.number}}
 
-</template>                               
+</template>
 
 <script>
 //import paths from '@router/paths';
@@ -534,7 +534,7 @@ export default {
           name: '최신순',
           selected: 'DESC',
           list: {
-            'DESC':  { 
+            'DESC':  {
               name: '최신순'
             },
             'ASC':  {
@@ -546,7 +546,7 @@ export default {
           name: '30개씩',
           selected: '30',
           list: {
-            '30':  { 
+            '30':  {
               name: '30개씩'
             },
             '50':  {
@@ -570,7 +570,7 @@ export default {
           name: '주문/승인',
           selected: null,
           list: {
-            'order':  { 
+            'order':  {
               name: '주문날짜'
             },
             'credit':  {
@@ -873,7 +873,7 @@ export default {
       } else if (this.picker.selected == 'endMinute') {
         this.searchOptions.datetime.end = this.$moment(this.searchOptions.datetime.end).set({ minute: tmp });
       }
-    }, 
+    },
     pickerDownNumber() {
       let tmp = this.picker.number;
       tmp = parseInt(tmp);
@@ -901,7 +901,7 @@ export default {
       } else if (this.picker.selected == 'endMinute') {
         this.searchOptions.datetime.end = this.$moment(this.searchOptions.datetime.end).set({ minute: tmp });
       }
-    }, 
+    },
     pickerSelectStartHour() {
       let tmp = this.$moment(this.searchOptions.datetime.start).format('H');
       this.picker.number = tmp;
@@ -1004,11 +1004,30 @@ export default {
       this.closeItemModal();
     },
     async cardCancelCommit(item) {
-      const url ="http://dev.order.torder.co.kr/credit/cardCancelCommit";
-      const res  = await this.commit(item, url);
-      const newItem = res.data.rowData;
-      this.$store.commit('replacePaymentListItem', newItem);
-      this.closeItemModal();
+      console.log('cardCancelCommit', item);
+
+      const paymentPayload = {
+        amount: item.amount,
+        payReqId: item.key,
+        paymentId: item.paymentId,
+        approvalNumber: item.approvalNumber,
+        storeCd: this.$store.state.auth.store.store_code,
+
+        installment: '00', // 서버에 저장된 값에서 불러와야함
+        deviceId: '',
+        approvalDate: '', // timestemp
+        tableNo: '',
+        vanType: '',
+      };
+
+
+
+      console.log(paymentPayload);
+      // const url ="http://dev.order.torder.co.kr/credit/cardCancelCommit";
+      // const res  = await this.commit(item, url);
+      // const newItem = res.data.rowData;
+      // this.$store.commit('replacePaymentListItem', newItem);
+      // this.closeItemModal();
     },
     selectPage(page) {
       const number = page.number;
@@ -1129,12 +1148,12 @@ export default {
 </script>
 
 <style lang="scss">
-.payment-container { 
+.payment-container {
   display:flex;
   flex-direction:column;
   flex-shrink:1;
   overflow:hidden;
-  
+
   .wrap-table {
     display:flex;
     flex-direction:column;
@@ -1186,7 +1205,7 @@ export default {
     align-items:center;
     justify-content:center;
     z-index:0;
-    
+
     .default-modal-background {
       display:flex;
       background-color:rgba(0,0,0,0.5);
@@ -1289,7 +1308,7 @@ export default {
         .button {
           border-radius:0.4em;
           background-color:#fafafa;
-          color:#202020; 
+          color:#202020;
           padding:1em 2em;
           margin-top:1em;
           align-items:center;
