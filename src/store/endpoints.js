@@ -24,6 +24,8 @@ const endpoints = {
     shopCloseOrder: `${SERVER_URL}/store/shop_close_order`,
     showRecentOrder: `${SERVER_URL}/store/shop_open_recent_order`,
     hideRecentOrder: `${SERVER_URL}/store/shop_close_recent_order`,
+    showKitchenOrder: `${SERVER_URL}/store/shop_open_kitchen_order`,
+    hideKitchenOrder: `${SERVER_URL}/store/shop_close_kitchen_order`,
   },
   table: {
     getTableList: `${SERVER_URL}/shop/get_table_list`,

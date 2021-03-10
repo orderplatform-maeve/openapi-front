@@ -4,7 +4,7 @@ import axios from 'axios';
 import querystring from 'querystring';
 
 import {
-  vaildShopCode,
+  validShopCode,
   getCategories,
   getNewCategories,
 } from './store.helper';
@@ -34,15 +34,15 @@ const socket = {
       message;
     },
     SOCKET_orderlog(state, order) {
-      if (vaildShopCode(state, order)) {
+      if (validShopCode(state, order)) {
         Vue.set(state, 'order', order);
       }
     },
   },
   actions: {
     SOCKET_orderlog({ commit, state }, order) {
-      //console.log('SOCKET_orderlog', order);
-      if (vaildShopCode(state, order)) {
+      // // console.log('SOCKET_orderlog', order);
+      if (validShopCode(state, order)) {
         commit('PUSH_ORDER', order);
       }
     },
@@ -217,6 +217,15 @@ const socket = {
 
       if (payload?.type === '@update/device/recentOrder') {
         commit('setDeviceRecentOrderStatus', payload.value);
+        if (payload.value) {
+          commit('pushFlashMessage', '태블릿 주문 내역 숨김 상태로 변경 되었습니다.');
+        } else {
+          commit('pushFlashMessage', '태블릿 주문 내역 표시 상태로 변경 되었습니다.');
+        }
+      }
+
+      if (payload?.type === '@update/device/kitchenOrder') {
+        commit('setDeviceKitchenOrderStatus', payload.value);
         if (payload.value) {
           commit('pushFlashMessage', '태블릿 주문 내역 숨김 상태로 변경 되었습니다.');
         } else {
@@ -507,7 +516,6 @@ const shop = {
 const device = {
   mutations: {
     setDeviceStatus(state, device) {
-      // // console.log('commit setDeviceStatus', device);
       Vue.set(state, 'device', device);
     },
     setDeviceOrderStatus(state, orderStatus) {
@@ -518,6 +526,9 @@ const device = {
     },
     setDeviceRecentOrderStatus(state, recentOrderStatus) {
       state.device.recentOrderStatus = Boolean(recentOrderStatus);
+    },
+    setDeviceKitchenOrderStatus(state, kitchenOrderStatus) {
+      state.device.kitchenOrderStatus = Boolean(kitchenOrderStatus);
     },
   },
   actions: {
@@ -599,6 +610,36 @@ const device = {
     async setCloseRecentOrder(context, params) {
       try {
         const url = endpoints.device.hideRecentOrder;
+        const response = await axios.post(url, params);
+
+        if (response) {
+          return true;
+        }
+
+        return false;
+      } catch (error) {
+        // console.log(error);
+        return false;
+      }
+    },
+    async setShowKitchenOrder(context, params) {
+      try {
+        const url = endpoints.device.showKitchenOrder;
+        const response = await axios.post(url, params);
+
+        if (response) {
+          return true;
+        }
+
+        return false;
+      } catch (error) {
+        // console.log(error);
+        return false;
+      }
+    },
+    async setCloseKitchenOrder(context, params) {
+      try {
+        const url = endpoints.device.hideKitchenOrder;
         const response = await axios.post(url, params);
 
         if (response) {
@@ -1127,6 +1168,7 @@ const state = {
     serviceStatus: false,
     orderStatus: false,
     recentOrderStatus: false,
+    kitchenOrderStatus: false,
   },
   auth: authProto,
   stores: [],

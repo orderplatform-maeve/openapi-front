@@ -1,4 +1,4 @@
-// export const vaildShopCodeOrigins = (state, order) => {
+// export const validShopCodeOrigins = (state, order) => {
 //   const isStateCode = state.auth && state.auth.store && state.auth.store.store_code;
 //   const isShopCode = order && order.shop_code;
 
@@ -10,7 +10,7 @@
 //   return isTrue;
 // };
 
-export const vaildShopCode = (state, order) => {
+export const validShopCode = (state, order) => {
   const isStateCode = state.auth?.store?.store_code;
 
   const isShopCode = order?.shop_code;
