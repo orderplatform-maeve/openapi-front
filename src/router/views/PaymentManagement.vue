@@ -1012,17 +1012,18 @@ export default {
         paymentId: item.paymentId,
         approvalNumber: item.approvalNumber,
         storeCd: this.$store.state.auth.store.store_code,
-
-        installment: '00', // 서버에 저장된 값에서 불러와야함
-        deviceId: '',
-        approvalDate: '', // timestemp
-        tableNo: '',
-        vanType: '',
+        tableNo: item.tabletnumber,
+        installment: item.ApprovalMonth, // 서버에 저장된 값에서 불러와야함
+        deviceId: item.deviceId,
+        approvalDate: item.approvalDate, // timestemp
+        vanType: item.vanType,
       };
-
-
-
       console.log(paymentPayload);
+
+      if (window?.UUID?.torderRefund) {
+        window.UUID.torderRefund(...paymentPayload);
+      }
+
       // const url ="http://dev.order.torder.co.kr/credit/cardCancelCommit";
       // const res  = await this.commit(item, url);
       // const newItem = res.data.rowData;
