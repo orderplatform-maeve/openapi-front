@@ -13,4 +13,5 @@ export default {
   newProducts: '/newProducts',
   controlOrder: '/controlOrder',
   controlLastOrder: '/controlLastOrder',
+  paymentManagement: '/paymentManagement',
 };

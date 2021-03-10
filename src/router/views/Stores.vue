@@ -124,7 +124,7 @@ ul.store-list {
     flex-grow:1;
     flex-shrink:0;
     margin:0px;
-    padding:4px 24px;
+    padding:4px 24px !important;
     border-bottom:solid 1px #484848;
     height:60px;
     color:#fafafa;
@@ -146,7 +146,7 @@ ul.store-list {
       display:flex;
       align-items: center;
       justify-content: center;
-      padding:0 24px;
+      padding:0 24px !important;
       background-color:#fafafa;
       height:48px;
       border-radius:200px;

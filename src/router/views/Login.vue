@@ -48,31 +48,47 @@ export default {
 </script>
 
 <style lang="scss">
-.top .title {
-  margin: auto;
-  margin-bottom: 12px;
-}
-.body {
-  form {
-    margin-top:24px;
-    display:flex;
-    flex-grow:1;
-    flex-direction:column;
-    .input {
+.container {
+  color:#ffffff;
+
+  .top .title {
+    font-size:24px;
+  }
+  .body {
+    form {
+      margin-top:24px;
       display:flex;
-      margin-bottom:24px;
-      input {
+      flex-grow:1;
+      flex-direction:column;
+      .input {
         display:flex;
-        flex-grow:1;
-        height:60px;
-        border-radius:20px;
-        border:solid 1px #eaeaea;
-        padding: 0 16px;
-        font-size:20px;
+        margin-bottom:24px;
+        input {
+          display:flex;
+          flex-grow:1;
+          height:60px;
+          border-radius:20px;
+          border:solid 1px #eaeaea;
+          padding: 0 16px;
+          font-size:20px;
+          margin-bottom:20px;
+        }
+      }
+      .input:last-child {
+        margin-bottom:0;
       }
     }
-    .input:last-child {
-      margin-bottom:0;
+  }
+  .bottom {
+    .button {
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background-color:#ff0000;
+      color:#ffffff;
+      height:60px;
+      font-size:20px;
+      border-radius:20px;
     }
   }
 }

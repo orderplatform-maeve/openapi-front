@@ -30,7 +30,7 @@ function imagePreload(url) {
 const socket = {
   mutations: {
     SOCKET_res(state, message) {
-      // console.log(message);
+      //console.log(message);
       message;
     },
     SOCKET_orderlog(state, order) {
@@ -41,13 +41,13 @@ const socket = {
   },
   actions: {
     SOCKET_orderlog({ commit, state }, order) {
-      // // console.log('SOCKET_orderlog', order);
+      //console.log('SOCKET_orderlog', order);
       if (vaildShopCode(state, order)) {
         commit('PUSH_ORDER', order);
       }
     },
     async SOCKET_orderview({ commit, state, dispatch }, payload) {
-      // // console.log('out SOCKET_orderview', payload);
+      //console.log('out SOCKET_orderview', payload);
 
       if (payload?.type_msg === 'commit') {
         const targetOrder = {
@@ -56,13 +56,20 @@ const socket = {
         };
 
         // const target = state.orders.find((o) => o.order_view_key === payload.key);
-
         // console.log('targetOrder', targetOrder);
         // console.log('SOCKET_orderview', payload, target);
 
         commit('UPDATE_ORDERS', targetOrder);
         // commit('pushFlashMessage', `${target.T_order_order_tablet_number} 테이블 주문이(${target.order_time}) ${targetOrder.commit ? '확인' : '미확인'} 상태로 변경 되었습니다.`);
         return commit('UNSET_ORDER');
+      }
+
+      if (payload?.type === 'requestReceiptCash') {
+        if (payload.data) {
+          const item = payload.data;
+          commit('setRequestCashItem', item);
+          commit('pushPaymentList', item);
+        }
       }
 
       if (payload?.type === 'reload') {
@@ -362,11 +369,22 @@ const order = {
       Vue.set(state, 'order', undefined);
     },
     PUSH_ORDER: (state, order) => {
+      console.log('PUSH_ORDER');
       state.orders.push(order);
     },
     SET_ORDERS: (state, orders) => {
       // // console.log('orders!!!!!!!', orders);
       Vue.set(state, 'orders', orders);
+    },
+    UPDATE_ORDER_CREDIT: (state, order, value) => {
+      const { orders } = state;
+      const idx = orders.findIndex((item) => item.order_id === order.order_id);
+
+      console.log(idx);
+      if (idx > -1) {
+        orders[idx].creditStat = value;
+      }
+
     },
     UPDATE_ORDERS: (state, order) => {
       const { orders } = state;
@@ -1012,6 +1030,7 @@ const tablet = {
   },
 };
 
+
 const authProto = {
   member: {
     code: '',
@@ -1032,6 +1051,73 @@ const confirmModalProto = {
   title: '',
   message: '',
   confirm: () => {},
+};
+
+const payment = {
+  mutations: {
+    setRequestCashItem(state, payload) {
+      state.requestCashItem = payload;
+    },
+    clearRequestCashItem(state) {
+      state.requestCashItem = undefined; 
+    },
+    pushPyamentList(state, payload) {
+      state.paymentList.push(payload);
+    },
+    updatePaymentList(state, payload) {
+      const currPage = payload.curentpage;
+      const allPages = payload.totalPage;
+      let list = payload.list;
+
+
+      const typeStrings = {
+        0: { name: "현금 미결제"},
+        1: { name: "현금 결제 완료"},
+        2: { name: "현금 환불"},
+        3: { name: "카드결제 완료"},
+        4: { name: "카드 환불"},
+        5: { name: "카드 취소"},
+        6: { name: "현금 영수증 요청 "},
+        7: { name: "현금 영수증 출력"},
+        8: { name: "현금 영수증 취소"},
+      };
+
+      list.map((i) => {
+        const index = i.creditType;
+        let name = "";
+        let item = typeStrings[index];
+        if (item) {
+          name = item.name;
+        }
+        i.creditTypeString = name;
+      });
+
+
+      Vue.set(state, 'paymentList', list);
+      Vue.set(state, 'paymentListPage', {
+        currPage,
+        allPages,
+      });
+    },
+    replacePaymentListItem(state, item) {
+      const id = item.id;
+      const index = state.paymentList.findIndex((i) => {
+        return i.id == id;
+      });
+      if (index>-1) {
+        state.paymentList[index] = item;
+      }
+    },
+  },
+  actions : {
+    async updatePaymentList(context, params) {
+
+      const url ="http://dev.order.torder.co.kr/credit/creditList";
+      const res = await axios.get(url, {params});
+
+      context.commit('updatePaymentList', res.data);
+    } 
+  },
 };
 
 const state = {
@@ -1058,6 +1144,12 @@ const state = {
   isDisConnectNetwork: false,
   signboardMessage: '',
   confirmModal: confirmModalProto,
+  requestCashItem: undefined,
+  paymentList: [],
+  paymentListPage: {
+    currPage: 3,
+    allPages: 10,
+  },
 };
 
 const mutations = {
@@ -1071,6 +1163,7 @@ const mutations = {
   ...device.mutations,
   ...popup.mutations,
   ...tablet.mutations,
+  ...payment.mutations,
 };
 
 const actions = {
@@ -1083,6 +1176,7 @@ const actions = {
   ...menu.actions,
   ...goods.actions,
   ...tablet.actions,
+  ...payment.actions,
 };
 
 const getters = {

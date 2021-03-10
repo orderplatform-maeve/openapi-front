@@ -1,5 +1,43 @@
 <template lang="pug">
 #orders
+  .top_menu
+    .menu(@click="setViewMode('a')" :class="activeAllTabBtnClass")
+      | 모든 주문 
+      span {{lengthOrders}}
+    .menu(@click="setViewMode('n')" :class="activeUnidentifiedTabBtnClass")
+      | 미확인 주문  
+      span {{unidentifiedOrders}}
+    .menu(@click="setViewMode('c')" :class="activeCheckedTabBtnClass")
+      | 확인주문
+      span {{lengthCommitedOrders}}
+
+  .list_box
+    ul.order_list
+      li.order-item(
+        v-for="order in sortedOrders"
+        v-if="visibleOrderItem(order)"
+      )
+        a(@click="view(order)")
+          .tn(v-bind:class="{ bg_red: order.viewType==1 || order.viewType==0, bg_blue: order.viewType==2, bg_green: order.viewType==3, bg_yellow: order.viewType==4}") {{checkedTabletNum(order)}}
+          .txt1
+            template(v-if="order.viewType==0") 첫주문
+            template(v-if="order.viewType==1") 주문
+            template(v-if="order.viewType==2") 호출
+            template(v-if="order.viewType==3") 세팅완료
+            template(v-if="order.viewType==4") 평가
+          .check(v-bind:class="getOrderItemClass(order)") 확인
+          .txt2
+            template(v-if="order.paidOrder") 선불
+            template(v-else) 후불
+          div(v-bind:class="{txt4: order.creditStat==false, txt3:order.creditStat==true || order.paidOrder==false}")
+            template(v-if="order.creditType=='cash'") 현금 
+            template(v-if="order.creditType=='card'") 카드 
+            template(v-if="order.creditType=='complex'") 카드+현금
+            template(v-if="order.paidOrder==false") &nbsp;&nbsp;&nbsp;&nbsp;
+          .date {{getOrderTiem(order)}}
+          .btn_orderList 주문내역 
+
+//#orders
   .top
     .tab-group
       .order-list-tab-buttons.tab-buttons
@@ -92,7 +130,7 @@ export default {
   },
   methods: {
     setViewMode(value) {
-      document.querySelector(".order-list").scrollTop = 0;
+      document.querySelector(".order_list").scrollTop = 0;
       this.viewMode = value;
     },
     view(order) {
@@ -115,7 +153,7 @@ export default {
     },
     getOrderItemClass(order) {
       return {
-        commit: this.checkedCommit(order),
+        on: this.checkedCommit(order),
       };
     },
     ...utils,
