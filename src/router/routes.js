@@ -13,6 +13,7 @@ import {
   NewProducts,
   ControlOrder,
   ControlLastOrder,
+  PaymentManagement,
 } from '@views';
 
 import paths from './paths';
@@ -103,6 +104,12 @@ const routes = [{
       path: paths.controlLastOrder,
       name: paths.controlLastOrder.replace('/',''),
       component: ControlLastOrder,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: paths.paymentManagement,
+      name: paths.paymentManagement.replace('/',''),
+      component: PaymentManagement,
       meta: { requiresAuth: true },
     },
   ],

@@ -20,13 +20,18 @@
     "axios": "^0.19.2",
     "cross-env": "^5.0.5",
     "lodash": "^4.17.15",
+    "luxon": "^1.26.0",
     "moment": "^2.26.0",
+    "v-calendar": "^2.2.4",
     "vue": "^2.6.11",
     "vue-axios": "^2.1.5",
+    "vue-datetime": "^1.0.0-beta.14",
+    "vue-infinite-loading": "^2.4.5",
     "vue-router": "^3.1.6",
     "vue-socket.io": "3.0.7",
     "vue-star-rating": "^1.6.1",
-    "vuex": "^3.1.2"
+    "vuex": "^3.1.2",
+    "weekstart": "^1.0.1"
   },
   "devDependencies": {
     "@babel/plugin-proposal-nullish-coalescing-operator": "^7.8.3",

@@ -1,5 +1,42 @@
 <template lang="pug">
-#order
+.popup.order_list
+  .top_wrap.clearfix
+    span.fleft.tn.bg_red {{checkedTabletNum(order)}}
+    h1 주문내역 
+    span.fright
+      a.btn_close(v-on:click="closeOrder")
+        svg(xmlns='http://www.w3.org/2000/svg' width='28.242' height='29.242' viewbox='0 0 28.242 29.242')
+          g(transform='translate(2.303 2.486)')
+            line(x1='24' y2='25' transform='translate(-0.182 -0.365)' fill='none' stroke='#fff' stroke-linecap='round' stroke-width='3')
+            line(x2='24' y2='25' transform='translate(-0.182 -0.365)' fill='none' stroke='#fff' stroke-linecap='round' stroke-width='3')
+    span.fright.date {{order.order_time}}
+    span.fright.check(v-bind:class="{'on': order.commit == true}")
+      template(v-if="order.commit == true") 확인
+      template(v-if="order.commit == false") 미확인
+  .details_wrap.clearfix
+    .details_left
+      p 현재 주문내역 
+      ul.list
+        li(v-for="product in order.order_info")
+          ul.group
+            li.fleft.txt1 {{getProjectGoodName(product)}}
+            li.fright.txt2 {{getProductQty(product)}}개
+            li.fleft.option(v-if="isProductOpt(product)")
+              div(v-for="option in product.option") {{getOptionDisplayName(option)}} {{getOptionGoodQty(option)}}개
+    .details_right()
+      p 이전 주문내역 
+      ul(v-if="order.paidOrder==false")
+        li(v-for="c_product in order.total_orders")
+          dl
+            dt.fleft {{getBeforeProductDisplayName(c_product)}}
+            dd.fright {{getBeforeProductOrderQty(c_product)}}개
+            dd.fleft.option(v-if="isBeforeProductOtp(c_product)")
+              div(v-for="option in c_product.option") {{getBeforeProductOptionDisplayName(option)}} {{getBeforeProductOptionOrderQty(option)}}개
+  .btm
+    p {{seconds}}초 후 닫혀요.
+    a(@click="commitOrder(order)") 확인 
+
+//#order
   .background
   .container
     .container-top
@@ -51,6 +88,9 @@
         ) 평가 항목
         .word(v-for="ratingItem in order.rating_info.rating_array") {{ ratingItem.title }} -&nbsp;
           span(v-for="word in ratingItem.rewviews") {{ word.name }}
+      .left(v-else-if="order.order_type === 'CREDIT'")
+        .good-name {{ order.rating_info.good_name }}
+
       .right
         .wrap-c-product-list()
           .title 이전주문내역
@@ -91,8 +131,11 @@ export default {
     },
   },
   mounted() {
+    console.log(this.$store.state.order);
+
     clearInterval(this.interval);
     this.seconds = 10;
+    /*
     this.interval = setInterval(() => {
       this.seconds -= 1;
 
@@ -100,6 +143,7 @@ export default {
         this.closeOrder();
       }
     }, 1000);
+    */
   },
   beforeDestroy() {
     this.closeOrder();
