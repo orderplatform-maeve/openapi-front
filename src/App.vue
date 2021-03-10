@@ -19,6 +19,7 @@ export default {
 
             if (vanData?.responseCode === "0000") {
               // 결제 취소 페이지 고고링
+              console.log('결제 취소 완료', vanData);
             }
           }
         }
