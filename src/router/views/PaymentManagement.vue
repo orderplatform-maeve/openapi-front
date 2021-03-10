@@ -1013,7 +1013,7 @@ export default {
         approvalNumber: item.approvalNumber,
         storeCd: this.$store.state.auth.store.store_code,
         tableNo: item.tabletnumber,
-        installment: item.ApprovalMonth, // 서버에 저장된 값에서 불러와야함
+        installment: String(item.ApprovalMonth) === "0" ? "00" : item.ApprovalMonth, // 서버에 저장된 값에서 불러와야함
         deviceId: item.deviceId,
         approvalDate: item.approvalDate, // timestemp
         vanType: item.vanType,
