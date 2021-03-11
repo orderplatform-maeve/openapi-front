@@ -1,5 +1,6 @@
 <template lang="pug">
 #orderview
+  alert-modal(v-if="isAlertModal")
   .popup.item.cashOutstanding(v-if="requestCashItem")
     p.tit 현금미결제
     .content
@@ -330,11 +331,13 @@ import store from '@store/store';
 import paths from '@router/paths';
 import { version } from '@utils/constants';
 import { Torder } from '@svg';
+import { AlertModal } from '@components';
 import axios from 'axios';
 
 export default {
   components: {
     Torder,
+    'alert-modal': AlertModal,
   },
   store,
   data() {
@@ -351,6 +354,9 @@ export default {
     };
   },
   computed: {
+    isAlertModal() {
+      return this.$store.state.isAlertModal;
+    },
     requestCashItem() {
       return this.$store.state.requestCashItem;
     },
@@ -468,6 +474,7 @@ export default {
   },
   methods: {
     async commit(item, url) {
+      console.log('commit', item);
       let data = new FormData();
       data.append('key', item.key);
       data.append('id', item.id);
@@ -477,12 +484,18 @@ export default {
       data.append('tabletNumber', item.tabletnumber);
       data.append('tablename', item.tableName);
       data.append('orderKey', item.orderkey);
-      return  await axios({
+      const res =  await axios({
         method: 'post',
         url,
         data: data,
         headers: { "Content-Type": "multipart/form-data" },
       });
+      console.log('commit res', res);
+      return res;
+    },
+    showAlert(message) {
+      this.$store.commit('updateAlertModalMessage', message);
+      return this.$store.commit('updateIsAlertModal', true);
     },
     watchPayment() {
       window.addEventListener('message', async (event) => {
@@ -502,27 +515,76 @@ export default {
 
                 const requestCreditItem = this.$store?.state?.requestCreditItem;
 
-                // const parmas = {
-                //   key: requestCreditItem.payReqId,
-                //   id: requestCreditItem.approvalMonth,
-                //   stat: 2, // 경석님한테 문의필요
-                //   type: 3, // 경석님한테 문의 하거나 전역으로 빼거나
-                //   tabletNumber: vanData.tableNo,
-                //   tablename: this.$store.state.auth.store.
-                //   orderKey: vanData.orderkey,
-                // };
+                if (!requestCreditItem?.key) {
+                  return this.showAlert(`key 값이 없습니다 아닙니다. 에러메세지: ${requestCreditItem?.key}`);
+                }
+
+                if (!requestCreditItem?.id) {
+                  return this.showAlert(`id 값이 없습니다 아닙니다. 에러메세지: ${requestCreditItem?.id}`);
+                }
+
+                if (!requestCreditItem?.creditStat) {
+                  return this.showAlert(`stat 값이 없습니다 아닙니다. 에러메세지: ${requestCreditItem?.creditStat}`);
+                }
+
+                if (!requestCreditItem?.creditType) {
+                  return this.showAlert(`type 값이 없습니다 아닙니다. 에러메세지: ${requestCreditItem?.creditType}`);
+                }
+
+                if (!requestCreditItem?.storeCode) {
+                  return this.showAlert(`storeCode 값이 없습니다 아닙니다. 에러메세지: ${requestCreditItem?.storeCode}`);
+                }
+
+                if (!requestCreditItem?.tabletnumber) {
+                  return this.showAlert(`tabletnumber 값이 없습니다 아닙니다. 에러메세지: ${requestCreditItem?.tabletnumber}`);
+                }
+
+                if (!requestCreditItem?.tableName) {
+                  return this.showAlert(`tableName 값이 없습니다 아닙니다. 에러메세지: ${requestCreditItem?.tableName}`);
+                }
+
+                if (!requestCreditItem?.orderkey) {
+                  return this.showAlert(`orderkey 값이 없습니다 아닙니다. 에러메세지: ${requestCreditItem?.orderkey}`);
+                }
 
                 const url ="http://dev.order.torder.co.kr/credit/cardCancelCommit";
-                const res  = await this.commit(requestCreditItem, url);
-                const newItem = res?.data?.rowData;
-                this.$store.commit('replacePaymentListItem', newItem);
-                // this.closeItemModal();
+                const res = await this.commit(requestCreditItem, url);
+
+                if (res.status === 200) {
+                  const newItem = res?.data?.rowData;
+
+                  if (!res.data) {
+                    return this.showAlert(`API cardCancelCommit 응답값 data이 없습니다 아닙니다. 응답값: ${newItem}`);
+                  }
+
+                  if (res?.data?.length === 0) {
+                    return this.showAlert(`API cardCancelCommit 응답값 data크기가 0입니다. 아닙니다. 응답값: ${res.data}`);
+                  }
+
+                  if (!newItem) {
+                    return this.showAlert(`API cardCancelCommit 응답값 rowData이 없습니다 아닙니다. 응답값: ${newItem}`);
+                  }
+
+                  // newItem {id: ''}
+
+                  this.$store.commit('replacePaymentListItem', newItem);
+                  return this.$store.commit('updateItemModal', {
+                    currName: null,
+                    index: null,
+                  });
+                }
+
+                return this.showAlert(`잘못된 response status 200이 아닙니다. status: ${res.status}`);
+              } else {
+                return this.showAlert(`잘못된 responseCode 0000이 아닙니다. 에러메세지: ${vanData?.errorMessage}`);
               }
+            } else {
+              return this.showAlert(`잘못된 callBackPayment message 형태입니다. 출력값: ${msg?.result}`);
             }
           }
 
         } catch (error) {
-          console.log(error);
+          return this.showAlert(`${event?.data?.methodName} 잘못된 message 형태입니다. 에러: ${error.message}`);
         }
       });
     },

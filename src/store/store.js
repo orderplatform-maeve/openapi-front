@@ -1096,6 +1096,12 @@ const confirmModalProto = {
 
 const payment = {
   mutations: {
+    updateAlertModalMessage(state, message) {
+      state.alertModalMessage = message;
+    },
+    updateIsAlertModal(state, visible) {
+      state.isAlertModal = visible;
+    },
     setRequestCashItem(state, payload) {
       state.requestCashItem = payload;
     },
@@ -1205,6 +1211,8 @@ const state = {
     index: null,
     item: null,
   },
+  alertModalMessage: '에레 메세지 입력하세요 기본값 입니다.',
+  isAlertModal: false,
 };
 
 const mutations = {

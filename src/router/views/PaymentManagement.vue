@@ -759,6 +759,10 @@ export default {
     this.picker.context = this.$moment();
   },
   methods: {
+    showAlert(message) {
+      this.$store.commit('updateAlertModalMessage', message);
+      return this.$store.commit('updateIsAlertModal', true);
+    },
     async updatePaymentList(page) {
       if (!page)  page = 1;
 
@@ -1007,74 +1011,111 @@ export default {
       this.closeItemModal();
     },
     async cardCancelCommit(item) {
-      console.log('cardCancelCommit', item);
+      try {
+        console.log('cardCancelCommit', item);
 
-      const paymentPayload = {
-        installment: String(item.ApprovalMonth) === "0" ? "00" : item.ApprovalMonth, // 서버에 저장된 값에서 불러와야함
-        amount: item.amount,
-        payReqId: item.key,
-        approvalDate: item.approvalDate, // timestemp
-        paymentId: item.paymentId,
-        approvalNumber: item.approvalNumber,
-        deviceId: item.deviceId,
-        storeCd: this.$store.state.auth.store.store_code,
-        tableNo: item.tabletnumber,
-        vanType: item.vanType,
-        orderKey: item.orderkey,
-      };
-      console.log(paymentPayload);
+        const paymentPayload = {
+          installment: String(item.ApprovalMonth) === "0" ? "00" : item.ApprovalMonth, // 서버에 저장된 값에서 불러와야함
+          amount: item.amount,
+          payReqId: item.key,
+          approvalDate: item.approvalDate, // timestemp
+          paymentId: item.paymentId,
+          approvalNumber: item.approvalNumber,
+          deviceId: item.deviceId,
+          storeCd: this.$store.state.auth.store.store_code,
+          tableNo: item.tabletnumber,
+          vanType: item.vanType,
+          orderKey: item.orderkey,
+        };
+        console.log('paymentPayload', paymentPayload, item.orderkey);
 
-      if (isDev) {
-        console.log('postMessage');
-        window.postMessage({
-          methodName: 'callBackPayment',
-          result: JSON.stringify({
-            responseCode: '0000',
-            amount: paymentPayload.amount,
-            vat: 0,
-            cardNumber: '655620**********',
-            issuerCode: '0100',
-            issuer: '우리카드',
-            acquirerCode: '0100',
-            acquirer: '비씨카드',
-            paymentId: String(Math.floor(Math.random() * 1000000000000) + 1),
-            approvalNumber: String(Math.floor(Math.random() * 100000000) + 1),
-            approvalMonth: '00',
-            approvalDate: '20201216113356',
-            errorMessage: '',
-            deviceId: paymentPayload.deviceId,
-            storeCode: paymentPayload.storeCd,
-            tableNo: paymentPayload.tableNo,
-            payReqId: paymentPayload.payReqId,
-            orderKey: paymentPayload.orderkey,
-          })
-        }, 'http://localhost:8080');
+        if (!item?.ApprovalMonth) {
+          return this.showAlert(`ApprovalMonth(installment) 잘못된 형태입니다. 출력값: ${item.ApprovalMonth}`);
+        }
+
+        if (!item.amount) {
+          return this.showAlert(`amount 잘못된 형태입니다. 출력값: ${item.amount}`);
+        }
+
+        if (!item.key) {
+          return this.showAlert(`key(payReqId) 잘못된 형태입니다. 출력값: ${item.key}`);
+        }
+
+        if (!item.approvalDate) {
+          return this.showAlert(`approvalDate 잘못된 형태입니다. 출력값: ${item.approvalDate}`);
+        }
+
+        if (!item.paymentId) {
+          return this.showAlert(`paymentId 잘못된 형태입니다. 출력값: ${item.paymentId}`);
+        }
+
+        if (!item.deviceId) {
+          return this.showAlert(`deviceId 잘못된 형태입니다. 출력값: ${item.deviceId}`);
+        }
+
+        if (!item.tabletnumber) {
+          return this.showAlert(`tabletnumber(tableNo) 잘못된 형태입니다. 출력값: ${item.tabletnumber}`);
+        }
+
+        if (!item.vanType) {
+          return this.showAlert(`vanType 잘못된 형태입니다. 출력값: ${item.vanType}`);
+        }
+
+        if (!item.orderkey) {
+          return this.showAlert(`orderKey 잘못된 형태입니다. 출력값: ${item.orderKey}`);
+        }
+
+        if (!this.$store?.state?.auth?.store?.store_code) {
+          return this.showAlert(`!store_code(storeCd) 잘못된 형태입니다. 출력값: ${this.$store?.state?.auth?.store?.store_code}`);
+        }
+
+        if (isDev) {
+          console.log('postMessage');
+          return window.postMessage({
+            methodName: 'callBackPayment',
+            result: JSON.stringify({
+              responseCode: '0000',
+              amount: paymentPayload.amount,
+              vat: 0,
+              cardNumber: '655620**********',
+              issuerCode: '0100',
+              issuer: '우리카드',
+              acquirerCode: '0100',
+              acquirer: '비씨카드',
+              paymentId: String(Math.floor(Math.random() * 1000000000000) + 1),
+              approvalNumber: String(Math.floor(Math.random() * 100000000) + 1),
+              approvalMonth: '00',
+              approvalDate: '20201216113356',
+              errorMessage: '',
+              deviceId: paymentPayload.deviceId,
+              storeCode: paymentPayload.storeCd,
+              tableNo: paymentPayload.tableNo,
+              payReqId: paymentPayload.payReqId,
+              orderKey: paymentPayload.orderKey,
+            })
+          }, 'http://localhost:8080');
+        }
+
+        if (window?.UUID) {
+          console.log('call torderRefund', window.UUID.torderRefund);
+          return window.UUID.torderRefund(
+            paymentPayload.installment,
+            paymentPayload.amount,
+            paymentPayload.payReqId,
+            paymentPayload.approvalDate,
+            paymentPayload.paymentId,
+            paymentPayload.approvalNumber,
+            paymentPayload.deviceId,
+            paymentPayload.storeCd,
+            paymentPayload.tableNo,
+            paymentPayload.vanType,
+            paymentPayload.orderKey,
+          );
+        }
+        return this.showAlert(`window.UUID 객체가 없습니다. 에러: ${window.UUID}`);
+      } catch (error) {
+        return this.showAlert(`cardCancelCommit 잘못된 형태입니다. 에러: ${error.message}`);
       }
-
-      if (window?.UUID) {
-        console.log('call torderRefund', window.UUID.torderRefund);
-        window.UUID.torderRefund(
-          paymentPayload.installment,
-          paymentPayload.amount,
-          paymentPayload.payReqId,
-          paymentPayload.approvalDate,
-          paymentPayload.paymentId,
-          paymentPayload.approvalNumber,
-          paymentPayload.deviceId,
-          paymentPayload.storeCd,
-          paymentPayload.tableNo,
-          paymentPayload.vanType,
-          paymentPayload.orderKey,
-        );
-      } else {
-        console.log('UUID가 없습니다.');
-      }
-
-      // const url ="http://dev.order.torder.co.kr/credit/cardCancelCommit";
-      // const res  = await this.commit(item, url);
-      // const newItem = res.data.rowData;
-      // this.$store.commit('replacePaymentListItem', newItem);
-      // this.closeItemModal();
     },
     selectPage(page) {
       const number = page.number;
