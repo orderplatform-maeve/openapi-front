@@ -1099,8 +1099,11 @@ const payment = {
     setRequestCashItem(state, payload) {
       state.requestCashItem = payload;
     },
+    setRequestCreditItem(state, payload) {
+      state.requestCreditItem = payload;
+    },
     clearRequestCashItem(state) {
-      state.requestCashItem = undefined; 
+      state.requestCashItem = undefined;
     },
     pushPyamentList(state, payload) {
       state.paymentList.push(payload);
@@ -1149,6 +1152,9 @@ const payment = {
         state.paymentList[index] = item;
       }
     },
+    updateItemModal(state, item) {
+      state.itemModal = item;
+    },
   },
   actions : {
     async updatePaymentList(context, params) {
@@ -1157,7 +1163,7 @@ const payment = {
       const res = await axios.get(url, {params});
 
       context.commit('updatePaymentList', res.data);
-    } 
+    }
   },
 };
 
@@ -1187,10 +1193,17 @@ const state = {
   signboardMessage: '',
   confirmModal: confirmModalProto,
   requestCashItem: undefined,
+  requestCreditItem: {},
   paymentList: [],
   paymentListPage: {
     currPage: 3,
     allPages: 10,
+  },
+  currentSearchModal: null,
+  itemModal: {
+    currName: null,
+    index: null,
+    item: null,
   },
 };
 

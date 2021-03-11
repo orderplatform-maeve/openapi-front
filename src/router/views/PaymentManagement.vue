@@ -517,10 +517,10 @@ export default {
         currPage: 3,
         allPages: 10,
       },
-      itemModal: {
-        currName: null,
-        item: null,
-      },
+      // itemModal: {
+      //   currName: null,
+      //   item: null,
+      // },
       picker: {
         today: null,
         context: null,
@@ -671,6 +671,9 @@ export default {
     };
   },
   computed: {
+    itemModal() {
+      return this.$store.state.itemModal;
+    },
     paymentList() {
       return this.$store.state.paymentList;
     },
@@ -1024,7 +1027,7 @@ export default {
       if (isDev) {
         console.log('postMessage');
         window.postMessage({
-          methodName: 'torderRefund',
+          methodName: 'callBackPayment',
           result: JSON.stringify({
             responseCode: '0000',
             amount: paymentPayload.amount,
@@ -1040,7 +1043,7 @@ export default {
             approvalDate: '20201216113356',
             errorMessage: '',
             deviceId: paymentPayload.deviceId,
-            storeCode: this.$store.state.store.code,
+            storeCode: paymentPayload.storeCd,
             tableNo: paymentPayload.tableNo,
             payReqId: paymentPayload.payReqId,
             orderKey: paymentPayload.orderkey,
@@ -1107,13 +1110,18 @@ export default {
         this.$store.commit('setRequestCashItem', item);
       } else {
         console.log('openItemModal', item, name);
-        this.itemModal.item = item;
-        this.itemModal.currName = name;
+        this.$store.commit('setRequestCreditItem', item);
+        this.$store.commit('updateItemModal', {
+          item,
+          currName: name,
+        });
       }
     },
     closeItemModal() {
-      this.itemModal.currName = null;
-      this.itemModal.index = null;
+      this.$store.commit('updateItemModal', {
+        currName: null,
+        index: null,
+      });
       this.currentSearchModal = null;
     },
     openSearchModal(name){
@@ -1121,8 +1129,10 @@ export default {
       this.currentSearchModal = name;
     },
     closeSearchModal() {
-      this.itemModal.currName = null;
-      this.itemModal.index = null;
+      this.$store.commit('updateItemModal', {
+        currName: null,
+        index: null,
+      });
       this.currentSearchModal = null;
     },
     search() {

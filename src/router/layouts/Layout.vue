@@ -445,6 +445,7 @@ export default {
     this.observableRefresh();
   },
   mounted() {
+    this.watchPayment();
     this.catchOffline();
     this.catchOnline();
     this.getUCode();
@@ -466,6 +467,65 @@ export default {
     },
   },
   methods: {
+    async commit(item, url) {
+      let data = new FormData();
+      data.append('key', item.key);
+      data.append('id', item.id);
+      data.append('stat', item.creditStat);
+      data.append('type',  item.creditType);
+      data.append('storeCode', item.storeCode);
+      data.append('tabletNumber', item.tabletnumber);
+      data.append('tablename', item.tableName);
+      data.append('orderKey', item.orderkey);
+      return  await axios({
+        method: 'post',
+        url,
+        data: data,
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+    },
+    watchPayment() {
+      window.addEventListener('message', async (event) => {
+        try {
+          const msg = event?.data;
+          const methodName = msg?.methodName;
+
+          if (methodName === 'callBackPayment') {
+            // console.log(event);
+
+            if (msg?.result) {
+              const vanData = JSON.parse(msg.result);
+
+              if (vanData?.responseCode === "0000") {
+                // 결제 취소 페이지 고고링
+                console.log('결제 취소 완료', vanData);
+
+                const requestCreditItem = this.$store?.state?.requestCreditItem;
+
+                // const parmas = {
+                //   key: requestCreditItem.payReqId,
+                //   id: requestCreditItem.approvalMonth,
+                //   stat: 2, // 경석님한테 문의필요
+                //   type: 3, // 경석님한테 문의 하거나 전역으로 빼거나
+                //   tabletNumber: vanData.tableNo,
+                //   tablename: this.$store.state.auth.store.
+                //   orderKey: vanData.orderkey,
+                // };
+
+                const url ="http://dev.order.torder.co.kr/credit/cardCancelCommit";
+                const res  = await this.commit(requestCreditItem, url);
+                const newItem = res?.data?.rowData;
+                this.$store.commit('replacePaymentListItem', newItem);
+                // this.closeItemModal();
+              }
+            }
+          }
+
+        } catch (error) {
+          console.log(error);
+        }
+      });
+    },
     async requestPaymentCommit(item, url) {
       console.log({item});
       let data = new FormData();
