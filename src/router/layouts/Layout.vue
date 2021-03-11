@@ -509,6 +509,31 @@ export default {
             if (msg?.result) {
               const vanData = JSON.parse(msg.result);
 
+              // acquirer: "삼성카드사"
+              // acquirerCode: "04"
+              // amount: "000000002000"
+              // approvalDate: "20210311174931"
+              // approvalMonth: "00"
+              // approvalNumber: "36204121"
+              // approvalType: "REFUND"
+              // cardNumber: "536148**********"
+              // deviceId: "DPT0TEST03"
+              // errorMessage: ""
+              // issuer: "삼성마스터카드"
+              // issuerCode: "04"
+              // orderKey: "TEST_TPAY_003-TEST_TPAY_003_TEST-1615452524"
+              // payReqId: "TEST_TPAY_003-TEST_TPAY_003_TEST-1615452521-4x6mn"
+              // paymentCompany: "KSNET"
+              // paymentDate: "20210311174934"
+              // paymentId: "687743457830"
+              // paymentResultUpload: "N"
+              // receiptType: ""
+              // responseCode: "0000"
+              // resultText: "success"
+              // storeCode: "TEST_TPAY_003"
+              // tableNo: "TEST_TPAY_003_TEST"
+              // vat: "000000000000"
+
               if (vanData?.responseCode === "0000") {
                 // 결제 취소 페이지 고고링
                 console.log('결제 취소 완료', vanData);
@@ -574,7 +599,7 @@ export default {
                   });
                 }
 
-                return this.showAlert(`잘못된 response status 200이 아닙니다. status: ${res.status}`);
+                return this.showAlert(`잘못된 response status 200이 아닙니다. status: ${res?.status}`);
               } else {
                 return this.showAlert(`잘못된 responseCode 0000이 아닙니다. 에러메세지: ${vanData?.errorMessage}`);
               }

@@ -1142,7 +1142,6 @@ const payment = {
         i.creditTypeString = name;
       });
 
-
       Vue.set(state, 'paymentList', list);
       Vue.set(state, 'paymentListPage', {
         currPage,
@@ -1154,8 +1153,12 @@ const payment = {
       const index = state.paymentList.findIndex((i) => {
         return i.id == id;
       });
-      if (index>-1) {
-        state.paymentList[index] = item;
+      if ( index >- 1) {
+
+        const deepCopyArr = JSON.parse(JSON.stringify(state.paymentList));
+        deepCopyArr[index] = item;
+
+        state.paymentList = deepCopyArr;
       }
     },
     updateItemModal(state, item) {
