@@ -1120,6 +1120,9 @@ const payment = {
       let list = payload.list;
 
 
+      const five = list.find((a) => a.creditStat === 5);
+      console.log('five', five);
+
       const typeStrings = {
         0: { name: "현금 미결제"},
         1: { name: "현금 결제 완료"},
@@ -1132,8 +1135,11 @@ const payment = {
         8: { name: "현금 영수증 취소"},
       };
 
+      // console.log(object);
+
       list.map((i) => {
         const index = i.creditType;
+        console.log(index);
         let name = "";
         let item = typeStrings[index];
         if (item) {

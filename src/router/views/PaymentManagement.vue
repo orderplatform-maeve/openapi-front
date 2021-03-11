@@ -331,6 +331,7 @@
             a.btn1(v-if="item.creditStat == 0" v-on:click.stop="openItemModal(item, 'cashOutstanding')") 현금미결제
             a.btn2(v-else-if="item.creditStat == 1" v-on:click.stop="openItemModal(item, 'cancelCashPayment')") 현금 결제 취소
             a.btn1(v-else-if="item.creditStat == 2" v-on:click.stop="openItemModal(item, 'cancelCreditCardPayment')") 결제 취소
+            a.btn2(v-else-if="item.creditStat == 4") 카드 취소 완료
           td.fixed-side {{item.creditTypeString}}
           td.fixed-side {{item.orderdateTime}}
           td.fixed-side {{item.paymentId}}
@@ -1224,6 +1225,7 @@ export default {
 
       items.map((i) => {
         const index = i.creditType;
+        console.log(index);
         let name = "";
         let item = typeStrings[index];
         if (item) {
