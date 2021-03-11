@@ -2,7 +2,7 @@
 .popup.order_list
   .top_wrap.clearfix
     span.fleft.tn.bg_red {{checkedTabletNum(order)}}
-    h1 주문내역 
+    h1 주문내역
     span.fright
       a.btn_close(v-on:click="closeOrder")
         svg(xmlns='http://www.w3.org/2000/svg' width='28.242' height='29.242' viewbox='0 0 28.242 29.242')
@@ -15,7 +15,7 @@
       template(v-if="order.commit == false") 미확인
   .details_wrap.clearfix
     .details_left
-      p 현재 주문내역 
+      p 현재 주문내역
       ul.list
         li(v-for="product in order.order_info")
           ul.group
@@ -24,7 +24,7 @@
             li.fleft.option(v-if="isProductOpt(product)")
               div(v-for="option in product.option") {{getOptionDisplayName(option)}} {{getOptionGoodQty(option)}}개
     .details_right()
-      p 이전 주문내역 
+      p 이전 주문내역
       ul(v-if="order.paidOrder==false")
         li(v-for="c_product in order.total_orders")
           dl
@@ -34,7 +34,7 @@
               div(v-for="option in c_product.option") {{getBeforeProductOptionDisplayName(option)}} {{getBeforeProductOptionOrderQty(option)}}개
   .btm
     p {{seconds}}초 후 닫혀요.
-    a(@click="commitOrder(order)") 확인 
+    a(@click="commitOrder(order)") 확인
 
 //#order
   .background
@@ -135,7 +135,7 @@ export default {
 
     clearInterval(this.interval);
     this.seconds = 10;
-    /*
+
     this.interval = setInterval(() => {
       this.seconds -= 1;
 
@@ -143,7 +143,6 @@ export default {
         this.closeOrder();
       }
     }, 1000);
-    */
   },
   beforeDestroy() {
     this.closeOrder();

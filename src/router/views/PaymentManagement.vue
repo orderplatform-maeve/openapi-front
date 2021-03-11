@@ -502,7 +502,7 @@
 
 <script>
 //import paths from '@router/paths';
-
+import { isDev } from '@utils/constants';
 import axios from 'axios';
 
 export default {
@@ -1007,21 +1007,64 @@ export default {
       console.log('cardCancelCommit', item);
 
       const paymentPayload = {
+        installment: String(item.ApprovalMonth) === "0" ? "00" : item.ApprovalMonth, // 서버에 저장된 값에서 불러와야함
         amount: item.amount,
         payReqId: item.key,
+        approvalDate: item.approvalDate, // timestemp
         paymentId: item.paymentId,
         approvalNumber: item.approvalNumber,
+        deviceId: item.deviceId,
         storeCd: this.$store.state.auth.store.store_code,
         tableNo: item.tabletnumber,
-        installment: String(item.ApprovalMonth) === "0" ? "00" : item.ApprovalMonth, // 서버에 저장된 값에서 불러와야함
-        deviceId: item.deviceId,
-        approvalDate: item.approvalDate, // timestemp
         vanType: item.vanType,
+        orderKey: item.orderkey,
       };
       console.log(paymentPayload);
 
-      if (window?.UUID?.torderRefund) {
-        window.UUID.torderRefund(...paymentPayload);
+      if (isDev) {
+        console.log('postMessage');
+        window.postMessage({
+          methodName: 'torderRefund',
+          result: JSON.stringify({
+            responseCode: '0000',
+            amount: paymentPayload.amount,
+            vat: 0,
+            cardNumber: '655620**********',
+            issuerCode: '0100',
+            issuer: '우리카드',
+            acquirerCode: '0100',
+            acquirer: '비씨카드',
+            paymentId: String(Math.floor(Math.random() * 1000000000000) + 1),
+            approvalNumber: String(Math.floor(Math.random() * 100000000) + 1),
+            approvalMonth: '00',
+            approvalDate: '20201216113356',
+            errorMessage: '',
+            deviceId: paymentPayload.deviceId,
+            storeCode: this.$store.state.store.code,
+            tableNo: paymentPayload.tableNo,
+            payReqId: paymentPayload.payReqId,
+            orderKey: paymentPayload.orderkey,
+          })
+        }, 'http://localhost:8080');
+      }
+
+      if (window?.UUID) {
+        console.log('call torderRefund', window.UUID.torderRefund);
+        window.UUID.torderRefund(
+          paymentPayload.installment,
+          paymentPayload.amount,
+          paymentPayload.payReqId,
+          paymentPayload.approvalDate,
+          paymentPayload.paymentId,
+          paymentPayload.approvalNumber,
+          paymentPayload.deviceId,
+          paymentPayload.storeCd,
+          paymentPayload.tableNo,
+          paymentPayload.vanType,
+          paymentPayload.orderKey,
+        );
+      } else {
+        console.log('UUID가 없습니다.');
       }
 
       // const url ="http://dev.order.torder.co.kr/credit/cardCancelCommit";
@@ -1063,6 +1106,7 @@ export default {
       if (name=='cashOutstanding') {
         this.$store.commit('setRequestCashItem', item);
       } else {
+        console.log('openItemModal', item, name);
         this.itemModal.item = item;
         this.itemModal.currName = name;
       }
