@@ -1119,10 +1119,6 @@ const payment = {
       const allPages = payload.totalPage;
       let list = payload.list;
 
-
-      const five = list.find((a) => a.creditStat === 5);
-      console.log('five', five);
-
       const typeStrings = {
         0: { name: "현금 미결제"},
         1: { name: "현금 결제 완료"},
@@ -1134,8 +1130,6 @@ const payment = {
         7: { name: "현금 영수증 출력"},
         8: { name: "현금 영수증 취소"},
       };
-
-      // console.log(object);
 
       list.map((i) => {
         const index = i.creditType;
@@ -1162,7 +1156,25 @@ const payment = {
       if ( index >- 1) {
 
         const deepCopyArr = JSON.parse(JSON.stringify(state.paymentList));
-        deepCopyArr[index] = item;
+
+        const typeStrings = {
+          0: { name: "현금 미결제"},
+          1: { name: "현금 결제 완료"},
+          2: { name: "현금 환불"},
+          3: { name: "카드결제 완료"},
+          4: { name: "카드 환불"},
+          5: { name: "카드 취소"},
+          6: { name: "현금 영수증 요청 "},
+          7: { name: "현금 영수증 출력"},
+          8: { name: "현금 영수증 취소"},
+        };
+
+        const target = {
+          ...item,
+          creditTypeString: typeStrings[item.creditType].name,
+        };
+
+        deepCopyArr[index] = target;
 
         state.paymentList = deepCopyArr;
       }
