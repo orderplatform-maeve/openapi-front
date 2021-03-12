@@ -4,7 +4,7 @@
   fieldset{clear:both}
   legend {visibility:hidden; height:0px; width:0px; line-height:0; _text-indent:-10px; font-size:0px}
   table {border-collapse:collapse}
-  ul, ol, dl {list-style-type:none; padding-left:0;}
+  ul, ol, dl, dt, dd {list-style-type:none; padding:0; margin:0}
 
   em{font-style:normal}
   body {color:#ffffff; }
@@ -330,7 +330,7 @@
 
   .popup.date .date_select .weekdays li{display: inline-block; width:52px; height:40px; color:#999; text-align: center; font-size:16px; padding-top:12px; margin-right:10px}
   .popup.date .date_select .weekdays li:last-child{margin-right:0px}
-  .popup.date .date_select .days li{display:inline-block; float:left; width:52px; height:44px; line-height:44px; color:#fff; text-align: center; font-size:24px; border-radius:100px; padding-top:8px; margin:0 10px 10px 0}
+  .popup.date .date_select .days li{display:inline-block; float:left; width:52px; height:44px; line-height:32px; color:#fff; text-align: center; font-size:24px; border-radius:100px; padding-top:8px; margin:0 10px 10px 0;}
   .popup.date .date_select .days li:last-child{margin-right:0px}
   .popup.date .date_select .days .active{background-color:#fff; color:#000; font-weight:bold}
 
@@ -344,7 +344,7 @@
   .popup.cardCompany .twoLine a span{display:block}
   .popup.cardCompany  a.button-complete {display:flex; flex-shrink:0; align-items:center; justify-content:center; color:#fff;background-color:#FC0000;border-radius:5px;height:56px;font-size:24px;font-weight:bold;}
   .popup.item .tit {border-bottom:solid 1px #484848; font-size:20px; padding-bottom:12px; margin-bottom:12px;}
-  .popup.item .content {display:flex; flex-direction:column; font-size:24px; font-weight:300; height:300px;}
+  .popup.item .content {display:flex; flex-direction:column; font-size:20px; font-weight:300; height:300px;}
   .popup.item .content dl {display:flex; margin-bottom:12px;}
   .popup.item .content dl dt {display:flex; flex-direction:column; }
   .popup.item .content dl dd {display:flex; margin-left:8px;}
