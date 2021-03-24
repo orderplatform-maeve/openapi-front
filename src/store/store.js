@@ -4,7 +4,7 @@ import axios from 'axios';
 import querystring from 'querystring';
 
 import {
-  vaildShopCode,
+  validShopCode,
   getCategories,
   getNewCategories,
 } from './store.helper';
@@ -34,15 +34,15 @@ const socket = {
       message;
     },
     SOCKET_orderlog(state, order) {
-      if (vaildShopCode(state, order)) {
+      if (validShopCode(state, order)) {
         Vue.set(state, 'order', order);
       }
     },
   },
   actions: {
     SOCKET_orderlog({ commit, state }, order) {
-      //console.log('SOCKET_orderlog', order);
-      if (vaildShopCode(state, order)) {
+      // // console.log('SOCKET_orderlog', order);
+      if (validShopCode(state, order)) {
         commit('PUSH_ORDER', order);
       }
     },
@@ -217,6 +217,15 @@ const socket = {
 
       if (payload?.type === '@update/device/recentOrder') {
         commit('setDeviceRecentOrderStatus', payload.value);
+        if (payload.value) {
+          commit('pushFlashMessage', '태블릿 주문 내역 숨김 상태로 변경 되었습니다.');
+        } else {
+          commit('pushFlashMessage', '태블릿 주문 내역 표시 상태로 변경 되었습니다.');
+        }
+      }
+
+      if (payload?.type === '@update/device/kitchenOrder') {
+        commit('setDeviceKitchenOrderStatus', payload.value);
         if (payload.value) {
           commit('pushFlashMessage', '태블릿 주문 내역 숨김 상태로 변경 되었습니다.');
         } else {
@@ -507,7 +516,6 @@ const shop = {
 const device = {
   mutations: {
     setDeviceStatus(state, device) {
-      // // console.log('commit setDeviceStatus', device);
       Vue.set(state, 'device', device);
     },
     setDeviceOrderStatus(state, orderStatus) {
@@ -518,6 +526,9 @@ const device = {
     },
     setDeviceRecentOrderStatus(state, recentOrderStatus) {
       state.device.recentOrderStatus = Boolean(recentOrderStatus);
+    },
+    setDeviceKitchenOrderStatus(state, kitchenOrderStatus) {
+      state.device.kitchenOrderStatus = Boolean(kitchenOrderStatus);
     },
   },
   actions: {
@@ -599,6 +610,36 @@ const device = {
     async setCloseRecentOrder(context, params) {
       try {
         const url = endpoints.device.hideRecentOrder;
+        const response = await axios.post(url, params);
+
+        if (response) {
+          return true;
+        }
+
+        return false;
+      } catch (error) {
+        // console.log(error);
+        return false;
+      }
+    },
+    async setShowKitchenOrder(context, params) {
+      try {
+        const url = endpoints.device.showKitchenOrder;
+        const response = await axios.post(url, params);
+
+        if (response) {
+          return true;
+        }
+
+        return false;
+      } catch (error) {
+        // console.log(error);
+        return false;
+      }
+    },
+    async setCloseKitchenOrder(context, params) {
+      try {
+        const url = endpoints.device.hideKitchenOrder;
         const response = await axios.post(url, params);
 
         if (response) {
@@ -1055,11 +1096,20 @@ const confirmModalProto = {
 
 const payment = {
   mutations: {
+    updateAlertModalMessage(state, message) {
+      state.alertModalMessage = message;
+    },
+    updateIsAlertModal(state, visible) {
+      state.isAlertModal = visible;
+    },
     setRequestCashItem(state, payload) {
       state.requestCashItem = payload;
     },
+    setRequestCreditItem(state, payload) {
+      state.requestCreditItem = payload;
+    },
     clearRequestCashItem(state) {
-      state.requestCashItem = undefined; 
+      state.requestCashItem = undefined;
     },
     pushPyamentList(state, payload) {
       state.paymentList.push(payload);
@@ -1068,7 +1118,6 @@ const payment = {
       const currPage = payload.curentpage;
       const allPages = payload.totalPage;
       let list = payload.list;
-
 
       const typeStrings = {
         0: { name: "현금 미결제"},
@@ -1084,6 +1133,7 @@ const payment = {
 
       list.map((i) => {
         const index = i.creditType;
+        console.log(index);
         let name = "";
         let item = typeStrings[index];
         if (item) {
@@ -1091,7 +1141,6 @@ const payment = {
         }
         i.creditTypeString = name;
       });
-
 
       Vue.set(state, 'paymentList', list);
       Vue.set(state, 'paymentListPage', {
@@ -1104,9 +1153,34 @@ const payment = {
       const index = state.paymentList.findIndex((i) => {
         return i.id == id;
       });
-      if (index>-1) {
-        state.paymentList[index] = item;
+      if ( index >- 1) {
+
+        const deepCopyArr = JSON.parse(JSON.stringify(state.paymentList));
+
+        const typeStrings = {
+          0: { name: "현금 미결제"},
+          1: { name: "현금 결제 완료"},
+          2: { name: "현금 환불"},
+          3: { name: "카드결제 완료"},
+          4: { name: "카드 환불"},
+          5: { name: "카드 취소"},
+          6: { name: "현금 영수증 요청 "},
+          7: { name: "현금 영수증 출력"},
+          8: { name: "현금 영수증 취소"},
+        };
+
+        const target = {
+          ...item,
+          creditTypeString: typeStrings[item.creditType].name,
+        };
+
+        deepCopyArr[index] = target;
+
+        state.paymentList = deepCopyArr;
       }
+    },
+    updateItemModal(state, item) {
+      state.itemModal = item;
     },
   },
   actions : {
@@ -1116,7 +1190,7 @@ const payment = {
       const res = await axios.get(url, {params});
 
       context.commit('updatePaymentList', res.data);
-    } 
+    }
   },
 };
 
@@ -1127,6 +1201,7 @@ const state = {
     serviceStatus: false,
     orderStatus: false,
     recentOrderStatus: false,
+    kitchenOrderStatus: false,
   },
   auth: authProto,
   stores: [],
@@ -1145,11 +1220,20 @@ const state = {
   signboardMessage: '',
   confirmModal: confirmModalProto,
   requestCashItem: undefined,
+  requestCreditItem: {},
   paymentList: [],
   paymentListPage: {
     currPage: 3,
     allPages: 10,
   },
+  currentSearchModal: null,
+  itemModal: {
+    currName: null,
+    index: null,
+    item: null,
+  },
+  alertModalMessage: '에레 메세지 입력하세요 기본값 입니다.',
+  isAlertModal: false,
 };
 
 const mutations = {

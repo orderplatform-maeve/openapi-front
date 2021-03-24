@@ -1,17 +1,18 @@
 <template lang="pug">
 #orderview
+  alert-modal(v-if="isAlertModal")
   .popup.item.cashOutstanding(v-if="requestCashItem")
-    p.tit 현금미결제 
-    .content 
+    p.tit 현금미결제
+    .content
       .row
         .left
-          dl 
+          dl
             dt 주문금액 :
             dd {{requestCashItem.amount}}
-          dl 
+          dl
             dt 승인번호 :
             dd {{requestCashItem.paymentId}}
-          dl 
+          dl
             dt 주문일시 :
             dd {{requestCashItem.orderdateTime}}
         .right
@@ -213,21 +214,21 @@
               path(d='M21.909,4V8.909H17' transform='translate(-2.909 -0.182)' fill='none' stroke='#fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1')
               path(d='M1,18.909V14H5.909' transform='translate(0 -2)' fill='none' stroke='#fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1')
               path(d='M3.054,7.909A7.364,7.364,0,0,1,15.2,5.16L19,8.727M1,12l3.8,3.567a7.364,7.364,0,0,0,12.15-2.749' transform='translate(0 0)' fill='none' stroke='#fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1')
-          | 새로고침 
+          | 새로고침
       li
         router-link(v-if="visibleOrderButton" :to="paths.order")
           svg(xmlns='http://www.w3.org/2000/svg' width='19' height='21' viewbox='0 0 19 21')
             g(transform='translate(-3.5 -1.5)')
               path(d='M17.5,4h2.25A2.135,2.135,0,0,1,22,6V20a2.135,2.135,0,0,1-2.25,2H6.25A2.135,2.135,0,0,1,4,20V6A2.135,2.135,0,0,1,6.25,4H8.5' fill='none' stroke='#fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1')
               rect(width='8' height='4' rx='1' transform='translate(9 2)' fill='none' stroke='#fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1')
-          | 주문보기 
+          | 주문보기
       li
         router-link(v-if="visibleOrderButton" :to="paths.additional")
           svg(xmlns='http://www.w3.org/2000/svg' width='19' height='19' viewbox='0 0 19 19')
             g(transform='translate(-0.5 -0.5)')
               circle(cx='2' cy='2' r='2' transform='translate(8 8)' fill='none' stroke='#fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1')
               path(d='M16.055,12.455a1.35,1.35,0,0,0,.27,1.489l.049.049a1.637,1.637,0,0,1,0,2.314l0,0a1.637,1.637,0,0,1-2.314,0l0,0-.049-.049a1.361,1.361,0,0,0-2.307.965v.139a1.636,1.636,0,1,1-3.273,0V17.29a1.35,1.35,0,0,0-.884-1.235,1.35,1.35,0,0,0-1.489.27l-.049.049a1.637,1.637,0,0,1-2.314,0l0,0a1.637,1.637,0,0,1,0-2.314l0,0,.049-.049A1.361,1.361,0,0,0,2.775,11.7H2.636a1.636,1.636,0,1,1,0-3.273H2.71a1.35,1.35,0,0,0,1.235-.884,1.35,1.35,0,0,0-.27-1.489l-.049-.049a1.637,1.637,0,0,1,0-2.314l0,0a1.637,1.637,0,0,1,2.314,0l0,0,.049.049a1.35,1.35,0,0,0,1.489.27h.065a1.351,1.351,0,0,0,.818-1.235V2.636a1.636,1.636,0,1,1,3.273,0V2.71a1.361,1.361,0,0,0,2.307.965l.049-.049a1.637,1.637,0,0,1,2.314,0l0,0a1.637,1.637,0,0,1,0,2.314l0,0-.049.049a1.35,1.35,0,0,0-.27,1.489v.065a1.351,1.351,0,0,0,1.235.818h.139a1.636,1.636,0,1,1,0,3.273H17.29A1.351,1.351,0,0,0,16.055,12.455Z' fill='none' stroke='#fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1')
-          | 추가기능(테스트) 
+          | 추가기능(테스트)
       li
         router-link(v-if="visibleOrderButton" :to="paths.paymentManagement")
           svg(xmlns='http://www.w3.org/2000/svg' width='19' height='21' viewbox='0 0 19 21')
@@ -237,17 +238,17 @@
               line(x1='8' transform='translate(9 13)' fill='none' stroke='#fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1')
               line(x1='8' transform='translate(9 17)' fill='none' stroke='#fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1')
               path(d='M10,9H8' transform='translate(0.571)' fill='none' stroke='#fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1')
-          | 결제내역 
+          | 결제내역
     .view_setting
-      p 테블릿 화면 
+      p 테블릿 화면
       label.switch(v-on:click.stop="toggleTabletScreen")
         input(type='checkbox' v-bind:checked="statusTabletScreen" disabled="disabled" )
         span.slider.round
-      p 테블릿 주문 
+      p 테블릿 주문
       label.switch(v-on:click.stop="toggleOrder")
         input(type='checkbox' v-bind:checked="statusOrder" disabled="disabled")
         span.slider.round
-      p 주문내역 
+      p 주문내역
       label.switch(v-on:click.stop="toggleRecentOrder")
         input(type='checkbox' v-bind:checked="statusRecentOrder" disabled="disabled")
         span.slider.round
@@ -256,7 +257,7 @@
         | {{storeName}}
         br
         | {{version}}
-      a.btn_logout(v-if="visibleLogoutButton" @click="logout") 로그아웃 
+      a.btn_logout(v-if="visibleLogoutButton" @click="logout") 로그아웃
 
 //#orderview
   //- transition(name="signboard")
@@ -282,7 +283,7 @@
         router-link.button(v-if="visibleOrderButton" :to="paths.order") 주문 보기
         router-link.button(v-if="visibleOrderButton" :to="paths.additional") 추가 기능
           <br> (테스트)
-        router-link.button(v-if="visibleOrderButton" :to="paths.paymentManagement") 결제 내역 
+        router-link.button(v-if="visibleOrderButton" :to="paths.paymentManagement") 결제 내역
 
         //- router-link.button(v-if="visibleOrderButton" :to="paths.products") 상품 관리
         //-   <br> (테스트)
@@ -309,6 +310,11 @@
           .tab-buttons
             .tab-button(:class="getOnTabletRecentOrderClass(device)" @click="showRecentOrder") On
             .tab-button(:class="getOffTabletRecentOrderClass(device)" @click="hideRecentOrder") Off
+        .tab-group
+          .tab-name 주방 마감
+          .tab-buttons
+            .tab-button(:class="getOnKitchenOrderClass(device)" @click="showKitchenOrder") On
+            .tab-button(:class="getOffKitchenOrderClass(device)" @click="hideKitchenOrder") Off
         hr
         router-link.button(v-if="visibleStoresButton" :to="paths.store") 매장 보기
         router-link.button.button-red(v-if="visibleLoginButton" :to="paths.login") 로그인
@@ -325,11 +331,13 @@ import store from '@store/store';
 import paths from '@router/paths';
 import { version } from '@utils/constants';
 import { Torder } from '@svg';
+import { AlertModal } from '@components';
 import axios from 'axios';
 
 export default {
   components: {
     Torder,
+    'alert-modal': AlertModal,
   },
   store,
   data() {
@@ -346,6 +354,9 @@ export default {
     };
   },
   computed: {
+    isAlertModal() {
+      return this.$store.state.isAlertModal;
+    },
     requestCashItem() {
       return this.$store.state.requestCashItem;
     },
@@ -440,6 +451,7 @@ export default {
     this.observableRefresh();
   },
   mounted() {
+    this.watchPayment();
     this.catchOffline();
     this.catchOnline();
     this.getUCode();
@@ -461,6 +473,146 @@ export default {
     },
   },
   methods: {
+    async commit(item, url) {
+      console.log('commit', item);
+      let data = new FormData();
+      data.append('key', item.key);
+      data.append('id', item.id);
+      data.append('stat', item.creditStat);
+      data.append('type',  item.creditType);
+      data.append('storeCode', item.storeCode);
+      data.append('tabletNumber', item.tabletnumber);
+      data.append('tablename', item.tableName);
+      data.append('orderKey', item.orderkey);
+      const res =  await axios({
+        method: 'post',
+        url,
+        data: data,
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      console.log('commit res', res);
+      return res;
+    },
+    showAlert(message) {
+      this.$store.commit('updateAlertModalMessage', message);
+      return this.$store.commit('updateIsAlertModal', true);
+    },
+    watchPayment() {
+      window.addEventListener('message', async (event) => {
+        try {
+          const msg = event?.data;
+          const methodName = msg?.methodName;
+
+          if (methodName === 'callBackPayment') {
+            // console.log(event);
+
+            if (msg?.result) {
+              const vanData = JSON.parse(msg.result);
+
+              // acquirer: "삼성카드사"
+              // acquirerCode: "04"
+              // amount: "000000002000"
+              // approvalDate: "20210311174931"
+              // approvalMonth: "00"
+              // approvalNumber: "36204121"
+              // approvalType: "REFUND"
+              // cardNumber: "536148**********"
+              // deviceId: "DPT0TEST03"
+              // errorMessage: ""
+              // issuer: "삼성마스터카드"
+              // issuerCode: "04"
+              // orderKey: "TEST_TPAY_003-TEST_TPAY_003_TEST-1615452524"
+              // payReqId: "TEST_TPAY_003-TEST_TPAY_003_TEST-1615452521-4x6mn"
+              // paymentCompany: "KSNET"
+              // paymentDate: "20210311174934"
+              // paymentId: "687743457830"
+              // paymentResultUpload: "N"
+              // receiptType: ""
+              // responseCode: "0000"
+              // resultText: "success"
+              // storeCode: "TEST_TPAY_003"
+              // tableNo: "TEST_TPAY_003_TEST"
+              // vat: "000000000000"
+
+              if (vanData?.responseCode === "0000") {
+                // 결제 취소 페이지 고고링
+                console.log('결제 취소 완료', vanData);
+
+                const requestCreditItem = this.$store?.state?.requestCreditItem;
+
+                if (!requestCreditItem?.key) {
+                  return this.showAlert(`key 값이 없습니다 아닙니다. 에러메세지: ${requestCreditItem?.key}`);
+                }
+
+                if (!requestCreditItem?.id) {
+                  return this.showAlert(`id 값이 없습니다 아닙니다. 에러메세지: ${requestCreditItem?.id}`);
+                }
+
+                if (!requestCreditItem?.creditStat) {
+                  return this.showAlert(`stat 값이 없습니다 아닙니다. 에러메세지: ${requestCreditItem?.creditStat}`);
+                }
+
+                if (!requestCreditItem?.creditType) {
+                  return this.showAlert(`type 값이 없습니다 아닙니다. 에러메세지: ${requestCreditItem?.creditType}`);
+                }
+
+                if (!requestCreditItem?.storeCode) {
+                  return this.showAlert(`storeCode 값이 없습니다 아닙니다. 에러메세지: ${requestCreditItem?.storeCode}`);
+                }
+
+                if (!requestCreditItem?.tabletnumber) {
+                  return this.showAlert(`tabletnumber 값이 없습니다 아닙니다. 에러메세지: ${requestCreditItem?.tabletnumber}`);
+                }
+
+                if (!requestCreditItem?.tableName) {
+                  return this.showAlert(`tableName 값이 없습니다 아닙니다. 에러메세지: ${requestCreditItem?.tableName}`);
+                }
+
+                if (!requestCreditItem?.orderkey) {
+                  return this.showAlert(`orderkey 값이 없습니다 아닙니다. 에러메세지: ${requestCreditItem?.orderkey}`);
+                }
+
+                const url ="http://dev.order.torder.co.kr/credit/cardCancelCommit";
+                const res = await this.commit(requestCreditItem, url);
+
+                if (res.status === 200) {
+                  const newItem = res?.data?.rowData;
+
+                  if (!res.data) {
+                    return this.showAlert(`API cardCancelCommit 응답값 data이 없습니다 아닙니다. 응답값: ${newItem}`);
+                  }
+
+                  if (res?.data?.length === 0) {
+                    return this.showAlert(`API cardCancelCommit 응답값 data크기가 0입니다. 아닙니다. 응답값: ${res.data}`);
+                  }
+
+                  if (!newItem) {
+                    return this.showAlert(`API cardCancelCommit 응답값 rowData이 없습니다 아닙니다. 응답값: ${newItem}`);
+                  }
+
+                  // newItem {id: ''}
+
+                  this.$store.commit('replacePaymentListItem', newItem);
+                  return this.$store.commit('updateItemModal', {
+                    currName: null,
+                    index: null,
+                  });
+                }
+
+                return this.showAlert(`잘못된 response status 200이 아닙니다. status: ${res?.status}`);
+              } else {
+                return this.showAlert(`잘못된 responseCode 0000이 아닙니다. 에러메세지: ${vanData?.errorMessage}`);
+              }
+            } else {
+              return this.showAlert(`잘못된 callBackPayment message 형태입니다. 출력값: ${msg?.result}`);
+            }
+          }
+
+        } catch (error) {
+          return this.showAlert(`${event?.data?.methodName} 잘못된 message 형태입니다. 에러: ${error.message}`);
+        }
+      });
+    },
     async requestPaymentCommit(item, url) {
       console.log({item});
       let data = new FormData();
@@ -864,37 +1016,37 @@ export default {
       return this.$socket.emit('orderview', payload);
     },
     getOnTabletMonitorClass(device) {
-      const active = !this.vaildServiceStatus(device);
+      const active = !this.validServiceStatus(device);
 
       return {
         active,
       };
     },
     getOffTabletMonitorClass(device) {
-      const active = this.vaildServiceStatus(device);
+      const active = this.validServiceStatus(device);
 
       return {
         active,
       };
     },
-    vaildServiceStatus(device) {
+    validServiceStatus(device) {
       return device && device.serviceStatus;
     },
     getOnTabletOrderClass(device) {
-      const active = !this.vaildOrderStatus(device);
+      const active = !this.validOrderStatus(device);
 
       return {
         active,
       };
     },
     getOffTabletOrderClass(device) {
-      const active = this.vaildOrderStatus(device);
+      const active = this.validOrderStatus(device);
 
       return {
         active,
       };
     },
-    vaildOrderStatus(device) {
+    validOrderStatus(device) {
       return device && device.orderStatus;
     },
     beep() {
@@ -979,20 +1131,20 @@ export default {
       this.$store.commit('SET_ALL_REFRESH_LIST', []);
     },
     getOnTabletRecentOrderClass(device) {
-      const active = !this.vaildRecentOrderStatus(device);
+      const active = !this.validRecentOrderStatus(device);
 
       return {
         active,
       };
     },
     getOffTabletRecentOrderClass(device) {
-      const active = this.vaildRecentOrderStatus(device);
+      const active = this.validRecentOrderStatus(device);
 
       return {
         active,
       };
     },
-    vaildRecentOrderStatus(device) {
+    validRecentOrderStatus(device) {
       return device && device.recentOrderStatus;
     },
     getNowDate() {
@@ -1003,6 +1155,93 @@ export default {
       const ISONow = now.toISOString();
 
       return this.$moment(ISONow).format('MM.DD HH:mm:ss');
+    },
+    showKitchenOrder() {
+      if (!this.$store.state.device.kitchenOrderStatus) {
+        return this.$store.commit('pushFlashMessage', '이미 주문 내역 표시 상태로 되어있습니다.');
+      }
+      const confirmModal = {};
+
+      confirmModal.show = true;
+      confirmModal.close = this.closeConfirmModal;
+      confirmModal.title = '주방 마감 메뉴 표시';
+      confirmModal.message = '태블릿에서 주방 마감 메뉴가 나타납니다';
+      confirmModal.confirm = this.reqShowKitchenOrder;
+
+      this.$store.commit('showConfirmModal', confirmModal);
+    },
+    hideKitchenOrder() {
+      if (this.$store.state.device.kitchenOrderStatus) {
+        return this.$store.commit('pushFlashMessage', '이미 주문 내역 표시 상태로 되어있습니다.');
+      }
+      const confirmModal = {};
+
+      confirmModal.show = true;
+      confirmModal.close = this.closeConfirmModal;
+      confirmModal.title = '주방 마감 메뉴 표시';
+      confirmModal.message = '태블릿에서 주방 마감 메뉴가 사라집니다.';
+      confirmModal.confirm = this.reqHideKitchenOrder;
+
+      this.$store.commit('showConfirmModal', confirmModal);
+    },
+    emitKitchenOrder(value) {
+      const { store_code } = this.$store.state.auth.store;
+      const payload = {
+        store: {
+          code: store_code,
+        },
+        type: '@update/device/kitchenOrder',
+        value,
+      };
+      return this.$socket.emit('orderview', payload);
+    },
+    async reqShowKitchenOrder() {
+      const fd = new FormData();
+      fd.append('store_code', this.auth.store.store_code);
+      const response = await this.$store.dispatch('setShowKitchenOrder', fd);
+
+      if (response) {
+        const value = 0;
+        const { disconnected } = this.emitKitchenOrder(value);
+
+        if (disconnected) {
+          this.$store.commit('setDeviceKitchenOrderStatus', value);
+          this.$store.commit('pushFlashMessage', '태블릿 주문 내역 표시 상태로 변경 되었습니다.');
+        }
+
+        this.closeConfirmModal();
+      }
+    },
+    async reqHideKitchenOrder() {
+      const fd = new FormData();
+      fd.append('store_code', this.auth.store.store_code);
+      const response = await this.$store.dispatch('setCloseKitchenOrder', fd);
+
+      if (response) {
+        const value = 1;
+        const { disconnected } = this.emitKitchenOrder(value);
+
+        if (disconnected) {
+          this.$store.commit('setDeviceKitchenOrderStatus', value);
+          this.$store.commit('pushFlashMessage', '태블릿 주문 내역 표시 상태로 변경 되었습니다.');
+        }
+
+        this.closeConfirmModal();
+      }
+    },
+    getOnKitchenOrderClass() {
+      const active = !this.device?.kitchenOrderStatus;
+
+      return {
+        active,
+      };
+    },
+    getOffKitchenOrderClass() {
+      const active = this.device?.kitchenOrderStatus;
+
+      return {
+        active,
+      };
     },
   },
 };

@@ -1,4 +1,4 @@
-function vaildGoodCode(order) {
+function validGoodCode(order) {
   const isOrderInfo = order && order.order_info;
   const isEmptyOrderInfo = order.order_info.length > 0;
   const isGoodCode = !!order.order_info[0];
@@ -47,20 +47,20 @@ export function getTableNumberClass(order) {
     };
   }
 
-  const goodCode = vaildGoodCode(order);
+  const goodCode = validGoodCode(order);
   return getGoodType(goodCode);
 }
 
 export function visibleCall(order) {
   if (!order) return false;
-  const goodCode = vaildGoodCode(order);
+  const goodCode = validGoodCode(order);
   const isCall = goodCode === '99999';
   return isCall;
 }
 
 export function isDoneSetting(order) {
   if (!order) return false;
-  const goodCode = vaildGoodCode(order);
+  const goodCode = validGoodCode(order);
   const isDone = goodCode === '88888';
   return isDone;
 }
@@ -112,7 +112,7 @@ export function getMsgTimeClass(order) {
   };
 }
 
-export function vaildCommitText(order) {
+export function validCommitText(order) {
   const isCommit = this.checkedCommit(order);
 
   const msg = isCommit ? '확인' : '미확인';
@@ -226,7 +226,7 @@ export default {
   isFirstOrder,
   getMsgTimeClass,
   checkedCommit,
-  vaildCommitText,
+  validCommitText,
   getOrderTiem,
   isRating,
   getRatingText,
