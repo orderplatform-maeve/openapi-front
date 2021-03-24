@@ -1,5 +1,5 @@
 <template lang="pug">
-#orderview
+.container
   //- router-link.button-added(v-if="visibleOrderButton" :to="paths.products") 상품 관리(구)
   //-   <br> (테스트)
   router-link.button-added(v-if="visibleOrderButton" :to="paths.newProducts") 상품 관리(신)
@@ -33,6 +33,7 @@ export default {
 </script>
 
 <style lang="scss">
+.container {
   .button-added {
     display:flex;
     align-items: center;
@@ -48,4 +49,5 @@ export default {
     font-size: 36px;
     padding: 8px 0;
   }
+}
 </style>

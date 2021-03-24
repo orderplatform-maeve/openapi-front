@@ -523,6 +523,7 @@ p {
   --c-10: #000000;
 
   #container {
+    color:#ffffff;
     display: flex;
     flex: 1;
     overflow: hidden;

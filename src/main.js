@@ -3,6 +3,9 @@ import VueRouter from 'vue-router';
 import VueSocketIO from 'vue-socket.io';
 import moment from 'moment';
 
+
+import VCalendar from 'v-calendar';
+
 import App from './App.vue';
 
 import "@babel/polyfill";
@@ -32,6 +35,10 @@ const momentPlugins = {
 Vue.use(momentPlugins);
 
 Vue.use(new VueSocketIO(socketConfig));
+
+Vue.use(VCalendar, {
+  componentPrefix: 'vc',
+});
 
 Vue.filter('moment', function (value, format) {
   if (value === null || value === undefined || format === undefined) {

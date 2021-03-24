@@ -688,8 +688,9 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .container{
+  color:#ffffff;
   a {
     text-decoration: none;
     color: var(--c-1);
@@ -770,8 +771,8 @@ export default {
           .sub-category-text {
             font-size: 8vh;
             text-align: right;
-            margin-top: 4vh;
-            padding-top: 4vh;
+            margin-top: 4vh !important;
+            padding-top: 4vh !important;
             white-space: nowrap;
           }
           .sub-category-text::after {
@@ -790,7 +791,7 @@ export default {
           height: 76vh;
           background-color: var(--c-9);
           display: flex;
-          margin: 8px;
+          margin: 8px !important;
           color: var(--c-2);
           flex-direction: column;
           border-radius: 4px;
@@ -824,9 +825,9 @@ export default {
               display: flex;
               align-items: center;
               justify-content: center;
-              padding: 4px 16px;
+              padding: 4px 16px !important;
               font-weight: 900;
-              margin-top: 8px;
+              margin-top: 8px !important;
               color: var(--c-9);
               background-color: var(--c-2);
               border-radius: 20px;

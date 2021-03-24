@@ -11,3 +11,4 @@ export { default as Additional } from './Additional';
 export { default as NewProducts } from './NewProducts';
 export { default as ControlOrder } from './ControlOrder';
 export { default as ControlLastOrder } from './ControlLastOrder';
+export { default as PaymentManagement } from './PaymentManagement';

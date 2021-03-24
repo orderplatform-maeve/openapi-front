@@ -10,6 +10,10 @@ yarn-error.log
 *.ntvs*
 *.njsproj
 *.sln
+*.sw*
 s3-credentials.json
 s3-credentials.dev.json
 backups
+# ignore node_modules symlink
+node_modules
+node_modules.nosync

@@ -4,7 +4,7 @@ import axios from 'axios';
 import querystring from 'querystring';
 
 import {
-  vaildShopCode,
+  validShopCode,
   getCategories,
   getNewCategories,
 } from './store.helper';
@@ -30,11 +30,11 @@ function imagePreload(url) {
 const socket = {
   mutations: {
     SOCKET_res(state, message) {
-      // console.log(message);
+      //console.log(message);
       message;
     },
     SOCKET_orderlog(state, order) {
-      if (vaildShopCode(state, order)) {
+      if (validShopCode(state, order)) {
         Vue.set(state, 'order', order);
       }
     },
@@ -42,12 +42,12 @@ const socket = {
   actions: {
     SOCKET_orderlog({ commit, state }, order) {
       // // console.log('SOCKET_orderlog', order);
-      if (vaildShopCode(state, order)) {
+      if (validShopCode(state, order)) {
         commit('PUSH_ORDER', order);
       }
     },
     async SOCKET_orderview({ commit, state, dispatch }, payload) {
-      // // console.log('out SOCKET_orderview', payload);
+      //console.log('out SOCKET_orderview', payload);
 
       if (payload?.type_msg === 'commit') {
         const targetOrder = {
@@ -56,13 +56,20 @@ const socket = {
         };
 
         // const target = state.orders.find((o) => o.order_view_key === payload.key);
-
         // console.log('targetOrder', targetOrder);
         // console.log('SOCKET_orderview', payload, target);
 
         commit('UPDATE_ORDERS', targetOrder);
         // commit('pushFlashMessage', `${target.T_order_order_tablet_number} 테이블 주문이(${target.order_time}) ${targetOrder.commit ? '확인' : '미확인'} 상태로 변경 되었습니다.`);
         return commit('UNSET_ORDER');
+      }
+
+      if (payload?.type === 'requestReceiptCash') {
+        if (payload.data) {
+          const item = payload.data;
+          commit('setRequestCashItem', item);
+          commit('pushPaymentList', item);
+        }
       }
 
       if (payload?.type === 'reload') {
@@ -217,6 +224,15 @@ const socket = {
         }
       }
 
+      if (payload?.type === '@update/device/kitchenOrder') {
+        commit('setDeviceKitchenOrderStatus', payload.value);
+        if (payload.value) {
+          commit('pushFlashMessage', '태블릿 주문 내역 숨김 상태로 변경 되었습니다.');
+        } else {
+          commit('pushFlashMessage', '태블릿 주문 내역 표시 상태로 변경 되었습니다.');
+        }
+      }
+
       if (payload?.type === 'suspendSale') {
         // console.log('suspendSale', payload);
         const findTargetIdx = state.tables.findIndex((o) => o.Ta_id === payload.table.code);
@@ -362,11 +378,22 @@ const order = {
       Vue.set(state, 'order', undefined);
     },
     PUSH_ORDER: (state, order) => {
+      console.log('PUSH_ORDER');
       state.orders.push(order);
     },
     SET_ORDERS: (state, orders) => {
       // // console.log('orders!!!!!!!', orders);
       Vue.set(state, 'orders', orders);
+    },
+    UPDATE_ORDER_CREDIT: (state, order, value) => {
+      const { orders } = state;
+      const idx = orders.findIndex((item) => item.order_id === order.order_id);
+
+      console.log(idx);
+      if (idx > -1) {
+        orders[idx].creditStat = value;
+      }
+
     },
     UPDATE_ORDERS: (state, order) => {
       const { orders } = state;
@@ -489,7 +516,6 @@ const shop = {
 const device = {
   mutations: {
     setDeviceStatus(state, device) {
-      // // console.log('commit setDeviceStatus', device);
       Vue.set(state, 'device', device);
     },
     setDeviceOrderStatus(state, orderStatus) {
@@ -500,6 +526,9 @@ const device = {
     },
     setDeviceRecentOrderStatus(state, recentOrderStatus) {
       state.device.recentOrderStatus = Boolean(recentOrderStatus);
+    },
+    setDeviceKitchenOrderStatus(state, kitchenOrderStatus) {
+      state.device.kitchenOrderStatus = Boolean(kitchenOrderStatus);
     },
   },
   actions: {
@@ -581,6 +610,36 @@ const device = {
     async setCloseRecentOrder(context, params) {
       try {
         const url = endpoints.device.hideRecentOrder;
+        const response = await axios.post(url, params);
+
+        if (response) {
+          return true;
+        }
+
+        return false;
+      } catch (error) {
+        // console.log(error);
+        return false;
+      }
+    },
+    async setShowKitchenOrder(context, params) {
+      try {
+        const url = endpoints.device.showKitchenOrder;
+        const response = await axios.post(url, params);
+
+        if (response) {
+          return true;
+        }
+
+        return false;
+      } catch (error) {
+        // console.log(error);
+        return false;
+      }
+    },
+    async setCloseKitchenOrder(context, params) {
+      try {
+        const url = endpoints.device.hideKitchenOrder;
         const response = await axios.post(url, params);
 
         if (response) {
@@ -1012,6 +1071,7 @@ const tablet = {
   },
 };
 
+
 const authProto = {
   member: {
     code: '',
@@ -1034,6 +1094,106 @@ const confirmModalProto = {
   confirm: () => {},
 };
 
+const payment = {
+  mutations: {
+    updateAlertModalMessage(state, message) {
+      state.alertModalMessage = message;
+    },
+    updateIsAlertModal(state, visible) {
+      state.isAlertModal = visible;
+    },
+    setRequestCashItem(state, payload) {
+      state.requestCashItem = payload;
+    },
+    setRequestCreditItem(state, payload) {
+      state.requestCreditItem = payload;
+    },
+    clearRequestCashItem(state) {
+      state.requestCashItem = undefined;
+    },
+    pushPyamentList(state, payload) {
+      state.paymentList.push(payload);
+    },
+    updatePaymentList(state, payload) {
+      const currPage = payload.curentpage;
+      const allPages = payload.totalPage;
+      let list = payload.list;
+
+      const typeStrings = {
+        0: { name: "현금 미결제"},
+        1: { name: "현금 결제 완료"},
+        2: { name: "현금 환불"},
+        3: { name: "카드결제 완료"},
+        4: { name: "카드 환불"},
+        5: { name: "카드 취소"},
+        6: { name: "현금 영수증 요청 "},
+        7: { name: "현금 영수증 출력"},
+        8: { name: "현금 영수증 취소"},
+      };
+
+      list.map((i) => {
+        const index = i.creditType;
+        console.log(index);
+        let name = "";
+        let item = typeStrings[index];
+        if (item) {
+          name = item.name;
+        }
+        i.creditTypeString = name;
+      });
+
+      Vue.set(state, 'paymentList', list);
+      Vue.set(state, 'paymentListPage', {
+        currPage,
+        allPages,
+      });
+    },
+    replacePaymentListItem(state, item) {
+      const id = item.id;
+      const index = state.paymentList.findIndex((i) => {
+        return i.id == id;
+      });
+      if ( index >- 1) {
+
+        const deepCopyArr = JSON.parse(JSON.stringify(state.paymentList));
+
+        const typeStrings = {
+          0: { name: "현금 미결제"},
+          1: { name: "현금 결제 완료"},
+          2: { name: "현금 환불"},
+          3: { name: "카드결제 완료"},
+          4: { name: "카드 환불"},
+          5: { name: "카드 취소"},
+          6: { name: "현금 영수증 요청 "},
+          7: { name: "현금 영수증 출력"},
+          8: { name: "현금 영수증 취소"},
+        };
+
+        const target = {
+          ...item,
+          creditTypeString: typeStrings[item.creditType].name,
+        };
+
+        deepCopyArr[index] = target;
+
+        state.paymentList = deepCopyArr;
+      }
+    },
+    updateItemModal(state, item) {
+      state.itemModal = item;
+    },
+  },
+  actions : {
+    async updatePaymentList(context, params) {
+
+      const url ="http://dev.order.torder.co.kr/credit/creditList";
+      const res = await axios.get(url, {params});
+
+      context.commit('updatePaymentList', res.data);
+    }
+  },
+};
+
 const state = {
   order: undefined,
   orders: [],
@@ -1041,6 +1201,7 @@ const state = {
     serviceStatus: false,
     orderStatus: false,
     recentOrderStatus: false,
+    kitchenOrderStatus: false,
   },
   auth: authProto,
   stores: [],
@@ -1058,6 +1219,21 @@ const state = {
   isDisConnectNetwork: false,
   signboardMessage: '',
   confirmModal: confirmModalProto,
+  requestCashItem: undefined,
+  requestCreditItem: {},
+  paymentList: [],
+  paymentListPage: {
+    currPage: 3,
+    allPages: 10,
+  },
+  currentSearchModal: null,
+  itemModal: {
+    currName: null,
+    index: null,
+    item: null,
+  },
+  alertModalMessage: '에레 메세지 입력하세요 기본값 입니다.',
+  isAlertModal: false,
 };
 
 const mutations = {
@@ -1071,6 +1247,7 @@ const mutations = {
   ...device.mutations,
   ...popup.mutations,
   ...tablet.mutations,
+  ...payment.mutations,
 };
 
 const actions = {
@@ -1083,6 +1260,7 @@ const actions = {
   ...menu.actions,
   ...goods.actions,
   ...tablet.actions,
+  ...payment.actions,
 };
 
 const getters = {
