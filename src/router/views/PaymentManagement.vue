@@ -218,6 +218,71 @@
     a.sort(v-on:click.stop="openSearchModal('sort')") {{optionName('sort')}}
     a.sort(v-on:click.stop="openSearchModal('filter')") {{optionName('filter')}}
   #table-scroll.table_list
+    table.main-table.clone
+      colgroup
+        col.col1
+        col.col2
+        col.col3
+        col.col4
+        col.col5
+        col.col6
+        col.col7
+        col.col8
+        col.col9
+        col.col10
+        col.col11
+        col.col12
+        col.col13
+        col.col14
+        col.col15
+        col.col16
+        col.col17
+        col.col18
+      thead
+        tr
+          th.fixed-side(scope='row') No
+          th.fixed-side(scope='row') 테이블이름
+          th.fixed-side(scope='row') 상태
+          th.fixed-side(scope='row') 결제유형
+          th.fixed-side(scope='row') 주문일시
+          th.fixed-side(scope='row') 카드번호
+          th(scope='row') 승인번호
+          th(scope='row') 상품
+          th(scope='row') 승인일시
+          th(scope='row') 금액
+          th(scope='row') 카드사명
+          th(scope='row') 현금영수증 종류
+          th(scope='row') 증빙방법
+          th(scope='row') 결제방식
+          th(scope='row') 할부개월
+          th(scope='row') 부가세
+          th(scope='row') 매입사명
+          th(scope='row') 오류내용
+      tbody
+        tr(v-for="item in paymentList")
+          td.fixed-side {{item.id}}
+          td.fixed-side {{item.tableName}}
+          td.fixed-side
+            a.btn1(v-if="item.creditStat == 0" v-on:click.stop="openItemModal(item, 'cashOutstanding')") 현금미결제
+            a.btn2(v-else-if="item.creditStat == 1" v-on:click.stop="openItemModal(item, 'cancelCashPayment')") 현금 결제 취소
+            a.btn1(v-else-if="item.creditStat == 2" v-on:click.stop="openItemModal(item, 'cancelCreditCardPayment')") 결제 취소
+            a.btn2(v-else-if="item.creditStat == 4") 카드 취소 완료
+          td.fixed-side {{item.creditTypeString}}
+          td.fixed-side {{item.orderdateTime}}
+          td.fixed-side {{item.cardNumber}}
+          td {{item.paymentId}}
+          td {{item.creditDateTime}}
+          td
+          td {{item.amount}}
+          td {{item.cardNumber}}
+          td {{item.issuer}}
+          td {{item.cashbillType}}
+          td
+          td {{item.creditTypeString}}
+          td {{item.ApprovalMonth}}
+          td {{item.vat}}
+          td {{item.Acquirer}}
+          td {{item.resultText}}
     .table-wrap
       table.main-table
         colgroup
@@ -246,11 +311,11 @@
             th.fixed-side(scope='row') 상태
             th.fixed-side(scope='row') 결제유형
             th.fixed-side(scope='row') 주문일시
-            th.fixed-side(scope='row') 승인번호
+            th.fixed-side(scope='row') 카드번호
+            th(scope='row') 승인번호
             th(scope='row') 승인일시
             th(scope='row') 상품
             th(scope='row') 금액
-            th(scope='row') 카드번호
             th(scope='row') 카드사명
             th(scope='row') 현금영수증 종류
             th(scope='row') 증빙방법
@@ -269,12 +334,12 @@
               a.btn1(v-else-if="item.creditStat == 2" v-on:click.stop="openItemModal(item, 'cancelCreditCardPayment')") 결제 취소
             td.fixed-side {{item.creditTypeString}}
             td.fixed-side {{item.orderdateTime}}
-            td.fixed-side {{item.paymentId}}
+            td.fixed-side {{item.cardNumber}}
+            td {{item.paymentId}}
             td {{item.creditDateTime}}
             td
               u(v-on:click.stop="openItemModal(item, 'orderProductsDetail')") {{productsName(item)}}
             td {{item.amount}}
-            td {{item.cardNumber}}
             td {{item.issuer}}
             td {{item.cashbillType}}
             td
@@ -283,70 +348,6 @@
             td {{item.vat}}
             td {{item.Acquirer}}
             td {{item.resultText}}
-    table.main-table.clone
-      colgroup
-        col.col1
-        col.col2
-        col.col3
-        col.col4
-        col.col5
-        col.col6
-        col.col7
-        col.col8
-        col.col9
-        col.col10
-        col.col11
-        col.col12
-        col.col13
-        col.col14
-        col.col15
-        col.col16
-        col.col17
-        col.col18
-      thead
-        tr
-          th.fixed-side(scope='row') No
-          th.fixed-side(scope='row') 테이블이름
-          th.fixed-side(scope='row') 상태
-          th.fixed-side(scope='row') 결제유형
-          th.fixed-side(scope='row') 주문일시
-          th.fixed-side(scope='row') 승인번호
-          th(scope='row') 상품
-          th(scope='row') 승인일시
-          th(scope='row') 금액
-          th(scope='row') 카드번호
-          th(scope='row') 카드사명
-          th(scope='row') 현금영수증 종류
-          th(scope='row') 증빙방법
-          th(scope='row') 결제방식
-          th(scope='row') 할부개월
-          th(scope='row') 부가세
-          th(scope='row') 매입사명
-          th(scope='row') 오류내용
-      tbody
-        tr(v-for="item in paymentList")
-          td.fixed-side {{item.id}}
-          td.fixed-side {{item.tableName}}
-          td.fixed-side
-            a.btn1(v-if="item.creditStat == 0" v-on:click.stop="openItemModal(item, 'cashOutstanding')") 현금미결제
-            a.btn2(v-else-if="item.creditStat == 1" v-on:click.stop="openItemModal(item, 'cancelCashPayment')") 현금 결제 취소
-            a.btn1(v-else-if="item.creditStat == 2" v-on:click.stop="openItemModal(item, 'cancelCreditCardPayment')") 결제 취소
-            a.btn2(v-else-if="item.creditStat == 4") 카드 취소 완료
-          td.fixed-side {{item.creditTypeString}}
-          td.fixed-side {{item.orderdateTime}}
-          td.fixed-side {{item.paymentId}}
-          td {{item.creditDateTime}}
-          td
-          td {{item.amount}}
-          td {{item.cardNumber}}
-          td {{item.issuer}}
-          td {{item.cashbillType}}
-          td
-          td {{item.creditTypeString}}
-          td {{item.ApprovalMonth}}
-          td {{item.vat}}
-          td {{item.Acquirer}}
-          td {{item.resultText}}
   .pagination
     ul
       li.first-child(v-if="pagination.firstPage > 1")
