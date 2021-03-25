@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import axios from 'axios';
 import querystring from 'querystring';
+import router from '@router';
 
 import {
   validShopCode,
@@ -35,13 +36,15 @@ const socket = {
     },
     SOCKET_orderlog(state, order) {
       if (validShopCode(state, order)) {
-        Vue.set(state, 'order', order);
+        if (router.currentRoute.name !== 'paymentManagement') {
+          Vue.set(state, 'order', order);
+        }
       }
     },
   },
   actions: {
-    SOCKET_orderlog({ commit, state }, order) {
-      // // console.log('SOCKET_orderlog', order);
+    SOCKET_orderlog({ commit , state }, order) {
+      //console.log('SOCKET_orderlog', order);
       if (validShopCode(state, order)) {
         commit('PUSH_ORDER', order);
       }
