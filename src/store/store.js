@@ -37,6 +37,10 @@ const socket = {
     SOCKET_orderlog(state, order) {
       if (validShopCode(state, order)) {
         if (router.currentRoute.name !== 'paymentManagement') {
+          if ( window?.UUID?.playOrderBell) {
+            window.UUID.playOrderBell();
+          }
+
           Vue.set(state, 'order', order);
         }
       }
