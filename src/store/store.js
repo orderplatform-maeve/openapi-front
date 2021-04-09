@@ -38,7 +38,9 @@ const socket = {
       if (validShopCode(state, order)) {
         if (router.currentRoute.name !== 'paymentManagement') {
           if ( window?.UUID?.playOrderBell) {
-            window.UUID.playOrderBell();
+            if (order.creditType !== "cash") {
+              window.UUID.playOrderBell();
+            }
           }
 
           Vue.set(state, 'order', order);
@@ -74,6 +76,9 @@ const socket = {
       if (payload?.type === 'requestReceiptCash') {
         if (payload.data) {
           const item = payload.data;
+          if (window?.UUID?.playOrderBell) {
+            window.UUID.playOrderBell();
+          }
           commit('setRequestCashItem', item);
           commit('pushPaymentList', item);
         }
