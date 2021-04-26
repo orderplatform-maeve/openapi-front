@@ -52,6 +52,13 @@ const endpoints = {
     refresh: `${ADMIN_URL}/tablet/tablet_refresh`,
     resetOrder: `${ADMIN_URL}/tablet/tablet_order_trash`,
   },
+  payment: {
+    cardCancelCommit: `${REST_URL}/credit/cardCancelCommit`,
+    cashCommit: `${REST_URL}/credit/cashCommit`,
+    creditList: `${REST_URL}/credit/creditList`,
+    cashCancelCommit: `${REST_URL}/credit/cashCancelCommit`,
+
+  },
 };
 
 export default endpoints;
