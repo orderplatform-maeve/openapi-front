@@ -333,6 +333,7 @@ import { version } from '@utils/constants';
 import { Torder } from '@svg';
 import { AlertModal } from '@components';
 import axios from 'axios';
+import endpoints from '@store/endpoints';
 
 export default {
   components: {
@@ -572,7 +573,7 @@ export default {
                   return this.showAlert(`orderkey 값이 없습니다 아닙니다. 에러메세지: ${requestCreditItem?.orderkey}`);
                 }
 
-                const url ="http://dev.order.torder.co.kr/credit/cardCancelCommit";
+                const url = endpoints.payment.cardCancelCommit;
                 const res = await this.commit(requestCreditItem, url);
 
                 if (res.status === 200) {
@@ -635,7 +636,7 @@ export default {
       this.$store.commit("clearRequestCashItem");
     },
     async cashCommit(item) {
-      const url ="http://dev.order.torder.co.kr/credit/cashCommit";
+      const url = endpoints.payment.cashCommit;
       const res  = await this.requestPaymentCommit(item, url);
 
       console.log({res});
