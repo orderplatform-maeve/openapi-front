@@ -1198,7 +1198,7 @@ const payment = {
   actions : {
     async updatePaymentList(context, params) {
 
-      const url ="http://dev.order.torder.co.kr/credit/creditList";
+      const url = endpoints.payment.creditList;
       const res = await axios.get(url, {params});
 
       context.commit('updatePaymentList', res.data);

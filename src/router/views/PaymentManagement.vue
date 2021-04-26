@@ -506,6 +506,7 @@
 //import paths from '@router/paths';
 import { isDev } from '@utils/constants';
 import axios from 'axios';
+import endpoints from '@store/endpoints';
 
 export default {
   components: {
@@ -996,8 +997,8 @@ export default {
       });
     },
     async cashCommit(item) {
-      const url ="http://dev.order.torder.co.kr/credit/cashCommit";
-      const res  = await this.commit(item, url);
+      const url = endpoints.payment.cashCommit;
+      const res = await this.commit(item, url);
       const newItem = res.data.rowData;
       this.$store.commit('replacePaymentListItem', newItem);
 
@@ -1006,8 +1007,8 @@ export default {
       this.closeItemModal();
     },
     async cashCancelCommit(item) {
-      const url ="http://dev.order.torder.co.kr/credit/cashCancelCommit";
-      const res  = await this.commit(item, url);
+      const url = endpoints.payment.cashCancelCommit;
+      const res = await this.commit(item, url);
       const newItem = res.data.rowData;
       this.$store.commit('replacePaymentListItem', newItem);
       this.closeItemModal();
@@ -1180,67 +1181,6 @@ export default {
     },
     search() {
       this.updatePaymentList(1);
-    },
-    async getItems(page) {
-      if (!page)  page = 1;
-
-      let selectedTables = [];
-      this.searchOptions.table.list.map((table) => {
-        if (table.selected) selectedTables.push(table.Ta_id);
-      });
-
-      const url ="http://dev.order.torder.co.kr/credit/creditList";
-      const maskMoment = "YYYY-MM-DD HH:mm:ss";
-      const params = {
-        storeCode: this.$store.state.auth.store.store_code,
-        dateType: this.searchOptions.type.selected,
-        Filter: this.searchOptions.filter.selected,
-        page: page,
-        sort: this.searchOptions.sort.selected,
-        startDate: this.$moment(this.searchOptions.datetime.start).format(maskMoment),
-        endDate: this.$moment(this.searchOptions.datetime.end).format(maskMoment),
-        paymentMethod: this.searchOptions.method.selected,
-        issuerCode: this.searchOptions.company.selected,
-        tables: selectedTables.join('@'),
-        sst: 'id',
-      };
-
-      const res = await axios.get(url, {params});
-
-      const items = res.data.list;
-      const currPage = res.data.curentpage;
-      const allPages = res.data.totalPage;
-
-
-      const typeStrings = {
-        0: { name: "현금 미결제"},
-        1: { name: "현금 결제 완료"},
-        2: { name: "현금 환불"},
-        3: { name: "카드결제 완료"},
-        4: { name: "카드 환불"},
-        5: { name: "카드 취소"},
-        6: { name: "현금 영수증 요청 "},
-        7: { name: "현금 영수증 출력"},
-        8: { name: "현금 영수증 취소"},
-      };
-
-      items.map((i) => {
-        const index = i.creditType;
-        console.log(index);
-        let name = "";
-        let item = typeStrings[index];
-        if (item) {
-          name = item.name;
-        }
-        i.creditTypeString = name;
-      });
-
-      this.items = items;
-      this.page = {
-        currPage,
-        allPages,
-      };
-
     },
   },
 };
