@@ -14,4 +14,5 @@ export default {
   controlOrder: '/controlOrder',
   controlLastOrder: '/controlLastOrder',
   paymentManagement: '/paymentManagement',
+  cancelPaymentOrder: '/cancelPaymentOrder',
 };
