@@ -14,6 +14,7 @@ import {
   ControlOrder,
   ControlLastOrder,
   PaymentManagement,
+  CancelPaymentOrder,
 } from '@views';
 
 import paths from './paths';
@@ -110,6 +111,12 @@ const routes = [{
       path: paths.paymentManagement,
       name: paths.paymentManagement.replace('/',''),
       component: PaymentManagement,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: paths.cancelPaymentOrder,
+      name: paths.cancelPaymentOrder.replace('/',''),
+      component: CancelPaymentOrder,
       meta: { requiresAuth: true },
     },
   ],

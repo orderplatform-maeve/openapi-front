@@ -14,6 +14,8 @@
   //-   <br> (테스트)
   router-link.button-added(v-if="visibleOrderButton" :to="paths.controlLastOrder") 타이머 관리
     <br> (테스트)
+  router-link.button-added(v-if="visibleOrderButton" :to="paths.cancelPaymentOrder") 결제 주문 강제 취소
+    <br> (테스트)
 </template>
 
 <script>

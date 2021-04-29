@@ -57,7 +57,7 @@ const endpoints = {
     cashCommit: `${REST_URL}/credit/cashCommit`,
     creditList: `${REST_URL}/credit/creditList`,
     cashCancelCommit: `${REST_URL}/credit/cashCancelCommit`,
-
+    deleteCartList: `${REST_URL}/credit/deleteCartList`,
   },
 };
 
