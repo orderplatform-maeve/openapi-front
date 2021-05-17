@@ -1,5 +1,5 @@
 <template lang="pug">
-.container
+.container-new
   .main-categories
     .main-category(
       v-for="ctgItem in data"
@@ -689,8 +689,19 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.container{
+.container-new {
   color:#ffffff;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  padding: 12px;
+  -webkit-box-flex: 1;
+  -ms-flex-positive: 1;
+  flex-grow: 1;
   a {
     text-decoration: none;
     color: var(--c-1);
