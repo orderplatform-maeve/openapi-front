@@ -27,7 +27,7 @@
             template(v-if="order.viewType==4") 평가
           //- .check(v-bind:class="getOrderItemClass(order)") 확인
           .order-price {{ getOrderPrice(order) }}원
-          .paid-price {{ getTotalAmount(order) }}원
+          .paid-price {{ getTotalAmount(order) }}
           .misu-btn {{ getMisu(order) }}
           .txt2
             template(v-if="order.paidOrder") 선불
