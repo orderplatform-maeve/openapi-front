@@ -18,17 +18,14 @@
         v-if="visibleOrderItem(order)"
       )
         a(@click="view(order)")
-          .tn(:class="getOrderTypeColor(order)") {{checkedTabletNum(order)}}
+          .tn(v-bind:class="{ bg_red: order.viewType==1 || order.viewType==0, bg_blue: order.viewType==2, bg_green: order.viewType==3, bg_yellow: order.viewType==4}") {{checkedTabletNum(order)}}
           .txt1
             template(v-if="order.viewType==0") 첫주문
             template(v-if="order.viewType==1") 주문
             template(v-if="order.viewType==2") 호출
             template(v-if="order.viewType==3") 세팅완료
             template(v-if="order.viewType==4") 평가
-          //- .check(v-bind:class="getOrderItemClass(order)") 확인
-          .order-price {{ getOrderPrice(order) }}원
-          .paid-price {{ getTotalAmount(order) }}
-          .misu-btn {{ getMisu(order) }}
+          .check(v-bind:class="getOrderItemClass(order)") 확인
           .txt2
             template(v-if="order.paidOrder") 선불
             template(v-else) 후불
@@ -37,13 +34,46 @@
             template(v-if="order.creditType=='card'") 카드
             template(v-if="order.creditType=='complex'") 카드+현금
             template(v-if="order.paidOrder==false") &nbsp;&nbsp;&nbsp;&nbsp;
-          .date {{ getOrderTime(order).substr(11) }}
+          .date {{getOrderTime(order)}}
           .btn_orderList 주문내역
+
+//#orders
+  .top
+    .tab-group
+      .order-list-tab-buttons.tab-buttons
+        .order-list-tab-button.tab-button(@click="setViewMode('a')" :class="activeAllTabBtnClass")
+          | 모든 주문
+          .count {{lengthOrders}}
+        .order-list-tab-button.tab-button(@click="setViewMode('n')" :class="activeUnidentifiedTabBtnClass")
+          | 미확인 주문
+          .count {{unidentifiedOrders}}
+        .order-list-tab-button.tab-button(@click="setViewMode('c')" :class="activeCheckedTabBtnClass")
+          | 확인 주문
+          .count {{lengthCommitedOrders}}
+  .loading(v-if="isLoading") 데이터 요청 중 입니다.
+  ul.order-list(v-if="!isLoading")
+    li.order-item(
+      v-for="order in sortedOrders"
+      :class="getOrderItemClass(order)"
+      @click="view(order)"
+      v-if="visibleOrderItem(order)"
+    )
+      .table-number(:class="getTableNumberClass(order)") {{checkedTabletNum(order)}}
+      .people_total_count(v-if="visibleCustomerCount(order)") {{checkedTotalPeople(order)}}명
+      .msg
+        span.title(v-if="visibleCall(order)") 호출이요
+        span.title(v-else-if="isDoneSetting(order)") 셋팅완료
+        span.title(v-else-if="isRating(order)") {{getRatingText(order.rating_type)}}
+        span.title(v-else) 주문이요
+        .icon.visit(v-if="isFirstEntered(order)") 입장
+        .icon.first(v-if="isFirstOrder(order)") 첫 주문
+      .msg-time
+        .commit(:class="getMsgTimeClass(order)") {{validCommitText(order)}}
+        .time {{getOrderTime(order)}}
 </template>
 
 <script>
 import utils from '@utils/orders.utils';
-import { won } from '@utils/regularExpressions';
 
 export default {
   data () {
@@ -85,7 +115,6 @@ export default {
     },
   },
   async mounted() {
-    console.log(this.sortedOrders);
     this.isLoading = true;
 
     const fd = new FormData();
@@ -100,42 +129,6 @@ export default {
     }
   },
   methods: {
-    getMisu(order) {
-      try {
-        console.log(order.totalMisu);
-        return won(order.totalMisu);
-      } catch (error) {
-        return '미수금없음';
-      }
-    },
-    getOrderTypeColor(order) {
-      try {
-        const result = {
-          bg_red: order.viewType === 1 || order.viewType === 0,
-          bg_blue: order.viewType === 2,
-          bg_green: order.viewType === 3,
-          bg_yellow: order.viewType === 4,
-          'overflow-hidden': true,
-        };
-        return result;
-      } catch (error) {
-        return '';
-      }
-    },
-    getOrderPrice(order) {
-      try {
-        return won(order.orderPrice);
-      } catch (error) {
-        return 0;
-      }
-    },
-    getTotalAmount(order) {
-      try {
-        return won(order.totalMisu);
-      } catch (error) {
-        return 0;
-      }
-    },
     setViewMode(value) {
       document.querySelector(".order_list").scrollTop = 0;
       this.viewMode = value;
@@ -170,11 +163,6 @@ export default {
 
 <style lang="scss">
 @import "../../scss/global.scss";
-
-.overflow-hidden {
-  overflow: hidden;
-}
-
 #orders {
   display:flex;
   flex-direction:column;
