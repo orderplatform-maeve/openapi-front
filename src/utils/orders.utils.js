@@ -124,7 +124,7 @@ export function checkedCommit(order) {
   return order && order.commit;
 }
 
-export function getOrderTiem(order) {
+export function getOrderTime(order) {
   if (!order) {
     return '';
   }
@@ -227,7 +227,7 @@ export default {
   getMsgTimeClass,
   checkedCommit,
   validCommitText,
-  getOrderTiem,
+  getOrderTime,
   isRating,
   getRatingText,
   ...productMethods,
