@@ -11,6 +11,7 @@
     "dev": "cross-env NODE_ENV=development SERVER_TYPE=demo vue-cli-service serve --open",
     "dev:rest": "cross-env NODE_ENV=development SERVER_TYPE=rest vue-cli-service serve --open",
     "dev:stop-redirect": "cross-env NODE_ENV=development SERVER_TYPE=rest STOP_REDIRECT=true vue-cli-service serve --open",
+    "demo:stop-redirect": "cross-env NODE_ENV=development SERVER_TYPE=demo STOP_REDIRECT=true vue-cli-service serve --open",
     "build": "vue-cli-service build",
     "deploy-tmp": "node ./script/deployTmp.js",
     "deploy": "node ./script/deploy.js",
