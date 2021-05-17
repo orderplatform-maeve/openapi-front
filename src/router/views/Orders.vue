@@ -2,10 +2,10 @@
 #orders
   .top_menu
     .menu(@click="setViewMode('a')" :class="activeAllTabBtnClass")
-      | 모든 주문 
+      | 모든 주문
       span {{lengthOrders}}
     .menu(@click="setViewMode('n')" :class="activeUnidentifiedTabBtnClass")
-      | 미확인 주문  
+      | 미확인 주문
       span {{unidentifiedOrders}}
     .menu(@click="setViewMode('c')" :class="activeCheckedTabBtnClass")
       | 확인주문
@@ -30,12 +30,12 @@
             template(v-if="order.paidOrder") 선불
             template(v-else) 후불
           div(v-bind:class="{txt4: order.creditStat==false, txt3:order.creditStat==true || order.paidOrder==false}")
-            template(v-if="order.creditType=='cash'") 현금 
-            template(v-if="order.creditType=='card'") 카드 
+            template(v-if="order.creditType=='cash'") 현금
+            template(v-if="order.creditType=='card'") 카드
             template(v-if="order.creditType=='complex'") 카드+현금
             template(v-if="order.paidOrder==false") &nbsp;&nbsp;&nbsp;&nbsp;
-          .date {{getOrderTiem(order)}}
-          .btn_orderList 주문내역 
+          .date {{getOrderTime(order)}}
+          .btn_orderList 주문내역
 
 //#orders
   .top
@@ -69,7 +69,7 @@
         .icon.first(v-if="isFirstOrder(order)") 첫 주문
       .msg-time
         .commit(:class="getMsgTimeClass(order)") {{validCommitText(order)}}
-        .time {{getOrderTiem(order)}}
+        .time {{getOrderTime(order)}}
 </template>
 
 <script>
