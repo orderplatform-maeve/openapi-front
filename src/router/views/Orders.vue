@@ -26,9 +26,9 @@
             template(v-if="order.viewType==3") 세팅완료
             template(v-if="order.viewType==4") 평가
           //- .check(v-bind:class="getOrderItemClass(order)") 확인
-          .order-price {{ getOrderPrice(order) }}
-          .paid-price {{ getTotalAmount(order) }}
-          .misu-btn {{ order.totalMisu > 0 ? order.totalMisu : '미수금없음' }}
+          .order-price {{ getOrderPrice(order) }}원
+          .paid-price {{ getTotalAmount(order) }}원
+          .misu-btn {{ getMisu(order) }}
           .txt2
             template(v-if="order.paidOrder") 선불
             template(v-else) 후불
@@ -43,7 +43,7 @@
 
 <script>
 import utils from '@utils/orders.utils';
-import { wonComma } from '@utils/regularExpressions';
+import { won } from '@utils/regularExpressions';
 
 export default {
   data () {
@@ -100,6 +100,14 @@ export default {
     }
   },
   methods: {
+    getMisu(order) {
+      try {
+        console.log(order.totalMisu);
+        return won(order.totalMisu);
+      } catch (error) {
+        return '미수금없음';
+      }
+    },
     getOrderTypeColor(order) {
       try {
         const result = {
@@ -116,14 +124,14 @@ export default {
     },
     getOrderPrice(order) {
       try {
-        return wonComma(order.orderPrice);
+        return won(order.orderPrice);
       } catch (error) {
         return 0;
       }
     },
     getTotalAmount(order) {
       try {
-        return wonComma(order.totalMisu);
+        return won(order.totalMisu);
       } catch (error) {
         return 0;
       }
