@@ -1,6 +1,6 @@
 <template lang="pug">
 #orders
-  .top_menu
+  .top_menu.fixed
     .menu(@click="setViewMode('a')" :class="activeAllTabBtnClass")
       | 모든 주문
       span {{lengthOrders}}
@@ -10,8 +10,8 @@
     .menu(@click="setViewMode('c')" :class="activeCheckedTabBtnClass")
       | 확인주문
       span {{lengthCommitedOrders}}
-
-  .list_box
+  .hide-menu-back
+  .list_box.mt
     ul.order_list
       li.order-item(
         v-for="order in sortedOrders"
@@ -26,9 +26,12 @@
             template(v-if="order.viewType==3") 세팅완료
             template(v-if="order.viewType==4") 평가
           //- .check(v-bind:class="getOrderItemClass(order)") 확인
-          .order-price {{ getOrderPrice(order) }}원
+          .order-price {{ getOrderPrice(order) }}
+            span 원
           .paid-price {{ getTotalAmount(order) }}
+            span 원
           .misu-btn {{ getMisu(order) }}
+            span 원
           .txt2
             template(v-if="order.paidOrder") 선불
             template(v-else) 후불
@@ -173,6 +176,30 @@ export default {
 
 .overflow-hidden {
   overflow: hidden;
+}
+
+.fixed {
+  position: fixed;
+  z-index: 2;
+  width: calc(100% - 180px) !important;
+  box-sizing: border-box;
+  top: 16px;
+  left: 16px;
+}
+
+.mt {
+  margin-top: 72px !important;
+  height: calc(100% - 72px) !important;
+}
+
+.hide-menu-back {
+  width: calc(100% - 150px);
+  height: 72px;
+  position: fixed;
+  left: 0;
+  top: 0;
+  background-color: #1C1B21;
+  z-index: 1;
 }
 
 #orders {
