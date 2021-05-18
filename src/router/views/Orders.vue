@@ -20,26 +20,31 @@
         a(@click="view(order)")
           .tn(:class="getOrderTypeColor(order)") {{checkedTabletNum(order)}}
           .txt1
-            template(v-if="order.viewType==0") 첫주문
-            template(v-if="order.viewType==1") 주문
-            template(v-if="order.viewType==2") 호출
-            template(v-if="order.viewType==3") 세팅완료
-            template(v-if="order.viewType==4") 평가
+            template(v-if="order.viewType === 0") 첫주문
+            template(v-if="order.viewType === 1") 주문
+            template(v-if="order.viewType === 2") 호출
+            template(v-if="order.viewType === 3") 세팅완료
+            template(v-if="order.viewType === 4") 평가
           //- .check(v-bind:class="getOrderItemClass(order)") 확인
           .order-price {{ getOrderPrice(order) }}
-            span 원
+            span.won 원
           .paid-price {{ getTotalAmount(order) }}
-            span 원
-          .misu-btn {{ getMisu(order) }}
-            span 원
-          .txt2
+            span.won 원
+          .misu-btn(
+            @click.stop="() => reqMisu(order)"
+            :class="getMisuBtnActive(order)"
+          )
+            div
+              span {{ getMisu(order) }}
+              span.won(v-if="getVisibleWon(order)") 원
+          //- .txt2
             template(v-if="order.paidOrder") 선불
             template(v-else) 후불
-          div(v-bind:class="{txt4: order.creditStat==false, txt3:order.creditStat==true || order.paidOrder==false}")
-            template(v-if="order.creditType=='cash'") 현금
-            template(v-if="order.creditType=='card'") 카드
-            template(v-if="order.creditType=='complex'") 카드+현금
-            template(v-if="order.paidOrder==false") &nbsp;&nbsp;&nbsp;&nbsp;
+          //- div(v-bind:class="{txt4: order.creditStat==false, txt3:order.creditStat==true || order.paidOrder==false}")
+            template(v-if="order.creditType === 'cash'") 현금
+            template(v-if="order.creditType === 'card'") 카드
+            template(v-if="order.creditType === 'complex'") 카드+현금
+            template(v-if="order.paidOrder === false") &nbsp;&nbsp;&nbsp;&nbsp;
           .date {{ getOrderTime(order).substr(11) }}
           .btn_orderList 주문내역
 </template>
@@ -103,9 +108,22 @@ export default {
     }
   },
   methods: {
+    getMisuBtnActive(order) {
+      return {
+        active: order.totalMisu > 0,
+      };
+    },
+    reqMisu(order) {
+      console.log(order, 'reqMisu');
+    },
+    getVisibleWon(order) {
+      return order.totalMisu > 0;
+    },
     getMisu(order) {
       try {
-        console.log(order.totalMisu);
+        if (order.totalMisu === 0) {
+          throw '미수금없음';
+        }
         return won(order.totalMisu);
       } catch (error) {
         return '미수금없음';
@@ -200,6 +218,47 @@ export default {
   top: 0;
   background-color: #1C1B21;
   z-index: 1;
+}
+
+.order-price {
+  width: 82px;
+  text-align: center;
+  font-size: 22px;
+}
+
+.won {
+  font-size: 16px;
+}
+
+.paid-price {
+  width: 82px;
+  text-align: center;
+  color: #60a2f8;
+}
+
+.misu-btn {
+  width: 112px;
+  height: 46px;
+  margin: 0 25px 0 51px;
+  padding: 7px 14px 6px;
+  border-radius: 5px;
+  background-color: #1c1b21;
+  font-size: 22px;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 0.73;
+  letter-spacing: -0.55px;
+  text-align: center;
+  color: #999999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.active {
+  font-weight: bold;
+  color: black;
+  background-color: white;
 }
 
 #orders {
