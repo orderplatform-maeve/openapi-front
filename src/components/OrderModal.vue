@@ -23,7 +23,7 @@
             li.fright.txt2 {{getProductQty(product)}}개
             li.fleft.option(v-if="isProductOpt(product)")
               div(v-for="option in product.option") {{getOptionDisplayName(option)}} {{getOptionGoodQty(option)}}개
-    .details_right()
+    .details_right(v-if="!order.paidOrder")
       p 이전 주문내역
       ul(v-if="order.paidOrder==false")
         li(v-for="c_product in order.total_orders")
@@ -31,7 +31,21 @@
             dt.fleft {{getBeforeProductDisplayName(c_product)}}
             dd.fright {{getBeforeProductOrderQty(c_product)}}개
             dd.fleft.option(v-if="isBeforeProductOtp(c_product)")
-              div(v-for="option in c_product.option") {{getBeforeProductOptionDisplayName(option)}} {{getBeforeProductOptionOrderQty(option)}}개
+              div(v-for="option in c_product.option") {{getBeforeProductOptionDisplayName(option)}} {{getBeforeProductOptionOrderQty(option)}}개.
+    .details_right(v-if="order.paidOrder")
+      p 결제내역
+      ul()
+        li(v-for="c_product in order.creditArray")
+          dl
+            dt.fleft {{ c_product.amount }}
+              dd.fright {{ c_product.order_type === 'cash' ? '현금' : '카드' }}
+    .details_right(v-if="order.paidOrder")
+      p 결제 취소 내역
+      ul()
+        li(v-for="c_product in order.creditArray")
+          dl
+            dt.fleft {{ c_product.amount }}
+              dd.fright {{ c_product.order_type === 'cash' ? '현금' : '카드' }}
   .btm
     p {{seconds}}초 후 닫혀요.
     a(@click="commitOrder(order)") 확인

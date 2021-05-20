@@ -48,7 +48,7 @@
         v-for="order in sortedOrders"
         v-if="visibleOrderItem(order)"
       )
-        a(@click="view(order)")
+        a(@click="openView(order)")
           .tn(:class="getOrderTypeColor(order)") {{checkedTabletNum(order)}}
           .txt1
             template(v-if="order.viewType === 0") 첫주문
@@ -68,7 +68,7 @@
             div
               span {{ getMisu(order) }}
               span.won(v-if="getVisibleWon(order)") 원
-          //- .txt2
+          .txt2
             template(v-if="order.paidOrder") 선불
             template(v-else) 후불
           //- div(v-bind:class="{txt4: order.creditStat==false, txt3:order.creditStat==true || order.paidOrder==false}")
@@ -221,7 +221,7 @@ export default {
       document.querySelector(".order_list").scrollTop = 0;
       this.viewMode = value;
     },
-    view(order) {
+    openView(order) {
       this.$store.dispatch('setOrder', order);
     },
     visibleOrderItem(order) {
