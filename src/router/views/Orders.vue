@@ -83,6 +83,11 @@
 <script>
 import utils from '@utils/orders.utils';
 import { won } from '@utils/regularExpressions';
+import { payments } from '@apis';
+
+const {
+  requestMisuCommit,
+} = payments;
 
 export default {
   data () {
@@ -140,8 +145,19 @@ export default {
     }
   },
   methods: {
-    reqConfirmMisu(order) {
+    async reqConfirmMisu(order) {
       console.log('misuCommit', order);
+
+      if (order?.order_view_key) {
+        const res = await requestMisuCommit(order.order_view_key);
+        console.log('res', res);
+
+        if (res?.status === 200) {
+          this.chooseOrder = {};
+          this.$store.commit('updateAlertModalMessage', '현금 수납 처리 되었습니다.');
+          this.$store.commit('updateIsAlertModal', true);
+        }
+      }
     },
     getCashOutPopVisble() {
       return this.chooseOrder?.totalMisu > 0;
