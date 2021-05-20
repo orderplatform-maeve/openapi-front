@@ -25,8 +25,8 @@
       .row
         .message 테이블에서<br/>현금 수납이 확인되었습니까?
     .button-group
-      .button(v-on:click.stop="closeItemModal();") 닫기
-      .button.on(v-on:click.stop="cashCommit(item);") 확인
+      .button(v-on:click.stop="closeItemModal") 닫기
+      .button.on(v-on:click.stop="() => cashCommit(item)") 확인
 
   .popup.item.cancelCashPayment(v-if="itemModal.currName == 'cancelCashPayment'")
     .tit 현금결제 취소
@@ -1000,6 +1000,7 @@ export default {
       const url = endpoints.payment.cashCommit;
       const res = await this.commit(item, url);
       const newItem = res.data.rowData;
+      console.log('newItem', res);
       this.$store.commit('replacePaymentListItem', newItem);
 
       this.$store.commit('UPDATE_ORDER_CREDIT', newItem, true);
@@ -1151,7 +1152,11 @@ export default {
     },
     openItemModal(item, name){
       if (name=='cashOutstanding') {
-        this.$store.commit('setRequestCashItem', item);
+        // this.$store.commit('setRequestCashItem', item);
+        this.$store.commit('updateItemModal', {
+          item,
+          currName: name,
+        });
       } else {
         console.log('openItemModal', item, name);
         this.$store.commit('setRequestCreditItem', item);
