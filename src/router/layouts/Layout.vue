@@ -101,7 +101,7 @@ import paths from '@router/paths';
 import { version } from '@utils/constants';
 import { Torder } from '@svg';
 import { AlertModal } from '@components';
-import endpoints from '@store/endpoints';
+import endpoints from '@apis/endpoints';
 
 export default {
   components: {

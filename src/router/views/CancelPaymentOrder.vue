@@ -7,7 +7,7 @@
 
 <script>
 import axios from 'axios';
-import endpoints from '@store/endpoints';
+import endpoints from '@apis/endpoints';
 
 export default {
   computed: {

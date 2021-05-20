@@ -13,6 +13,7 @@ const aliases = {
   '@scss': 'src/scss',
   '@config': 'src/config',
   '@svg': 'src/svg',
+  '@apis': 'src/apis',
 };
 
 module.exports = {

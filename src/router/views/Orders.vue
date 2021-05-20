@@ -1,5 +1,36 @@
 <template lang="pug">
 #orders
+  .popup.item.cashOutstanding(v-if="getCashOutPopVisble()")
+    p.tit 현금미결제
+    .content
+      .row
+        .left
+          dl
+            dt 주문금액 :
+            dd {{chooseOrder.orderPrice}}
+          dl
+            dt 주문번호 :
+            dd {{chooseOrder.order_id}}
+          dl
+            dt 주문일시 :
+            dd {{chooseOrder.order_time}}
+        .right
+          dl(v-for="p in chooseOrder.order_info")
+            dt
+              .name {{p.display_name}}
+              .option(v-if="p.option")
+                div(v-for="option in p.option") {{option.display_name}} {{option.order_qty}}개
+
+            dd {{p.good_qty}}개
+      .row
+        .message 테이블에서<br/>현금 수납이 확인되었습니까?
+    .button-group
+      .button(@click.stop="closeMisuModal") 닫기
+      .button.on(@click.stop="() => reqConfirmMisu(chooseOrder)") 확인
+  .dimBg(
+    v-if="getCashOutPopVisble()"
+    @click.stop="closeMisuModal"
+  )
   .top_menu.fixed
     .menu(@click="setViewMode('a')" :class="activeAllTabBtnClass")
       | 모든 주문
@@ -31,7 +62,7 @@
           .paid-price {{ getTotalAmount(order) }}
             span.won 원
           .misu-btn(
-            @click.stop="() => reqMisu(order)"
+            @click.stop="() => openMisuModal(order)"
             :class="getMisuBtnActive(order)"
           )
             div
@@ -58,6 +89,7 @@ export default {
     return {
       viewMode: 'a',
       isLoading: false,
+      chooseOrder: {},
     };
   },
   computed: {
@@ -108,13 +140,25 @@ export default {
     }
   },
   methods: {
+    reqConfirmMisu(order) {
+      console.log('misuCommit', order);
+    },
+    getCashOutPopVisble() {
+      return this.chooseOrder?.totalMisu > 0;
+    },
+    closeMisuModal() {
+      this.chooseOrder = {};
+    },
     getMisuBtnActive(order) {
       return {
         active: order.totalMisu > 0,
       };
     },
-    reqMisu(order) {
-      console.log(order, 'reqMisu');
+    openMisuModal(order) {
+      console.log(order, 'openMisuModal');
+      if (order.totalMisu > 0) {
+        this.chooseOrder = order;
+      }
     },
     getVisibleWon(order) {
       return order.totalMisu > 0;

@@ -10,8 +10,7 @@ import {
   getNewCategories,
 } from './store.helper';
 import { isEmpty } from '@utils/CheckedType';
-
-import endpoints from './endpoints';
+import endpoints from '@apis/endpoints';
 
 Vue.use(Vuex);
 

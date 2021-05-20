@@ -506,7 +506,7 @@
 //import paths from '@router/paths';
 import { isDev } from '@utils/constants';
 import axios from 'axios';
-import endpoints from '@store/endpoints';
+import endpoints from '@apis/endpoints';
 
 export default {
   components: {
