@@ -417,6 +417,18 @@ const order = {
         Vue.set(state, 'orders', orders);
       }
     },
+    UPDATE_DONE_MISU_ORDERS: (state, order) => {
+      const { orders } = state;
+      const idx = orders.findIndex((item) => item.order_view_key === order.order_view_key);
+
+      // console.log('UPDATE_ORDERS', idx);
+
+      if (idx > -1) {
+        orders[idx].totalAmount = order.totalMisu;
+        orders[idx].totalMisu = 0;
+        Vue.set(state, 'orders', orders);
+      }
+    },
   },
   actions: {
     async commitOrder(context, payload) {

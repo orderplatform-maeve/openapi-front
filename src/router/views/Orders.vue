@@ -154,6 +154,7 @@ export default {
 
         if (res?.status === 200) {
           this.chooseOrder = {};
+          this.$store.commit('UPDATE_DONE_MISU_ORDERS', order);
           this.$store.commit('updateAlertModalMessage', '현금 수납 처리 되었습니다.');
           this.$store.commit('updateIsAlertModal', true);
         }
@@ -212,7 +213,7 @@ export default {
     },
     getTotalAmount(order) {
       try {
-        return won(order.totalMisu);
+        return won(order.totalAmount);
       } catch (error) {
         return 0;
       }
