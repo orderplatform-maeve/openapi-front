@@ -41,6 +41,16 @@
     .menu(@click="setViewMode('c')" :class="activeCheckedTabBtnClass")
       | 확인주문
       span {{lengthCommitedOrders}}
+  .t-head
+    .t-num 테이블번호
+    .state 상태
+    .od-price 주문금액
+    .od-price 결제금액
+    .misu 미수금
+    .paid-type  선/후불
+    .credit-type 결제수단
+    .date 주문시간
+    .empty
   .hide-menu-back
   .list_box.mt
     ul.order_list
@@ -71,7 +81,7 @@
           .txt2
             template(v-if="order.paidOrder") 선불
             template(v-else) 후불
-          //- div(v-bind:class="{txt4: order.creditStat==false, txt3:order.creditStat==true || order.paidOrder==false}")
+          div(v-bind:class="{txt4: order.creditStat==false, txt3:order.creditStat==true || order.paidOrder==false}")
             template(v-if="order.creditType === 'cash'") 현금
             template(v-if="order.creditType === 'card'") 카드
             template(v-if="order.creditType === 'complex'") 카드+현금
@@ -253,6 +263,55 @@ export default {
 <style lang="scss">
 @import "../../scss/global.scss";
 
+.t-head {
+  width: calc(100% - 150px) !important;
+  display: flex;
+  position: fixed;
+  top: 72px;
+  left: 0;
+  color: #999999;
+  font-size: 16px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.5;
+  letter-spacing: normal;
+  text-align: center;
+  height: 54px;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 3;
+  padding: 0 20px 0 20px !important;
+  box-sizing: border-box;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+
+  .t-num {
+    width: 120px;
+  }
+  .state {
+    width: 80px;
+  }
+  .od-price {
+    width: 115px;
+  }
+  .misu {
+    width: 112px;
+  }
+  .paid-type {
+    width: 75px;
+  }
+  .credit-type {
+    width: 100px;
+  }
+  .date {
+    width: 143px;
+  }
+  .empty {
+    width: 112px;
+  }
+}
+
 .overflow-hidden {
   overflow: hidden;
 }
@@ -267,13 +326,13 @@ export default {
 }
 
 .mt {
-  margin-top: 72px !important;
-  height: calc(100% - 72px) !important;
+  margin-top: calc(72px + 54px) !important;
+  height: calc(100% - 72px - 54px) !important;
 }
 
 .hide-menu-back {
   width: calc(100% - 150px);
-  height: 72px;
+  height: calc(72px + 54px);
   position: fixed;
   left: 0;
   top: 0;
