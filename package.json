@@ -15,7 +15,8 @@
     "build": "vue-cli-service build",
     "deploy-tmp": "node ./script/deployTmp.js",
     "deploy": "node ./script/deploy.js",
-    "deploy:dev": "cross-env NODE_ENV=development SERVER_TYPE=rest STOP_REDIRECT=true vue-cli-service build && node ./script/s3Uploader.dev.js"
+    "deploy:dev": "cross-env NODE_ENV=development SERVER_TYPE=rest STOP_REDIRECT=true vue-cli-service build && node ./script/s3Uploader.dev.js",
+    "deploy:demo": "cross-env NODE_ENV=development SERVER_TYPE=demo STOP_REDIRECT=true vue-cli-service build && node ./script/s3Uploader.dev.js"
   },
   "dependencies": {
     "axios": "^0.19.2",
