@@ -314,7 +314,7 @@
             th.fixed-side(scope='row') 카드번호
             th(scope='row') 승인번호
             th(scope='row') 승인일시
-            th(scope='row') 상품
+            //- th(scope='row') 상품
             th(scope='row') 금액
             th(scope='row') 카드사명
             th(scope='row') 현금영수증 종류
@@ -337,7 +337,7 @@
             td.fixed-side {{item.cardNumber}}
             td {{item.paymentId}}
             td {{item.creditDateTime}}
-            td
+            //- td
               u(v-on:click.stop="openItemModal(item, 'orderProductsDetail')") {{productsName(item)}}
             td {{item.amount}}
             td {{item.issuer}}
