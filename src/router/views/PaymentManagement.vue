@@ -174,38 +174,6 @@
           li(v-for="date in calendarDaysInMonth" v-bind:class="{'active': date == initialDate && calendarMonth == initialMonth && calendarYear == initialYear}" v-on:click.stop="pickerSelectDate(calendarYear, calendarMonth, date)") {{date}}
 
   .dimBg(v-if="currentSearchModal || itemModal.currName" v-on:click.stop="closeSearchModal()")
-
-  //.search-modal(v-if="currentSearchModal")
-    .search-modal-background(v-on:click.stop="closeSearchModal()")
-    //.search-modal-content(v-if="currentSearchModal == 'type'")
-      .title 주문/승인 선택
-      .button-group
-        .button(v-for="(value, name) in searchOptions.type.list" v-on:click.stop="selectOption('type', name)") {{value.name}}
-        //.button(v-on:click.stop="selectType(2)") 현금승인날짜<br/>(현금영수증발행)
-    //.search-modal-content(v-if="currentSearchModal == 'date'")
-      .title 날짜/시간별 조회
-      vc-date-picker(v-model='searchOptions.datetime' is-range  :masks="masks")
-      .button-group
-        .button(v-on:click="closeSearchModal();") 확인
-    //.search-modal-content(v-if="currentSearchModal == 'method'")
-      .title 결제방식 선택
-      .button-group
-        .button(v-for="(value, name) in searchOptions.method.list" v-on:click.stop="selectOption('method', name)") {{value.name}}
-    //.search-modal-content(v-if="currentSearchModal == 'company'")
-      .title 카드사 선택
-      .button-group.company
-        .button(v-for="(value, name) in searchOptions['company'].list" v-on:click.stop="selectOption('company', name)") {{value.name}}
-    //.search-modal-content(v-if="currentSearchModal == 'table'")
-      .title 테이블 선택(중복선택 가능)
-      .table-group
-        .table(v-for="table in searchOptions.table.list" v-on:click.stop="toggleTable(table)") {{table.Tablet_name}} {{table.selected}}
-      .button(v-on:click.stop="closeSearchModal()") 선택완료
-    //.search-modal-content(v-if="currentSearchModal == 'sort'")
-      .button-group
-        .button(v-for="(value, name) in searchOptions['sort'].list" v-on:click.stop="selectOption('sort', name); search();") {{value.name}}
-    //.search-modal-content(v-if="currentSearchModal == 'filter'")
-      .button-group
-        .button(v-for="(value, name) in searchOptions['filter'].list" v-on:click.stop="selectOption('filter', name);  search();") {{value.name}}
   h1 결제내역(건별)
   .filter_wrap
     a.select(v-on:click.stop="openSearchModal('type')") {{optionName('type')}}
@@ -223,8 +191,8 @@
         //- col.col1
         col.col2
         col.col3
-        col.col4
-        col.col5
+        //- col.col4
+        //- col.col5
         col.col6
         //- col.col7
         //- col.col8
@@ -243,8 +211,8 @@
           //- th.fixed-side(scope='row') No
           th.fixed-side(scope='row') 테이블이름
           th.fixed-side(scope='row') 상태
-          th.fixed-side(scope='row') 결제유형
-          th.fixed-side(scope='row') 주문일시
+          //- th.fixed-side(scope='row') 결제유형
+          //- th.fixed-side(scope='row') 주문일시
           th.fixed-side(scope='row') 카드번호
           //- th(scope='row') 승인번호
           //- th(scope='row') 상품
@@ -267,8 +235,8 @@
             a.btn2(v-else-if="item.creditStat == 1" v-on:click.stop="openItemModal(item, 'cancelCashPayment')") 현금 결제 취소
             a.btn1(v-else-if="item.creditStat == 2" v-on:click.stop="openItemModal(item, 'cancelCreditCardPayment')") 결제 취소
             a.btn2(v-else-if="item.creditStat == 4") 카드 취소 완료
-          td.fixed-side {{item.creditTypeString}}
-          td.fixed-side {{item.orderdateTime}}
+          //- td.fixed-side {{item.creditTypeString}}
+          //- td.fixed-side {{item.orderdateTime}}
           td.fixed-side {{item.cardNumber}}
           //- td {{item.paymentId}}
           //- td {{item.creditDateTime}}
@@ -289,28 +257,28 @@
           //- col.col1
           col.col2
           col.col3
-          col.col4
-          col.col5
+          //- col.col4
+          //- col.col5
           col.col6
           col.col7
           col.col8
-          col.col9
+          //- col.col9
           col.col10
           col.col11
           col.col12
-          col.col13
-          col.col14
-          col.col15
-          col.col16
-          col.col17
-          col.col18
+          //- col.col13
+          //- col.col14
+          //- col.col15
+          //- col.col16
+          //- col.col17
+          //- col.col18
         thead
           tr
             //- th.fixed-side(scope='row') No
             th.fixed-side(scope='row') 테이블이름
             th.fixed-side(scope='row') 상태
-            th.fixed-side(scope='row') 결제유형
-            th.fixed-side(scope='row') 주문일시
+            //- th.fixed-side(scope='row') 결제유형
+            //- th.fixed-side(scope='row') 주문일시
             th.fixed-side(scope='row') 카드번호
             th(scope='row') 승인번호
             th(scope='row') 승인일시
@@ -318,12 +286,12 @@
             th(scope='row') 금액
             th(scope='row') 카드사명
             th(scope='row') 현금영수증 종류
-            th(scope='row') 증빙방법
-            th(scope='row') 결제방식
-            th(scope='row') 할부개월
-            th(scope='row') 부가세
-            th(scope='row') 매입사명
-            th(scope='row') 오류내용
+            //- th(scope='row') 증빙방법
+            //- th(scope='row') 결제방식
+            //- th(scope='row') 할부개월
+            //- th(scope='row') 부가세
+            //- th(scope='row') 매입사명
+            //- th(scope='row') 오류내용
         tbody
           tr(v-for="item in paymentList")
             //- td.fixed-side {{item.id}}
@@ -332,8 +300,8 @@
               a.btn1(v-if="item.creditStat == 0" v-on:click.stop="openItemModal(item, 'cashOutstanding')") 현금미결제
               a.btn2(v-else-if="item.creditStat == 1" v-on:click.stop="openItemModal(item, 'cancelCashPayment')") 현금 결제 취소
               a.btn1(v-else-if="item.creditStat == 2" v-on:click.stop="openItemModal(item, 'cancelCreditCardPayment')") 결제 취소
-            td.fixed-side {{item.creditTypeString}}
-            td.fixed-side {{item.orderdateTime}}
+            //- td.fixed-side {{item.creditTypeString}}
+            //- td.fixed-side {{item.orderdateTime}}
             td.fixed-side {{item.cardNumber}}
             td {{item.paymentId}}
             td {{item.creditDateTime}}
@@ -342,12 +310,12 @@
             td {{item.amount}}
             td {{item.issuer}}
             td {{item.cashbillType}}
-            td
-            td {{item.creditTypeString}}
-            td {{item.ApprovalMonth}}
-            td {{item.vat}}
-            td {{item.Acquirer}}
-            td {{item.resultText}}
+            //- td
+            //- td {{item.creditTypeString}}
+            //- td {{item.ApprovalMonth}}
+            //- td {{item.vat}}
+            //- td {{item.Acquirer}}
+            //- td {{item.resultText}}
   .pagination
     ul
       li.first-child(v-if="pagination.firstPage > 1")
