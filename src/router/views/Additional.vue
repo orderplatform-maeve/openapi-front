@@ -16,6 +16,8 @@
     <br> (테스트)
   router-link.button-added(v-if="visibleOrderButton" :to="paths.cancelPaymentOrder") 결제 주문 강제 취소
     <br> (테스트)
+  router-link.button-added(v-if="visibleOrderButton" :to="paths.oldPaymentManagement") 구 결제내역
+    <br> (테스트)
 </template>
 
 <script>

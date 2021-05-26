@@ -56,6 +56,7 @@ const endpoints = {
     cardCancelCommit: `${SERVER_URL}/credit/cardCancelCommit`,
     cashCommit: `${SERVER_URL}/credit/cashCommit`,
     creditList: `${SERVER_URL}/credit/creditList`,
+    creditDataList: `${SERVER_URL}/credit/creditDataList`,
     cashCancelCommit: `${SERVER_URL}/credit/cashCancelCommit`,
     deleteCartList: `${SERVER_URL}/credit/deleteCartList`,
     misuCommit: `${SERVER_URL}/credit/misuCommit`,

@@ -11,6 +11,13 @@ export const requestMisuCommit = async (orderKey) => {
   return res;
 };
 
+export const requestCardCancelCommit = async (params) => {
+  const url = endpoints.payment.cardCancelCommit;
+  const res = await axios.post(url, JSON.stringify(params));
+  return res;
+};
+
 export default {
   requestMisuCommit,
+  requestCardCancelCommit,
 };

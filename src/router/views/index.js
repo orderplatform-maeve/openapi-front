@@ -13,3 +13,4 @@ export { default as ControlOrder } from './ControlOrder';
 export { default as ControlLastOrder } from './ControlLastOrder';
 export { default as PaymentManagement } from './PaymentManagement';
 export { default as CancelPaymentOrder } from './CancelPaymentOrder';
+export { default as OldPaymentManagement } from './OldPaymentManagement';

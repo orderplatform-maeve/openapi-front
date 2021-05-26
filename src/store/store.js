@@ -1209,6 +1209,13 @@ const payment = {
   actions : {
     async updatePaymentList(context, params) {
 
+      const url = endpoints.payment.creditDataList;
+      const res = await axios.get(url, {params});
+
+      context.commit('updatePaymentList', res.data);
+    },
+    async updateOldPaymentList(context, params) {
+
       const url = endpoints.payment.creditList;
       const res = await axios.get(url, {params});
 
