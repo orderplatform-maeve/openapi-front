@@ -40,10 +40,10 @@
           dl
             dt.fleft {{ getProductAmount(c_product) }}
               dd.fright {{ getProductOrderType(c_product) }}
-    .details_right(v-if="order.paidOrder")
+    .details_right(v-if="getVisibleCancelListArea(order)")
       p 결제 취소 내역
       ul()
-        li(v-for="c_product in order.creditArray")
+        li(v-for="c_product in order.cancelArray")
           dl
             dt.fleft {{ getProductAmount(c_product) }}
               dd.fright {{ getProductOrderType(c_product) }}
@@ -102,6 +102,13 @@ export default {
     },
   },
   methods: {
+    getVisibleCancelListArea(order) {
+      try {
+        return order.cancelArray.length > 0;
+      } catch (error) {
+        return false;
+      }
+    },
     getProductAmount(order) {
       try {
         return won(order.amount);
