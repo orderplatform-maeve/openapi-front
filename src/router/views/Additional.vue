@@ -18,6 +18,8 @@
     <br> (테스트)
   router-link.button-added(v-if="visibleOrderButton" :to="paths.oldPaymentManagement") 구 결제내역
     <br> (테스트)
+  router-link.button-added(v-if="visibleOrderButton" :to="paths.newPaymentManagement") 신 결제내역
+    <br> (테스트)
 </template>
 
 <script>

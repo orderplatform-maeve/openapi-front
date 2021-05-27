@@ -16,4 +16,5 @@ export default {
   paymentManagement: '/paymentManagement',
   cancelPaymentOrder: '/cancelPaymentOrder',
   oldPaymentManagement: '/oldPaymentManagement',
+  newPaymentManagement: '/newPaymentManagement',
 };
