@@ -1,11 +1,11 @@
-import { isDemo } from '@utils/constants';
+// import { isDemo } from '@utils/constants';
 
 const DEMO_URL = 'http:///demo.api.torder.co.kr';
 const REST_URL = 'http://rest.torder.co.kr';
 const ADMIN_URL = 'http://admin.torder.co.kr';
 const API_URL = 'http://api.torder.co.kr';
 
-const SERVER_URL = isDemo ? DEMO_URL : REST_URL;
+// const SERVER_URL = isDemo ? DEMO_URL : REST_URL;
 
 const endpoints = {
   authentication: {
