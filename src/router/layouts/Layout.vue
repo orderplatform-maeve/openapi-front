@@ -1,35 +1,6 @@
 <template lang="pug">
 #orderview
   alert-modal(v-if="isAlertModal")
-  .popup.item.cashOutstanding(v-if="requestCashItem")
-    p.tit 현금미결제
-    .content
-      .row
-        .left
-          dl
-            dt 주문금액 :
-            dd {{requestCashItem.amount}}
-          dl
-            dt 승인번호 :
-            dd {{requestCashItem.paymentId}}
-          dl
-            dt 주문일시 :
-            dd {{requestCashItem.orderdateTime}}
-        .right
-          dl(v-for="p in requestCashItem.orderInfo")
-            dt
-              .name {{p.display_name}}
-              .option(v-if="p.option")
-                div(v-for="option in p.option") {{option.display_name}} {{option.order_qty}}개
-
-            dd {{p.good_qty}}개
-      .row
-        .message 테이블에서<br/>현금 수납이 확인되었습니까?
-    .button-group
-      .button(v-on:click.stop="closeRequestItemModal();") 닫기
-      .button.on(v-on:click.stop="cashCommit(requestCashItem);") 확인
-  .dimBg(v-if="requestCashItem")
-
   modal-order(v-if="order")
   .dimBg(v-if="order")
   modal-all-refresh(
@@ -52,144 +23,6 @@
       :stores="stores"
       :time="time"
     )
-    //.top_menu
-      .menu.active
-        | &#xBAA8;&#xB4E0; &#xC8FC;&#xBB38;
-        span 10
-      .menu
-        | &#xBBF8;&#xD655;&#xC778; &#xC8FC;&#xBB38;
-        span 1
-      .menu
-        | &#xD655;&#xC778; &#xC8FC;&#xBB38;
-        span 0
-    //.list_box
-      ul.order_list
-        li
-          a(href='')
-            .tn.bg_red A-01
-            .txt1 &#xCCAB;&#xC8FC;&#xBB38;
-            .check.on &#xD655;&#xC778;
-            .txt2 &#xC120;&#xBD88;
-            .txt3 &#xD604;&#xAE08;
-            .date 2021-02-10 11:13:20
-            .btn_orderList &#xC8FC;&#xBB38;&#xB0B4;&#xC5ED;
-        li
-          a(href='')
-            .tn.bg_blue A-02
-            .txt1 &#xD638;&#xCD9C;&#xC774;&#xC694;
-            .check.on &#xD655;&#xC778;
-            .txt2 &#xC120;&#xBD88;
-            .txt4 &#xD604;&#xAE08;&#xBBF8;&#xACB0;&#xC81C;
-            .date 2021-02-10 11:13:20
-            .btn_orderList &#xC8FC;&#xBB38;&#xB0B4;&#xC5ED;
-        li
-          a(href='')
-            .tn.bg_blue A-03
-            .txt1 &#xD638;&#xCD9C;&#xC774;&#xC694;
-            .check.on &#xD655;&#xC778;
-            .txt2 &#xC120;&#xBD88;
-            .txt3 &#xCE74;&#xB4DC;+&#xD604;&#xAE08;
-            .date 2021-02-10 11:13:20
-            .btn_orderList &#xC8FC;&#xBB38;&#xB0B4;&#xC5ED;
-        li
-          a(href='')
-            .tn.bg_yellow A-03
-            .txt1 &#xD3C9;&#xAC00;
-            .check.on &#xD655;&#xC778;
-            .txt2 &#xC120;&#xBD88;
-            .txt3 &#xCE74;&#xB4DC;+&#xD604;&#xAE08;
-            .date 2021-02-10 11:13:20
-            .btn_orderList &#xC8FC;&#xBB38;&#xB0B4;&#xC5ED;
-        li
-          a(href='')
-            .tn.bg_green A-03
-            .txt1 &#xC138;&#xD305;&#xC644;&#xB8CC;
-            .check &#xBBF8;&#xD655;&#xC778;
-            .txt2 &#xC120;&#xBD88;
-            .txt4 &#xD604;&#xAE08;&#xBBF8;&#xACB0;&#xC81C;
-            .date 2021-02-10 11:13:20
-            .btn_orderList &#xC8FC;&#xBB38;&#xB0B4;&#xC5ED;
-        li
-          a(href='')
-            .tn.bg_red A-03
-            .txt1 &#xC8FC;&#xBB38;&#xC774;&#xC694;
-            .check &#xBBF8;&#xD655;&#xC778;
-            .txt2 &#xC120;&#xBD88;
-            .txt3 &#xCE74;&#xB4DC;+&#xD604;&#xAE08;
-            .date 2021-02-10 11:13:20
-            .btn_orderList &#xC8FC;&#xBB38;&#xB0B4;&#xC5ED;
-        li
-          a(href='')
-            .tn.bg_red A-03
-            .txt1 &#xC8FC;&#xBB38;&#xC774;&#xC694;
-            .check &#xBBF8;&#xD655;&#xC778;
-            .txt2 &#xC120;&#xBD88;
-            .txt3 &#xCE74;&#xB4DC;+&#xD604;&#xAE08;
-            .date 2021-02-10 11:13:20
-            .btn_orderList &#xC8FC;&#xBB38;&#xB0B4;&#xC5ED;
-        li
-          a(href='')
-            .tn.bg_red A-03
-            .txt1 &#xC8FC;&#xBB38;&#xC774;&#xC694;
-            .check &#xBBF8;&#xD655;&#xC778;
-            .txt2 &#xC120;&#xBD88;
-            .txt3 &#xCE74;&#xB4DC;+&#xD604;&#xAE08;
-            .date 2021-02-10 11:13:20
-            .btn_orderList &#xC8FC;&#xBB38;&#xB0B4;&#xC5ED;
-        li
-          a(href='')
-            .tn.bg_red A-03
-            .txt1 &#xC8FC;&#xBB38;&#xC774;&#xC694;
-            .check &#xBBF8;&#xD655;&#xC778;
-            .txt2 &#xC120;&#xBD88;
-            .txt3 &#xCE74;&#xB4DC;+&#xD604;&#xAE08;
-            .date 2021-02-10 11:13:20
-            .btn_orderList &#xC8FC;&#xBB38;&#xB0B4;&#xC5ED;
-        li
-          a(href='')
-            .tn.bg_red A-03
-            .txt1 &#xC8FC;&#xBB38;&#xC774;&#xC694;
-            .check &#xBBF8;&#xD655;&#xC778;
-            .txt2 &#xC120;&#xBD88;
-            .txt3 &#xCE74;&#xB4DC;+&#xD604;&#xAE08;
-            .date 2021-02-10 11:13:20
-            .btn_orderList &#xC8FC;&#xBB38;&#xB0B4;&#xC5ED;
-        li
-          a(href='')
-            .tn.bg_red A-03
-            .txt1 &#xC8FC;&#xBB38;&#xC774;&#xC694;
-            .check &#xBBF8;&#xD655;&#xC778;
-            .txt2 &#xC120;&#xBD88;
-            .txt3 &#xCE74;&#xB4DC;+&#xD604;&#xAE08;
-            .date 2021-02-10 11:13:20
-            .btn_orderList &#xC8FC;&#xBB38;&#xB0B4;&#xC5ED;
-        li
-          a(href='')
-            .tn.bg_red A-03
-            .txt1 &#xC8FC;&#xBB38;&#xC774;&#xC694;
-            .check &#xBBF8;&#xD655;&#xC778;
-            .txt2 &#xC120;&#xBD88;
-            .txt3 &#xCE74;&#xB4DC;+&#xD604;&#xAE08;
-            .date 2021-02-10 11:13:20
-            .btn_orderList &#xC8FC;&#xBB38;&#xB0B4;&#xC5ED;
-        li
-          a(href='')
-            .tn.bg_red A-03
-            .txt1 &#xC8FC;&#xBB38;&#xC774;&#xC694;
-            .check &#xBBF8;&#xD655;&#xC778;
-            .txt2 &#xC120;&#xBD88;
-            .txt3 &#xCE74;&#xB4DC;+&#xD604;&#xAE08;
-            .date 2021-02-10 11:13:20
-            .btn_orderList &#xC8FC;&#xBB38;&#xB0B4;&#xC5ED;
-        li
-          a(href='')
-            .tn.bg_red A-03
-            .txt1 &#xC8FC;&#xBB38;&#xC774;&#xC694;
-            .check &#xBBF8;&#xD655;&#xC778;
-            .txt2 &#xC120;&#xBD88;
-            .txt3 &#xCE74;&#xB4DC;+&#xD604;&#xAE08;
-            .date 2021-02-10 11:13:20
-            .btn_orderList &#xC8FC;&#xBB38;&#xB0B4;&#xC5ED;
   .right_wrap
     p#clock {{ getNowDate() }}
     .branch
@@ -258,88 +91,29 @@
         br
         | {{version}}
       a.btn_logout(v-if="visibleLogoutButton" @click="logout") 로그아웃
-
-//#orderview
-  //- transition(name="signboard")
-  //-   .top(v-if="isDisConnectNetwork")
-  //-     .alert {{ signboardMessage }}
-  .body
-    .left
-      router-view(
-        :auth="auth"
-        :orders="orders"
-        :stores="stores"
-        :time="time"
-      )
-    .right(v-if="visibleSideMenu()")
-      .top
-        .button(
-          @click="restart()"
-        ) 새로고침
-        .datetime
-          span {{ getNowDate() }}
-        torder
-        .store_name {{storeName}}
-        router-link.button(v-if="visibleOrderButton" :to="paths.order") 주문 보기
-        router-link.button(v-if="visibleOrderButton" :to="paths.additional") 추가 기능
-          <br> (테스트)
-        router-link.button(v-if="visibleOrderButton" :to="paths.paymentManagement") 결제 내역
-
-        //- router-link.button(v-if="visibleOrderButton" :to="paths.products") 상품 관리
-        //-   <br> (테스트)
-        //- router-link.button(v-if="visibleOrderButton" :to="paths.tables") 테이블 주문
-        //-   <br> (테스트)
-        //- router-link.button(v-if="visibleOrderButton" :to="paths.pickUpTables") 픽업 요청
-        //-   <br> (테스트)
-      //-   router-link.button(v-if="visibleOrderButton" :to="paths.updateCategories") 분류 관리
-      //-     <br> (테스트)
-      .bottom
-        hr
-        .tab-group
-          .tab-name 태블릿 화면
-          .tab-buttons
-            .tab-button(:class="getOnTabletMonitorClass(device)" @click="openTabletScreen") On
-            .tab-button(:class="getOffTabletMonitorClass(device)" @click="closeTabletScreen") Off
-        .tab-group
-          .tab-name 태블릿 주문
-          .tab-buttons
-            .tab-button(:class="getOnTabletOrderClass(device)" @click="agreeOrder") On
-            .tab-button(:class="getOffTabletOrderClass(device)" @click="rejectOrder") Off
-        .tab-group
-          .tab-name 주문 내역
-          .tab-buttons
-            .tab-button(:class="getOnTabletRecentOrderClass(device)" @click="showRecentOrder") On
-            .tab-button(:class="getOffTabletRecentOrderClass(device)" @click="hideRecentOrder") Off
-        .tab-group
-          .tab-name 주방 마감
-          .tab-buttons
-            .tab-button(:class="getOnKitchenOrderClass(device)" @click="showKitchenOrder") On
-            .tab-button(:class="getOffKitchenOrderClass(device)" @click="hideKitchenOrder") Off
-        hr
-        router-link.button(v-if="visibleStoresButton" :to="paths.store") 매장 보기
-        router-link.button.button-red(v-if="visibleLoginButton" :to="paths.login") 로그인
-        .name {{userName}}
-        .version {{version}}
-        .button.button-red.button-member(v-if="visibleLogoutButton" @click="logout")
-          span 로그아웃
-  .foot.foot-right
-    .version-footer u-code: {{uCode}} {{version}}
 </template>
 
 <script>
+import axios from 'axios';
+
 import store from '@store/store';
 import paths from '@router/paths';
 import { version } from '@utils/constants';
 import { Torder } from '@svg';
 import { AlertModal } from '@components';
-import axios from 'axios';
-import endpoints from '@store/endpoints';
+
+import { payments } from '@apis';
+
+const {
+  requestCardCancelCommit,
+} = payments;
 
 export default {
   components: {
     Torder,
     'alert-modal': AlertModal,
   },
+  // https://vuex.vuejs.org/kr/guide/state.html#vuex-%EC%83%81%ED%83%9C%EB%A5%BC-vue-%EC%BB%B4%ED%8F%AC%EB%84%8C%ED%8A%B8%EC%97%90%EC%84%9C-%EA%B0%80%EC%A0%B8%EC%98%A4%EA%B8%B0
   store,
   data() {
     return {
@@ -357,9 +131,6 @@ export default {
   computed: {
     isAlertModal() {
       return this.$store.state.isAlertModal;
-    },
-    requestCashItem() {
-      return this.$store.state.requestCashItem;
     },
     statusTabletScreen() {
       const result = this.$store.state.device.serviceStatus;
@@ -573,8 +344,7 @@ export default {
                   return this.showAlert(`orderkey 값이 없습니다 아닙니다. 에러메세지: ${requestCreditItem?.orderkey}`);
                 }
 
-                const url = endpoints.payment.cardCancelCommit;
-                const res = await this.commit(requestCreditItem, url);
+                const res = await requestCardCancelCommit(vanData);
 
                 if (res.status === 200) {
                   const newItem = res?.data?.rowData;
@@ -613,39 +383,6 @@ export default {
           return this.showAlert(`${event?.data?.methodName} 잘못된 message 형태입니다. 에러: ${error.message}`);
         }
       });
-    },
-    async requestPaymentCommit(item, url) {
-      console.log({item});
-      let data = new FormData();
-      data.append('key', item.key);
-      data.append('id', item.id);
-      data.append('stat', item.creditStat);
-      data.append('type',  item.creditType);
-      data.append('storeCode', item.storeCode);
-      data.append('tabletNumber', item.tabletnumber);
-      data.append('tablename', item.tableName);
-      data.append('orderKey', item.orderkey);
-      return  await axios({
-        method: 'post',
-        url,
-        data: data,
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-    },
-    closeRequestItemModal() {
-      this.$store.commit("clearRequestCashItem");
-    },
-    async cashCommit(item) {
-      const url = endpoints.payment.cashCommit;
-      const res  = await this.requestPaymentCommit(item, url);
-
-      console.log({res});
-
-      const newItem = res.data.rowData;
-      // this.replaceItem(newItem);
-
-      this.$store.commit('UPDATE_ORDER_CREDIT', newItem, true);
-      this.$store.commit('clearRequestCashItem');
     },
     toggleTabletScreen() {
       if (this.statusTabletScreen) {
@@ -1016,40 +753,6 @@ export default {
       };
       return this.$socket.emit('orderview', payload);
     },
-    getOnTabletMonitorClass(device) {
-      const active = !this.validServiceStatus(device);
-
-      return {
-        active,
-      };
-    },
-    getOffTabletMonitorClass(device) {
-      const active = this.validServiceStatus(device);
-
-      return {
-        active,
-      };
-    },
-    validServiceStatus(device) {
-      return device && device.serviceStatus;
-    },
-    getOnTabletOrderClass(device) {
-      const active = !this.validOrderStatus(device);
-
-      return {
-        active,
-      };
-    },
-    getOffTabletOrderClass(device) {
-      const active = this.validOrderStatus(device);
-
-      return {
-        active,
-      };
-    },
-    validOrderStatus(device) {
-      return device && device.orderStatus;
-    },
     beep() {
       const time = Date.now();
       const ISONow = new Date(time).toISOString();
@@ -1131,23 +834,6 @@ export default {
       this.$store.commit('CLOSE_ALL_REFRESH_MODAL');
       this.$store.commit('SET_ALL_REFRESH_LIST', []);
     },
-    getOnTabletRecentOrderClass(device) {
-      const active = !this.validRecentOrderStatus(device);
-
-      return {
-        active,
-      };
-    },
-    getOffTabletRecentOrderClass(device) {
-      const active = this.validRecentOrderStatus(device);
-
-      return {
-        active,
-      };
-    },
-    validRecentOrderStatus(device) {
-      return device && device.recentOrderStatus;
-    },
     getNowDate() {
       if (!this.time.now) {
         return '';
@@ -1156,93 +842,6 @@ export default {
       const ISONow = now.toISOString();
 
       return this.$moment(ISONow).format('MM.DD HH:mm:ss');
-    },
-    showKitchenOrder() {
-      if (!this.$store.state.device.kitchenOrderStatus) {
-        return this.$store.commit('pushFlashMessage', '이미 주문 내역 표시 상태로 되어있습니다.');
-      }
-      const confirmModal = {};
-
-      confirmModal.show = true;
-      confirmModal.close = this.closeConfirmModal;
-      confirmModal.title = '주방 마감 메뉴 표시';
-      confirmModal.message = '태블릿에서 주방 마감 메뉴가 나타납니다';
-      confirmModal.confirm = this.reqShowKitchenOrder;
-
-      this.$store.commit('showConfirmModal', confirmModal);
-    },
-    hideKitchenOrder() {
-      if (this.$store.state.device.kitchenOrderStatus) {
-        return this.$store.commit('pushFlashMessage', '이미 주문 내역 표시 상태로 되어있습니다.');
-      }
-      const confirmModal = {};
-
-      confirmModal.show = true;
-      confirmModal.close = this.closeConfirmModal;
-      confirmModal.title = '주방 마감 메뉴 표시';
-      confirmModal.message = '태블릿에서 주방 마감 메뉴가 사라집니다.';
-      confirmModal.confirm = this.reqHideKitchenOrder;
-
-      this.$store.commit('showConfirmModal', confirmModal);
-    },
-    emitKitchenOrder(value) {
-      const { store_code } = this.$store.state.auth.store;
-      const payload = {
-        store: {
-          code: store_code,
-        },
-        type: '@update/device/kitchenOrder',
-        value,
-      };
-      return this.$socket.emit('orderview', payload);
-    },
-    async reqShowKitchenOrder() {
-      const fd = new FormData();
-      fd.append('store_code', this.auth.store.store_code);
-      const response = await this.$store.dispatch('setShowKitchenOrder', fd);
-
-      if (response) {
-        const value = 0;
-        const { disconnected } = this.emitKitchenOrder(value);
-
-        if (disconnected) {
-          this.$store.commit('setDeviceKitchenOrderStatus', value);
-          this.$store.commit('pushFlashMessage', '태블릿 주문 내역 표시 상태로 변경 되었습니다.');
-        }
-
-        this.closeConfirmModal();
-      }
-    },
-    async reqHideKitchenOrder() {
-      const fd = new FormData();
-      fd.append('store_code', this.auth.store.store_code);
-      const response = await this.$store.dispatch('setCloseKitchenOrder', fd);
-
-      if (response) {
-        const value = 1;
-        const { disconnected } = this.emitKitchenOrder(value);
-
-        if (disconnected) {
-          this.$store.commit('setDeviceKitchenOrderStatus', value);
-          this.$store.commit('pushFlashMessage', '태블릿 주문 내역 표시 상태로 변경 되었습니다.');
-        }
-
-        this.closeConfirmModal();
-      }
-    },
-    getOnKitchenOrderClass() {
-      const active = !this.device?.kitchenOrderStatus;
-
-      return {
-        active,
-      };
-    },
-    getOffKitchenOrderClass() {
-      const active = this.device?.kitchenOrderStatus;
-
-      return {
-        active,
-      };
     },
   },
 };
