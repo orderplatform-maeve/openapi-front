@@ -53,13 +53,13 @@ const endpoints = {
     resetOrder: `${ADMIN_URL}/tablet/tablet_order_trash`,
   },
   payment: {
-    cardCancelCommit: `${SERVER_URL}/credit/cardCancelCommit`,
-    cashCommit: `${SERVER_URL}/credit/cashCommit`,
-    creditList: `${SERVER_URL}/credit/creditList`,
-    creditDataList: `${SERVER_URL}/credit/creditDataList`,
-    cashCancelCommit: `${SERVER_URL}/credit/cashCancelCommit`,
-    deleteCartList: `${SERVER_URL}/credit/deleteCartList`,
-    misuCommit: `${SERVER_URL}/credit/misuCommit`,
+    cardCancelCommit: `${DEMO_URL}/credit/cardCancelCommit`,
+    cashCommit: `${DEMO_URL}/credit/cashCommit`,
+    creditList: `${DEMO_URL}/credit/creditList`,
+    creditDataList: `${DEMO_URL}/credit/creditDataList`,
+    cashCancelCommit: `${DEMO_URL}/credit/cashCancelCommit`,
+    deleteCartList: `${DEMO_URL}/credit/deleteCartList`,
+    misuCommit: `${DEMO_URL}/credit/misuCommit`,
   },
 };
 
