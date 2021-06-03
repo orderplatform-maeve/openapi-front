@@ -88,6 +88,40 @@
             template(v-if="order.paidOrder === false") &nbsp;&nbsp;&nbsp;&nbsp;
           .date {{ getOrderTime(order).substr(11) }}
           .btn_orderList 주문내역
+
+//#orders
+  .top
+    .tab-group
+      .order-list-tab-buttons.tab-buttons
+        .order-list-tab-button.tab-button(@click="setViewMode('a')" :class="activeAllTabBtnClass")
+          | 모든 주문
+          .count {{lengthOrders}}
+        .order-list-tab-button.tab-button(@click="setViewMode('n')" :class="activeUnidentifiedTabBtnClass")
+          | 미확인 주문
+          .count {{unidentifiedOrders}}
+        .order-list-tab-button.tab-button(@click="setViewMode('c')" :class="activeCheckedTabBtnClass")
+          | 확인 주문
+          .count {{lengthCommitedOrders}}
+  .loading(v-if="isLoading") 데이터 요청 중 입니다.
+  ul.order-list(v-if="!isLoading")
+    li.order-item(
+      v-for="order in sortedOrders"
+      :class="getOrderItemClass(order)"
+      @click="view(order)"
+      v-if="visibleOrderItem(order)"
+    )
+      .table-number(:class="getTableNumberClass(order)") {{checkedTabletNum(order)}}
+      .people_total_count(v-if="visibleCustomerCount(order)") {{checkedTotalPeople(order)}}명
+      .msg
+        span.title(v-if="visibleCall(order)") 호출이요
+        span.title(v-else-if="isDoneSetting(order)") 셋팅완료
+        span.title(v-else-if="isRating(order)") {{getRatingText(order.rating_type)}}
+        span.title(v-else) 주문이요
+        .icon.visit(v-if="isFirstEntered(order)") 입장
+        .icon.first(v-if="isFirstOrder(order)") 첫 주문
+      .msg-time
+        .commit(:class="getMsgTimeClass(order)") {{validCommitText(order)}}
+        .time {{getOrderTime(order)}}
 </template>
 
 <script>
@@ -140,7 +174,6 @@ export default {
     },
   },
   async mounted() {
-    console.log(this.sortedOrders);
     this.isLoading = true;
 
     const fd = new FormData();
