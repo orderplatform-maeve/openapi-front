@@ -6,17 +6,14 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve --open",
     "lint": "vue-cli-service lint",
-    "dev": "cross-env NODE_ENV=development SERVER_TYPE=demo vue-cli-service serve --open",
-    "dev:rest": "cross-env NODE_ENV=development SERVER_TYPE=rest vue-cli-service serve --open",
     "dev:stop-redirect": "cross-env NODE_ENV=development SERVER_TYPE=rest STOP_REDIRECT=true vue-cli-service serve --open",
     "demo:stop-redirect": "cross-env NODE_ENV=development SERVER_TYPE=demo STOP_REDIRECT=true vue-cli-service serve --open",
     "build": "vue-cli-service build",
-    "deploy-tmp": "node ./script/deployTmp.js",
     "deploy": "node ./script/deploy.js",
+    "deploy:tmp": "node ./script/deployTmp.js",
     "deploy:dev": "cross-env NODE_ENV=development SERVER_TYPE=rest STOP_REDIRECT=true vue-cli-service build && node ./script/s3Uploader.dev.js",
-    "deploy:demo": "cross-env NODE_ENV=development SERVER_TYPE=demo STOP_REDIRECT=true vue-cli-service build && node ./script/s3Uploader.dev.js"
+    "deploy:dev:demo": "cross-env NODE_ENV=development SERVER_TYPE=demo STOP_REDIRECT=true vue-cli-service build && node ./script/s3Uploader.dev.js"
   },
   "dependencies": {
     "axios": "^0.19.2",
