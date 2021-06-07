@@ -1,11 +1,11 @@
-import { isDemo } from '@utils/constants';
+// import { isDemo } from '@utils/constants';
 
-const DEMO_URL = 'http://demo.torder.co.kr';
+// const DEMO_URL = 'http:///demo.api.torder.co.kr';
 const REST_URL = 'http://rest.torder.co.kr';
 const ADMIN_URL = 'http://admin.torder.co.kr';
 const API_URL = 'http://api.torder.co.kr';
 
-const SERVER_URL = isDemo ? DEMO_URL : REST_URL;
+// const SERVER_URL = isDemo ? DEMO_URL : REST_URL;
 
 const endpoints = {
   authentication: {
@@ -53,11 +53,13 @@ const endpoints = {
     resetOrder: `${ADMIN_URL}/tablet/tablet_order_trash`,
   },
   payment: {
-    cardCancelCommit: `${SERVER_URL}/credit/cardCancelCommit`,
-    cashCommit: `${SERVER_URL}/credit/cashCommit`,
-    creditList: `${SERVER_URL}/credit/creditList`,
-    cashCancelCommit: `${SERVER_URL}/credit/cashCancelCommit`,
-    deleteCartList: `${SERVER_URL}/credit/deleteCartList`,
+    cardCancelCommit: `${REST_URL}/credit/cardCancelCommit`,
+    cashCommit: `${REST_URL}/credit/cashCommit`,
+    creditList: `${REST_URL}/credit/creditList`,
+    creditDataList: `${REST_URL}/credit/creditDataList`,
+    cashCancelCommit: `${REST_URL}/credit/cashCancelCommit`,
+    deleteCartList: `${REST_URL}/credit/deleteCartList`,
+    misuCommit: `${REST_URL}/credit/misuCommit`,
   },
 };
 

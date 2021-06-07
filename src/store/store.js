@@ -10,8 +10,7 @@ import {
   getNewCategories,
 } from './store.helper';
 import { isEmpty } from '@utils/CheckedType';
-
-import endpoints from './endpoints';
+import endpoints from '@apis/endpoints';
 
 Vue.use(Vuex);
 
@@ -37,7 +36,7 @@ const socket = {
     SOCKET_orderlog(state, order) {
       if (validShopCode(state, order)) {
         if (router.currentRoute.name !== 'paymentManagement') {
-          if ( window?.UUID?.playOrderBell) {
+          if (window?.UUID?.playOrderBell) {
             if (order.creditType !== "cash") {
               window.UUID.playOrderBell();
             }
@@ -52,6 +51,10 @@ const socket = {
     SOCKET_orderlog({ commit , state }, order) {
       //console.log('SOCKET_orderlog', order);
       if (validShopCode(state, order)) {
+        console.log('주문 커먼');
+        if (window?.UUID?.playOrderBell) {
+          window.UUID.playOrderBell();
+        }
         commit('PUSH_ORDER', order);
       }
     },
@@ -415,6 +418,18 @@ const order = {
 
       if (idx > -1) {
         orders[idx].commit = order.commit;
+        Vue.set(state, 'orders', orders);
+      }
+    },
+    UPDATE_DONE_MISU_ORDERS: (state, order) => {
+      const { orders } = state;
+      const idx = orders.findIndex((item) => item.order_view_key === order.order_view_key);
+
+      // console.log('UPDATE_ORDERS', idx);
+
+      if (idx > -1) {
+        orders[idx].totalAmount = order.totalMisu;
+        orders[idx].totalMisu = 0;
         Vue.set(state, 'orders', orders);
       }
     },
@@ -1197,6 +1212,13 @@ const payment = {
   },
   actions : {
     async updatePaymentList(context, params) {
+
+      const url = endpoints.payment.creditDataList;
+      const res = await axios.get(url, {params});
+
+      context.commit('updatePaymentList', res.data);
+    },
+    async updateOldPaymentList(context, params) {
 
       const url = endpoints.payment.creditList;
       const res = await axios.get(url, {params});

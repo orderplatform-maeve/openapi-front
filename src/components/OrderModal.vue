@@ -20,10 +20,11 @@
         li(v-for="product in order.order_info")
           ul.group
             li.fleft.txt1 {{getProjectGoodName(product)}}
+            li.fleft.txt3 {{ getItemPrice(product) }}원
             li.fright.txt2 {{getProductQty(product)}}개
             li.fleft.option(v-if="isProductOpt(product)")
               div(v-for="option in product.option") {{getOptionDisplayName(option)}} {{getOptionGoodQty(option)}}개
-    .details_right()
+    .details_right(v-if="!order.paidOrder")
       p 이전 주문내역
       ul(v-if="order.paidOrder==false")
         li(v-for="c_product in order.total_orders")
@@ -31,87 +32,31 @@
             dt.fleft {{getBeforeProductDisplayName(c_product)}}
             dd.fright {{getBeforeProductOrderQty(c_product)}}개
             dd.fleft.option(v-if="isBeforeProductOtp(c_product)")
-              div(v-for="option in c_product.option") {{getBeforeProductOptionDisplayName(option)}} {{getBeforeProductOptionOrderQty(option)}}개
+              div(v-for="option in c_product.option") {{getBeforeProductOptionDisplayName(option)}} {{getBeforeProductOptionOrderQty(option)}}개.
+    .details_right(v-if="order.paidOrder")
+      p 결제내역
+      ul()
+        li(v-for="c_product in order.creditArray")
+          dl
+            dt.fleft {{ getProductAmount(c_product) }}
+              dd.fright {{ getProductOrderType(c_product) }}
+    .details_right(v-if="getVisibleCancelListArea(order)")
+      p 결제 취소 내역
+      ul()
+        li(v-for="c_product in order.cancelArray")
+          dl
+            dt.fleft {{ getProductAmount(c_product) }}
+              dd.fright {{ getProductOrderType(c_product) }}
   .btm
     p {{seconds}}초 후 닫혀요.
     a(@click="commitOrder(order)") 확인
-
-//#order
-  .background
-  .container
-    .container-top
-      .order-title
-        .table-number(:class="getTableNumberClass(order)") {{checkedTabletNum(order)}}
-        .people_total_count(v-if="visibleCustomerCount(order)") {{checkedTotalPeople(order)}}명
-        .msg
-          span.title(v-if="visibleCall(order)") 호출이요
-          span.title(v-else-if="isDoneSetting(order)") 셋팅완료
-          span.title(v-else-if="isRating(order)") {{getRatingText(order.rating_type)}}
-          span.title(v-else) 주문이요
-          .icon.visit(v-if="isFirstEntered(order)") 입장
-          .icon.first(v-if="isFirstOrder(order)") 첫 주문
-        .msg-time
-          .commit(:class="getMsgTimeClass(order)") {{validCommitText(order)}}
-          .time(:style="{fontSize: '1.5rem'}") {{getOrderTime(order)}}
-      .button.button-close(v-on:click="closeOrder") 닫기
-    .container-body
-      .left(v-if="getOrderType(order)")
-        .wrap-people-list
-          ul.people-list
-            li.people-item(v-for="people in order.people_json" v-if="isPeopleCnt(people)")
-              .count {{getPeopleCnt(people)}}명
-              .name {{getPeopleName(people)}}
-        .wrap-product-list
-          ul.product-list
-            li.product-item(v-for="product in order.order_info")
-              .count {{getProductQty(product)}}개
-              .name {{getProjectGoodName(product)}}
-              .memo(v-if="isProductMemoShow(product)") {{getProductMemo(product)}}
-              ul.option-list(v-if="isProductOpt(product)")
-                li.option-item(v-for="option in product.option")
-                  span +
-                  .count {{getOptionGoodQty(option)}}개
-                  .name {{getOptionDisplayName(option)}}
-      .left(v-else-if="order.order_type === 'RATING'")
-        .good-name {{ order.rating_info.good_name }}
-        star-rating(
-          :increment=".5"
-          :read-only="true"
-          :rating="order.rating_info.score/2"
-          :show-rating="false"
-          active-color="#ff0000"
-          glowColor="#000"
-        )
-        .raitng-item(
-          class="rating"
-          v-if="order.rating_info.rating_array && (order.rating_info.rating_array.length > 0)"
-        ) 평가 항목
-        .word(v-for="ratingItem in order.rating_info.rating_array") {{ ratingItem.title }} -&nbsp;
-          span(v-for="word in ratingItem.rewviews") {{ word.name }}
-      .left(v-else-if="order.order_type === 'CREDIT'")
-        .good-name {{ order.rating_info.good_name }}
-
-      .right
-        .wrap-c-product-list()
-          .title 이전주문내역
-          ul.c-product-list
-            li.order-item(v-for="c_product in order.total_orders")
-              .name {{getBeforeProductDisplayName(c_product)}}
-              .count {{getBeforeProductOrderQty(c_product)}}개
-              ul.option-list(v-if="isBeforeProductOtp(c_product)")
-                li.option-item(v-for="option in c_product.option")
-                  span +
-                  .count {{getBeforeProductOptionOrderQty(option)}}개
-                  .name {{getBeforeProductOptionDisplayName(option)}}
-    .container-foot
-      .msg {{seconds}}초 후 닫혀요.
-      .buttons
-        .button.button-commit(@click="commitOrder(order)") {{ getCommitText() }}
 </template>
 
 <script>
-import utils from '@utils/orders.utils';
 import StarRating from 'vue-star-rating';
+
+import utils from '@utils/orders.utils';
+import { won } from '@utils/regularExpressions';
 
 export default {
   components: {
@@ -157,6 +102,34 @@ export default {
     },
   },
   methods: {
+    getVisibleCancelListArea(order) {
+      try {
+        return order.cancelArray.length > 0;
+      } catch (error) {
+        return false;
+      }
+    },
+    getProductAmount(order) {
+      try {
+        return won(order.amount);
+      } catch (error) {
+        return 0;
+      }
+    },
+    getProductOrderType(order) {
+      try {
+        return order.order_type === 'cash' ? '현금' : '카드';
+      } catch (error) {
+        return 'order_type가 없습니다.';
+      }
+    },
+    getItemPrice(order) {
+      try {
+        return won(order.good_price);
+      } catch (error) {
+        return 0;
+      }
+    },
     async commitOrder(order) {
       const auth = this.$store.state.auth;
       this.isConfirm = true;
@@ -206,16 +179,6 @@ export default {
     closeOrder() {
       clearInterval(this.interval);
       this.$store.commit('UNSET_ORDER');
-    },
-    getOrderType(order) {
-      try {
-        return order.order_type === 'ORDER';
-      } catch (error) {
-        return false;
-      }
-    },
-    getCommitText() {
-      return this.isConfirm ? '요청중...' : '확인';
     },
     ...utils,
   },
