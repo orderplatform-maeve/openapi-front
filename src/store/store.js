@@ -36,7 +36,7 @@ const socket = {
     SOCKET_orderlog(state, order) {
       if (validShopCode(state, order)) {
         if (router.currentRoute.name !== 'paymentManagement') {
-          if ( window?.UUID?.playOrderBell) {
+          if (window?.UUID?.playOrderBell) {
             if (order.creditType !== "cash") {
               window.UUID.playOrderBell();
             }
@@ -51,6 +51,10 @@ const socket = {
     SOCKET_orderlog({ commit , state }, order) {
       //console.log('SOCKET_orderlog', order);
       if (validShopCode(state, order)) {
+        console.log('주문 커먼');
+        if (window?.UUID?.playOrderBell) {
+          window.UUID.playOrderBell();
+        }
         commit('PUSH_ORDER', order);
       }
     },

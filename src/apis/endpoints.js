@@ -1,6 +1,6 @@
 // import { isDemo } from '@utils/constants';
 
-const DEMO_URL = 'http:///demo.api.torder.co.kr';
+// const DEMO_URL = 'http:///demo.api.torder.co.kr';
 const REST_URL = 'http://rest.torder.co.kr';
 const ADMIN_URL = 'http://admin.torder.co.kr';
 const API_URL = 'http://api.torder.co.kr';
@@ -53,13 +53,13 @@ const endpoints = {
     resetOrder: `${ADMIN_URL}/tablet/tablet_order_trash`,
   },
   payment: {
-    cardCancelCommit: `${DEMO_URL}/credit/cardCancelCommit`,
-    cashCommit: `${DEMO_URL}/credit/cashCommit`,
-    creditList: `${DEMO_URL}/credit/creditList`,
-    creditDataList: `${DEMO_URL}/credit/creditDataList`,
-    cashCancelCommit: `${DEMO_URL}/credit/cashCancelCommit`,
-    deleteCartList: `${DEMO_URL}/credit/deleteCartList`,
-    misuCommit: `${DEMO_URL}/credit/misuCommit`,
+    cardCancelCommit: `${REST_URL}/credit/cardCancelCommit`,
+    cashCommit: `${REST_URL}/credit/cashCommit`,
+    creditList: `${REST_URL}/credit/creditList`,
+    creditDataList: `${REST_URL}/credit/creditDataList`,
+    cashCancelCommit: `${REST_URL}/credit/cashCancelCommit`,
+    deleteCartList: `${REST_URL}/credit/deleteCartList`,
+    misuCommit: `${REST_URL}/credit/misuCommit`,
   },
 };
 
