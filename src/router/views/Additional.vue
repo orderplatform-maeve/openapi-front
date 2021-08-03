@@ -10,8 +10,8 @@
     <br> (테스트)
   router-link.button-added(v-if="visibleOrderButton" :to="paths.controlOrder") 테이블 주류 주문 관리
     <br> (테스트)
-  //- router-link.button-added(v-if="visibleOrderButton" :to="paths.updateCategories") 분류 관리
-  //-   <br> (테스트)
+  router-link.button-added(v-if="visibleOrderButton" :to="paths.updateCategories") 분류 관리
+    <br> (테스트)
   router-link.button-added(v-if="visibleOrderButton" :to="paths.controlLastOrder") 타이머 관리
     <br> (테스트)
   router-link.button-added(v-if="visibleOrderButton" :to="paths.cancelPaymentOrder") 결제 주문 강제 취소
