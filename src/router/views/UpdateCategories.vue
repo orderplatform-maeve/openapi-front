@@ -146,6 +146,10 @@ export default {
   --c-9: #efefef;
   --c-10: #000000;
   overflow-y: auto;
+  margin: 0 10px !important;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 
   .card {
     flex-grow: 1;
