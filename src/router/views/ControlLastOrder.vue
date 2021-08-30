@@ -186,10 +186,12 @@ export default {
   .title {
     font-size: 36px;
     margin-bottom: 16px;
+    color: #fff;
   }
   .justifyBetween {
     display: flex;
     justify-content: space-between;
+    margin-bottom: 15px !important;
 
     .button {
       margin:0;
