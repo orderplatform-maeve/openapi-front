@@ -463,7 +463,6 @@ const order = {
           // api 서버에서 가공해서 주는 요청으로 변경 할 필요 있음
           orders.push(JSON.parse(item.json_data));
         }
-
         commit('SET_ORDERS', orders);
       }
 

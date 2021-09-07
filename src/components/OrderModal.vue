@@ -3,6 +3,10 @@
   .top_wrap.clearfix
     span.fleft.tn.bg_red {{checkedTabletNum(order)}}
     h1 주문내역
+    span.wrap-gender(v-if="visitGroupInfo()")
+      span.gender(v-for="(count, gender, index) in visitGroupInfo()" :key="'gender-'+gender+'-'+index") {{gender}}: {{count}}명
+    span.total(v-if="!visitGroupInfo() && visitGroupTotal()") 총 {{visitGroupTotal()}}명
+    span.total(v-if="visitGroupStatus() && electronicAccessCount()") 총 {{electronicAccessCount()}}명(전자출입명부 작성)
     span.fright
       a.btn_close(v-on:click="closeOrder")
         svg(xmlns='http://www.w3.org/2000/svg' width='28.242' height='29.242' viewbox='0 0 28.242 29.242')
@@ -76,8 +80,6 @@ export default {
     },
   },
   mounted() {
-    console.log(this.$store.state.order);
-
     clearInterval(this.interval);
     this.seconds = 10;
 
@@ -102,6 +104,9 @@ export default {
     },
   },
   methods: {
+    getClassType(obj) {
+      return Object.prototype.toString.call(obj).slice(8,-1);
+    },
     getVisibleCancelListArea(order) {
       try {
         return order.cancelArray.length > 0;
@@ -181,12 +186,38 @@ export default {
       this.$store.commit('UNSET_ORDER');
     },
     ...utils,
+    visitGroupInfo() {
+      if(this.getClassType(this.order?.visitGroups?.groupInfo) === 'Object') {
+        return this.order?.visitGroups?.groupInfo;
+      }
+
+      return false;
+    },
+    visitGroupTotal() {
+      return this.order?.visitGroups?.total;
+    },
+    visitGroupStatus() {
+      return this.order.visitGroups.length === 0;
+    },
+    electronicAccessCount() {
+      return this.order.visitPeopleCnt;
+    }
   },
 };
 </script>
 
 <style lang="scss">
 @import "../scss/global.scss";
+
+.wrap-gender,
+.total {
+  margin-left: 50px !important;
+  font-size: 30px !important;
+}
+
+.gender:last-child {
+  margin-left: 15px !important;
+}
 
 #order {
   position:fixed;
