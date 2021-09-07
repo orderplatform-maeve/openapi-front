@@ -197,7 +197,7 @@ export default {
       return this.order?.visitGroups?.total;
     },
     visitGroupStatus() {
-      return this.order.visitGroups.length === 0;
+      return this.order?.visitGroups?.length === 0;
     },
     electronicAccessCount() {
       return this.order.visitPeopleCnt;
