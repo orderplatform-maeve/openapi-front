@@ -20,6 +20,7 @@ import {
   ProductOptionModal,
   FlashMessage,
   AllRefreshModal,
+  RightMenu,
 } from '@components';
 
 Vue.config.devtools = true;
@@ -57,7 +58,7 @@ Vue.component('modal-menu', MenuModal);
 Vue.component('modal-product-option', ProductOptionModal);
 Vue.component('flash-message', FlashMessage);
 Vue.component('modal-all-refresh', AllRefreshModal);
-
+Vue.component('right-menu', RightMenu);
 new Vue({
   router,
   render: (h) => h(App),

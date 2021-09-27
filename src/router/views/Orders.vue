@@ -128,11 +128,9 @@
 import utils from '@utils/orders.utils';
 import { won } from '@utils/regularExpressions';
 import { payments } from '@apis';
-
 const {
   requestMisuCommit,
 } = payments;
-
 export default {
   data () {
     return {
@@ -175,12 +173,10 @@ export default {
   },
   async mounted() {
     this.isLoading = true;
-
     const fd = new FormData();
     fd.append('shop_code', this.$store.state.auth.store.store_code);
     const res = await this.$store.dispatch('setOrders', fd);
     // console.log(res);
-
     if (res) {
       setTimeout(() => {
         this.isLoading = false;
@@ -190,11 +186,9 @@ export default {
   methods: {
     async reqConfirmMisu(order) {
       console.log('misuCommit', order);
-
       if (order?.order_view_key) {
         const res = await requestMisuCommit(order.order_view_key);
         console.log('res', res);
-
         if (res?.status === 200) {
           this.chooseOrder = {};
           this.$store.commit('UPDATE_DONE_MISU_ORDERS', order);
@@ -274,13 +268,10 @@ export default {
     },
     validViewMode(commit) {
       const { viewMode } = this;
-
       const isAll = viewMode === 'a';
       const isUndientified = viewMode === 'n' && !commit;
       const isChecked = viewMode === 'c' && commit;
-
       const isOk = isAll || isUndientified || isChecked;
-
       return isOk;
     },
     getOrderItemClass(order) {
@@ -292,10 +283,8 @@ export default {
   }
 };
 </script>
-
 <style lang="scss">
 @import "../../scss/global.scss";
-
 .t-head {
   width: calc(100% - 150px) !important;
   display: flex;
@@ -318,7 +307,6 @@ export default {
   box-sizing: border-box;
   -webkit-box-orient: horizontal;
   -webkit-box-direction: normal;
-
   .t-num {
     width: 120px;
   }
@@ -344,11 +332,9 @@ export default {
     width: 112px;
   }
 }
-
 .overflow-hidden {
   overflow: hidden;
 }
-
 .fixed {
   position: fixed;
   z-index: 2;
@@ -357,12 +343,10 @@ export default {
   top: 16px;
   left: 16px;
 }
-
 .mt {
   margin-top: calc(72px + 54px) !important;
   height: calc(100% - 72px - 54px) !important;
 }
-
 .hide-menu-back {
   width: calc(100% - 150px);
   height: calc(72px + 54px);
@@ -372,23 +356,19 @@ export default {
   background-color: #1C1B21;
   z-index: 1;
 }
-
 .order-price {
   width: 82px;
   text-align: center;
   font-size: 22px;
 }
-
 .won {
   font-size: 16px;
 }
-
 .paid-price {
   width: 82px;
   text-align: center;
   color: #60a2f8;
 }
-
 .misu-btn {
   width: 112px;
   height: 46px;
@@ -407,27 +387,22 @@ export default {
   justify-content: center;
   align-items: center;
 }
-
 .active {
   font-weight: bold;
   color: black;
   background-color: white;
 }
-
 #orders {
   display:flex;
   flex-direction:column;
   width:100%;
-
   .top {
     display:flex;
     flex-shrink:0;
     height:40px;
     padding:12px;
     font-size:16px;
-
     @include tab-group;
-
     .tab-button.datetime {
       font-weight:400!important;
     }
@@ -440,7 +415,6 @@ export default {
     overflow:scroll;
     flex-grow:1;
     -webkit-overflow-scrolling: touch;
-
     .no-item {
       display:flex;
       align-items: center;
