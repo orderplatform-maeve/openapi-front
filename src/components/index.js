@@ -6,3 +6,4 @@ export { default as ProductOptionModal } from './ProductOptionModal';
 export { default as FlashMessage } from './FlashMessage';
 export { default as AllRefreshModal } from './AllRefreshModal';
 export { default as AlertModal } from './AlertModal';
+export { default as RightMenu } from './RightMenu';
