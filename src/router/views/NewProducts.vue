@@ -719,7 +719,8 @@ a {
   overflow: auto;
 
   .new-products-title {
-    font-family: "notosans-bold";
+    font-family: "notosans";
+    font-weight: bold;
     font-size: 1.71875vw;
     padding: 1.171875vw 0 !important;
     color: #fff;
@@ -795,7 +796,8 @@ a {
 
           .new-product-good-name {
             flex: 1;
-            font-family: "notosans-bold";
+            font-family: "notosans";
+            font-weight: bold;
             font-size: 1.71875vw;
             letter-spacing: -0.02578125vw;
           }

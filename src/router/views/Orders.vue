@@ -1,142 +1,90 @@
 <template lang="pug">
-#orders
-  .popup.item.cashOutstanding(v-if="getCashOutPopVisble()")
-    p.tit 현금미결제
-    .content
-      .row
-        .left
-          dl
-            dt 주문금액 :
-            dd {{chooseOrder.orderPrice}}
-          dl
-            dt 주문번호 :
-            dd {{chooseOrder.order_id}}
-          dl
-            dt 주문일시 :
-            dd {{chooseOrder.order_time}}
-        .right
-          dl(v-for="p in chooseOrder.order_info")
-            dt
-              .name {{p.display_name}}
-              .option(v-if="p.option")
-                div(v-for="option in p.option") {{option.display_name}} {{option.order_qty}}개
+  .orders-container
+    .popup.item.cashOutstanding(v-if="getCashOutPopVisble()")
+      p.tit 현금미결제
+      .content
+        .row
+          .left
+            dl
+              dt 주문금액 :
+              dd {{chooseOrder.orderPrice}}
+            dl
+              dt 주문번호 :
+              dd {{chooseOrder.order_id}}
+            dl
+              dt 주문일시 :
+              dd {{chooseOrder.order_time}}
+          .right
+            dl(v-for="p in chooseOrder.order_info")
+              dt
+                .name {{p.display_name}}
+                .option(v-if="p.option")
+                  div(v-for="option in p.option") {{option.display_name}} {{option.order_qty}}개
 
-            dd {{p.good_qty}}개
-      .row
-        .message 테이블에서<br/>현금 수납이 확인되었습니까?
-    .button-group
-      .button(@click.stop="closeMisuModal") 닫기
-      .button.on(@click.stop="() => reqConfirmMisu(chooseOrder)") 확인
-  .dimBg(
-    v-if="getCashOutPopVisble()"
-    @click.stop="closeMisuModal"
-  )
-  .top_menu.fixed
-    .menu(@click="setViewMode('a')" :class="activeAllTabBtnClass")
-      | 모든 주문
-      span {{lengthOrders}}
-    .menu(@click="setViewMode('n')" :class="activeUnidentifiedTabBtnClass")
-      | 미확인 주문
-      span {{unidentifiedOrders}}
-    .menu(@click="setViewMode('c')" :class="activeCheckedTabBtnClass")
-      | 확인주문
-      span {{lengthCommitedOrders}}
-  .t-head
-    .t-num 테이블번호
-    .state 상태
-    .od-price 주문금액
-    .od-price 결제금액
-    .misu 미수금
-    .paid-type  선/후불
-    .credit-type 결제수단
-    .date 주문시간
-    .empty
-  .hide-menu-back
-  .list_box.mt
-    ul.order_list
-      li.order-item(
-        v-for="order in sortedOrders"
-        v-if="visibleOrderItem(order)"
-      )
-        a(@click="openView(order)")
-          .tn(:class="getOrderTypeColor(order)") {{checkedTabletNum(order)}}
-          .txt1
-            template(v-if="order.viewType === 0") 첫주문
-            template(v-if="order.viewType === 1") 주문
-            template(v-if="order.viewType === 2") 호출
-            template(v-if="order.viewType === 3") 세팅완료
-            template(v-if="order.viewType === 4") 평가
-          //- .check(v-bind:class="getOrderItemClass(order)") 확인
-          .order-price {{ getOrderPrice(order) }}
-            span.won 원
-          .paid-price {{ getTotalAmount(order) }}
-            span.won 원
-          .misu-btn(
-            @click.stop="() => openMisuModal(order)"
-            :class="getMisuBtnActive(order)"
-          )
-            div
-              span {{ getMisu(order) }}
-              span.won(v-if="getVisibleWon(order)") 원
-          .txt2
-            template(v-if="order.paidOrder") 선불
-            template(v-else) 후불
-          div(v-bind:class="{txt4: order.creditStat==false, txt3:order.creditStat==true || order.paidOrder==false}")
-            template(v-if="order.creditType === 'cash'") 현금
-            template(v-if="order.creditType === 'card'") 카드
-            template(v-if="order.creditType === 'complex'") 카드+현금
-            template(v-if="order.paidOrder === false") &nbsp;&nbsp;&nbsp;&nbsp;
-          .date {{ getOrderTime(order).substr(11) }}
-          .btn_orderList 주문내역
-
-//#orders
-  .top
-    .tab-group
-      .order-list-tab-buttons.tab-buttons
-        .order-list-tab-button.tab-button(@click="setViewMode('a')" :class="activeAllTabBtnClass")
-          | 모든 주문
-          .count {{lengthOrders}}
-        .order-list-tab-button.tab-button(@click="setViewMode('n')" :class="activeUnidentifiedTabBtnClass")
-          | 미확인 주문
-          .count {{unidentifiedOrders}}
-        .order-list-tab-button.tab-button(@click="setViewMode('c')" :class="activeCheckedTabBtnClass")
-          | 확인 주문
-          .count {{lengthCommitedOrders}}
-  .loading(v-if="isLoading") 데이터 요청 중 입니다.
-  ul.order-list(v-if="!isLoading")
-    li.order-item(
-      v-for="order in sortedOrders"
-      :class="getOrderItemClass(order)"
-      @click="view(order)"
-      v-if="visibleOrderItem(order)"
+              dd {{p.good_qty}}개
+        .row
+          .message 테이블에서<br/>현금 수납이 확인되었습니까?
+      .button-group
+        .button(@click.stop="closeMisuModal") 닫기
+        .button.on(@click.stop="() => reqConfirmMisu(chooseOrder)") 확인
+    .dimBg(
+      v-if="getCashOutPopVisble()"
+      @click.stop="closeMisuModal"
     )
-      .table-number(:class="getTableNumberClass(order)") {{checkedTabletNum(order)}}
-      .people_total_count(v-if="visibleCustomerCount(order)") {{checkedTotalPeople(order)}}명
-      .msg
-        span.title(v-if="visibleCall(order)") 호출이요
-        span.title(v-else-if="isDoneSetting(order)") 셋팅완료
-        span.title(v-else-if="isRating(order)") {{getRatingText(order.rating_type)}}
-        span.title(v-else) 주문이요
-        .icon.visit(v-if="isFirstEntered(order)") 입장
-        .icon.first(v-if="isFirstOrder(order)") 첫 주문
-      .msg-time
-        .commit(:class="getMsgTimeClass(order)") {{validCommitText(order)}}
-        .time {{getOrderTime(order)}}
+    p.store-name {{storeName}}{{version}}
+    .header-orders-status-list
+      .orders-status(@click="setViewMode('all')" :class="{activeButton: viewMode === 'all'}")
+        p 모든 주문
+        span {{lengthOrders}}
+      .orders-status(@click="setViewMode('notConfirm')" :class="{activeButton: viewMode === 'notConfirm'}")
+        p 미확인 주문
+        span {{unidentifiedOrders}}
+      .orders-status(@click="setViewMode('confirm')" :class="{activeButton: viewMode === 'confirm'}")
+        p 확인 주문
+        span {{lengthCommitedOrders}}
+    .wrap-order-list
+      .order-title-list
+        p.order-title 테이블번호
+        p.order-title 주문유형
+        p.order-title 주문금액
+        p.order-title 결제금액
+        p.order-title 미수금
+        p.order-title 선/후불
+        p.order-title 결제수단
+        p.order-title 주문시간
+        p.order-title 총 인원수
+      .wrap-order-information-lists
+        .order-information-lists(v-for="(order, index) in sortedOrders" :key="`order-index-`+index")
+          .order-information-list(v-if="visibleOrderItem(order)" @click="openView(order)")
+            p.order-information-table-number(:class="orderStyleCheck(order)") {{checkedTabletNum(order)}}
+            p.order-information-order-type(:class="orderStyleCheck(order)") {{orderTypeCheck(order)}}
+            p.order-information-price {{getOrderPrice(order)}}원
+            p.order-information-paid-price {{getTotalAmount(order)}}원
+            p.order-information-unpaid-money(@click.stop="() => openMisuModal(order)")
+              span(:class="{unpaid: getMisu(order) !== '미수금없음'}") {{ getMisu(order) }}
+              span.unpaid(v-if="getVisibleWon(order)") 원 
+            p.order-information-paid-type {{paidTypeCheck(order)}}
+            p.order-information-credit-type {{creditTypeCheck(order)}}
+            p.order-information-order-time {{getOrderTime(order).substr(11)}}
+            p.order-information-total-people {{visitGroups(order)}}명
 </template>
 
 <script>
 import utils from '@utils/orders.utils';
 import { won } from '@utils/regularExpressions';
 import { payments } from '@apis';
+import { version } from '@utils/constants';
+
 const {
   requestMisuCommit,
 } = payments;
 export default {
   data () {
     return {
-      viewMode: 'a',
+      viewMode: 'all',
       isLoading: false,
       chooseOrder: {},
+      version,
     };
   },
   computed: {
@@ -169,6 +117,13 @@ export default {
       return {
         active: state.viewMode === 'c',
       };
+    },
+    storeName() {
+      const { auth } = this;
+      return auth && auth.store && auth.store.store_name;
+    },
+    auth() {
+      return this.$store.state.auth;
     },
   },
   async mounted() {
@@ -242,6 +197,7 @@ export default {
       }
     },
     getOrderPrice(order) {
+      console.log(order);
       try {
         return won(order.orderPrice);
       } catch (error) {
@@ -256,7 +212,7 @@ export default {
       }
     },
     setViewMode(value) {
-      document.querySelector(".order_list").scrollTop = 0;
+      document.querySelector(".header-orders-status-list").scrollTop = 0;
       this.viewMode = value;
     },
     openView(order) {
@@ -268,9 +224,9 @@ export default {
     },
     validViewMode(commit) {
       const { viewMode } = this;
-      const isAll = viewMode === 'a';
-      const isUndientified = viewMode === 'n' && !commit;
-      const isChecked = viewMode === 'c' && commit;
+      const isAll = viewMode === 'all';
+      const isUndientified = viewMode === 'notConfirm' && !commit;
+      const isChecked = viewMode === 'confirm' && commit;
       const isOk = isAll || isUndientified || isChecked;
       return isOk;
     },
@@ -279,177 +235,198 @@ export default {
         on: this.checkedCommit(order),
       };
     },
+    orderTypeCheck(order) {
+      const viewType = order.viewType;
+
+      if (viewType === 0) {
+        return '첫주문';
+      }
+
+      if (viewType === 1) {
+        return '주문';
+      }
+
+      if (viewType === 2) {
+        return '호출';
+      }
+
+      if (viewType === 3) {
+        return '세팅완료';
+      }
+
+      if (viewType === 4) {
+        return '평가';
+      }
+    },
+    orderStyleCheck(order) {
+      const orderType = this.orderTypeCheck(order);
+      
+      if (orderType === '첫주문' || orderType === '주문') {
+        return 'orderColorRed';
+      }
+
+      if (orderType === '호출') {
+        return 'orderColorBlue';
+      }
+
+      if (orderType === '세팅완료') {
+        return 'orderColorGreen';
+      }
+
+      if (orderType === '평가') {
+        return 'orderColorYellow';
+      }
+    },
+    paidTypeCheck(order) {
+      if (order.paidOrder) {
+        return '선불';
+      }
+      
+      return '후불';
+    },
+    creditTypeCheck(order) {
+      const creditType = order.creditType;
+
+      if (creditType === 'cash') {
+        return '현금';
+      }
+
+      if (creditType === 'cart') {
+        return '카드';
+      }
+
+      if (creditType === 'complex') {
+        return '카드+현금';
+      }
+    },
+    visitGroups(order) {
+      return order?.visitGroups?.total ? order.visitGroups.total : 0;
+    },
     ...utils,
   }
 };
 </script>
-<style lang="scss">
-@import "../../scss/global.scss";
-.t-head {
-  width: calc(100% - 150px) !important;
-  display: flex;
-  position: fixed;
-  top: 72px;
-  left: 0;
-  color: #999999;
-  font-size: 16px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.5;
-  letter-spacing: normal;
-  text-align: center;
-  height: 54px;
-  justify-content: space-between;
-  align-items: center;
-  z-index: 3;
-  padding: 0 20px 0 20px !important;
-  box-sizing: border-box;
-  -webkit-box-orient: horizontal;
-  -webkit-box-direction: normal;
-  .t-num {
-    width: 120px;
+<style lang="scss" scoped>
+.orders-container {
+  font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+
+  .store-name {
+    width: 83.59375vw;
+    height: 3.125vw;
+    display: flex;
+    font-size: 0.9375vw;
+    color: #fff;
+    justify-content: flex-end;
+    align-items: center;
   }
-  .state {
-    width: 80px;
-  }
-  .od-price {
-    width: 115px;
-  }
-  .misu {
-    width: 112px;
-  }
-  .paid-type {
-    width: 75px;
-  }
-  .credit-type {
-    width: 100px;
-  }
-  .date {
-    width: 143px;
-  }
-  .empty {
-    width: 112px;
-  }
-}
-.overflow-hidden {
-  overflow: hidden;
-}
-.fixed {
-  position: fixed;
-  z-index: 2;
-  width: calc(100% - 180px) !important;
-  box-sizing: border-box;
-  top: 16px;
-  left: 16px;
-}
-.mt {
-  margin-top: calc(72px + 54px) !important;
-  height: calc(100% - 72px - 54px) !important;
-}
-.hide-menu-back {
-  width: calc(100% - 150px);
-  height: calc(72px + 54px);
-  position: fixed;
-  left: 0;
-  top: 0;
-  background-color: #1C1B21;
-  z-index: 1;
-}
-.order-price {
-  width: 82px;
-  text-align: center;
-  font-size: 22px;
-}
-.won {
-  font-size: 16px;
-}
-.paid-price {
-  width: 82px;
-  text-align: center;
-  color: #60a2f8;
-}
-.misu-btn {
-  width: 112px;
-  height: 46px;
-  margin: 0 25px 0 51px;
-  padding: 7px 14px 6px;
-  border-radius: 5px;
-  background-color: #1c1b21;
-  font-size: 22px;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 0.73;
-  letter-spacing: -0.55px;
-  text-align: center;
-  color: #999999;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.active {
-  font-weight: bold;
-  color: black;
-  background-color: white;
-}
-#orders {
-  display:flex;
-  flex-direction:column;
-  width:100%;
-  .top {
-    display:flex;
-    flex-shrink:0;
-    height:40px;
-    padding:12px;
-    font-size:16px;
-    @include tab-group;
-    .tab-button.datetime {
-      font-weight:400!important;
-    }
-  }
-  .order-list {
-    display:flex;
-    flex-direction: column;
-    margin:0;
-    padding:0 12px;
-    overflow:scroll;
-    flex-grow:1;
-    -webkit-overflow-scrolling: touch;
-    .no-item {
-      display:flex;
-      align-items: center;
+
+  .header-orders-status-list {
+    width: 83.59375vw;
+    display: flex;
+    align-items: center;
+    gap: 0.78125vw;
+    font-size: 1.5625vw;
+    font-weight: bold;
+    color: #ddd;
+
+    .orders-status {
+      flex: 1;
+      min-height: 4.6875vw;
+      display: flex;
       justify-content: center;
-      flex-grow:1;
-      font-size:32px;
-      font-weight:400;
-      text-align:center;
-    }
-    .order-item {
-      @include order-title;
-      padding:8px 0;
-      flex: 0 0 auto;
-      border: {
-        top:solid 1px #484848;
+      align-items: center;
+      gap: 1.5625vw;
+      background-color: #404144;
+      border-top-left-radius: 0.78125vw;
+      border-top-right-radius: 0.78125vw;
+      letter-spacing: -0.0390625vw;
+
+      span {
+        font-size: 3.125vw;
+        letter-spacing: -0.078125vw;
+        color: #fff;
       }
     }
-    .order-item:first-child {
-      border-top:none;
-    }
-    .order-item.commit {
-      opacity:0.5;
+
+    .activeButton {
+      background-color: #fff !important;
+      color: #000;
+
+      span {
+        color: #000;
+      }
     }
   }
-  .scroll-stop {
-    overflow:hidden !important;
-    -webkit-overflow-scrolling: auto !important;
-  }
-  .loading {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-grow: 1;
-    font-size: 40px;
-    font-weight: 900;
+
+  .wrap-order-list {
+    width: 84.53125vw;
+    height: calc(95vh - 4.6875vw);
+    background-color: #fff;
+    padding: 0 1.5625vw !important;
+    box-sizing: border-box;
+
+    .order-title-list {
+      display: grid;
+      grid-template-columns: 1fr 5.46875vw 7.8125vw 7.8125vw 7.8125vw 3.90625vw 6.25vw 5.859375vw 4.53125vw;
+      gap: 2.34375vw;
+      padding: 3.75vh 1.5625vw 1.25vh !important;
+      border-bottom: solid 0.078125vw #333333;
+      box-sizing: border-box;
+      
+
+      .order-title {
+        font-size: 1.09375vw;
+        color: #666;
+        text-align: center;
+      }
+    }
+    .wrap-order-information-lists {
+      height: calc(92.5vh - 7.8125vw);
+      overflow: auto;
+      .order-information-lists {
+        .order-information-list {
+          height: 4.375vw;
+          padding: 0 1.5625vw !important;
+          display: grid;
+          grid-template-columns: 1fr 5.46875vw 7.8125vw 7.8125vw 7.8125vw 3.90625vw 6.25vw 5.859375vw 4.53125vw;
+          align-items: center;
+          gap: 2.34375vw;
+          box-sizing: border-box;
+
+          > p {
+            font-size: 1.406250vw;
+            letter-spacing: -0.02109375vw;
+            text-align: center;
+          }
+
+          .orderColorRed {
+            color: #fc0000;
+          }
+          .orderColorBlue {
+            color: #184fe1;
+          }
+          .orderColorGreen {
+            color: #1e9d2f;
+          }
+          .orderColorYellow {
+            color: #e5a11a;
+          }
+
+          .order-information-table-number {
+            font-weight: bold;
+          }
+
+          .order-information-unpaid-money {
+            color: #999;
+            .unpaid {
+              color: #fc0000;
+              text-decoration: underline;
+            }
+          }
+        }
+      }
+    }
   }
 }
+
 </style>

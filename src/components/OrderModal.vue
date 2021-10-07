@@ -218,6 +218,7 @@ export default {
   border-radius: 1.5625vw;
   padding: 1.5625vw 0 !important;
   box-sizing: border-box;
+  z-index: 1;
 
   .order-modal-header {
     padding: 0.234375000vw 3.125vw 0.9375vw !important;
@@ -291,7 +292,8 @@ export default {
       width: 44.0625vw;
 
       .current-order-history-text {
-        font-family: "notosans-bold";
+        font-family: "notosans";
+        font-weight: bold;
         font-size: 1.25vw;
         letter-spacing: -0.0625vw;
       }

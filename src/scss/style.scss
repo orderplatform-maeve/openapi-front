@@ -73,8 +73,8 @@
     height: 0;
   }
 
-  label:before,
-  label:after{
+  .switch:before,
+  .switch:after{
       position: absolute;
       top: -2px;
       width: 38px;
@@ -84,7 +84,7 @@
       font-size:12px
   }
 
-  label:before {
+  .switch:before {
       left: 6px;
       content: 'ON';
       z-index: 1;
@@ -92,7 +92,7 @@
       font-weight: bold
 
   }
-  label:after {
+  .switch:after {
       right: 3px;
       content: 'OFF';
       z-index:1;
@@ -210,14 +210,6 @@
   .clone {position:absolute; top:0; left:0; z-index:2!important; width:auto!important;}
   .clone th:not(.fixed-side) , .clone td:not(.fixed-side) {display:none;}
   .clone .fixed-side {}
-
-  .pagination{margin-top: auto; text-align: center; width:100%; height:65px; background-color:#1C1B21; box-shadow:0px -1px 20px 5px #000; z-index:1}
-  .pagination ul{height:65px; display:flex; justify-content: center; align-items: center}
-  .pagination li{margin:0 10px}
-  .pagination li a{display:inline-block; width:34px; height:30px; padding-top:4px; color:#fff; background-color:#292830; font-size:16px; border-radius:100px}
-  .pagination li a.on{background-color:#fff; color:#000; font-weight:bold}
-  .pagination li.first-child a{text-indent:-9999px; background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='7.484' height='15.402' viewBox='0 0 7.484 15.402'%3E%3Cpath id='ico_arrow4' d='M0,0,6.614,5.484ZM13.4,0,6.7,5.428Z' transform='translate(6.484 1) rotate(90)' fill='rgba(0,0,0,0)' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2'/%3E%3C/svg%3E%0A") no-repeat 12px 50%; background-color:#292830;}
-  .pagination li.last-child a{text-indent:-9999px; background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='7.484' height='15.402' viewBox='0 0 7.484 15.402'%3E%3Cpath id='ico_arrow4' d='M0,0,6.614,5.484ZM13.4,0,6.7,5.428Z' transform='translate(6.484 1) rotate(90)' fill='rgba(0,0,0,0)' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2'/%3E%3C/svg%3E%0A") no-repeat 12px 50%; background-color:#292830; transform:rotate(90deg); -moz-transform: scaleX(-1); -o-transform: scaleX(-1); -webkit-transform: scaleX(-1); transform: scaleX(-1)}
 
 
   ul.order_list{padding-bottom:100px; overflow: scroll}
