@@ -218,7 +218,6 @@ export default {
   border-radius: 1.5625vw;
   padding: 1.5625vw 0 !important;
   box-sizing: border-box;
-  z-index: 1;
 
   .order-modal-header {
     padding: 0.234375000vw 3.125vw 0.9375vw !important;
