@@ -1,6 +1,6 @@
 <template lang="pug">
 .control-last-order-container
-  p.control-last-order-container-title 타이머 관리(테스트)
+  p.control-last-order-title 타이머 관리 (테스트)
   .wrap-delete-timer
     p.delete-timer-title 타이머 제거
     button.delete-timer-button(@click="removeTimer") 제거하기
@@ -18,11 +18,12 @@
       button.time-setting-button(@click="calMinute(10)") +10분
       button.time-setting-button(@click="calMinute(-10)") -10분
       button.reset-button(@click="resetMinute()") 리셋
-  p.wrap-alarm-time
-    span.red-text {{minute}}분 
-    span 뒤 메세지가 노출 됩니다.
-  .wrap-confirm-button
-    button.confirm-buttom(@click="confirm") 확인
+  .wrap-bottom
+    p.wrap-alarm-time
+      span.red-text {{minute}}분 
+      span 뒤 메세지가 노출 됩니다.
+    .wrap-confirm-button
+      button.confirm-buttom(@click="confirm") 확인
 </template>
 
 <script>
@@ -157,13 +158,16 @@ export default {
 <style scoped lang="scss">
 .control-last-order-container {
   flex: 1;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
   padding: 0 1.5625vw !important;
   font-size: 1.71875vw;
   background-color: #fff;
   box-sizing: border-box;
   overflow: auto;
 
-  .control-last-order-container-title {
+  .control-last-order-title {
     font-family: "notosans";
     font-weight: bold;
     font-size: 1.71875vw;
@@ -261,43 +265,43 @@ export default {
     }
   }
 
-  .wrap-alarm-time {
-    width: 100%;
-    margin: 9.5vh 0 2.5vh !important;
-    font-family: 'Spoqa Han Sans Neo', 'sans-serif';
-    font-size: 2.03125vw;
-    letter-spacing: -0.05078125vw;
-    text-align: center;
+  .wrap-bottom {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding-bottom: 3.7vh !important;
 
-    .red-text {
-      font-size: 3.125vw;
-      font-weight: bold;
-      letter-spacing: -0.078125vw;
-      color: #fc0000;
-    }
-  }
-  .wrap-confirm-button {
-    width: 100%;
-    text-align: center;
-    .confirm-buttom {
+    .wrap-alarm-time {
+      width: 100%;
+      margin-bottom: 2.5vh !important;
       font-family: 'Spoqa Han Sans Neo', 'sans-serif';
-      width: 37.5vw;
-      height: 4.53125vw;
       font-size: 2.03125vw;
       letter-spacing: -0.05078125vw;
-      color: #fff;
-      background-color: #fc0000;
-      border: none;
-      border-radius: 1.015625vw;
+      text-align: center;
+
+      .red-text {
+        font-size: 3.125vw;
+        font-weight: bold;
+        letter-spacing: -0.078125vw;
+        color: #fc0000;
+      }
+    }
+    .wrap-confirm-button {
+      width: 100%;
+      text-align: center;
+      .confirm-buttom {
+        font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+        width: 37.5vw;
+        height: 4.53125vw;
+        font-size: 2.03125vw;
+        letter-spacing: -0.05078125vw;
+        color: #fff;
+        background-color: #fc0000;
+        border: none;
+        border-radius: 1.015625vw;
+      }
     }
   }
-}
-
-@media screen and (max-height: 710px){
-  .control-last-order-container {
-    .wrap-alarm-time {
-      margin-top: 2.5vh !important;
-    }
-  }  
 }
 </style>

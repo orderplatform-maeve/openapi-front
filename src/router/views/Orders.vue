@@ -309,6 +309,8 @@ export default {
 <style lang="scss" scoped>
 .orders-container {
   font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+  display: flex;
+  flex-direction: column;
 
   .store-name {
     width: 83.59375vw;
@@ -359,8 +361,8 @@ export default {
   }
 
   .wrap-order-list {
+    flex:1;
     width: 84.53125vw;
-    height: calc(95vh - 4.6875vw);
     background-color: #fff;
     padding: 0 1.5625vw !important;
     box-sizing: border-box;

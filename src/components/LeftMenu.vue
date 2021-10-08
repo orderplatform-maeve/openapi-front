@@ -402,8 +402,11 @@ export default {
   position: relative;
   width: 15.46875vw;
   height: 100vh;
+  display: flex;
+  flex-direction: column;
   padding: 2.1875vw 0 0 !important;
   box-sizing: border-box !important;
+  overflow: auto;
 
   .torder-logo {
     width: 100%;
@@ -462,8 +465,11 @@ export default {
   }
 
   .wrap-bottom-button-area {
-    position: absolute;
-    bottom: 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    
     .on-off-button-list {
       padding: 2.890625vw 1.171875vw !important;
       border-top: solid 0.078125vw #000;
