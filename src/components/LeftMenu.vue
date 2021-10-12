@@ -535,11 +535,13 @@ export default {
           .switchOff::before {
             color: #fff;
             background-color: #2a2e39;
+            box-shadow: 0.234375vw 0.234375vw 0.46875vw 0 #000;
           }
 
           .switchOn::after {
             color: #fff;
             background-color: #fc0000;
+            box-shadow: 0.234375vw 0.234375vw 0.46875vw 0 #000;
           }
         }
       }

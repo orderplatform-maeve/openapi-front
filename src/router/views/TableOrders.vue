@@ -1,64 +1,22 @@
 <template lang="pug">
-.top-box
-  modal-product-option(
-    :show="optionModal"
-    :product="selectedProduct"
-    :onSubmit="optionMdalConfirm"
-    :close="optionModalClose"
-  )
-  #container
-    .left-box
-      .top
-        .order-table
-          .table-row
-            .table-row-title 주문번호
-            .table-row-content {{ getOrderId() }}
-          .table-row
-            .table-row-title 테이블
-            .table-row-content {{ getOrderTableNum() }}
-        .order-table
-          .table-row
-            .table-row-title 주문시간
-            .table-row-content {{ getOrderTime() }}
-          .table-row
-            .table-row-title 고객수
-            .table-row-content {{ getOrderCustomerCount() }}
-      .bill
-        .bill-top
-          .bill-category.product-title 상품명
-          .bill-category.product-qty 수량
-          .bill-category.product-price 금액
-        .wrapper
-          .bill-body(v-if="previousOrders" ref="billBody")
-            .row(
-              v-for="(order, orderIdx) in previousOrders"
-              :class="getLastBorder(orderIdx)"
-            )
-              .order
-                .order-text.product-title
-                  .title {{ order.display_name }}
-                .order-text.product-qty {{ order.order_qty }}
-                .order-text.product-price {{ getPrice(order.good_price) }}
-              .option(v-for="option in order.option")
-                .option-text.product-title
-                  .title ┕▷ {{ option.display_name }}
-                .option-text.product-qty {{ option.order_qty }}
-                .option-text.product-price {{ option.pos_price }}
-            .row(v-for="(order, orderIdx) in cartList")
-              .order
-                .order-text.product-title
-                  .title {{ order.display_name }}
-                .order-text.product-qty {{ order.order_qty }}
-                .order-text.product-price {{ getPrice(order.good_price) }}
-              .option(v-for="option in order.option")
-                .option-text.product-title
-                  .title ┕▷ {{ option.display_name }}
-                .option-text.product-qty {{ option.order_qty }}
-                .option-text.product-price {{ option.pos_price }}
-        .bill-footer
-          .counter {{ getOrderCount() }} 건
-          .total 합계: {{ getTotalPrice() }}
-    .right-box
+  .table-orders-container
+    modal-product-option(
+      :show="optionModal"
+      :product="selectedProduct"
+      :onSubmit="optionMdalConfirm"
+      :close="optionModalClose"
+    )
+    .header
+      p.table-number {{ getOrderTableNum() }}
+      .wrap-order-information
+        p.order-number 
+          span.text 주문번호:
+          span.value {{ getOrderId() }}
+        p.customer-count 
+          span.text 고객수:  
+          span.value {{ getOrderCustomerCount() }}명
+        p.order-date {{ getOrderTime() }}
+    .wrap-product-list
       .main-categories
         .main-category(
           v-for="ctgItem in menu"
@@ -66,28 +24,64 @@
           @click="() => onSelectMainCtg(ctgItem)"
           :class="getActiveMainCategory(ctgItem.code)"
         ) {{ ctgItem.name }}
-      .sub-categories
-        .sub-category(
-          v-for="subCtgItem in getSubCategories()"
-          :key="subCtgItem.code"
-          :name="subCtgItem.code"
-          @click="() => onSelectSubCtg(subCtgItem)"
-          :class="getActiveSubCategory(subCtgItem.code)"
-        ) {{ subCtgItem.name }}
-      .scroll
-        .good(
-          v-for="good in getGoods()"
-          :key="good.code"
-          @click="() => selectGood(good)"
-        )
-          p {{ good.displayName }}
-          p ₩ {{ getPrice(good.price) }}
-  .footer
-    .button.order(@click="yesOrder") 주문
-    //- .button(v-if="visibleDeleteButton()" @click="onDeleteOrder") 초기화
-    .button(@click="onDeleteOrder") 초기화
-    .button(@click="reload") 새로고침
-    .button(@click="close") 닫기
+      .background-white
+        .sub-categories
+          .sub-category(
+            v-for="subCtgItem in getSubCategories()"
+            :key="subCtgItem.code"
+            :name="subCtgItem.code"
+            @click="() => onSelectSubCtg(subCtgItem)"
+            :class="getActiveSubCategory(subCtgItem.code)"
+          ) {{ subCtgItem.name }}
+        .product-list-and-cart
+          .scroll(@scroll="handleScroll" ref="scroll")
+            .new-products(
+              v-for="mainCtg in menu"
+              :key="mainCtg.code"
+              :id="mainCtg.code"
+              :ref="mainCtg.code"
+            )
+              .new-product-goods-list(
+                v-for="subCtg in mainCtg.subCategories"
+                :id="subCtg.code"
+                :ref="subCtg.code"
+              ) 
+                p.wrap-category-name
+                  span.main-cateogry-name {{mainCtg.name}}
+                  span.bar |
+                  span.sub-category-name {{subCtg.name}}
+                .new-product-goods(
+                  v-for="good in subCtg.goods"
+                  :key="good.code"
+                  @click="() => selectGood(good)"
+                )
+                  p.new-product-good-name {{ good.displayName }}
+                  p.new-product-good-price {{good.price.toLocaleString()}}원
+          .wrap-cart(ref="billBody")
+            .cart-header
+              p.cart-title 장바구니
+              .wrap-reset-button
+                button.reset(@click="onDeleteOrder") 초기화
+                button.refresh(@click="reload") 새로고침
+            .cart-product-list
+              .cart-product(v-for="(order, orderIdx) in previousOrders" :class="getLastBorder(orderIdx)")
+                p.cart-product-name {{ order.display_name }}
+                .wrap-cart-product-price
+                  .cart-product-quantity {{ order.order_qty }}개
+                  .cart-product-price {{ getPrice(order.good_price) }}원
+              .cart-product(v-for="(order, orderIdx) in cartList" :class="getLastBorder(orderIdx)")
+                p.cart-product-name {{ order.display_name }}
+                .wrap-cart-product-price
+                  .cart-product-quantity {{ order.order_qty }}개
+                  .cart-product-price {{ getPrice(order.good_price) }}원
+            .cart-total-information
+              p.cart-total-quantity {{ getOrderCount() }}건
+              p.cart-total-price 
+                span.text 합계: 
+                span.price {{ getTotalPrice() }}원
+            .wrap-confirm-button
+              button.close-button(@click="close") 닫기
+              button.submit-button(@click="yesOrder()") 주문하기
 </template>
 
 <script>
@@ -108,12 +102,23 @@ export default {
   },
   computed: {
     previousOrders() {
-      // // console.log(this.$store.state.cartList);
       return this.$store.state.cartList;
+    },
+    getSelectMainCategoryItem() {
+      return this.selectMainCategoryItem;
     },
     menu() {
       const { getCategoriesGoods } = this.$store.getters;
       return getCategoriesGoods;
+    },
+  },
+  watch: {
+    menu(newData) {
+
+      if (!this.selectSubCategoryItem) {
+        // console.log(newData[0].subCategories[0]);
+        this.selectSubCategoryItem = newData[0]?.subCategories[0];
+      }
     },
   },
   async mounted() {
@@ -123,7 +128,6 @@ export default {
     this.emitTargetTable();
   },
   beforeRouteLeave(to, from, next) {
-    // console.log('beforeRouteLeave', this.$route?.params?.id);
     if (this.$route?.params?.id) {
       const { store_code } = this.$store.state.auth.store;
       const payload = {
@@ -154,8 +158,65 @@ export default {
 
       this.$store.dispatch('tabletReload', fd);
     },
+    getCategoryNameVisible(subCategory) {
+      return subCategory.goods.length > 0;
+    },
     close() {
       this.$router.replace(paths.tables);
+    },
+    unVisibleScroll() {
+      const mainCategories = document.querySelector('.main-categories');
+      const clientWidth = mainCategories.clientWidth;
+      
+      const target = document.querySelector('.active');
+      const targetLeft = target?.getBoundingClientRect().left;
+
+      if(targetLeft) {
+        if(clientWidth - targetLeft < 0) {
+          mainCategories.scrollBy({
+            left: clientWidth,
+            top: 0,
+            behavior: 'smooth',
+          });
+        } else if(targetLeft < 0){
+          mainCategories.scrollBy({
+            left: -clientWidth,
+            top: 0,
+            behavior: 'smooth',
+          });
+        }
+      }
+    },
+    handleScroll(e) {
+      this.unVisibleScroll();
+      const products = e.target.children;
+      let elBottom = 0;
+      let subElBottom = 0;
+
+      [...products].forEach((el) => {
+        const elTop = el.offsetTop - this.$refs.scroll.offsetTop;
+        elBottom += el.offsetHeight;
+        const { scrollTop } = e.target;
+
+        // // console.log(i, elTop, elBottom, scrollTop, el.id, targetId);
+        if (elTop <= scrollTop && elBottom >= scrollTop) {
+          // // console.log(i, elTop, elBottom, scrollTop, el.id);
+
+          const findItem = this.menu.find((o) => o.code === el.id);
+          this.selectMainCategoryItem = findItem;
+        }
+
+        [...el.children].forEach((element) => {
+          const subElTop = element.offsetTop - this.$refs.scroll.offsetTop;
+          subElBottom += element.offsetHeight;
+
+          if (subElTop <= scrollTop && subElBottom >= scrollTop) {
+            // // console.log(subElTop, subElBottom, scrollTop, element.id);
+            const findSubItem = this.getSubCategories().find((o) => o.code === element.id);
+            this.selectSubCategoryItem = findSubItem;
+          }
+        });
+      });
     },
     getPrice(price) {
       try {
@@ -221,6 +282,29 @@ export default {
 
       return true;
     },
+    async initialize() {
+      this.isLoading = true;
+
+      const fd = new FormData();
+      fd.append('store_code', this.$store.state.auth.store.store_code);
+
+      const config = await this.$store.dispatch('setMenuConfig', fd);
+
+      const { categorys, goods } = config;
+      const categories = categorys;
+
+      // console.log( goods[0]);
+      // const ctgRes = await this.$store.dispatch('setCategories', fd);
+      // const goodsRes = await this.$store.dispatch('setGoods', fd);
+      // console.log(ctgRes[0], categories[0]);
+      // console.log(goodsRes[0], goods[0]);
+
+      if (categories && goods) {
+        setTimeout(() => {
+          this.isLoading = false;
+        }, 0);
+      }
+    },
     async getPreviousOrders() {
       const fd = new FormData();
       const { store_code } = this.$store.state.auth.store;
@@ -236,12 +320,15 @@ export default {
     onSelectMainCtg(item) {
       this.selectMainCategoryItem = item;
       this.selectSubCategoryItem = item.subCategories[0];
+
+      const elTop = this.$refs[item.code][0].offsetTop - this.$refs.scroll.offsetTop;
+      this.$refs.scroll.scrollTo(0, elTop);
     },
     getActiveMainCategory(targetCode) {
       try {
-        const { menu, selectMainCategoryItem } = this;
+        const { menu, getSelectMainCategoryItem } = this;
 
-        if (!selectMainCategoryItem) {
+        if (!getSelectMainCategoryItem) {
           const isDefaultActive = targetCode === menu[0].code;
           if (isDefaultActive) {
             return 'active';
@@ -249,7 +336,7 @@ export default {
           return '';
         }
 
-        const isSelectedActive = selectMainCategoryItem.code === targetCode;
+        const isSelectedActive = getSelectMainCategoryItem.code === targetCode;
         if (isSelectedActive) return 'active';
 
         return '';
@@ -271,7 +358,11 @@ export default {
       }
     },
     onSelectSubCtg(item) {
+      console.log(item.code, '테스트');
       this.selectSubCategoryItem = item;
+
+      const elTop = this.$refs[item.code][0].offsetTop - this.$refs.scroll.offsetTop;
+      this.$refs.scroll.scrollTo(0, elTop);
     },
     getActiveSubCategory(targetCode) {
       try {
@@ -406,11 +497,8 @@ export default {
     },
     optionMdalConfirm(newOrder) {
       // console.log('confirm', newOrder);
-
       this.cartList = [...this.cartList, newOrder];
-
       this.billScrollBottom();
-
       this.optionModalClose();
     },
     getOrderCount() {
@@ -504,329 +592,319 @@ export default {
 };
 </script>
 
-<style lang="scss">
-p {
-  margin: 0;
-}
-
-.top-box{
-  display: flex;
+<style lang="scss" scoped>
+.table-orders-container {
   flex: 1;
-  flex-direction: column;
+  font-family: 'Spoqa Han Sans Neo', 'sans-serif';
 
-  --c-1: #ffffff;
-  --c-2: #202020;
-  --c-3: #ff0000;
-  --c-7: #e0e0e0;
-  --c-8: #fafafa;
-  --c-9: #efefef;
-  --c-10: #000000;
-
-  #container {
-    color:#ffffff;
+  .header {
+    width: 84.53125vw;
+    min-height: 6.25vw;
+    padding: 1.25vw 3.125vw 1.25vw 0 !important;
     display: flex;
-    flex: 1;
-    overflow: hidden;
-    .left-box {
-      display: flex;
-      flex-direction: column;
-      width: 50%;
-      overflow: hidden;
-      .top {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        box-sizing: border-box;
-        flex-shrink: 0;
-        .order-table {
-          padding: 4px;
-          flex-grow: 1;
-          font-size: 20px;
-          display: flex;
-          flex-direction: column;
-          .table-row {
-            display: flex;
-            border: 1px solid var(--c-7);
-            padding: 4px;
-            .table-row-title {
-              display: flex;
-              flex-grow: 1;
-              font-weight: 900;
-              max-width: 80px;
-              justify-content: center;
-              align-items: center;
-              border-right: 1px solid var(--c-7);
-            }
-            .table-row-content {
-              font-size: 12px;
-              display: flex;
-              flex-grow: 1;
-              justify-content: center;
-              align-items: center;
-            }
-          }
-        }
-      }
-      .bill {
-        display: flex;
-        flex-direction: column;
-        flex-grow: 1;
-        overflow: hidden;
-        margin-top: 8px;
-        .bill-top {
-          width: 100%;
-          padding: 8px 0 8px 0;
-          box-sizing: border-box;
-          display: flex;
-          border-bottom: 1px solid var(--c-7);
-          flex-shrink: 0;
-          .bill-category {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 20px;
-            font-weight: 900;
-          }
-          .bill-category.product-title {
-            width: 60%;
-          }
-          .bill-category.product-qty {
-            width: 15%;
-            border-left: 1px solid var(--c-7);
-          }
-          .bill-category.product-price {
-            width: 25%;
-            border-left: 1px solid var(--c-7);
-          }
-        }
-        .wrapper {
-          display: flex;
-          flex-direction: column;
-          flex-grow: 1;
-          overflow: hidden;
-        }
-        .bill-body {
-          padding: 8px 0 8px 0;
-          box-sizing: border-box;
-          overflow-y: auto;
-          .row {
-            display: flex;
-            flex-direction: column;
-            border-bottom: 1px solid var(--c-7);
-            box-sizing: border-box;
+    justify-content: space-between;
+    align-items: center;
+    box-sizing: border-box;
 
-            .order {
-              height: 60px;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              .order-text {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                font-size: 20px;
-                padding: 8px 0 8px 0;
-                box-sizing: border-box;
-              }
-              .order-text.product-title {
-                width: 60%;
-                .title {
-                  width: 100%;
-                  overflow: hidden;
-                  text-overflow: ellipsis;
-                  white-space: nowrap;
-                  text-align: left;
-                  padding-left: 8px;
-                  box-sizing: border-box;
-                }
-              }
-              .order-text.product-qty {
-                width: 15%;
-                justify-content: flex-end;
-                padding-right: 8px;
-                box-sizing: border-box;
-              }
-              .order-text.product-price {
-                width: 25%;
-                justify-content: flex-end;
-                padding-right: 8px;
-                box-sizing: border-box;
-              }
-            }
-
-            .option {
-              height: 60px;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              border-top: 1px solid var(--c-7);
-              .option-text {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                font-size: 20px;
-                padding: 8px 0 8px 0;
-                box-sizing: border-box;
-              }
-              .option-text.product-title {
-                width: 60%;
-                .title {
-                  width: 100%;
-                  overflow: hidden;
-                  text-overflow: ellipsis;
-                  white-space: nowrap;
-                  text-align: left;
-                }
-              }
-              .option-text.product-qty {
-                width: 15%;
-                justify-content: flex-end;
-                padding-right: 8px;
-                box-sizing: border-box;
-              }
-              .option-text.product-price {
-                width: 25%;
-                justify-content: flex-end;
-                padding-right: 8px;
-                box-sizing: border-box;
-              }
-            }
-          }
-          .row.last {
-            border-bottom: 1px dashed var(--c-3);
-          }
-        }
-        .bill-footer {
-          display: flex;
-          justify-content: flex-end;
-          border-top: 1px dashed var(--c-7);
-          padding: 16px 0 16px 0;
-          box-sizing: border-box;
-          font-size: 20px;
-          font-weight: 600;
-          flex-shrink: 0;
-
-          .counter {
-            width: 15%;;
-            text-align: end;
-            padding-right: 8px;
-            box-sizing: border-box;
-          }
-
-          .total {
-            min-width: 25%;
-            padding-right: 8px;
-            box-sizing: border-box;
-            text-align: end;
-          }
-        }
-      }
+    .table-number {
+      flex: 1;
+      font-size: 2.65625vw;
+      font-weight: bold;
+      letter-spacing: -0.03984375vw;
+      color: #fc0000;
+      overflow: auto;
     }
-    .right-box {
+
+    .wrap-order-information {
+      color: #fff;
       display: flex;
-      flex-direction: column;
-      width: 50%;
-      overflow: hidden;
-      border-left: 1px solid var(--c-7);
+      align-items: center;
+      gap: 3.125vw;
 
-      .main-categories {
-        display: flex;
-        justify-content: space-between;
-        flex-shrink: 0;
-
-        .main-category {
-          display: flex;
-          flex-grow: 1;
-          justify-content: center;
-          font-weight: 900;
-          font-size: 24px;
-          height: 60px;
-          align-items: center;
-          padding: 0 20px;
+      .order-number,
+      .customer-count {
+        font-size: 1.5625vw;
+        letter-spacing: -0.0234375vw;
+        word-break: break-all;
+        white-space: nowrap;
+        
+        .text {
+          color: #ccc;
         }
-
-        .active {
-          color: var(--c-3);
+        .value {
+          color: #fff;
         }
       }
 
-      .sub-categories {
-        display: flex;
-        justify-content: space-between;
-        flex-shrink: 0;
-        flex-wrap: wrap;
-
-        .sub-category {
-          display: flex;
-          flex-grow: 1;
-          justify-content: center;
-          margin: 4px;
-          height: 44px;
-          font-weight: 900;
-          font-size: 16px;
-          align-items: center;
-          padding: 0 20px;
-        }
-        .active {
-          color: var(--c-3);
-          border-radius: 24px;
-          border: solid 2px var(--c-3);
-        }
+      .order-date {
+        font-size: 1.5625vw;
+        color: #fff;
+        word-break: break-all;
+        white-space: nowrap;
       }
-
-      .scroll {
-        border-top: 1px solid var(--c-7);
-        display: flex;
-        flex-wrap: wrap;
-        align-items: flex-start;
-        padding: 10px 4px;
-        box-sizing: border-box;
-        justify-content: center;
-        flex-grow: 1;
-        overflow-y: auto;
-
-        .good {
-          width: calc(33.3333% - 16px);
-          height: 15vh;
-          margin: 4px;
-          background-color: var(--c-1);
-          border-radius: 4px;
-          padding: 4px;
-          box-sizing: border-box;
-          display: flex;
-          flex-grow: 1;
-          color: var(--c-10);
-          font-size: 20px;
-          font-weight: 800;
-          justify-content: space-around;
-          align-items: center;
-          flex-direction: column;
-          text-align: center;
-        }
-      }
-
     }
   }
 
-  .footer {
+  .wrap-product-list {
     display: flex;
-    height: 100px;
-    justify-content: space-around;
-    align-items: center;
-    border-top: 2px solid var(--c-7);
+    flex-direction: column;
+    .main-categories {
+      display: flex;
+      align-items: center;
+      gap: 0.78125vw;
+      max-width: 84.53125vw;
+      overflow: auto;
 
-    .button {
-      padding: 10px 60px;
-      background-color: white;
-      font-size: 36px;
-      color: black;
-      font-weight: 800;
-      border-radius: 20px;
+      .main-category {
+        font-size: 1.5625vw;
+        color: #ddd;
+        letter-spacing: -0.0390625vw;
+        background-color: #404144;
+        padding: 1.328125vw 1.5625vw !important;
+        box-sizing: border-box;
+        border-top-left-radius: 1.015625vw;
+        border-top-right-radius: 1.015625vw;
+        white-space:nowrap;
+        word-break: keep-all;
+      }
+
+      .active {
+        color: #000;
+        font-weight: bold;
+        background-color: #fff;
+      }
     }
 
-    .button.order {
-      background-color: var(--c-3);
-      color: white;
+    .background-white {
+      background-color: #fff;
+      margin-top: -0.078125vw !important;
+
+      .sub-categories {
+        display: flex;
+        align-items: center;
+        gap: 0.78125vw;
+        width: 84.53125vw;
+        padding: 1.5625vw 0 1.5625vw 1.5625vw !important;
+        box-sizing: border-box;
+        overflow: scroll;
+
+        .sub-category {
+          font-size: 1.406250vw;
+          letter-spacing: -0.03515625vw;
+          color: #666;
+          background-color: #e5e5e5;
+          padding: 0.9375vw 2.34375vw !important;
+          border: none;
+          border-radius: 1.015625vw;
+          white-space:nowrap;
+          word-break: keep-all;
+        }
+
+        .active {
+          color: #fff;
+          font-weight: bold;
+          background-color: #000;
+        }
+      }
+      .product-list-and-cart {
+        max-height: calc(100vh - 18.125vw);
+        display: flex;
+        gap: 1.5625vw;
+        padding: 0 0.78125vw 0.78125vw !important;
+        box-sizing: border-box;
+        .scroll {
+          flex: 1;
+          position: relative;
+          overflow: auto;
+          padding-left: 1.5625vw !important;
+          box-sizing: border-box;
+
+          .new-products {
+            .new-product-goods-list {
+              margin-top: 2.34375vw !important;
+              .wrap-category-name {
+                display: flex;
+                align-items: center;
+                gap: 1.5625vw;
+
+                .main-cateogry-name {
+                  font-size: 1.875vw;
+                  color: #fc0000;
+                  font-weight: bold;
+                  letter-spacing: -0.09375vw;
+                }
+
+                .bar {
+                  font-size: 1.875vw;
+                  color: #999;
+                }
+
+                .sub-category-name {
+                  font-size: 1.875vw;
+                  letter-spacing: -0.09375vw;
+                  color: #000;
+                }
+              }
+              .new-product-goods {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 1.5234375vw 0 !important;
+                border-bottom: solid 0.078125vw #ccc;
+
+                .new-product-good-name {
+                  font-size: 1.71875vw;
+                  color: #000;
+                  font-weight: bold;
+                }
+                .new-product-good-price {
+                  font-size: 1.5625vw;
+                  color: #000;
+                }
+              }
+            }
+          }
+          .new-products:first-child {
+            margin-top: -2.34375vw !important;
+          }
+        }
+        .scroll:last-child {
+          padding-bottom: 50vh !important;
+        }
+
+        .wrap-cart {
+          width: 36.875vw;
+          background-color: #1f222a;
+          border-radius: 1.015625vw;
+          padding: 0.78125vw 1.5625vw 1.5625vw !important;
+          box-sizing: border-box;
+
+          .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 0.78125vw !important;
+            border-bottom: solid 0.078125vw #999;
+            box-sizing: border-box;
+
+            .cart-title {
+              font-family: "notosans";
+              font-size: 1.71875vw;
+              font-weight: bold;
+              letter-spacing: -0.04296875vw;
+              color: #fff;
+            }
+
+            .wrap-reset-button {
+              display: flex;
+              align-items: center;
+              gap: 0.78125vw;
+
+              > button {
+                width: 6.25vw;
+                height: 2.8125vw;
+                border-radius: 0.390625vw;
+                border: none;
+                background-color: #fff;
+                font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+                font-size: 1.25vw;
+                letter-spacing: -0.0625vw;
+              }
+            }
+          }
+
+          .cart-product-list {
+            height: calc(100vh - 35vw);
+            padding: 1.5625vw 0 !important;
+            display: flex;
+            flex-direction: column;
+            gap: 1.171875vw;
+            overflow: auto;
+            border-bottom: solid 0.078125vw #999;
+            box-sizing: border-box;
+
+            .cart-product {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              gap: 0.78125vw;
+
+              .cart-product-name {
+                flex: 1;
+                font-size: 1.40625vw;
+                font-weight: bold;
+                letter-spacing: -0.03515625vw;
+                color: #fff;
+              }
+
+              .wrap-cart-product-price {
+                display: flex;
+                align-items: center;
+                gap: 1.953125vw;
+                font-size: 1.40625vw;
+                letter-spacing: -0.03515625vw;
+                color: #fff;
+
+                .cart-product-price {
+                  width: 8.203125vw;
+                  text-align: right;
+                }
+              }
+            }
+          }
+
+          .cart-total-information {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.171875vw 0 !important;
+
+            .cart-total-quantity {
+              font-size: 1.40625vw;
+              letter-spacing: -0.03515625vw;
+              color: #fff;
+            }
+
+            .cart-total-price {
+              color: #fff;
+              .text {
+                font-size: 1.40625vw;
+                letter-spacing: -0.03515625vw;
+              }
+              .price {
+                font-size: 2.34375vw;
+                font-weight: bold;
+                letter-spacing: -0.05859375vw;
+              }
+            }
+          }
+
+          .wrap-confirm-button {
+            display: flex;
+            gap: 0.78125vw;
+
+            > button {
+              height: 4.53125vw;
+              font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+              font-size: 2.03125vw;
+              letter-spacing: -0.05078125vw;
+              color: #fff;
+              border: none;
+              border-radius: 1.015625vw;
+            }
+
+            .close-button {
+              width: 10.15625vw;
+              background-color: #404144;
+            }
+
+            .submit-button {
+              flex: 1;
+              background-color: #fc0000;
+            }
+          }
+        }
+      }
     }
   }
 }
