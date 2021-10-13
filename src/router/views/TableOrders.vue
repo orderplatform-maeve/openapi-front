@@ -594,7 +594,7 @@ export default {
 
 <style lang="scss" scoped>
 .table-orders-container {
-  flex: 1;
+  width: 84.53125vw;
   font-family: 'Spoqa Han Sans Neo', 'sans-serif';
 
   .header {

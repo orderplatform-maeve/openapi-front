@@ -728,6 +728,7 @@ a {
 }
 
 .new-products-container {
+  flex: 1;
   font-family: 'Spoqa Han Sans Neo', 'sans-serif';
   color:#ffffff;
   padding: 0.390625vw 0 0 !important;
@@ -855,6 +856,7 @@ a {
                 font-size: 1.71875vw;
                 color: #000;
                 font-weight: bold;
+                word-break: break-all;
               }
               .good-buttons {
                 display: flex;

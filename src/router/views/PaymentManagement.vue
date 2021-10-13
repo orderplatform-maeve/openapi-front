@@ -668,7 +668,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .payment-management-container {
   flex: 1;
   background-color: #fff;
@@ -730,7 +730,7 @@ export default {
 
   .wrap-credit-information-list {
     position: relative;
-    max-height: calc(100vh - 20.390625vw);
+    height: calc(100vh - 20.390625vw);
     overflow-y: auto;
     margin-left: 1.5625vw !important;
     box-sizing: border-box;
