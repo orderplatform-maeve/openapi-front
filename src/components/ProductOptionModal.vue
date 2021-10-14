@@ -50,7 +50,7 @@
                     icon-plus-button(:clickEvent="() => plusQty(option)")
                     p.cart-option-qty {{option.qty}}개
                     icon-minus-button(:clickEvent="() => minusQty(option)")
-                  .cart-option-category {{option.group.name}}이름이 길어진다면 어떻게? 보임?
+                  .cart-option-category {{option.group.name}}
             .wrap-confirm-button
               button.close(@click="close()") 닫기
               button.confirm(@click="submit") 주문 목록에 담기
