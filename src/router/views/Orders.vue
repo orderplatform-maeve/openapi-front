@@ -1,35 +1,10 @@
 <template lang="pug">
   .orders-container
-    .popup.item.cashOutstanding(v-if="getCashOutPopVisble()")
-      p.tit 현금미결제
-      .content
-        .row
-          .left
-            dl
-              dt 주문금액 :
-              dd {{chooseOrder.orderPrice}}
-            dl
-              dt 주문번호 :
-              dd {{chooseOrder.order_id}}
-            dl
-              dt 주문일시 :
-              dd {{chooseOrder.order_time}}
-          .right
-            dl(v-for="p in chooseOrder.order_info")
-              dt
-                .name {{p.display_name}}
-                .option(v-if="p.option")
-                  div(v-for="option in p.option") {{option.display_name}} {{option.order_qty}}개
-
-              dd {{p.good_qty}}개
-        .row
-          .message 테이블에서<br/>현금 수납이 확인되었습니까?
-      .button-group
-        .button(@click.stop="closeMisuModal") 닫기
-        .button.on(@click.stop="() => reqConfirmMisu(chooseOrder)") 확인
-    .dimBg(
+    order-cash-out-standing-modal(
       v-if="getCashOutPopVisble()"
-      @click.stop="closeMisuModal"
+      :item="chooseOrder"
+      :closeItemModal="closeMisuModal"
+      :cashCommit="() => reqConfirmMisu(chooseOrder)"
     )
     p.store-name {{storeName}}{{version}}
     .header-orders-status-list
@@ -140,10 +115,8 @@ export default {
   },
   methods: {
     async reqConfirmMisu(order) {
-      console.log('misuCommit', order);
       if (order?.order_view_key) {
         const res = await requestMisuCommit(order.order_view_key);
-        console.log('res', res);
         if (res?.status === 200) {
           this.chooseOrder = {};
           this.$store.commit('UPDATE_DONE_MISU_ORDERS', order);
@@ -164,7 +137,6 @@ export default {
       };
     },
     openMisuModal(order) {
-      console.log(order, 'openMisuModal');
       if (order.totalMisu > 0) {
         this.chooseOrder = order;
       }
@@ -197,7 +169,6 @@ export default {
       }
     },
     getOrderPrice(order) {
-      console.log(order);
       try {
         return won(order.orderPrice);
       } catch (error) {

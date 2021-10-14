@@ -27,6 +27,7 @@ import {
   SelectDateModal,
   CreditCancelModal,
   CashOutStandingModal,
+  OrderCashOutStandingModal,
   CancelCashPaymentModal,
 } from '@components';
 
@@ -37,6 +38,8 @@ import {
   UnderArrow,
   RefreshBlackIcon,
   DeleteIcon,
+  PlusButton,
+  MinusButton,
 } from '@svg';
 
 Vue.config.devtools = true;
@@ -81,6 +84,7 @@ Vue.component('select-table-modal', SelectTableModal);
 Vue.component('select-date-modal', SelectDateModal);
 Vue.component('credit-cancel-modal', CreditCancelModal);
 Vue.component('cash-out-standing-modal', CashOutStandingModal);
+Vue.component('order-cash-out-standing-modal', OrderCashOutStandingModal);
 Vue.component('cancel-cash-payment-modal', CancelCashPaymentModal);
 
 Vue.component('icon-torder-logo', TorderLogo);
@@ -89,6 +93,8 @@ Vue.component('icon-logout-icon', LogoutIcon);
 Vue.component('icon-under-arrow', UnderArrow);
 Vue.component('icon-refresh-black-icon', RefreshBlackIcon);
 Vue.component('icon-delete-icon', DeleteIcon);
+Vue.component('icon-plus-button', PlusButton);
+Vue.component('icon-minus-button', MinusButton);
 
 new Vue({
   router,

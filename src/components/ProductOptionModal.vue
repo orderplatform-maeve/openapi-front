@@ -1,51 +1,65 @@
 <template lang="pug">
-transition(name="modalFade")
-  .md.md-product-option(v-if="show")
-    .md-background
-    .md-head
-      .md-title {{ product.displayNameOneLine }} 선택 옵션
-      .md-close-button(@click="close()") 닫기
-    .md-body
-      .column-option-group(ref='optionGroup')
-        .option-group(v-for="group in product.options" v-bind:key="group.index" @mousedown.stop="scroll")
-          .option-group-name {{ group.name }}
-          .option-require(v-if="group.require_flag") * 필수 선택 사항입니다.
-          .option-max-select {{ group.limit_select }}개 까지 선택할 수 있어요.
-          .option-items
-            .option-item.button(v-if="!group.require_flag" @click="selectNone(group)" v-bind:class="{selected: group.noOption == true}")
-              .option-name 선택안함
-
-            .option-item.button(v-for="option in group.option_items" @click="select(option)" v-bind:class="{selected: option.qty > 0}" )
-              .option-name {{option.displayname}}
-              .option-price(v-if="option.price>0") + {{option.price | numFormat}}원
-
-      .column-product
-        .product-name(v-html="product.displayNameOneLine")
-        .product-default-price
-          .label 기본 가격
-          .price {{product.price | numFormat}}원
-        .product-selected-option-list
-          transition-group(name="selectedOption")
-            .selected-option-item(v-for="option in reversedSelectedOptions" v-bind:key="option.code + ':' + option.group.index")
-              .option-name
-                .text {{option.displayname}}
-                .group-name - {{option.group.name}}
-              .line
-                .option-qty(v-if="option.limit_qty!=1")
-                  .button.button-plus(@click.stop="plusQty(option)") +
-                  .number {{option.qty}} 개
-                  .button.button-minus(@click.stop="minusQty(option)") -
-                .option-qty(v-else)
-                  .button.button-remove(@click.stop="popOption(option)") 삭제
-                .option-price
-                  span(v-if="option.price") {{option.price * option.qty | numFormat}} 원
-        .buttons
-          .button(@click="empty()") 전부 삭제
-          .button.button-red(@click="submit") 주문 목록에 담기
+  .product-option-modal-container(v-if="show")
+    .wrap-product-option-modal
+      .product-option-modal-title {{ product.displayNameOneLine }} 선택 옵션
+      .wrap-product-option
+        .product-option-category-list
+          div(
+            v-for="(group, index) in product.options"
+            :key="group.index"
+            :class="getCategoryStyle(index)"
+            @click="selectIndex(index)"
+          )
+            p.product-option-category-number {{index+1}}
+            p.product-option-category-name {{group.name}}
+            p.product-option-require {{getRequireFlag(group.require_flag)}}
+        .product-option-list
+          p.option-max-select {{currentOption.limit_select}}개 까지 선택할 수 있어요.
+          .product-option-information
+            div(
+              v-if="!currentOption.require_flag"
+              :class="getOptionStyle(currentOption, true)"
+              @click="selectNone(currentOption)"
+            ) 선택안함
+            div(
+              v-for="(option, index) in currentOption.option_items"
+              :key="`${currentIndex}-${index}`"
+              :class="getOptionStyle(option, false)"
+              @click="select(option)"
+            )
+              p.product-option-name {{option.name}}
+              p.product-option-price + {{option.price.toLocaleString()}}원
+        .product-option-cart
+          .wrap-option-cart-list
+            .option-cart-header
+              p.product-option-cart-title {{product.displayNameOneLine}}
+              button.cart-reset-button(@click="empty()") 초기화
+            .option-cart-list
+              .wrap-product-default-price
+                p.text 기본가격
+                p.product-default-price {{product.price.toLocaleString()}}원
+              .wrap-cart-product-information(
+                  v-for="option in reversedSelectedOptions"
+                  v-bind:key="option.code + ':' + option.group.index"
+                )
+                .wrap-cart-product-option-name
+                  p.cart-product-option-name {{option.displayname}}
+                  p.cart-product-option-price {{option.price.toLocaleString()}}원
+                .wrap-set-cart-product-option-qty(v-if="option.limit_qty!=1")
+                  .cart-product-option-set-qty-button
+                    icon-plus-button(:clickEvent="() => plusQty(option)")
+                    p.cart-option-qty {{option.qty}}개
+                    icon-minus-button(:clickEvent="() => minusQty(option)")
+                  .cart-option-category {{option.group.name}}이름이 길어진다면 어떻게? 보임?
+            .wrap-confirm-button
+              button.close(@click="close()") 닫기
+              button.confirm(@click="submit") 주문 목록에 담기
+              
 </template>
 
 <script>
 export default {
+  name: "ProductOptionModal",
   props: {
     show: {
       type: Boolean,
@@ -70,6 +84,7 @@ export default {
   },
   data() {
     return {
+      currentIndex: 0,
       selectedOptions: [],
     };
   },
@@ -77,8 +92,30 @@ export default {
     reversedSelectedOptions() {
       return this.selectedOptions.slice(0).reverse();
     },
+    currentOption() {
+      console.log(this.product.options[this.currentIndex], '확인용');
+      return this.product.options[this.currentIndex];
+    }
   },
   methods: {
+    selectIndex(index) {
+      this.currentIndex = index;
+    },
+    getOptionStyle(option, selected) {
+      return {
+        'product-option': true,
+        'selected': selected ? this.currentOption.noOption == true : option.qty > 0,
+      };
+    },
+    getRequireFlag(status) {
+      return status ? '*필수' : '';
+    },
+    getCategoryStyle(index) {
+      return {
+        'product-option-category': true,
+        'selectCategory': this.currentIndex === index
+      };
+    },
     empty() {
       for (let g of this.product.options) {
         g.option_items.map((o) => {
@@ -88,14 +125,6 @@ export default {
       }
       this.selectedOptions = [];
       this.$store.commit('pushFlashMessage', '전체 삭제 하였습니다.');
-    },
-    scroll(event) {
-      const ele = event.target.closest('.option-group');
-      const left = ele.offsetLeft;
-      const wrapLeft = this.$refs.optionGroup.offsetLeft;
-
-      const moveLeft = left - wrapLeft;
-      this.$refs.optionGroup.scrollLeft = moveLeft;
     },
     submit() {
       let flag = true;
@@ -232,6 +261,7 @@ export default {
       }
     },
     plusQty(option) {
+      console.log('찍힘?', option);
       let max_qty = 9;
       if (option.limit_qty) {
         max_qty = option.limit_qty;
@@ -253,390 +283,300 @@ export default {
 };
 </script>
 
-<style lang="scss">
-.md-product-option {
-  display:flex;
+<style lang="scss" scoped>
+.product-option-modal-container {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.85);
+  z-index: 10;
+  display: flex;
   justify-content: center;
-  z-index:19;
-  position:fixed;
-  top:0;
-  left:0;
-  right:0;
-  bottom:0;
-  flex-direction: column;
-  padding:0;
-  color:#ffffff;
+  align-items: center;
 
-  .md-background {
-    background-color: rgba(0, 0, 0, 0.8);
-    width: 100%;
-    height: 100%;
-    position: fixed;
-    left: 0;
-    top: 0;
-    z-index: -1;
-  }
+  .wrap-product-option-modal {
+    width: 83.75vw;
+    height: 76vh;
+    background-color: #fff;
+    border-radius: 1.5625vw;
 
-  .md-head {
-    display:flex;
-    height:60px;
-    margin:12px;
-    flex-shrink:0;
-    justify-content: space-between;
-
-    .md-title {
-      display:inline-block;
-      flex-grow: 1;
-      line-height:60px;
-      padding:0;
-      font-size:28px;
-      font-weight:100;
-      color:#ffffff;
-      border-bottom:solid 1px #ffffff;
-      margin-right:12px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+    .product-option-modal-title {
+      font-family: "notosans";
+      font-size: 2.1875vw;
+      padding: 1.796875vw 0 0.9375vw 3.125vw !important;
+      border-bottom: solid 0.15625vw #fc0000;
+      box-sizing: border-box;
     }
-    .md-close-button {
-      display:flex;
-      align-items: center;
-      justify-content: center;
-      padding:0 30px;
-      font-size:20px;
-      color:#000000;
-      border: solid 1px #ffffff;
-      border-radius:100px;
-      height:60px;
-      box-shadow: 0 0 8px -4px #000000;
-      background-color:#ffffff;
 
-      svg {
-        margin-right:8px;
-        width:auto;
-        height:16px;
+    .wrap-product-option {
+      display: flex;
 
-        * {
-          fill: #000000;
-        }
-      }
-    }
-    .md-close-button:active {
-      opacity:0.4;
-    }
-  }
+      .product-option-category-list {
+        width: 21.25vw;
+        height: calc(76vh - 6.09375vw);
+        display: flex;
+        flex-direction: column;
+        gap: 0.78125vw;
+        padding: 1.5625vw 2.34375vw !important;
+        box-sizing: border-box;
+        border-right: solid 0.078125vw #999;
+        overflow: auto;
 
-  .md-body {
-    display:flex;
-    flex-direction:row;
-    flex-grow: 1;
-    overflow-y: auto;
+        .product-option-category {
+          font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+          font-size: 1.5625vw;
+          display: flex;
+          align-items: center;
+          gap: 0.78125vw;
+          height: 5.234375vw;
+          padding: 0 1.171875vw !important;
+          border: solid 0.078125vw #d6d6d6;
+          border-radius: 0.78125vw;
+          box-sizing: border-box;
+          background-color: #f5f5f5;
 
-    .column-option-group {
-      scroll-behavior: smooth;
-      display:flex;
-      flex-grow:1;
-      font-size:24px;
-      line-height:1em;
-      padding:0px;
-      margin-right:-12px;
-      overflow-x: scroll;
-      border-radius:12px;
-      z-index:1;
-      color:#ffffff;
-      font-weight:900;
-
-      .option-group {
-        display:flex;
-        flex-direction:column;
-        flex-grow:1;
-        flex-shrink:0;
-        padding:12px 24px;
-        margin-right:0px;
-        border-right: solid 1px #eaeaea;
-        overflow-y: scroll;
-
-        .option-group-name {
-          display:flex;
-          flex-shrink:0;
-          font-size: 32px;
-          line-height:1em;
-          padding:12px 0px;
-          border-bottom: solid 1px #ffffff;
-          margin-bottom:12px;
-        }
-        .option-require {
-          display:flex;
-          flex-shrink:0;
-          font-size: 20px;
-          margin-bottom:12px;
-          color:#ff0000;
-        }
-        .option-max-select {
-          display:flex;
-          flex-shrink:0;
-          font-size: 20px;
-          margin-bottom:12px;
-        }
-        .option-items {
-          display:flex;
-          flex-direction:column;
-
-          .option-item {
-            display:flex;
-            flex-direction:row;
-            flex-shrink:0;
-            padding:0px 24px;
-            align-items: center;
-            justify-content: space-between;
-            height:60px;
-            margin-bottom:12px;
-            border:solid 2px #ffffff;
-            border-radius:100px;
-            font-weight:100;
-
-            .option-name {
-              font-size:24px;
-
-            }
-            .option-price {
-              display:flex;
-              border-radius:100px;
-              padding:0 12px;
-              margin-left:8px;
-              align-items: center;
-              justify-content: center;
-              font-size:16px;
-              line-height:1em;
-              height:28px;
-
-              background-color:#ffffff;
-              color:#202020;
-            }
-          }
-          .option-item:last-child {
-            margin-bottom:0;
-          }
-          .option-item.selected {
-            background-color:#ffffff !important;
-            color:#202020 !important;
-
-            .option-price {
-              background-color:#202020;
-              color:#ffffff;
-            }
-          }
-        }
-      }
-      .option-group:last-child {
-        padding-right:32px;
-        border-right:none;
-      }
-    }
-    .column-product {
-      display:flex;
-      flex-direction:column;
-      justify-content: center;
-      align-items: center;
-      background-color:#ffffff;
-      border-radius:12px;
-      color:#202020;
-      flex-shrink:0;
-      box-shadow: 0 0 8px -4px #000;
-      z-index:2;
-
-      width:30%;
-      padding:12px 24px;
-      font-size:24px;
-      line-height:1em;
-
-      > * {
-        display:flex;
-        width:100%;
-      }
-
-      .product-name {
-        overflow:hidden;
-        text-overflow:ellipsis;
-        border-bottom: solid 1px #202020;
-        font-size:32px;
-        line-height:1em;
-        padding:12px 0;
-      }
-      .product-default-price {
-        justify-content: space-between;
-        padding:12px 0;
-      }
-
-      .product-selected-option-list {
-        flex-direction:column;
-        flex-grow:1;
-        overflow:scroll;
-
-        .selected-option-item {
-          display:flex;
-          flex-direction:column;
-          padding-top:12px;
-          border-top:solid 1px #eaeaea;
-
-
-          .option-name {
-            display:flex;
-
-            .text {
-              display:inline;
-            }
-            .group-name  {
-              display:inline;
-              font-size:16px;
-              margin-left:12px;
-            }
-          }
-
-          .line {
-            display:flex;
-            flex-direction:row;
-            justify-content: space-between;
-            align-items: center;
-            padding:12px 0;
-
-          }
-          .option-price {
-            flex-grow:1;
-            text-align: right;
-          }
-
-          .option-qty {
-            display:flex;
+          .product-option-category-number {
+            width: 2.5vw;
+            height: 2.5vw;
+            color: #666666;
+            background-color: #e5e5e5;
+            border-radius: 0.390625vw;
+            display: flex;
             justify-content: center;
             align-items: center;
+          }
 
-            .number {
-              margin:0 24px;
+          .product-option-category-name {
+            flex: 1;
+            letter-spacing: -0.0390625vw;
+          }
+
+          .product-option-require {
+            width: 3.90625vw;
+            color: #fc0000;
+          }
+        }
+
+        .selectCategory {
+          font-weight: bold;
+          background-color: #fff;
+          border: solid 0.15625vw #000;
+
+          .product-option-category-number {
+            color: #fff;
+            background-color: #000;
+          }
+        }
+      }
+      
+      .product-option-list {
+        width: 31.25vw;
+        height: calc(76vh - 6.59375vw);
+        font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+        padding: 1.5625vw 2.34375vw !important;
+        box-sizing: border-box;
+        border-right: solid 0.078125vw #999;
+        overflow: auto;
+
+        .option-max-select {
+          font-family: "notosans";
+          font-size: 1.40625vw;
+          font-weight: bold;
+          color: #fc0000;
+          letter-spacing: -0.0703125vw;
+        }
+
+        .product-option-information {
+          overflow: auto;
+          margin-top: 0.78125vw !important;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          gap: 0.390625vw;
+
+          .product-option {
+            height: 5.234375vw;
+            font-size: 1.718750vw;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5625vw !important;
+            background: #f5f5f5;
+            border: solid 0.078125vw #d6d6d6;
+            border-radius: 0.78125vw;
+            box-sizing: border-box;
+
+            .product-option-name {
+              flex: 1;
+              letter-spacing: -0.04296875vw;
             }
-            .button {
-              display:flex;
-              height:40px;
-              width:40px;
-              font-size:24px;
-              justify-content: center;
-              align-items: center;
-              background-color:#eaeaea;
-              color:#202020;
-              border-radius:100px;
-              padding: 0;
+
+            .product-option-price {
+              flex: 1;
+              font-size: 1.5625vw;
+              text-align: right;
             }
-            .button-remove {
-              padding:0 32px;
-              font-size:16px;
-            }
+          }
+
+          .selected {
+            font-weight: bold;
+            background-color: #fff;
+            border: solid 0.15625vw #000;
           }
         }
       }
 
-      .buttons {
-        display:flex;
-        padding-top:12px;
+      .product-option-cart {
+        flex: 1;
+        .wrap-option-cart-list {
+          padding: 0 2.34375vw !important;
+          box-sizing: border-box;
 
-        .button {
-          display:flex;
-          flex-grow:1;
-          margin-right:12px;
-          height:60px;
-          background-color:#202020;
-          color:#ffffff;
-          border-radius:100px;
-          justify-content: center;
-          align-items: center;
-          font-weight:900;
-          font-size:20px;
-        }
-        .button:last-child {
-          margin-right:0;
-        }
-        .button-red {
-          width:40%;
-          flex-shrink:0;
-          background-color:#ff0000;
-          color:#ffffff;
+          .option-cart-header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.78125vw;
+            padding: 1.5625vw 0 1.171875vw !important;
+            border-bottom: solid 1px #999;
+
+            .product-option-cart-title {
+              flex: 1;
+              font-family: "notosans";
+              font-size: 1.5625vw;
+              letter-spacing: -0.0390625vw;
+            }
+
+            .cart-reset-button {
+              width: 6.25vw;
+              height: 2.8125vw;
+              font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+              font-size: 1.25vw;
+              color: #fff;
+              letter-spacing: -0.0625vw;
+              background-color: #000;
+              border-radius: 0.390625vw;
+              border: none;
+            }
+          }
+
+          .option-cart-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5625vw;
+            height: calc(76vh - 17.8125vw);
+            overflow: auto;
+            padding: 1.328125vw 0 !important;
+            box-sizing: border-box;
+
+
+            .wrap-product-default-price {
+              font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+              font-size: 1.5625vw;
+              letter-spacing: -0.0625vw;
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              box-sizing: border-box;
+
+              .text {
+                flex: 1;
+              }
+
+              .product-default-price {
+                width: 6.953125vw;
+                text-align: right;
+              }
+            }
+
+            .wrap-cart-product-information {
+              font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+              display: flex;
+              flex-direction: column;
+              gap: 0.78125vw;
+
+              .wrap-cart-product-option-name {
+                flex: 1;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                font-size: 1.5625vw;
+                letter-spacing: -0.0390625vw;
+
+                .cart-product-option-name {
+                  flex: 1;
+                  font-weight: bold;
+                }
+
+                .cart-product-option-price {
+                  width: 6.953125vw;
+                  text-align: right;
+                }
+              }
+
+              .wrap-set-cart-product-option-qty {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 0.78125vw;
+
+                .cart-product-option-set-qty-button {
+                  width: 10.625vw;
+                  display: flex;
+                  align-items: center;
+                  justify-content: space-between;
+
+                  .cart-option-qty {
+                    font-family: "notosans-medium";
+                    font-size: 1.875vw;
+                    letter-spacing: -0.09375vw;
+                  }
+                }
+
+                .cart-option-category {
+                  flex: 1;
+                  font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+                  font-size: 1.25vw;
+                  color: #666;
+                  letter-spacing: -0.03125vw;
+                }
+              }
+            }
+          }
+
+          .wrap-confirm-button {
+            margin-top: 0.78125vw !important;
+            display: flex;
+            align-items: center;
+            gap: 0.78125vw;
+
+            > button {
+              height: 4.53125vw;
+              font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+              font-size: 2.03125vw;
+              letter-spacing: -0.05078125vw;
+              border: none;
+              border-radius: 1.015625vw;
+              color: #fff;
+            }
+
+            .close {
+              width: 8.828125vw;
+              background-color: #404144;
+            }
+
+            .confirm {
+              flex: 1;
+              font-weight: bold;
+              background-color: #fc0000;
+            }
+          }
         }
       }
     }
-  }
-}
-
-@keyframes selectedOptionOut {
-  0% {
-    opacity:0;
-    transform: translateX(0);
-  }
-  100% {
-    opacity:1;
-    transform: translateX(100%);
-  }
-}
-@keyframes selectedOptionIn {
-  0% {
-    opacity:0;
-    transform: translateX(-100%);
-  }
-  100% {
-    opacity:1;
-    transform: translateX(0);
-  }
-}
-.selectedOption-enter-active{
-  animation: selectedOptionIn .5s;
-}
-.selectedOption-leave-active{
-  animation: selectedOptionOut .5s;
-}
-
-.modalFade-enter-active{
-  animation: fade .5s;
-
-  .md-head {
-    animation: mdHead .5s;
-  }
-  .md-body {
-    animation: mdBody .5s;
-  }
-}
-
-.modalFade-leave-active{
-  animation: fade .5s reverse;
-
-  .md-head {
-    animation: mdHead .5s reverse;
-  }
-  .md-body {
-    animation: mdBody .5s reverse;
-  }
-
-}
-
-@keyframes fade {
-  0% {
-    opacity:0;
-  }
-  100% {
-    opacity:1;
-  }
-}
-@keyframes mdHead {
-  0% {
-    transform: translateY(-100vh);
-  }
-  100% {
-    transform: translateY(0);
-  }
-}
-@keyframes mdBody {
-  0% {
-    transform: translateY(100vh);
-  }
-  100% {
-    transform: translateY(0);
   }
 }
 </style>

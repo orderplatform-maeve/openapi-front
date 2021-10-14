@@ -38,7 +38,6 @@
             .new-product-goods(
               v-for="good in subCtg.goods"
               :key="good.code"
-              @click="() => selectGood(good)"
             )
               p.new-product-good-name {{ good.displayName }}
               .good-buttons

@@ -9,4 +9,9 @@
 	font-family: "notosans";
 	src: url("https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/fonts/NotoSansKR-Regular.woff2") format("woff2");
 }
+
+@font-face {
+  font-family: "notosans-medium";
+  src: url("https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/fonts/NotoSansKR-Medium.woff2") format("woff2");
+}
 </style>

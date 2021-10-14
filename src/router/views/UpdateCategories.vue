@@ -138,6 +138,7 @@ export default {
 
 <style lang="scss">
 .container{
+  flex: 1;
   --c-1: #ffffff;
   --c-2: #202020;
   --c-3: #ff0000;

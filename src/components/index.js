@@ -13,5 +13,6 @@ export { default as SelectTableModal } from './SelectTableModal';
 export { default as SelectDateModal } from './SelectDateModal';
 export { default as CreditCancelModal } from './CreditCancelModal';
 export { default as CashOutStandingModal } from './CashOutStandingModal';
+export { default as OrderCashOutStandingModal } from './OrderCashOutStandingModal';
 export { default as CancelCashPaymentModal } from './CancelCashPaymentModal';
 

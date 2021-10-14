@@ -1,6 +1,7 @@
 <template lang="pug">
   .table-orders-container
     modal-product-option(
+      v-if="selectedProduct"
       :show="optionModal"
       :product="selectedProduct"
       :onSubmit="optionMdalConfirm"
@@ -65,15 +66,27 @@
                 button.refresh(@click="reload") 새로고침
             .cart-product-list
               .cart-product(v-for="(order, orderIdx) in previousOrders" :class="getLastBorder(orderIdx)")
-                p.cart-product-name {{ order.display_name }}
-                .wrap-cart-product-price
-                  .cart-product-quantity {{ order.order_qty }}개
-                  .cart-product-price {{ getPrice(order.good_price) }}원
+                .wrap-cart-product-name
+                  p.cart-product-name {{ order.display_name }}
+                  .wrap-cart-product-price
+                    .cart-product-quantity {{ order.order_qty }}개
+                    .cart-product-price {{ getPrice(order.good_price) }}원
+                .wrap-cart-product-option(v-for="(option, index) in order.option" :key="`option-index:${index}`")
+                  p.cart-product-option-name +{{option.display_name}}
+                  .wrap-cart-product-option-price
+                    .cart-product-option-quantity {{option.order_qty}}개
+                    .cart-product-option-price {{option.pos_price.toLocaleString()}}원
               .cart-product(v-for="(order, orderIdx) in cartList" :class="getLastBorder(orderIdx)")
-                p.cart-product-name {{ order.display_name }}
-                .wrap-cart-product-price
-                  .cart-product-quantity {{ order.order_qty }}개
-                  .cart-product-price {{ getPrice(order.good_price) }}원
+                .wrap-cart-product-name
+                  p.cart-product-name {{ order.display_name }}
+                  .wrap-cart-product-price
+                    .cart-product-quantity {{ order.order_qty }}개
+                    .cart-product-price {{ getPrice(order.good_price) }}원
+                .wrap-cart-product-option(v-for="(option, index) in order.option" :key="`option-index:${index}`")
+                  p.cart-product-option-name +{{option.display_name}}
+                  .wrap-cart-product-option-price
+                    .cart-product-option-quantity {{option.order_qty}}개
+                    .cart-product-option-price {{option.pos_price.toLocaleString()}}원
             .cart-total-information
               p.cart-total-quantity {{ getOrderCount() }}건
               p.cart-total-price 
@@ -707,6 +720,7 @@ export default {
         }
       }
       .product-list-and-cart {
+        position: relative;
         max-height: calc(100vh - 18.125vw);
         display: flex;
         gap: 1.5625vw;
@@ -714,9 +728,9 @@ export default {
         box-sizing: border-box;
         .scroll {
           flex: 1;
-          position: relative;
           overflow: auto;
           padding-left: 1.5625vw !important;
+          padding-bottom: 5vh !important;
           box-sizing: border-box;
 
           .new-products {
@@ -824,30 +838,59 @@ export default {
             box-sizing: border-box;
 
             .cart-product {
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
-              gap: 0.78125vw;
+              .wrap-cart-product-name {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 0.78125vw;
+                .cart-product-name {
+                  flex: 1;
+                  font-size: 1.40625vw;
+                  font-weight: bold;
+                  letter-spacing: -0.03515625vw;
+                  color: #fff;
+                }
 
-              .cart-product-name {
-                flex: 1;
-                font-size: 1.40625vw;
-                font-weight: bold;
-                letter-spacing: -0.03515625vw;
-                color: #fff;
+                .wrap-cart-product-price {
+                  display: flex;
+                  align-items: center;
+                  gap: 1.953125vw;
+                  font-size: 1.40625vw;
+                  letter-spacing: -0.03515625vw;
+                  color: #fff;
+
+                  .cart-product-price {
+                    width: 8.203125vw;
+                    text-align: right;
+                  }
+                }
               }
 
-              .wrap-cart-product-price {
+              .wrap-cart-product-option {
+                padding-left: 0.78125vw !important;
                 display: flex;
+                justify-content: space-between;
                 align-items: center;
-                gap: 1.953125vw;
-                font-size: 1.40625vw;
-                letter-spacing: -0.03515625vw;
-                color: #fff;
+                gap: 0.78125vw;
+                box-sizing: border-box;
+                color: #80a2ff;
 
-                .cart-product-price {
-                  width: 8.203125vw;
-                  text-align: right;
+                .cart-product-option-name {
+                  font-size: 1.25vw;
+                  letter-spacing: -0.03125vw;
+                }
+
+                .wrap-cart-product-option-price {
+                  display: flex;
+                  align-items: center;
+                  gap: 1.953125vw;
+                  font-size: 1.25vw;
+                  letter-spacing: -0.03125vw;
+
+                  .cart-product-option-price {
+                    width: 8.203125vw;
+                    text-align: right;
+                  }
                 }
               }
             }

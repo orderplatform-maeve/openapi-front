@@ -5,3 +5,5 @@ export { default as LogoutIcon } from './LogoutIcon';
 export { default as UnderArrow } from './UnderArrow';
 export { default as RefreshBlackIcon } from './RefreshBlackIcon';
 export { default as DeleteIcon } from './DeleteIcon';
+export { default as PlusButton } from './PlusButton';
+export { default as MinusButton } from './MinusButton';

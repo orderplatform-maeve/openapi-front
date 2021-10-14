@@ -5,12 +5,12 @@
       .cash-out-standing
         .credit-information
           p.wrap-order-price 주문금액: 
-            span.order-price {{item.amount.toLocaleString()}}원
-          p.approval-number 승인번호: {{item.paymentId}}
-          p.order-date 주문일시: {{item.orderdateTime}}
+            span.order-price {{item.orderPrice.toLocaleString()}}원
+          p.approval-number 주문번호: {{item.order_id}}
+          p.order-date 주문일시: {{item.order_time}}
         .order-information-list
           .order-information(
-            v-for="(order, index) in item.orderInfo"
+            v-for="(order, index) in item.order_info"
             :key="getOrderInformationKey(order, index)"
           )
             .wrap-order-product-name
@@ -25,12 +25,12 @@
         p 현금 수납이 확인되었습니까?
       .confirm-button-list
         button.close-button(@click.stop="closeItemModal()") 닫기
-        button.confirm-button(@click.stop="cashCommit(item)") 확인
+        button.confirm-button(@click.stop="cashCommit") 확인
 </template>
 
 <script>
 export default {
-  name: "CashOutStandingModal",
+  name: "OrderCashOutStandingModal",
   props: {
     item: {
       type: Object,
