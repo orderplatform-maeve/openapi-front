@@ -1,0 +1,571 @@
+<template lang="pug">
+  .left-menu-container
+    modal-confirm(
+      :show="confirmModal.show"
+      :close="confirmModal.close"
+      :title="confirmModal.title"
+      :message="confirmModal.message"
+      :confirm="confirmModal.confirm"
+    )
+    .torder-logo
+      icon-torder-logo
+    .wrap-current-date
+      p.current-date {{getNowDate()}}
+      p.current-time {{getNowTime()}}
+    .wrap-page-button-list
+      router-link.order-history(v-if="visibleOrderButton" :to="paths.order" :class="{activeButton: path === '/order'}") 주문보기
+      router-link.additional-functions(v-if="visibleOrderButton" :to="paths.additional" :class="{activeButton: path === '/additional'}") 추가기능(테스트)
+      router-link.paid-history(v-if="visibleOrderButton" :to="paths.paymentManagement" :class="{activeButton: path === '/paymentManagement'}") 결제내역
+    .wrap-bottom-button-area
+      .on-off-button-list
+        .wrap-on-off-button
+          p 테블릿 화면
+          .wrap-on-off-switch
+            label.on-off-switch(v-on:click.stop="toggleTabletScreen" :class="{switchOff: !statusTabletScreen, switchOn: statusTabletScreen}")
+              input(type='checkbox' :checked="statusTabletScreen" disabled="disabled")
+        .wrap-on-off-button
+          p 테블릿 주문
+          .wrap-on-off-switch
+            label.on-off-switch(v-on:click.stop="toggleOrder" :class="{switchOff: !statusOrder, switchOn: statusOrder}")
+              input(type='checkbox' :checked="statusOrder" disabled="disabled")
+        .wrap-on-off-button
+          p 주문 내역
+          .wrap-on-off-switch
+            label.on-off-switch(v-on:click.stop="toggleRecentOrder" :class="{switchOff: !statusRecentOrder, switchOn: statusRecentOrder}")
+              input(type='checkbox' :checked="statusRecentOrder" disabled="disabled")
+      button.wrap-refresh-button(@click="restart")
+        p 새고고침
+        icon-refresh-icon
+      button.wrap-logout-button(v-if="visibleLogoutButton" @click="logout")
+        p 로그아웃
+        icon-logout-icon
+</template>
+
+<script>
+import { version } from '@utils/constants';
+import paths from '@router/paths';
+
+export default {
+  data() {
+    return {
+      time: {
+        now: 0,
+        start: 0,
+        end: 0,
+      },
+      version,
+      paths,
+    };
+  },
+  methods: {
+    restart() {
+      // location.href = '/'; // cache 파일을 먼저 로드한다.
+      location.replace('/'); // cache 파일을 로드하지 않는다.
+    },
+    logout() {
+      this.$store.dispatch('logout');
+      localStorage.removeItem('auth');
+      this.$router.replace(paths.login);
+    },
+    getNowDate() {
+      if (!this.time.now) {
+        return '';
+      }
+      const now = new Date(this.time.now);
+      const ISONow = now.toISOString();
+
+      return this.$moment(ISONow).format('MM월 DD일');
+    },
+    getNowTime() {
+      if (!this.time.now) {
+        return '';
+      }
+      const now = new Date(this.time.now);
+      const ISONow = now.toISOString();
+
+      return this.$moment(ISONow).format('HH:mm:ss');
+    },
+    beep() {
+      const time = Date.now();
+      const ISONow = new Date(time).toISOString();
+      const datetime = this.$moment(ISONow).format();
+
+      let deviceUsage = {};
+      try {
+        if (window.UUID) {
+          deviceUsage = JSON.parse(window.UUID.getDeviceUsage());
+        }
+      } catch(e) {
+        //// console.log(e);
+      }
+
+      const data = {
+        type: 'beep',
+        uCode: this.$store.state.uCode,
+        MACAddr: this.$store.state.MACAddr,
+        deviceUsage: deviceUsage,
+        location: window.location,
+        store: {
+          code: this.$store.state.auth?.store?.code,
+        },
+        time: time,
+        path: this.$route.path,
+        datetime: datetime,
+      };
+
+      this.$socket.emit('event', data, () => {
+        // // console.log('event', answer.msg);
+      });
+    },
+    loopBeep() {
+      this.beep();
+      setInterval(() => {
+        this.time.now = parseInt(Date.now());
+
+        const timestemp = parseInt(Date.now() / 1000);
+        const lap = timestemp % 30;
+        const term = lap < 1;
+
+        if (term) {
+          // console.log('term', new Date());
+          this.beep();
+        }
+      }, 1000);
+    },
+    closeTabletScreen() {
+      if (this.$store.state.device.serviceStatus) {
+        return this.$store.commit('pushFlashMessage', '이미 태블릿 닫기 상태로 되어있습니다.');
+      }
+
+      const confirmModal = {};
+
+      confirmModal.show = true;
+      confirmModal.close = this.closeConfirmModal;
+      confirmModal.title = '태블릿 닫기';
+      confirmModal.message = '모든 태블릿의 화면을 닫아요';
+      confirmModal.confirm = this.reqCloseTablet;
+
+      this.$store.commit('showConfirmModal', confirmModal);
+    },
+    openTabletScreen() {
+      if (!this.$store.state.device.serviceStatus) {
+        return this.$store.commit('pushFlashMessage', '이미 태블릿 열기 상태로 되어있습니다.');
+      }
+      const confirmModal = {};
+      confirmModal.show = true;
+      confirmModal.close = this.closeConfirmModal;
+      confirmModal.title = '태블릿 열기';
+      confirmModal.message = '모든 태블릿의 화면을 열어요';
+      confirmModal.confirm = this.reqOpenTablet;
+      this.$store.commit('showConfirmModal', confirmModal);
+    },
+    agreeOrder() {
+      if (!this.$store.state.device.orderStatus) {
+        return this.$store.commit('pushFlashMessage', '이미 주문 받기 상태로 되어있습니다.');
+      }
+      const confirmModal = {};
+      confirmModal.show = true;
+      confirmModal.close = this.closeConfirmModal;
+      confirmModal.title = '주문 받기';
+      confirmModal.message = '태블릿에서 주문을 받아요';
+      confirmModal.confirm = this.reqAgreeOrder;
+      this.$store.commit('showConfirmModal', confirmModal);
+    },
+    rejectOrder() {
+      if (this.$store.state.device.orderStatus) {
+        return this.$store.commit('pushFlashMessage', '이미 주문 중단 상태로 되어있습니다.');
+      }
+      const confirmModal = {};
+      confirmModal.show = true;
+      confirmModal.close = this.closeConfirmModal;
+      confirmModal.title = '주문 중단';
+      confirmModal.message = '태블릿을 메뉴판으로만 사용하고 주문은 안돼요';
+      confirmModal.confirm = this.reqRejectOrder;
+      this.$store.commit('showConfirmModal', confirmModal);
+    },
+    showRecentOrder() {
+      if (!this.$store.state.device.recentOrderStatus) {
+        return this.$store.commit('pushFlashMessage', '이미 주문 내역 표시 상태로 되어있습니다.');
+      }
+      const confirmModal = {};
+      confirmModal.show = true;
+      confirmModal.close = this.closeConfirmModal;
+      confirmModal.title = '주문 내역 표시';
+      confirmModal.message = '태블릿에서 주문 내역이 나타납니다';
+      confirmModal.confirm = this.reqShowOrder;
+      this.$store.commit('showConfirmModal', confirmModal);
+    },
+    hideRecentOrder() {
+      if (this.$store.state.device.recentOrderStatus) {
+        return this.$store.commit('pushFlashMessage', '이미 주문 내역 숨김 상태로 되어있습니다.');
+      }
+      const confirmModal = {};
+      confirmModal.show = true;
+      confirmModal.close = this.closeConfirmModal;
+      confirmModal.title = '주문 내역 숨김';
+      confirmModal.message = '태블릿에서 주문 내역이 숨겨집니다';
+      confirmModal.confirm = this.reqHideOrder;
+      this.$store.commit('showConfirmModal', confirmModal);
+    },
+    closeConfirmModal() {
+      this.$store.commit('closeConfirmModal');
+    },
+    async reqOpenTablet() {
+      const fd = new FormData();
+      fd.append('store_code', this.auth.store.store_code);
+      const response = await this.$store.dispatch('setOpenTablet', fd);
+      if (response) {
+        const value = 0;
+        const { disconnected } = this.emitServiceStatus(value);
+        if (disconnected) {
+          this.$store.commit('setDeviceServiceStatus', value);
+          this.$store.commit('pushFlashMessage', '태블릿 화면 열기 상태로 변경 되었습니다.');
+        }
+        this.closeConfirmModal();
+      }
+    },
+    async reqCloseTablet() {
+      const fd = new FormData();
+      fd.append('store_code', this.auth.store.store_code);
+      const response = await this.$store.dispatch('setCloseTablet', fd);
+      if (response) {
+        const value = 1;
+        const { disconnected } = this.emitServiceStatus(value);
+        if (disconnected) {
+          this.$store.commit('setDeviceServiceStatus', value);
+          this.$store.commit('pushFlashMessage', '태블릿 화면 닫기 상태로 변경 되었습니다.');
+        }
+        this.closeConfirmModal();
+      }
+    },
+    async reqAgreeOrder() {
+      const fd = new FormData();
+      fd.append('store_code', this.auth.store.store_code);
+      const response = await this.$store.dispatch('setAgreeOrder', fd);
+      if (response) {
+        const value = 0;
+        const { disconnected } = this.emitAgreeOrder(value);
+        if (disconnected) {
+          this.$store.commit('setDeviceOrderStatus', value);
+          this.$store.commit('pushFlashMessage', '태블릿 주문 받기 상태로 변경 되었습니다.');
+        }
+        this.closeConfirmModal();
+      }
+    },
+    async reqRejectOrder() {
+      const fd = new FormData();
+      fd.append('store_code', this.auth.store.store_code);
+      const response = await this.$store.dispatch('setRejectOrder', fd);
+      if (response) {
+        const value = 1;
+        const { disconnected } = this.emitAgreeOrder(value);
+        if (disconnected) {
+          this.$store.commit('setDeviceOrderStatus', value);
+          this.$store.commit('pushFlashMessage', '태블릿 주문 중단 상태로 변경 되었습니다.');
+        }
+        this.closeConfirmModal();
+      }
+    },
+    async reqShowOrder() {
+      const fd = new FormData();
+      fd.append('store_code', this.auth.store.store_code);
+      const response = await this.$store.dispatch('setShowRecentOrder', fd);
+      if (response) {
+        const value = 0;
+        const { disconnected } = this.emitRecentOrder(value);
+        if (disconnected) {
+          this.$store.commit('setDeviceRecentOrderStatus', value);
+          this.$store.commit('pushFlashMessage', '태블릿 주문 내역 표시 상태로 변경 되었습니다.');
+        }
+        this.closeConfirmModal();
+      }
+    },
+    async reqHideOrder() {
+      const fd = new FormData();
+      fd.append('store_code', this.auth.store.store_code);
+      const response = await this.$store.dispatch('setCloseRecentOrder', fd);
+      if (response) {
+        const value = 1;
+        const { disconnected } = this.emitRecentOrder(value);
+        if (disconnected) {
+          this.$store.commit('setDeviceRecentOrderStatus', value);
+          this.$store.commit('pushFlashMessage', '태블릿 주문 내역 숨김 상태로 변경 되었습니다.');
+        }
+        this.closeConfirmModal();
+      }
+    },
+    emitServiceStatus(value) {
+      const { store_code } = this.$store.state.auth.store;
+      const payload = {
+        store: {
+          code: store_code,
+        },
+        type: '@update/device/serviceStatus',
+        value,
+      };
+      return this.$socket.emit('orderview', payload);
+    },
+    emitAgreeOrder(value) {
+      const { store_code } = this.$store.state.auth.store;
+      const payload = {
+        store: {
+          code: store_code,
+        },
+        type: '@update/device/agreeOrder',
+        value,
+      };
+      return this.$socket.emit('orderview', payload);
+    },
+    emitRecentOrder(value) {
+      const { store_code } = this.$store.state.auth.store;
+      const payload = {
+        store: {
+          code: store_code,
+        },
+        type: '@update/device/recentOrder',
+        value,
+      };
+      return this.$socket.emit('orderview', payload);
+    },
+    toggleTabletScreen() {
+      if (this.statusTabletScreen) {
+        this.closeTabletScreen();
+      } else {
+        this.openTabletScreen();
+      }
+    },
+    toggleOrder() {
+      if (!this.statusOrder) {
+        this.agreeOrder();
+      } else {
+        this.rejectOrder();
+      }
+    },
+    toggleRecentOrder() {
+      if (!this.statusRecentOrder) {
+        this.showRecentOrder();
+      } else {
+        this.hideRecentOrder();
+      }
+    },
+  },
+  mounted() {
+    this.loopBeep();
+  },
+  computed: {
+    statusOrder() {
+      const result = this.$store.state.device.orderStatus;
+      return !result;
+    },
+    statusRecentOrder() {
+      const result = this.$store.state.device.recentOrderStatus;
+      return !result;
+    },
+    userName() {
+      const { auth } = this;
+      return auth && auth.member && auth.member.name;
+    },
+    visibleLoginButton() {
+      return !this.userName;
+    },
+    visibleLogoutButton() {
+      return !!this.userName;
+    },
+    visibleOrderButton() {
+      const { auth } = this;
+      return !!(auth && auth.store && auth.store.store_code);
+    },
+    storeName() {
+      const { auth } = this;
+      return auth && auth.store && auth.store.store_name;
+    },
+    statusTabletScreen() {
+      const result = this.$store.state.device.serviceStatus;
+      return !result;
+    },
+    auth() {
+      return this.$store.state.auth;
+    },
+    path() {
+      return this.$route.path;
+    },
+    confirmModal() {
+      return this.$store.state.confirmModal;
+    },
+  }
+};
+</script>
+
+<style lang="scss" scoped>
+.left-menu-container {
+  font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+  position: relative;
+  width: 15.46875vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 2.1875vw 0 0 !important;
+  box-sizing: border-box !important;
+  overflow: auto;
+
+  .torder-logo {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .wrap-current-date {
+    padding: 0 1.171875vw !important;
+    margin: 2.34375vw 0 !important;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-sizing: border-box;
+
+    .current-date {
+      font-size: 1.71875vw;
+      letter-spacing: -0.02578125vw;
+    }
+    
+    .current-time {
+      font-size: 2.578125vw;
+      font-weight: bold;
+      letter-spacing: -0.0390625vw;
+    }
+  }
+
+  .wrap-page-button-list {
+    width: 100%;
+    padding: 0 1.171875vw !important;
+    display: flex;
+    flex-direction: column;
+    gap: 0.78125vw;
+    box-sizing: border-box;
+
+    > a {
+      width: 100%;
+      height: 3.90625vw;
+      font-size: 1.40625vw !important;
+      letter-spacing: 0.03515625vw;
+      background-color: #12151d;
+      border: none;
+      border-radius: 1.015625vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #ddd !important;
+    }
+
+    .activeButton {
+      background-color: #fc0000;
+      font-weight: bold;
+      color: #fff;
+    }
+  }
+
+  .wrap-bottom-button-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    
+    .on-off-button-list {
+      padding: 2.890625vw 1.171875vw !important;
+      border-top: solid 0.078125vw #000;
+      border-bottom: solid 0.078125vw #000;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      gap: 1.171875vw;
+
+      .wrap-on-off-button {
+        display: flex;
+        align-items: center;
+        gap: 0.625vw;
+
+        > p {
+          flex: 1;
+          font-size: 1.09375vw;
+          letter-spacing: -0.02734375vw;
+          color: #fff;
+        }
+
+        .wrap-on-off-switch {
+          position: relative;
+          width: 7.1875vw;
+          height: 2.734375vw;
+          background-color: #12151d;
+          border-radius: 1.25vw;
+
+          .on-off-switch {
+            display: inline-block;
+            > input {
+              opacity: 0;
+              width: 0;
+              height: 0;
+            }
+          }
+
+          .on-off-switch::before,
+          .on-off-switch::after {
+            position: absolute;
+            width: 3.203125vw;
+            top: 0.234375vw;
+            height: 2.265625vw;
+            font-size: 0.9375vw;
+            font-weight: bold;
+            color: #666;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 1.015625vw;
+          }
+
+          .on-off-switch::before {
+            content: 'OFF';
+            left: 0.234375vw;
+          }
+
+          .on-off-switch::after {
+            content: 'ON';
+            right: 0.234375vw;
+          }
+
+          .switchOff::before {
+            color: #fff;
+            background-color: #2a2e39;
+            box-shadow: 0.234375vw 0.234375vw 0.46875vw 0 #000;
+          }
+
+          .switchOn::after {
+            color: #fff;
+            background-color: #fc0000;
+            box-shadow: 0.234375vw 0.234375vw 0.46875vw 0 #000;
+          }
+        }
+      }
+    }
+
+    .wrap-refresh-button,
+    .wrap-logout-button {
+      width: 100%;
+      height: 3.90625vw;
+      font-size: 1.25vw;
+      letter-spacing: -0.03125vw;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1.171875vw;
+      background-color: unset;
+      border: none;
+    }
+
+    .wrap-logout-button {
+      color: #ff0000;
+      border: solid 0.078125vw #000;
+    }
+  }
+}
+</style>

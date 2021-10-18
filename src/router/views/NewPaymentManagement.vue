@@ -1,329 +1,104 @@
 <template lang="pug">
-.list_box
-  .popup.item.cashOutstanding(v-if="itemModal.currName == 'cashOutstanding'")
-    p.tit 현금미결제
-    .content
-      .row
-        .left
-          dl
-            dt 주문금액 :
-            dd {{item.amount}}
-          dl
-            dt 승인번호 :
-            dd {{item.paymentId}}
-          dl
-            dt 주문일시 :
-            dd {{item.orderdateTime}}
-        .right
-          dl(v-for="p in item.orderInfo")
-            dt
-              .name {{p.display_name}}
-              .option(v-if="p.option")
-                div(v-for="option in p.option") {{option.display_name}} {{option.order_qty}}개
-
-            dd {{p.good_qty}}개
-      .row
-        .message 테이블에서<br/>현금 수납이 확인되었습니까?
-    .button-group
-      .button(v-on:click.stop="closeItemModal") 닫기
-      .button.on(v-on:click.stop="() => cashCommit(item)") 확인
-
-  .popup.item.cancelCashPayment(v-if="itemModal.currName == 'cancelCashPayment'")
-    .tit 현금결제 취소
-    .content
-      p 현금결제 환불 처리하시겠습니까?
-    .button-group
-      .button(v-on:click.stop="closeItemModal()") 닫기
-      .button.on(v-on:click.stop="cashCancelCommit(item);") 확인
-
-  .popup.item.cancelCreditCardPayment(v-if="itemModal.currName == 'cancelCreditCardPayment'")
-    p.tit 신용카드 결제 취소
-    .content
-      dl
-        dt 카드번호 :
-        dd {{item.cardNumber}}
-      dl
-        dt 카드사명 :
-        dd {{item.issuer}}
-      dl
-        dt 결제금액 :
-        dd {{item.amount}}
-      dl
-        dt 할부개월 :
-        dd {{item.ApprovalMonth}}
-      dl
-        dt 승인번호 :
-        dd {{item.paymentId}}
-      dl
-        dt 승인일시 :
-        dd {{item.creditDateTime}}
-    .button-group
-      .button(v-on:click.stop="closeItemModal()") 닫기
-      .button.on(v-on:click.stop="() => cardCancelCommit(item)") 승인취소
-
-  .popup.item.orderProductDetail(v-if="itemModal.currName == 'orderProductsDetail'")
-    p.tit 주문상품 상세
-    .content
-      dl(v-for="p in item.orderInfo")
-        dt {{p.display_name}}
-        dd {{p.good_qty}}개
-    .button-group
-      .button(v-on:click.stop="closeItemModal()") 닫기
-
-  .popup.dateSelect(v-if="currentSearchModal == 'type'")
-    p.tit 주문/승인 선택
-    ul.btn_list
-      li(v-for="(value, name) in searchOptions.type.list")
-        a(v-on:click.stop="selectOption('type', name)" v-bind:class="{on: searchOptions.type.selected == name}") {{value.name}}
-  .popup.payment(v-if="currentSearchModal == 'method'")
-    p.tit 결제방식 선택
-    ul.btn_list
-      li(v-for="(value, name) in searchOptions.method.list")
-        a(v-on:click.stop="selectOption('method', name)" v-bind:class="{on: searchOptions.method.selected == name}") {{value.name}}
-  .popup.sortCount(v-if="currentSearchModal == 'filter'")
-    ul.btn_list
-      li(v-for="(value, name) in searchOptions.filter.list")
-        a(v-on:click.stop="selectOption('filter', name)" v-bind:class="{on: searchOptions.filter.selected == name}") {{value.name}}
-  .popup.sortDate(v-if="currentSearchModal == 'sort'")
-    ul.btn_list
-      li(v-for="(value, name) in searchOptions.sort.list")
-        a(v-on:click.stop="selectOption('sort', name)" v-bind:class="{on: searchOptions.sort.selected == name}") {{value.name}}
-  .popup.cardCompany(v-if="currentSearchModal == 'company'")
-    p.tit 카드사 선택
-    ul.list
-      li(v-for="(value, name) in searchOptions.company.list")
-        a(v-on:click.stop="selectOption('company', name)" v-bind:class="{on: searchOptions.company.selected == name}") {{value.name}}
-  .popup.cardCompany(v-if="currentSearchModal == 'table'")
-    p.tit 테이블 선택
-    ul.list
-      li(v-for="table in searchOptions.table.list")
-        a(v-on:click.stop="toggleTable(table)"  v-bind:class="{'on': table.selected}") {{table.Tablet_name}}
-    a.button-complete(v-on:click.stop="closeSearchModal()") 선택완료
-
-  .popup.date(v-if="currentSearchModal == 'date'")
-    p.tit 날짜/시간별 조회
-    .left_box.fleft
-      ul.quick_date.clearfix
-        li
-          a(v-on:click.stop="pickerSelectToday") 오늘
-        li
-          a(v-on:click.stop="pickerSelectWeek") 1주일
-        li
-          a(v-on:click.stop="pickerSelectMonth") 1개월
-        li
-          a(v-on:click.stop="pickerSelect3Months") 3개월
-      dl.date_time.clearfix
-        dt 시작일
-        dd
-          input(type='text' name='' v-bind:value="$moment(searchOptions.datetime.start).format('YYYY-MM-DD')" readonly v-on:click.stop="pickerSelectStartDate")
-        dd
-          input(type='text' name='' v-bind:value="$moment(searchOptions.datetime.start).format('HH')" readonly v-on:click.stop="pickerSelectStartHour")
-          |  시
-        dd
-          input(type='text' name='' v-bind:value="$moment(searchOptions.datetime.start).format('mm')" readonly v-on:click.stop="pickerSelectStartMinute")
-          |  분
-      dl.date_time.clearfix
-        dt 종료일
-        dd
-          input(type='text' name='' v-bind:value="$moment(searchOptions.datetime.end).format('YYYY-MM-DD')" readonly v-on:click.stop="pickerSelectEndDate")
-        dd
-          input(type='text' name='' v-bind:value="$moment(searchOptions.datetime.end).format('HH')" readonly v-on:click.stop="pickerSelectEndHour")
-          |  시
-        dd
-          input(type='text' name='' v-bind:value="$moment(searchOptions.datetime.end).format('mm')" readonly v-on:click.stop="pickerSelectEndMinute")
-          |  분
-      a.select_done(v-on:click.stop="closeSearchModal()") 선택완료
-    .right_box.fleft
-      .date_select(v-if="['startHour', 'startMinute', 'endMinute', 'endHour'].includes(picker.selected)")
-        ul.num
-          li
-            a(v-on:click.stop="pickerDownNumber") 이전
-          li {{picker.number}}
-          li
-            a(v-on:click.stop="pickerUpNumber") 다음
-        ul.keypad.clearfix
-          li(v-on:click.stop="pickerSelectButton(1)") 1
-          li(v-on:click.stop="pickerSelectButton(2)") 2
-          li(v-on:click.stop="pickerSelectButton(3)") 3
-          li(v-on:click.stop="pickerSelectButton(4)") 4
-          li(v-on:click.stop="pickerSelectButton(5)") 5
-          li(v-on:click.stop="pickerSelectButton(6)") 6
-          li(v-on:click.stop="pickerSelectButton(7)") 7
-          li(v-on:click.stop="pickerSelectButton(8)") 8
-          li(v-on:click.stop="pickerSelectButton(9)") 9
-          li.refresh(v-on:click.stop="pickerSelectButton('r')") 초기화
-          li(v-on:click.stop="pickerSelectButton(0)") 0
-          li.del(v-on:click.stop="pickerSelectButton('d')") 삭제
-      .date_select(v-if="['startDate', 'enddate'].includes(picker.selected)")
-        ul.month
-          li
-            a(v-on:click.stop="pickerPrevMonth") 이전
-          li {{calendarYear}}년 {{calendarMonth}}월
-          li
-            a(v-on:click.stop="pickerNextMonth") 다음
-        ul.weekdays
-          li 월
-          li 화
-          li 수
-          li 목
-          li 금
-          li 토
-          li 일
-        ul.days
-          li(v-for="date in calendarFirstDayOfMonth")
-          li(v-for="date in calendarDaysInMonth" v-bind:class="{'active': date == initialDate && calendarMonth == initialMonth && calendarYear == initialYear}" v-on:click.stop="pickerSelectDate(calendarYear, calendarMonth, date)") {{date}}
-
-  .dimBg(v-if="currentSearchModal || itemModal.currName" v-on:click.stop="closeSearchModal()")
-  h1 결제내역(건별)
-  .filter_wrap
-    a.select(v-on:click.stop="openSearchModal('type')") {{optionName('type')}}
-    a.select(v-on:click.stop="openSearchModal('date')") 날짜/시간별 조회
-    a.select(v-on:click.stop="openSearchModal('method')") {{optionName('method')}}
-    a.select(v-on:click.stop="openSearchModal('company')") {{optionName('company')}}
-    a.select(v-on:click.stop="openSearchModal('table')") 테이블선택
-    a.btn(v-on:click.stop="search()") 조회
-  .sort_wrap
-    a.sort(v-on:click.stop="openSearchModal('sort')") {{optionName('sort')}}
-    a.sort(v-on:click.stop="openSearchModal('filter')") {{optionName('filter')}}
-  #table-scroll.table_list
-    table.main-table.clone
-      colgroup
-        //- col.col1
-        col.col2
-        col.col3
-        //- col.col4
-        //- col.col5
-        col.col6
-        //- col.col7
-        //- col.col8
-        //- col.col9
-        //- col.col10
-        //- col.col11
-        //- col.col12
-        //- col.col13
-        //- col.col14
-        //- col.col15
-        //- col.col16
-        //- col.col17
-        //- col.col18
-      thead
-        tr
-          //- th.fixed-side(scope='row') No
-          th.fixed-side(scope='row') 테이블이름
-          th.fixed-side(scope='row') 상태
-          //- th.fixed-side(scope='row') 결제유형
-          //- th.fixed-side(scope='row') 주문일시
-          th.fixed-side(scope='row') 카드번호
-          //- th(scope='row') 승인번호
-          //- th(scope='row') 상품
-          //- th(scope='row') 승인일시
-          //- th(scope='row') 금액
-          //- th(scope='row') 카드사명
-          //- th(scope='row') 현금영수증 종류
-          //- th(scope='row') 증빙방법
-          //- th(scope='row') 결제방식
-          //- th(scope='row') 할부개월
-          //- th(scope='row') 부가세
-          //- th(scope='row') 매입사명
-          //- th(scope='row') 오류내용
-      tbody
-        tr(v-for="item in paymentList")
-          //- td.fixed-side {{item.id}}
-          td.fixed-side {{item.tableName}}
-          td.fixed-side
-            a.btn1(v-if="item.creditStat == 0" v-on:click.stop="openItemModal(item, 'cashOutstanding')") 현금미결제
-            a.btn2(v-else-if="item.creditStat == 1" v-on:click.stop="openItemModal(item, 'cancelCashPayment')") 현금 결제 취소
-            a.btn1(v-else-if="item.creditStat == 2" v-on:click.stop="openItemModal(item, 'cancelCreditCardPayment')") 결제 취소
-            a.btn2(v-else-if="item.creditStat == 4") 카드 취소 완료
-          //- td.fixed-side {{item.creditTypeString}}
-          //- td.fixed-side {{item.orderdateTime}}
-          td.fixed-side {{item.cardNumber}}
-          //- td {{item.paymentId}}
-          //- td {{item.creditDateTime}}
-          //- td
-          //- td {{item.amount}}
-          //- td {{item.cardNumber}}
-          //- td {{item.issuer}}
-          //- td {{item.cashbillType}}
-          //- td
-          //- td {{item.creditTypeString}}
-          //- td {{item.ApprovalMonth}}
-          //- td {{item.vat}}
-          //- td {{item.Acquirer}}
-          //- td {{item.resultText}}
-    .table-wrap
-      table.main-table
-        colgroup
-          //- col.col1
-          col.col2
-          col.col3
-          //- col.col4
-          //- col.col5
-          col.col6
-          col.col7
-          col.col8
-          //- col.col9
-          col.col10
-          col.col11
-          col.col12
-          //- col.col13
-          //- col.col14
-          //- col.col15
-          //- col.col16
-          //- col.col17
-          //- col.col18
-        thead
-          tr
-            //- th.fixed-side(scope='row') No
-            th.fixed-side(scope='row') 테이블이름
-            th.fixed-side(scope='row') 상태
-            //- th.fixed-side(scope='row') 결제유형
-            //- th.fixed-side(scope='row') 주문일시
-            th.fixed-side(scope='row') 카드번호
-            th(scope='row') 승인번호
-            th(scope='row') 승인일시
-            //- th(scope='row') 상품
-            th(scope='row') 금액
-            th(scope='row') 카드사명
-            th(scope='row') 현금영수증 종류
-            //- th(scope='row') 증빙방법
-            //- th(scope='row') 결제방식
-            //- th(scope='row') 할부개월
-            //- th(scope='row') 부가세
-            //- th(scope='row') 매입사명
-            //- th(scope='row') 오류내용
-        tbody
-          tr(v-for="item in paymentList")
-            //- td.fixed-side {{item.id}}
-            td.fixed-side {{item.tableName}}
-            td.fixed-side
-              a.btn1(v-if="item.creditStat == 0" v-on:click.stop="openItemModal(item, 'cashOutstanding')") 현금미결제
-              a.btn2(v-else-if="item.creditStat == 1" v-on:click.stop="openItemModal(item, 'cancelCashPayment')") 현금 결제 취소
-              a.btn1(v-else-if="item.creditStat == 2" v-on:click.stop="openItemModal(item, 'cancelCreditCardPayment')") 결제 취소
-            //- td.fixed-side {{item.creditTypeString}}
-            //- td.fixed-side {{item.orderdateTime}}
-            td.fixed-side {{item.cardNumber}}
-            td {{item.paymentId}}
-            td {{item.creditDateTime}}
-            //- td
-              u(v-on:click.stop="openItemModal(item, 'orderProductsDetail')") {{productsName(item)}}
-            td {{item.amount}}
-            td {{item.issuer}}
-            td {{item.cashbillType}}
-            //- td
-            //- td {{item.creditTypeString}}
-            //- td {{item.ApprovalMonth}}
-            //- td {{item.vat}}
-            //- td {{item.Acquirer}}
-            //- td {{item.resultText}}
-  .pagination
-    ul
-      li.first-child(v-if="pagination.firstPage > 1")
-        a(v-on:click="selectPage({number: pagination.firstPage-1})") 이전
-      li(v-for="page in pagination.pages")
-        a(v-bind:class="{'on': page.current}" v-on:click="selectPage(page)") {{page.number}}
-      li.last-child(v-if="pagination.lastPage != pagination.maxPage")
-        a(v-on:click="selectPage({number: pagination.lastPage+1})") 다음
+.new-payment-management-container
+  vertical-long-modal(
+    v-if="verticalModalVisible"
+    :data="searchOptions[currentSearchModal]"
+    :type="currentSearchModal"
+    :selectOption="selectOption"
+    :closeSearchModal="closeSearchModal"
+  )
+  credit-company-list-modal(
+    v-if="creditComponyModalVisible"
+    :data="searchOptions[currentSearchModal]"
+    :type="currentSearchModal"
+    :selectOption="selectOption"
+    :closeSearchModal="closeSearchModal"
+  )
+  select-table-modal(
+    v-if="selectTableModalVisible"
+    :data="searchOptions[currentSearchModal]"
+    :type="currentSearchModal"
+    :toggleTable="toggleTable"
+    :closeSearchModal="closeSearchModal"
+  )
+  select-date-modal(
+    v-if="selectDateModalVisible"
+    :data="searchOptions.datetime"
+    :selectDateModalSubmit="selectDateModalSubmit"
+    :closeSearchModal="closeSearchModal"
+  )
+  credit-cancel-modal(
+    v-if="cancelCreditCardPaymentModalVisible"
+    :item="item"
+    :closeItemModal="closeItemModal"
+    :cardCancelCommit="cardCancelCommit"
+  )
+  cash-out-standing-modal(
+    v-if="cashOutstandingModalVisibie"
+    :item="item"
+    :closeItemModal="closeItemModal"
+    :cashCommit="cashCommit"
+  )
+  cancel-cash-payment-modal(
+    v-if="cancelCashPaymentModalVisibie"
+    :item="item"
+    :closeItemModal="closeItemModal"
+    :cashCancelCommit="cashCancelCommit"
+  )
+  p.payment-management-title 결제내역(건별)
+  .payment-type-button-list
+    button.order-date-type(@click.stop="openSearchModal('type')")
+      p.select-button {{optionName('type')}}
+      icon-under-arrow
+    button.order-date(@click.stop="openSearchModal('date')")
+      p.select-button {{displayDate}}
+      icon-under-arrow
+    button.payment-type(@click.stop="openSearchModal('method')")
+      p.select-button {{optionName('method')}}
+      icon-under-arrow
+    button.payment-company(@click.stop="openSearchModal('company')")
+      p.select-button {{optionName('company')}}
+      icon-under-arrow
+    button.table-number(@click.stop="openSearchModal('table')")
+      p.select-button 테이블선택
+      icon-under-arrow
+    button.submit(@click.stop="search()") 조회
+  .sort-type-button-list
+    button.date-base(@click.stop="openSearchModal('sort')")
+      p.select-button {{getSortedType}}
+      icon-under-arrow(:black="true")
+    button.count-base(@click.stop="openSearchModal('filter')")
+      p.select-button {{searchOptions.filter.selected}}개씩
+      icon-under-arrow(:black="true")
+  .wrap-credit-information-list
+    .wrap-fixed-credit-information
+      .fixed-credit-information-list
+        .fixed-credit-information-header
+          p 테이블이름
+          p 상태
+          p 카드번호
+          p.header-payment-id 승인번호
+          p 승인일시
+          p 금액
+          p 카드사명
+          p 현금영수증 종류
+        .fixed-credit-information(v-for="(item, index) in paymentList" :key="'index-'+index+'id-'+item.id")
+          p {{item.tableName}}
+          .status
+            button.btn1(v-if="item.creditStat == 0" v-on:click.stop="openItemModal(item, 'cashOutstanding')") 현금미결제
+            button.btn2(v-else-if="item.creditStat == 1" v-on:click.stop="openItemModal(item, 'cancelCashPayment')") 현금결제취소
+            button.btn1(v-else-if="item.creditStat == 2" v-on:click.stop="openItemModal(item, 'cancelCreditCardPayment')") 결제 취소
+            button.btn2(v-else-if="item.creditStat == 4") 카드 취소 완료
+          p {{item.cardNumber}}
+          p.payment-id {{item.paymentId}}
+          p.payment-date {{item.creditDateTime}}
+          p {{item.amount}}
+          p {{item.issuer}}
+          p {{item.cashbillType}}
+  .wrap-pagination
+    button.previous-button(v-if="pagination.firstPage > 1" v-on:click="selectPage({number: pagination.firstPage-1})") &lt;
+    button.page-number(v-for="(page, index) in pagination.pages" :key="index" @click="selectPage(page)" :class="{paginationActive: page.current}") {{page.number}}
+    button.next-button(v-if="pagination.lastPage != pagination.maxPage" v-on:click="selectPage({number: pagination.lastPage+1})") &gt;
 </template>
 
 <script>
@@ -344,6 +119,10 @@ export default {
         currPage: 3,
         allPages: 10,
       },
+      // itemModal: {
+      //   currName: null,
+      //   item: null,
+      // },
       picker: {
         today: null,
         context: null,
@@ -366,7 +145,7 @@ export default {
           }
         },
         filter : {
-          name: '30개씩',
+          name: '목록 갯수',
           selected: '30',
           list: {
             '30':  {
@@ -491,9 +270,17 @@ export default {
         }
       },
       items: [],
+      selectStartDate: undefined,
+      selectEndDate: undefined,
     };
   },
   computed: {
+    selectDate() {
+      return this.selectStartDate && this.selectEndDate;
+    },
+    displayDate() {
+      return this.selectDate ? `${this.selectStartDate.format('YYYY-MM-DD')} ~ ${this.selectEndDate.format('YYYY-MM-DD')}` : '날짜/시간별 조회';
+    },
     itemModal() {
       return this.$store.state.itemModal;
     },
@@ -502,28 +289,6 @@ export default {
     },
     paymentListPage() {
       return this.$store.state.paymentListPage;
-    },
-    calendarYear() {
-      return this.picker.context.format('YYYY');
-    },
-    calendarMonth() {
-      return this.picker.context.format('MM');
-    },
-    calendarDaysInMonth() {
-      return this.picker.context.daysInMonth();
-    },
-    calendarFirstDayOfMonth: function () {
-      let firstDay = this.$moment(this.picker.context).subtract((this.picker.context.get('date') - 1), 'days');
-      return firstDay.weekday();
-    },
-    initialDate() {
-      return this.picker.today.get('date');
-    },
-    initialMonth() {
-      return this.picker.today.format('MM');
-    },
-    initialYear() {
-      return this.picker.today.format('YYYY');
     },
     item() {
       return this.itemModal.item;
@@ -570,6 +335,30 @@ export default {
         maxPage,
       };
     },
+    verticalModalVisible() {
+      return this.currentSearchModal == 'type' || this.currentSearchModal == 'method' || this.currentSearchModal == 'sort' || this.currentSearchModal == 'filter';
+    },
+    creditComponyModalVisible() {
+      return this.currentSearchModal == 'company';
+    },
+    selectTableModalVisible() {
+      return this.currentSearchModal == 'table';
+    },
+    selectDateModalVisible() {
+      return this.currentSearchModal == 'date';
+    },
+    cancelCreditCardPaymentModalVisible() {
+      return this.itemModal.currName == 'cancelCreditCardPayment';
+    },
+    cashOutstandingModalVisibie() {
+      return this.itemModal.currName == 'cashOutstanding';
+    },
+    cancelCashPaymentModalVisibie() {
+      return this.itemModal.currName == 'cancelCashPayment';
+    },
+    getSortedType() {
+      return this.searchOptions.sort.list[this.searchOptions.sort.selected].name;
+    }
   },
   watch: {
   },
@@ -582,6 +371,13 @@ export default {
     this.picker.context = this.$moment();
   },
   methods: {
+    selectDateModalSubmit(date) {
+      this.selectStartDate =  date.start;
+      this.selectEndDate = date.end;
+      this.searchOptions.datetime.start = date.start;
+      this.searchOptions.datetime.end = date.end;
+      this.closeSearchModal();
+    },
     showAlert(message) {
       this.$store.commit('updateAlertModalMessage', message);
       return this.$store.commit('updateIsAlertModal', true);
@@ -609,7 +405,7 @@ export default {
         sst: 'id',
       };
 
-      await this.$store.dispatch('updatePaymentList', params);
+      await this.$store.dispatch('updateOldPaymentList', params);
     },
     productsName(order) {
       let msg = '';
@@ -626,178 +422,9 @@ export default {
 
       return msg;
     },
-    pickerSelectButton(k) {
-      let tmp = 0;
-
-      if (k=='r') {
-        tmp = this.picker.numberRefeshTemp;
-      } else if (k=='d') {
-        let number = this.picker.number;
-        let stringNumber = String(number);
-        stringNumber = stringNumber.substr(0, stringNumber.length -1);
-
-        if (stringNumber.length<1) stringNumber =0;
-
-        tmp = parseInt(stringNumber);
-      } else if (parseInt(k)) {
-        let number = this.picker.number;
-        let stringNumber = String(number);
-
-        stringNumber+=k;
-        if (stringNumber.length > 2) {
-          stringNumber = stringNumber.substr(stringNumber.length -2, stringNumber.length -1);
-
-        }
-        tmp = parseInt(stringNumber);
-      }
-
-
-      if (this.picker.selected == 'startHour' || this.picker.selected == 'endHour') {
-        if (tmp > 23) {
-          tmp = 0;
-        }
-      } else {
-        if (tmp > 59) {
-          tmp = 0;
-        }
-      }
-
-
-      this.picker.number = tmp;
-
-      if (this.picker.selected == 'startHour') {
-        this.searchOptions.datetime.start = this.$moment(this.searchOptions.datetime.start).set({ hour: tmp });
-      } else if (this.picker.selected == 'endHour') {
-        this.searchOptions.datetime.end = this.$moment(this.searchOptions.datetime.end).set({ hour: tmp });
-      } else if (this.picker.selected == 'startMinute') {
-        this.searchOptions.datetime.start = this.$moment(this.searchOptions.datetime.start).set({ minute: tmp });
-      } else if (this.picker.selected == 'endMinute') {
-        this.searchOptions.datetime.end = this.$moment(this.searchOptions.datetime.end).set({ minute: tmp });
-      }
-
-    },
-    pickerUpNumber() {
-      let tmp = this.picker.number;
-
-      tmp = parseInt(tmp);
-      tmp  += 1;
-
-      if (this.picker.selected == 'startHour' || this.picker.selected == 'endHour') {
-        if (tmp > 23) {
-          tmp = 0;
-        }
-      } else {
-        if (tmp > 59) {
-          tmp = 0;
-        }
-      }
-
-      this.picker.number = tmp;
-
-      if (this.picker.selected == 'startHour') {
-        this.searchOptions.datetime.start = this.$moment(this.searchOptions.datetime.start).set({ hour: tmp });
-      } else if (this.picker.selected == 'endHour') {
-        this.searchOptions.datetime.end = this.$moment(this.searchOptions.datetime.end).set({ hour: tmp });
-      } else if (this.picker.selected == 'startMinute') {
-        this.searchOptions.datetime.start = this.$moment(this.searchOptions.datetime.start).set({ minute: tmp });
-      } else if (this.picker.selected == 'endMinute') {
-        this.searchOptions.datetime.end = this.$moment(this.searchOptions.datetime.end).set({ minute: tmp });
-      }
-    },
-    pickerDownNumber() {
-      let tmp = this.picker.number;
-      tmp = parseInt(tmp);
-
-      tmp  -= 1;
-
-      if (this.picker.selected == 'startHour' || this.picker.selected== 'endHour') {
-        if (tmp < 0) {
-          tmp = 23;
-        }
-      } else {
-        if (tmp < 0) {
-          tmp = 59;
-        }
-      }
-
-      this.picker.number = tmp;
-
-      if (this.picker.selected == 'startHour') {
-        this.searchOptions.datetime.start = this.$moment(this.searchOptions.datetime.start).set({ hour: tmp });
-      } else if (this.picker.selected == 'endHour') {
-        this.searchOptions.datetime.end = this.$moment(this.searchOptions.datetime.end).set({ hour: tmp });
-      } else if (this.picker.selected == 'startMinute') {
-        this.searchOptions.datetime.start = this.$moment(this.searchOptions.datetime.start).set({ minute: tmp });
-      } else if (this.picker.selected == 'endMinute') {
-        this.searchOptions.datetime.end = this.$moment(this.searchOptions.datetime.end).set({ minute: tmp });
-      }
-    },
-    pickerSelectStartHour() {
-      let tmp = this.$moment(this.searchOptions.datetime.start).format('H');
-      this.picker.number = tmp;
-      this.picker.numberRefeshTemp = tmp;
-      this.picker.selected = 'startHour';
-    },
-    pickerSelectEndHour() {
-      let tmp = this.$moment(this.searchOptions.datetime.end).format('H');
-      this.picker.number = tmp;
-      this.picker.numberRefeshTemp = tmp;
-      this.picker.selected = 'endHour';
-    },
-    pickerSelectStartMinute() {
-      let tmp = this.$moment(this.searchOptions.datetime.start).format('m');
-      this.picker.number = tmp;
-      this.picker.numberRefeshTemp = tmp;
-      this.picker.selected = 'startMinute';
-    },
-    pickerSelectEndMinute() {
-      let tmp = this.$moment(this.searchOptions.datetime.end).format('m');
-      this.picker.number = tmp;
-      this.picker.numberRefeshTemp = tmp;
-      this.picker.selected = 'endMinute';
-    },
-    pickerSelectStartDate() {
-      this.picker.today = this.searchOptions.datetime.start;
-      this.picker.context = this.searchOptions.datetime.start;
-      this.picker.selected = 'startDate';
-    },
-    pickerSelectEndDate() {
-      this.picker.today = this.searchOptions.datetime.end;
-      this.picker.context = this.searchOptions.datetime.end;
-      this.picker.selected = 'enddate';
-    },
-    pickerSelectDate(year, month, date) {
-      month = parseInt(month) - 1;
-      if (this.picker.selected == 'startDate') {
-        this.searchOptions.datetime.start = this.$moment([year, month, date]);
-        this.picker.today = this.searchOptions.datetime.start;
-
-      } else if (this.picker.selected == 'enddate') {
-        this.searchOptions.datetime.end = this.$moment([year, month, date]);
-        this.picker.today = this.searchOptions.datetime.end;
-      }
-    },
     pickerSelectToday() {
       this.searchOptions.datetime.start = this.$moment({ hour:0, minute:0 });
-      this.searchOptions.datetime.end = this.$moment({ hour:24, minute:0 });
-    },
-    pickerSelectWeek() {
-      this.searchOptions.datetime.start = this.$moment({ hour:0, minute:0 }).subtract(1, 'week');
-      this.searchOptions.datetime.end = this.$moment({ hour:24, minute:0 });
-    },
-    pickerSelectMonth() {
-      this.searchOptions.datetime.start = this.$moment({ hour:0, minute:0 }).subtract(1, 'months');
-      this.searchOptions.datetime.end = this.$moment({ hour:24, minute:0 });
-    },
-    pickerSelect3Months() {
-      this.searchOptions.datetime.start = this.$moment({ hour:0, minute:0 }).subtract(3, 'months');
-      this.searchOptions.datetime.end = this.$moment({ hour:24, minute:0 });
-    },
-    pickerPrevMonth() {
-      this.picker.context = this.$moment(this.picker.context).subtract(1, 'months');
-    },
-    pickerNextMonth() {
-      this.picker.context = this.$moment(this.picker.context).add(1, 'months');
+      this.searchOptions.datetime.end = this.$moment({ hour:23, minute:59 });
     },
     async commit(item, url) {
       let data = new FormData();
@@ -1019,232 +646,135 @@ export default {
 };
 </script>
 
-<style lang="scss">
-.payment-container {
-  display:flex;
-  flex-direction:column;
-  flex-shrink:1;
-  overflow:hidden;
+<style lang="scss" scoped>
+.new-payment-management-container {
+  flex: 1;
+  background-color: #fff;
 
-  .wrap-table {
-    display:flex;
-    flex-direction:column;
-    overflow:scroll;
+  .payment-management-title {
+    font-family: "notosans";
+    font-weight: bold;
+    font-size: 1.71875vw;
+    padding: 1.5625vw !important;
+    box-sizing: border-box;
+  }
 
-    table {
-      margin:1em;
-      background-color:#fafafa;
-      color:#202020;
-      overflow:scroll;
-        width:100%;
+  .payment-type-button-list {
+    padding: 0 1.5625vw !important;
+    display: grid;
+    align-items: center;
+    grid-template-columns: 10.9375vw 18.75vw 12.1875vw 12.1875vw 12.1875vw 7.8125vw;
+    gap: 0.390625vw;
+    box-sizing: border-box;
 
-      thead {
-        font-weight:900;
+    > button {
+      font-family: 'Spoqa Han Sans Neo', 'sans-serif'; 
+      font-size: 1.25vw;
+      letter-spacing: -0.03125vw;
+      height: 3.515625vw;
+      padding: 0 1.171875vw !important;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: none;
+      border-radius: 0.390625vw;
+    }
 
-        th {
-          padding: 0.5em 1em;
-          white-space:nowrap;
-          word-break: keep-all;
+    .submit {
+      color: #fff;
+      justify-content: center;
+      background-color: #fc0000;
+    }
+  }
+
+  .sort-type-button-list {
+    display: flex;
+    align-items: center;
+    gap: 0.78125vw;
+    padding: 1.5625vw 1.5625vw 0.78125vw !important;
+
+    > button {
+      font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+      font-size: 1.25vw;
+      background-color: unset;
+      border: none;
+      display: flex;
+      align-items: center;
+      gap: 0.9375vw;
+      padding: 1.015625vw !important;
+      box-sizing: border-box;
+    }
+  }
+
+  .wrap-credit-information-list {
+    position: relative;
+    height: calc(100vh - 20.390625vw);
+    overflow-y: auto;
+    margin-left: 1.5625vw !important;
+    box-sizing: border-box;
+    display: flex;
+    border-top: solid 0.078125vw #ccc;
+
+    .wrap-fixed-credit-information {
+      flex: 1;
+
+      .fixed-credit-information-list {
+        border-right: solid 0.078125vw #ccc;
+
+        .fixed-credit-information-header {
+          display: grid;
+          grid-template-columns: 10.25vw 11.71875vw 10.9375vw 9.375vw 12.8125vw 7.8125vw 9.375vw 9.375vw;
+          align-items: center;
+          border-bottom: solid 0.078125vw #ccc;
+
+          > p {
+            height: 4.375vw;
+            font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+            font-size: 1.09375vw;
+            color: #666;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          }
         }
-      }
-      tbody {
-        td {
-          padding: 0.5em 1em;
-          white-space:nowrap;
-          word-break: keep-all;
+        .fixed-credit-information {
+          display: grid;
+          grid-template-columns: 10.25vw 11.71875vw 10.9375vw 9.375vw 12.8125vw 7.8125vw 9.375vw 9.375vw;
+          align-items: center;
 
-          .button {
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            background-color:#202020;
-            color:#fafafa;
-            border-radius:1em;
-            padding: 0.5em 1em;
+          > p {
+            min-height: 4.375vw;
+            font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+            font-size: 1.09375vw;
+            color: #666;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            word-break: break-all;
+            word-wrap: normal;
+          }
+
+          .status {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
+
+            > button {
+              font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+              font-size: 1.25vw;
+              letter-spacing: -0.03125vw;
+              color: #fc0000;
+              width: 100%;
+              height: 2.8125vw;
+              background-color: #fff;
+              border: solid 0.078125vw #fc0000;
+              border-radius: 0.390625vw;
+            }
           }
         }
       }
-    }
-  }
-
-  .default-modal {
-    position:fixed;
-    top:0;
-    bottom:0;
-    left:0;
-    right:0;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    z-index:0;
-
-    .default-modal-background {
-      display:flex;
-      background-color:rgba(0,0,0,0.5);
-      position:fixed;
-      left:0;
-      top:0;
-      right:0;
-      bottom:0;
-      z-index:1;
-    }
-
-    .default-modal-content {
-      background-color:#fafafa;
-      color:#202020;
-      padding:1em;
-      z-index:2;
-
-      .title {
-        display:flex;
-        position:relative;
-        flex-direction:row;
-        border-bottom:solid 1px #cacaca;
-        padding-bottom:0.5em;
-
-        .button-close {
-          display:flex;
-          position:absolute;
-          right:0;
-          top:0;
-        }
-      }
-      .message {
-        display:flex;
-        flex-direction:column;
-        padding:0.5em 0;
-
-        p {
-          margin:0.5em 0;
-        }
-      }
-      .button-group {
-        display:flex;
-        flex-direction:row;
-        justify-content:space-between;
-
-        .button {
-          display:flex;
-          flex-grow:1;
-          height:3em;
-          padding:0 2em;
-          margin-right:1em;
-          align-items:center;
-          justify-content:center;
-          background-color:#202020;
-          color:#fafafa;
-        }
-        .button:last-child {
-          margin-right:0;
-        }
-      }
-    }
-  }
-  .search-modal {
-    position:fixed;
-    top:0;
-    bottom:0;
-    left:0;
-    right:0;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    .search-modal-background {
-      display:flex;
-      background-color:rgba(0,0,0,0.5);
-      position:fixed;
-      left:0;
-      top:0;
-      right:0;
-      bottom:0;
-      z-index:1;
-    }
-
-    .search-modal-content {
-      display:flex;
-      flex-direction:column;
-      z-index:2;
-      background-color:#202020;
-      border-radius:1.2em;
-      border:solid 2px #848484;
-      padding:1em;
-
-      .title {
-        color:#eaeaea;
-      }
-
-      .button-group {
-        display:flex;
-        flex-direction:column;
-        .button {
-          border-radius:0.4em;
-          background-color:#fafafa;
-          color:#202020;
-          padding:1em 2em;
-          margin-top:1em;
-          align-items:center;
-          justify-content:center;
-          text-align:center;
-          font-size:1em;
-        }
-      }
-      .button-group.company {
-        flex-direction:row;
-        flex-wrap:wrap;
-
-        .button {
-          margin:0.5em;
-        }
-      }
-    }
-    .table-group {
-      display:flex;
-      flex-wrap:wrap;
-
-      .table {
-        display:flex;
-        align-items:center;
-        justify-contents:center;
-        background-color:#eaeaea;
-        color:#202020;
-        padding:0.5em 1em;
-        margin:0.5em;
-      }
-    }
-  }
-  .search-control {
-    display:flex;
-    margin:1em;
-
-    .button {
-      background-color:#fafafa;
-      color:#202020;
-      padding:0.5em 1em;
-      margin-right:1em;
-    }
-    .button:last-child {
-      margin-right:0;
-    }
-    .button.button-submit {
-      background-color:#ff0000;
-      color:#fafafa;
-    }
-  }
-  .wrap-pagination {
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    color:#fafafa;
-
-    .page {
-      font-size:1em;
-      margin:0 1em;
-      font-weight:100;
-    }
-    .page.current {
-      font-weight:900;
-      font-size:20px;
     }
   }
 }

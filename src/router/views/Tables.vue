@@ -1,14 +1,12 @@
 <template lang="pug">
-#tables
-  ul.table-list
-    li.table-item(v-for="table in tables" :key="table.Ta_id" )
-      .table-number(@click="openTableOrders(table)" :class="'empty-table'") {{getTableName(table)}}
+  .tables-page-container
+    p.tables-page-title 테이블 주문 (테스트)
+    .order-table-list
+      button.order-table-name(v-for="table in tables" :key="table.Ta_id" @click="openTableOrders(table)") 
+        p {{getTableName(table)}}
         p {{table.ordering ? '주문중' : ''}}
-  .footer
-    .button(
-      v-if="getAllRefreshDataVisible()"
-      @click="onAllRefresh"
-    ) 테이블 전체 새로고침 (테스트)
+    .wrap-all-table-reset-button
+      button.all-table-reset-button 테이블 전체 새로고침
 </template>
 
 <script>
@@ -154,111 +152,68 @@ export default {
 };
 </script>
 
-<style lang="scss">
-@import "../../scss/global.scss";
-#tables {
-  display:flex;
-  flex-direction:column;
-  width:100%;
+<style lang="scss" scoped>
+.tables-page-container {
+  flex: 1;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 0 1.5625vw !important;
+  font-size: 1.71875vw;
+  background-color: #fff;
+  box-sizing: border-box;
+  overflow: auto;
 
-  .footer {
-    display:flex;
-    padding: 12px;
+  .tables-page-title {
+    font-family: "notosans";
+    font-weight: bold;
+    font-size: 1.71875vw;
+    padding: 2.5vh 0 !important;
+    box-sizing: border-box;
+  }
+
+  .order-table-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 10.9375vw);
     align-items: center;
-    justify-content: center;
-    border-top: solid 2px #484848;
+    gap: 0.78125vw;
 
-    .button {
-      display:flex;
-      align-items: center;
+    .order-table-name {
+      min-height: 4.6875vw;
+      display: flex;
+      flex-direction: column;
       justify-content: center;
-      margin:0px;
-      padding: 20px;
-      height:40px;
-      background-color:#fafafa;
-      color:#000000;
-      border-radius:100px;
-      font-weight:900;
-      font-size: 32px;
-    }
-    .button.button-dark {
-      background-color:#484848;
-      color:#ffffff;
+      align-items: center;
+      background-color: #e5e5e5;
+      border: none;
+      border-radius: 1.015625vw;
+      font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+      font-size: 1.5625vw;
+      color: #666;
+      letter-spacing: -0.0390625vw;
+      text-align: center;
     }
   }
-  .table-list {
-    display:flex;
-    flex-wrap:wrap;
-    margin:0;
-    padding:0 12px;
-    overflow:scroll;
-    flex-grow:1;
-    -webkit-overflow-scrolling: touch;
 
-    .table-item {
-      display:flex;
-      flex-direction:column;
-      align-items: center;
-      justify-content: flex-start;
-      flex-grow:1;
-      margin:0;
-      padding:8px 4px;
+  .wrap-all-table-reset-button {
+    flex: 1;
+    padding: 1.5625vw 0 !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
 
-      .table-number {
-        @include table-number;
-        position:relative;
-      }
-      .table-number.empty-table {
-        background-color:#484848!important;
-      }
-      .table-number.disconnected {
-        background-color:#484848!important;
-      }
-      .table-number.preparing {
-        background-color:#ff8400!important;
-      }
-      .wrap-info {
-        .price-amt {
-          font-weight:900;
-          font-size:20px;
-        }
-      }
-      .wrap-clients {
-        display:flex;
-        z-index:10;
-        padding-top:8px;
-
-        .client-count {
-          display:flex;
-          align-items: center;
-          justify-content: center;
-          color:#ffffff;
-          border-radius:100px;
-          font-size:28px;
-          font-weight:900;
-          border-radius:4px;
-          width:1.2em;
-          height:1.4em;
-        }
-
-        .client {
-          display:flex;
-          align-items: center;
-          justify-content: center;
-          background-color:#fafafa;
-          color:#ff0000;
-          font-size:28px;
-          font-weight:900;
-          border-radius:4px;
-          width:1.2em;
-          height:1.4em;
-          box-shadow: 0 0 4px 0 #000000;
-          margin: 0 -1px;
-        }
-        .client.preparing {
-          color:#000000;
-        }
-      }
+    .all-table-reset-button {
+      width: 37.5vw;
+      height: 4.53125vw;
+      font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+      font-weight: bold;
+      font-size: 2.03125vw;
+      color: #fff;
+      letter-spacing: -0.05078125vw;
+      background-color: #fc0000;
+      border: none;
+      border-radius: 1.015625vw;
     }
   }
 }

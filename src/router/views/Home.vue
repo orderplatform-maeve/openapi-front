@@ -9,26 +9,38 @@
     :data="allRefreshList"
   )
   flash-message
-  left-menu
-  router-view(
-    :auth="auth"
-    :orders="orders"
-    :stores="stores"
-    :time="time"
+  modal-confirm(
+    :show="confirmModal.show"
+    :close="confirmModal.close"
+    :title="confirmModal.title"
+    :message="confirmModal.message"
+    :confirm="confirmModal.confirm"
   )
+  .left_wrap.new.left_wrap
+    router-view(
+      :auth="auth"
+      :orders="orders"
+      :stores="stores"
+      :time="time"
+    )
+  right-menu
 </template>
 
 <script>
 import axios from 'axios';
+
 import store from '@store/store';
 import paths from '@router/paths';
 import { version } from '@utils/constants';
 import { Torder } from '@svg';
 import { AlertModal } from '@components';
+
 import { payments } from '@apis';
+
 const {
   requestCardCancelCommit,
 } = payments;
+
 export default {
   components: {
     Torder,
@@ -136,6 +148,7 @@ export default {
     } catch(e) {
       // console.log(e);
     }
+
     this.$store.commit('updateMACAddr', MACAddr);
   },
   created() {
@@ -147,7 +160,6 @@ export default {
     this.catchOffline();
     this.catchOnline();
     this.getUCode();
-    this.loopBeep();
     if (process.env.UPLOAD_TYPE !== 'tmp') {
       this.tagetVersionRedirect();
     }
@@ -194,10 +206,13 @@ export default {
         try {
           const msg = event?.data;
           const methodName = msg?.methodName;
+
           if (methodName === 'callBackPayment') {
             // console.log(event);
+
             if (msg?.result) {
               const vanData = JSON.parse(msg.result);
+
               // acquirer: "삼성카드사"
               // acquirerCode: "04"
               // amount: "000000002000"
@@ -222,53 +237,71 @@ export default {
               // storeCode: "TEST_TPAY_003"
               // tableNo: "TEST_TPAY_003_TEST"
               // vat: "000000000000"
+
               if (vanData?.responseCode === "0000") {
                 // 결제 취소 페이지 고고링
                 console.log('결제 취소 완료', vanData);
+
                 const requestCreditItem = this.$store?.state?.requestCreditItem;
+
                 if (!requestCreditItem?.key) {
                   return this.showAlert(`key 값이 없습니다 아닙니다. 에러메세지: ${requestCreditItem?.key}`);
                 }
+
                 if (!requestCreditItem?.id) {
                   return this.showAlert(`id 값이 없습니다 아닙니다. 에러메세지: ${requestCreditItem?.id}`);
                 }
+
                 if (!requestCreditItem?.creditStat) {
                   return this.showAlert(`stat 값이 없습니다 아닙니다. 에러메세지: ${requestCreditItem?.creditStat}`);
                 }
+
                 if (!requestCreditItem?.creditType) {
                   return this.showAlert(`type 값이 없습니다 아닙니다. 에러메세지: ${requestCreditItem?.creditType}`);
                 }
+
                 if (!requestCreditItem?.storeCode) {
                   return this.showAlert(`storeCode 값이 없습니다 아닙니다. 에러메세지: ${requestCreditItem?.storeCode}`);
                 }
+
                 if (!requestCreditItem?.tabletnumber) {
                   return this.showAlert(`tabletnumber 값이 없습니다 아닙니다. 에러메세지: ${requestCreditItem?.tabletnumber}`);
                 }
+
                 if (!requestCreditItem?.tableName) {
                   return this.showAlert(`tableName 값이 없습니다 아닙니다. 에러메세지: ${requestCreditItem?.tableName}`);
                 }
+
                 if (!requestCreditItem?.orderkey) {
                   return this.showAlert(`orderkey 값이 없습니다 아닙니다. 에러메세지: ${requestCreditItem?.orderkey}`);
                 }
+
                 const res = await requestCardCancelCommit(vanData);
+
                 if (res.status === 200) {
                   const newItem = res?.data?.rowData;
+
                   if (!res.data) {
                     return this.showAlert(`API cardCancelCommit 응답값 data이 없습니다 아닙니다. 응답값: ${newItem}`);
                   }
+
                   if (res?.data?.length === 0) {
                     return this.showAlert(`API cardCancelCommit 응답값 data크기가 0입니다. 아닙니다. 응답값: ${res.data}`);
                   }
+
                   if (!newItem) {
                     return this.showAlert(`API cardCancelCommit 응답값 rowData이 없습니다 아닙니다. 응답값: ${newItem}`);
                   }
+
                   // newItem {id: ''}
+
                   this.$store.commit('replacePaymentListItem', newItem);
                   return this.$store.commit('updateItemModal', {
                     currName: null,
                     index: null,
                   });
                 }
+
                 return this.showAlert(`잘못된 response status 200이 아닙니다. status: ${res?.status}`);
               } else {
                 return this.showAlert(`잘못된 responseCode 0000이 아닙니다. 에러메세지: ${vanData?.errorMessage}`);
@@ -277,6 +310,7 @@ export default {
               return this.showAlert(`잘못된 callBackPayment message 형태입니다. 출력값: ${msg?.result}`);
             }
           }
+
         } catch (error) {
           return this.showAlert(`${event?.data?.methodName} 잘못된 message 형태입니다. 에러: ${error.message}`);
         }
@@ -310,6 +344,7 @@ export default {
           visible: true,
           message: '인터넷이 연결 되지 않았습니다. 인터넷 연결 확인 후 새로고침 해주세요.',
         };
+
         this.$store.commit('setSignBoardStatus', payload);
       });
     },
@@ -320,6 +355,7 @@ export default {
           visible: false,
           message: '',
         };
+
         this.$store.commit('setSignBoardStatus', payload);
       });
     },
@@ -339,6 +375,7 @@ export default {
             MACAddr: this.$store.state.MACAddr,
             ordering: false,
           };
+
           this.$socket.emit('orderview', payload);
         }
       // event.returnValue = 'Write something';
@@ -348,6 +385,7 @@ export default {
       try {
         const params = { shop_code: this.$store.state.auth.store.store_code };
         const tables = await this.$store.dispatch('setTables', params);
+
         tables.forEach((table) => {
           this.$socket.emit('event', {
             store: {
@@ -359,6 +397,7 @@ export default {
             type: 'getSuspendSale',
           });
         });
+
       } catch (error) {
         // console.log(error);
       }
@@ -370,6 +409,7 @@ export default {
           params.append('store_code', this.$store.state.auth.store.store_code);
           const res = await this.$store.dispatch('setStoreInit', params);
           // // console.log('tagetVersionRedirect', res);
+
           const nextUrl = res.data.data.T_order_store_orderView_version;
           if (nextUrl) {
             const {
@@ -377,8 +417,10 @@ export default {
               hostname,
               pathname,
             } = location;
+
             const nowPath = `${protocol}//${hostname}${pathname}#/`;
             // console.log('location', nowPath, nextUrl);
+
             if (!process.env.STOP_REDIRECT) {
               if (nowPath !== nextUrl) {
                 return location.replace(nextUrl);
@@ -393,91 +435,110 @@ export default {
     },
     visibleSideMenu() {
       const targetPath = this.$router.history.current.path;
+
       const isLoginPath = targetPath === '/login';
       const isStorePath = targetPath === '/store';
+
       const isFalse = isLoginPath || isStorePath;
+
       if (isFalse) return false;
+
       return true;
     },
     logout() {
       this.$store.dispatch('logout');
+
       localStorage.removeItem('auth');
       this.$router.replace(paths.login);
-    },
-    restart() {
-      // location.href = '/'; // cache 파일을 먼저 로드한다.
-      location.replace('/'); // cache 파일을 로드하지 않는다.
     },
     openTabletScreen() {
       if (!this.$store.state.device.serviceStatus) {
         return this.$store.commit('pushFlashMessage', '이미 태블릿 열기 상태로 되어있습니다.');
       }
+
       const confirmModal = {};
+
       confirmModal.show = true;
       confirmModal.close = this.closeConfirmModal;
       confirmModal.title = '태블릿 열기';
       confirmModal.message = '모든 태블릿의 화면을 열어요';
       confirmModal.confirm = this.reqOpenTablet;
+
       this.$store.commit('showConfirmModal', confirmModal);
     },
     closeTabletScreen() {
       if (this.$store.state.device.serviceStatus) {
         return this.$store.commit('pushFlashMessage', '이미 태블릿 닫기 상태로 되어있습니다.');
       }
+
       const confirmModal = {};
+
       confirmModal.show = true;
       confirmModal.close = this.closeConfirmModal;
       confirmModal.title = '태블릿 닫기';
       confirmModal.message = '모든 태블릿의 화면을 닫아요';
       confirmModal.confirm = this.reqCloseTablet;
+
       this.$store.commit('showConfirmModal', confirmModal);
     },
     agreeOrder() {
       if (!this.$store.state.device.orderStatus) {
         return this.$store.commit('pushFlashMessage', '이미 주문 받기 상태로 되어있습니다.');
       }
+
       const confirmModal = {};
+
       confirmModal.show = true;
       confirmModal.close = this.closeConfirmModal;
       confirmModal.title = '주문 받기';
       confirmModal.message = '태블릿에서 주문을 받아요';
       confirmModal.confirm = this.reqAgreeOrder;
+
       this.$store.commit('showConfirmModal', confirmModal);
     },
     rejectOrder() {
       if (this.$store.state.device.orderStatus) {
         return this.$store.commit('pushFlashMessage', '이미 주문 중단 상태로 되어있습니다.');
       }
+
       const confirmModal = {};
+
       confirmModal.show = true;
       confirmModal.close = this.closeConfirmModal;
       confirmModal.title = '주문 중단';
       confirmModal.message = '태블릿을 메뉴판으로만 사용하고 주문은 안돼요';
       confirmModal.confirm = this.reqRejectOrder;
+
       this.$store.commit('showConfirmModal', confirmModal);
     },
     showRecentOrder() {
       if (!this.$store.state.device.recentOrderStatus) {
         return this.$store.commit('pushFlashMessage', '이미 주문 내역 표시 상태로 되어있습니다.');
       }
+
       const confirmModal = {};
+
       confirmModal.show = true;
       confirmModal.close = this.closeConfirmModal;
       confirmModal.title = '주문 내역 표시';
       confirmModal.message = '태블릿에서 주문 내역이 나타납니다';
       confirmModal.confirm = this.reqShowOrder;
+
       this.$store.commit('showConfirmModal', confirmModal);
     },
     hideRecentOrder() {
       if (this.$store.state.device.recentOrderStatus) {
         return this.$store.commit('pushFlashMessage', '이미 주문 내역 숨김 상태로 되어있습니다.');
       }
+
       const confirmModal = {};
+
       confirmModal.show = true;
       confirmModal.close = this.closeConfirmModal;
       confirmModal.title = '주문 내역 숨김';
       confirmModal.message = '태블릿에서 주문 내역이 숨겨집니다';
       confirmModal.confirm = this.reqHideOrder;
+
       this.$store.commit('showConfirmModal', confirmModal);
     },
     closeConfirmModal() {
@@ -486,28 +547,36 @@ export default {
     async reqOpenTablet() {
       const fd = new FormData();
       fd.append('store_code', this.auth.store.store_code);
+
       const response = await this.$store.dispatch('setOpenTablet', fd);
+
       if (response) {
         const value = 0;
         const { disconnected } = this.emitServiceStatus(value);
+
         if (disconnected) {
           this.$store.commit('setDeviceServiceStatus', value);
           this.$store.commit('pushFlashMessage', '태블릿 화면 열기 상태로 변경 되었습니다.');
         }
+
         this.closeConfirmModal();
       }
     },
     async reqCloseTablet() {
       const fd = new FormData();
       fd.append('store_code', this.auth.store.store_code);
+
       const response = await this.$store.dispatch('setCloseTablet', fd);
+
       if (response) {
         const value = 1;
         const { disconnected } = this.emitServiceStatus(value);
+
         if (disconnected) {
           this.$store.commit('setDeviceServiceStatus', value);
           this.$store.commit('pushFlashMessage', '태블릿 화면 닫기 상태로 변경 되었습니다.');
         }
+
         this.closeConfirmModal();
       }
     },
@@ -515,13 +584,16 @@ export default {
       const fd = new FormData();
       fd.append('store_code', this.auth.store.store_code);
       const response = await this.$store.dispatch('setAgreeOrder', fd);
+
       if (response) {
         const value = 0;
         const { disconnected } = this.emitAgreeOrder(value);
+
         if (disconnected) {
           this.$store.commit('setDeviceOrderStatus', value);
           this.$store.commit('pushFlashMessage', '태블릿 주문 받기 상태로 변경 되었습니다.');
         }
+
         this.closeConfirmModal();
       }
     },
@@ -529,13 +601,16 @@ export default {
       const fd = new FormData();
       fd.append('store_code', this.auth.store.store_code);
       const response = await this.$store.dispatch('setRejectOrder', fd);
+
       if (response) {
         const value = 1;
         const { disconnected } = this.emitAgreeOrder(value);
+
         if (disconnected) {
           this.$store.commit('setDeviceOrderStatus', value);
           this.$store.commit('pushFlashMessage', '태블릿 주문 중단 상태로 변경 되었습니다.');
         }
+
         this.closeConfirmModal();
       }
     },
@@ -543,13 +618,16 @@ export default {
       const fd = new FormData();
       fd.append('store_code', this.auth.store.store_code);
       const response = await this.$store.dispatch('setShowRecentOrder', fd);
+
       if (response) {
         const value = 0;
         const { disconnected } = this.emitRecentOrder(value);
+
         if (disconnected) {
           this.$store.commit('setDeviceRecentOrderStatus', value);
           this.$store.commit('pushFlashMessage', '태블릿 주문 내역 표시 상태로 변경 되었습니다.');
         }
+
         this.closeConfirmModal();
       }
     },
@@ -557,13 +635,16 @@ export default {
       const fd = new FormData();
       fd.append('store_code', this.auth.store.store_code);
       const response = await this.$store.dispatch('setCloseRecentOrder', fd);
+
       if (response) {
         const value = 1;
         const { disconnected } = this.emitRecentOrder(value);
+
         if (disconnected) {
           this.$store.commit('setDeviceRecentOrderStatus', value);
           this.$store.commit('pushFlashMessage', '태블릿 주문 내역 숨김 상태로 변경 되었습니다.');
         }
+
         this.closeConfirmModal();
       }
     },
@@ -604,6 +685,7 @@ export default {
       const time = Date.now();
       const ISONow = new Date(time).toISOString();
       const datetime = this.$moment(ISONow).format();
+
       let deviceUsage = {};
       try {
         if (window.UUID) {
@@ -612,6 +694,7 @@ export default {
       } catch(e) {
         //// console.log(e);
       }
+
       const data = {
         type: 'beep',
         uCode: this.$store.state.uCode,
@@ -625,6 +708,7 @@ export default {
         path: this.$route.path,
         datetime: datetime,
       };
+
       this.$socket.emit('event', data, () => {
         // // console.log('event', answer.msg);
       });
@@ -632,8 +716,10 @@ export default {
     getAuthentication() {
       try {
         const params = { store_code: this.auth.store.store_code };
+
         const auth = JSON.parse(localStorage.auth);
         console.log('getAuthentication', auth);
+
         this.$socket.emit('reqStoreInfo', params);
         this.$store.commit('SET_AUTH', auth);
       } catch (error) {
@@ -643,6 +729,7 @@ export default {
     getUCode() {
       // get uCode from localStorage
       let uCode = localStorage.getItem('uCode');
+
       // create uCode if no code
       if (!uCode) {
         uCode = '';
@@ -660,9 +747,11 @@ export default {
       this.beep();
       setInterval(() => {
         this.time.now = parseInt(Date.now());
+
         const timestemp = parseInt(Date.now() / 1000);
         const lap = timestemp % 30;
         const term = lap < 1;
+
         if (term) {
           // console.log('term', new Date());
           this.beep();
@@ -673,20 +762,271 @@ export default {
       this.$store.commit('CLOSE_ALL_REFRESH_MODAL');
       this.$store.commit('SET_ALL_REFRESH_LIST', []);
     },
-    getNowDate() {
-      if (!this.time.now) {
-        return '';
-      }
-      const now = new Date(this.time.now);
-      const ISONow = now.toISOString();
-      return this.$moment(ISONow).format('MM.DD HH:mm:ss');
-    },
   },
 };
 </script>
+
 <style lang="scss">
 @import "../../scss/common.css";
 @import "../../scss/style.scss";
 @import "../../scss/global.scss";
+#orderview-old {
+  display:flex;
+  flex-direction:column;
+  width: 100vw;
+  height: 100vh;
+  position:relative;
+  background-color:#000000;
+  font-family: 'NanumSquare', sans-serif;
+}
+#orderview-old > .top {
+  display: flex;
+  flex-direction: row;
+  .alert {
+    background-color: #ff0000;
+    font-size: 28px;
+    padding: 12px;
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+  }
+}
+#orderview-old > .body {
+  display:flex;
+  flex-grow:1;
+  overflow:scroll;
 
+  .right {
+    width:120px;
+    flex-shrink:0;
+    flex-direction:column;
+    display:flex;
+    padding:12px;
+    overflow:auto;
+    background-color:#121212;
+
+    hr {
+      border-color:#606060;
+    }
+
+    .name {
+      font-size:12px;
+      text-align: center;
+      margin-bottom: 4px;
+    }
+
+    .button {
+      display:flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 8px;
+      margin-bottom: 4px;
+      height: 40px;
+      width: 100%;
+      border-radius: 100px;
+      background-color: #ffffff;
+      color: #000000;
+      font-weight: 900;
+      text-decoration: none;
+      text-align: center;
+    }
+    .button.active {
+      background-color:#484848;
+      color:#eaeaea;
+    }
+    .button-member {
+      flex-direction:column;
+    }
+    .button-red {
+      background-color:#ff0000;
+      color:#ffffff;
+    }
+    .top {
+      display:flex;
+      flex-direction:column;
+      align-items: center;
+      justify-content: flex-start;
+      flex-grow:1;
+      .logo {
+        height:40px;
+        margin-bottom:12px;
+        max-width:160px;
+      }
+      .button{
+        margin-top:0!important;
+        margin-bottom:12px;
+      }
+      .store_name {
+        margin-bottom:12px;
+        font-size:12px;
+        font-weight:900;
+        word-break:keep-all;
+        text-align:center;
+      }
+      .datetime {
+        margin-bottom:12px;
+        display:flex;
+        flex-direction:column;
+        align-items: center;
+        justify-content: center;
+        width:100%;
+        height:40px;
+        border-radius:100px;
+        background-color:#484848;
+        font-weight:400;
+
+        .price {
+          font-size:12px;
+          font-weight:900;
+        }
+      }
+    }
+    .bottom{
+      justify-content: flex-end;
+
+      .buttons {
+        display:flex;
+      }
+    }
+    .version {
+      text-align: center;
+    }
+
+    @include tab-group;
+
+    .tab-group {
+      flex-direction:column;
+      margin-top:0px;
+      flex-grow:0;
+      .tab-name {
+        display:flex;
+        height:40px;
+        padding:0 24px;
+        font-size:12px;
+        font-weight:900;
+        border-radius:200px;
+        background-color:#121212;
+        color:#ffffff;
+        align-items: center;
+        justify-content: center;
+        text-decoration:none;
+      }
+    }
+    > .button {
+      display:flex;
+      margin-top:40px;
+      height:40px;
+      padding:0 24px;
+      font-size:16px;
+      font-weight:900;
+      border-radius:200px;
+      background-color:#eaeaea;
+      color:#000000;
+      align-items: center;
+      justify-content: center;
+      text-decoration:none;
+      box-shadow: 0px 0px 12px -4px #000000;
+    }
+
+  }
+  .left {
+    flex-grow:1;
+    display:flex;
+    overflow:auto;
+    .container {
+      display:flex;
+      flex-direction:column;
+      padding:12px;
+      flex-grow:1;
+
+      > * {
+        display:flex;
+      }
+      > .top {
+
+        display:flex;
+        align-items: center;
+        justify-content: center;
+        border-bottom:solid 1px #ffffff;
+        padding-bottom:12px;
+        .title {
+          display:flex;
+          align-items: center;
+          justify-content: center;
+          font-size:24px;
+          font-weight:900;
+        }
+      }
+      > .bottom {
+        margin-top:24px;
+
+        .button {
+          display:flex;
+          margin:0;
+          flex-grow:1;
+          align-items: center;
+          justify-content: center;
+          height:60px;
+          background-color:#ff0000;
+          color:#ffffff;
+          border-radius:100px;
+          font-size:20px;
+          font-weight:900;
+        }
+      }
+    }
+  }
+}
+#orderview-old {
+  > .foot-left {
+    display:flex;
+    position:absolute;
+    bottom:0;
+    left:0;
+  }
+  > .foot-right {
+    display:flex;
+    position:fixed;
+    bottom:0;
+    right: 4px;
+    .version-footer {
+      font-size: 8px;
+    }
+  }
+  > .foot {
+    .button {
+      display:flex;
+      margin: 12px 6px;
+      height:40px;
+      padding:0 24px;
+      font-size:16px;
+      font-weight:900;
+      border-radius:200px;
+      background-color:#eaeaea;
+      color:#000000;
+      align-items: center;
+      justify-content: center;
+      text-decoration:none;
+      box-shadow: 0px 0px 12px -4px #000000;
+    }
+  }
+}
+
+@keyframes mdHead {
+  0% {
+    transform: translateY(-100vh);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.signboard-enter-active {
+  animation: mdHead .5s;
+}
+
+.signboard-leave-active {
+  animation: mdHead .5s reverse;
+}
 </style>

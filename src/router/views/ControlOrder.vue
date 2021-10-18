@@ -1,9 +1,10 @@
 <template lang="pug">
-#tables
-  ul.table-list
-    li.table-item(v-for="table in tables" :key="table.Ta_id" )
-      .table-number(@click="openTableOrders(table)" :class="getTableNumberClass(table.orderStatus)") {{getTableName(table)}}
-      p {{table.orderStatus ? '주문 가능' : '주문 막음'}}
+  .control-order-page-container
+    p.control-order-page-title 테이블 주류 주문 관리 (테스트)
+    .order-table-list
+      button(v-for="table in tables" :key="table.Ta_id" @click="openTableOrders(table)" :class="orderStatus('order-table-name', !table.orderStatus)") 
+        p {{getTableName(table)}}
+        p.order-status {{table.orderStatus ? '주문 가능' : '주문 막음'}}
 </template>
 
 <script>
@@ -17,6 +18,12 @@ export default {
     this.initialized();
   },
   methods: {
+    orderStatus(defaultClass, status) {
+      return {
+        [defaultClass]: true,
+        notOrder: status
+      };
+    },
     async initialized() {
       if (this.$store.state.tables.length === 0) {
         try {
@@ -69,46 +76,65 @@ export default {
 };
 </script>
 
-<style lang="scss">
-@import "../../scss/global.scss";
-#tables {
-  display:flex;
-  flex-direction:column;
-  width:100%;
+<style lang="scss" scoped>
+.control-order-page-container {
+  flex: 1;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 0 1.5625vw !important;
+  font-size: 1.71875vw;
+  background-color: #fff;
+  box-sizing: border-box;
+  overflow: auto;
 
-  .table-list {
-    display:flex;
-    flex-wrap:wrap;
-    margin:0;
-    padding:0 12px;
-    overflow:scroll;
-    flex-grow:1;
-    -webkit-overflow-scrolling: touch;
+  .control-order-page-title {
+    font-family: "notosans";
+    font-weight: bold;
+    font-size: 1.71875vw;
+    padding: 2.5vh 0 !important;
+    box-sizing: border-box;
+  }
 
-    .table-item {
-      display:flex;
-      flex-direction:column;
+  .order-table-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 10.9375vw);
+    align-items: center;
+    gap: 0.78125vw;
+
+    .order-table-name {
+      min-height: 4.6875vw;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
       align-items: center;
-      justify-content: flex-start;
-      flex-grow:1;
-      margin: 0;
-      padding:8px 4px;
+      background-color: #e5e5e5;
+      border: none;
+      border-radius: 1.015625vw;
+      font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+      font-size: 1.5625vw;
+      color: #666;
+      letter-spacing: -0.0390625vw;
+      text-align: center;
 
-      .table-number {
-        @include table-number;
-        position:relative;
+      > p {
+        word-break: break-all;
       }
-      .table-number.empty-table {
-        background-color:#484848!important;
+
+      .order-status {
+        color: #999;
+        font-size: 1.2vw; 
       }
-      .table-number.connect {
-        background-color:#006a4a!important;
-      }
-      .table-number.disconnected {
-        background-color:#B53737!important;
-      }
-      .table-number.preparing {
-        background-color:#ff8400!important;
+    }
+
+    .notOrder {
+      background-color: #000;
+      color: #fff;
+      font-weight: bold;
+
+      .order-status {
+        color: #fff;
+        font-weight: lighter;
       }
     }
   }

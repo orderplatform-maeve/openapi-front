@@ -183,6 +183,20 @@ export default {
         this.openTabletScreen();
       }
     },
+    toggleOrder() {
+      if (!this.statusOrder) {
+        this.agreeOrder();
+      } else {
+        this.rejectOrder();
+      }
+    },
+    toggleRecentOrder() {
+      if (!this.statusRecentOrder) {
+        this.showRecentOrder();
+      } else {
+        this.hideRecentOrder();
+      }
+    },
   },
   mounted() {
     this.loopBeep();

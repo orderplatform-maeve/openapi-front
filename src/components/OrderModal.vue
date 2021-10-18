@@ -291,7 +291,8 @@ export default {
       width: 44.0625vw;
 
       .current-order-history-text {
-        font-family: "notosans-bold";
+        font-family: "notosans";
+        font-weight: bold;
         font-size: 1.25vw;
         letter-spacing: -0.0625vw;
       }

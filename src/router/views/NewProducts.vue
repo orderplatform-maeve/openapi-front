@@ -8,32 +8,46 @@
       @click="() => onSelectMainCtg(ctgItem)"
       :class="getActiveMainCategory(ctgItem.code)"
     ) {{ ctgItem.name }}
-  .sub-categories
-    .sub-category(
-      v-for="subCtgItem in getSubCategories()"
-      :key="subCtgItem.code"
-      :name="subCtgItem.code"
-      @click="() => onSelectSubCtg(subCtgItem)"
-      :class="getActiveSubCategory(subCtgItem.code)"
-    ) {{ subCtgItem.name }}
-
-  .loading(v-if="isLoading") 데이터 요청 중 입니다.
-  .scroll(@scroll="handleScroll" ref="scroll" v-if="!isLoading")
-    .new-products(v-for="mainCtg in data" :key="mainCtg.code" :id="mainCtg.code" :ref="mainCtg.code")
-      .new-product-goods-list(v-for="subCtg in mainCtg.subCategories" :id="subCtg.code" :ref="subCtg.code")
-        .new-product-goods(
-          v-for="good in subCtg.goods"
-          :key="good.code"
+  .background-white
+    .sub-categories
+      .sub-category(
+        v-for="subCtgItem in getSubCategories()"
+        :key="subCtgItem.code"
+        :name="subCtgItem.code"
+        @click="() => onSelectSubCtg(subCtgItem)"
+        :class="getActiveSubCategory(subCtgItem.code)"
+      ) {{ subCtgItem.name }}
+    .loading(v-if="isLoading") 데이터 요청 중 입니다.
+    .product-list
+      .scroll(@scroll="handleScroll" ref="scroll" v-if="!isLoading")
+        .new-products(
+          v-for="mainCtg in data"
+          :key="mainCtg.code"
+          :id="mainCtg.code"
+          :ref="mainCtg.code"
         )
-          p.new-product-good-name {{ good.displayName }}
-          .good-buttons
-            .button(@click="() => onNoUse(good)" :class="getButtonStatusStyle(good.noUse)") {{ getUseStatusText(good.noUse) }}
-            .button(@click="() => onSoldoutStatus(good)" :class="getButtonStatusStyle(good.soldout)") {{ getSoldoutStatusText(good.soldout) }}
-            .button(@click="() => onBestStatus(good)" :class="getButtonStatusStyle(good.best)") {{ getBestStatusText(good.best) }}
-            .button(@click="() => onHitStatus(good)" :class="getButtonStatusStyle(good.hit)") {{ getHitStatusText(good.hit) }}
-            .button(@click="() => onMdStatus(good)" :class="getButtonStatusStyle(good.md)") {{ getMdStatusText(good.md) }}
-            .button(@click="() => onSaleStatus(good)" :class="getButtonStatusStyle(good.sale)") {{ getSaleStatusText(good.sale) }}
-            .button(@click="() => onNewStatus(good)" :class="getButtonStatusStyle(good.new)") {{ getNewStatusText(good.new) }}
+          .new-product-goods-list(
+            v-for="subCtg in mainCtg.subCategories"
+            :id="subCtg.code"
+            :ref="subCtg.code"
+          ) 
+            p.wrap-category-name
+              span.main-cateogry-name {{mainCtg.name}}
+              span.bar |
+              span.sub-category-name {{subCtg.name}}
+            .new-product-goods(
+              v-for="good in subCtg.goods"
+              :key="good.code"
+            )
+              p.new-product-good-name {{ good.displayName }}
+              .good-buttons
+                .button(@click="() => onNoUse(good)" :class="getButtonStatusStyle(good.noUse)") {{ getUseStatusText(good.noUse) }}
+                .button(@click="() => onSoldoutStatus(good)" :class="getButtonStatusStyle(good.soldout)") {{ getSoldoutStatusText(good.soldout) }}
+                .button(@click="() => onBestStatus(good)" :class="getButtonStatusStyle(good.best)") {{ getBestStatusText(good.best) }}
+                .button(@click="() => onHitStatus(good)" :class="getButtonStatusStyle(good.hit)") {{ getHitStatusText(good.hit) }}
+                .button(@click="() => onMdStatus(good)" :class="getButtonStatusStyle(good.md)") {{ getMdStatusText(good.md) }}
+                .button(@click="() => onSaleStatus(good)" :class="getButtonStatusStyle(good.sale)") {{ getSaleStatusText(good.sale) }}
+                .button(@click="() => onNewStatus(good)" :class="getButtonStatusStyle(good.new)") {{ getNewStatusText(good.new) }}
 </template>
 
 <script>
@@ -713,120 +727,171 @@ a {
 }
 
 .new-products-container {
+  flex: 1;
+  font-family: 'Spoqa Han Sans Neo', 'sans-serif';
   color:#ffffff;
-  padding: 0.390625vw 1.5625vw !important;
+  padding: 0.390625vw 0 0 !important;
   box-sizing: border-box;
   overflow: auto;
 
   .new-products-title {
-    font-family: "notosans-bold";
+    font-family: "notosans";
+    font-weight: bold;
     font-size: 1.71875vw;
-    padding: 1.171875vw 0 !important;
+    padding: 1.5625vw 0 1.5625vw !important;
     color: #fff;
-    border-bottom: solid 0.078125vw #464656;
   }
 
   .main-categories {
-    margin-top: 1.171875vw !important;
-    font-size: 1.40625vw;
     display: flex;
+    align-items: center;
     gap: 0.78125vw;
+    max-width: 84.53125vw;
     overflow: auto;
-
+    
     .main-category {
-      min-width: 10.625vw;
-      padding: 0.625vw !important;
+      font-size: 1.5625vw;
+      color: #ddd;
+      letter-spacing: -0.0390625vw;
+      background-color: #404144;
+      padding: 1.328125vw 1.5625vw !important;
       box-sizing: border-box;
+      border-top-left-radius: 1.015625vw;
+      border-top-right-radius: 1.015625vw;
+      white-space:nowrap;
       word-break: keep-all;
-      text-align: center;
-      border-radius: 1.640625vw;
-    }
-  }
-
-  .sub-categories {
-    margin-top: 1.171875vw !important;
-    display: flex;
-    border-bottom: solid 1px #464656;
-
-    .sub-category {
-      padding: 1.171875vw 1.796875vw !important;
-      box-sizing: border-box;
-      word-break: keep-all;
-      font-family: "notosans";
-      font-size: 1.40625vw;
-      color: #fff;
-      text-align: center;
     }
 
     .active {
-      background-color: unset;
-      color: #fc0000;
-      border-bottom: solid 5px #fc0000;
+      color: #000;
+      font-weight: bold;
+      background-color: #fff;
     }
   }
-  
-  .loading {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-grow: 1;
-    font-size: 40px;
-    font-weight: 900;
-  }
 
-  .scroll {
-    max-height: calc(100vh - 15.390625vw);
-    overflow: auto;
-    .new-products {
-      .new-product-goods-list {
-        display: flex;
-        flex-direction: column;
-        gap: 0.390625vw;
-        margin-bottom:  0.390625vw !important;
+  .background-white {
+    margin-top: -0.078125vw !important;
+    background-color: #fff;
 
-        .new-product-goods {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          gap: 0.78125vw;
-          padding: 1.5625vw !important;
-          box-sizing: border-box;
-          background-color: #26262d;
+    .sub-categories {
+      display: flex;
+      align-items: center;
+      gap: 0.78125vw;
+      width: 84.53125vw;
+      padding: 1.5625vw 0 1.5625vw 1.5625vw !important;
+      box-sizing: border-box;
+      overflow: scroll;
 
-          .new-product-good-name {
-            flex: 1;
-            font-family: "notosans-bold";
-            font-size: 1.71875vw;
-            letter-spacing: -0.02578125vw;
-          }
+      .sub-category {
+        font-size: 1.406250vw;
+        letter-spacing: -0.03515625vw;
+        color: #666;
+        background-color: #e5e5e5;
+        padding: 0.9375vw 2.34375vw !important;
+        border: none;
+        border-radius: 1.015625vw;
+        white-space:nowrap;
+        word-break: keep-all;
+        box-sizing: border-box;
+      }
 
-          .good-buttons {
-            display: flex;
-            gap: 0.78125vw;
-
-            .button {
-              font-family: "notosans";
-              font-size: 1.25vw;
-              color: #000;
-              background-color: #fff;
-              padding: 0.546875vw 0.78125vw !important;
-              box-sizing: border-box;
-              border-radius: 0.390625vw;
-            }
-
-            .buttonActive {
-              background-color: #fc0000;
-              color: #fff;
-            }
-          }
-        }
+      .active {
+        color: #fff;
+        font-weight: bold;
+        background-color: #000;
       }
     }
 
-    .new-products:last-child {
-      padding-bottom: 18vw !important;
+    .product-list {
+      position: relative;
+      max-height: calc(100vh - 18.125vw);
+      display: flex;
+      gap: 1.5625vw;
+      padding: 0 0.78125vw 0.78125vw !important;
+      box-sizing: border-box;
+
+      .scroll {
+        flex: 1;
+        overflow: auto;
+        padding-left: 1.5625vw !important;
+        box-sizing: border-box;
+
+        .new-products {
+          .new-product-goods-list {
+            margin-top: 2.34375vw !important;
+
+            .wrap-category-name {
+              display: flex;
+              align-items: center;
+              gap: 1.5625vw;
+
+              .main-cateogry-name {
+                font-size: 1.875vw;
+                color: #fc0000;
+                font-weight: bold;
+                letter-spacing: -0.09375vw;
+              }
+
+              .bar {
+                font-size: 1.875vw;
+                color: #999;
+              }
+
+              .sub-category-name {
+                font-size: 1.875vw;
+                letter-spacing: -0.09375vw;
+                color: #000;
+              }
+            }
+            .new-product-goods {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              padding: 1.5234375vw 0 !important;
+              border-bottom: solid 0.078125vw #ccc;
+
+              .new-product-good-name {
+                flex: 1;
+                font-size: 1.71875vw;
+                color: #000;
+                font-weight: bold;
+                word-break: break-all;
+              }
+              .good-buttons {
+                display: flex;
+                align-items: center;
+                gap: 0.390625vw;
+
+                .button {
+                  width: 7.8125vw;
+                  height: 2.8125vw;
+                  font-size: 1.25vw;
+                  letter-spacing: -0.0625vw;
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                  color: #000;
+                  border: solid 0.078125vw #000;
+                  border-radius: 0.390625vw;
+                  box-sizing: border-box;
+                }
+
+                .buttonActive {
+                  color: #fc0000;
+                  border: solid 0.15625vw #fc0000;
+                  background-color: #ffefef;
+                }
+              }
+            }
+          }
+        }
+
+        .new-products:first-child {
+          margin-top: -2.34375vw !important;
+        }
+      }
     }
   }
-
 }
+
 </style>
