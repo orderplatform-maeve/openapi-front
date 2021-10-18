@@ -1,20 +1,43 @@
 <template lang="pug">
-.container
-  .card(
-    v-for="ctgItem in data"
-    :key="ctgItem.code"
-  )
-    .header {{ ctgItem.name }} (메인 카테고리)
-      .toggles
-        .btn(@click="() => open(ctgItem.code, ctgItem.useCategory)" :style="getAbleButtonColor(ctgItem.useCategory)") 표시
-        .btn(@click="() => close(ctgItem.code, !ctgItem.useCategory)" :style="getAbleButtonColor(!ctgItem.useCategory)") 숨김
-    .sub-category(
-      v-for="subCtgItem in ctgItem.subCategories"
-      :key="subCtgItem.code"
-    ) {{ subCtgItem.name }} (서브 카테고리)
-      .toggles
-        .btn(@click="() => open(subCtgItem.code, subCtgItem.useCategory)" :style="getAbleButtonColor(subCtgItem.useCategory)") 표시
-        .btn(@click="() => close(subCtgItem.code, !subCtgItem.useCategory)" :style="getAbleButtonColor(!subCtgItem.useCategory)") 숨김
+.update-categories-container
+  p.update-categories-title 분류관리 (테스트)
+  .main-categories
+    .main-category(
+      v-for="(ctgItem, index) in data"
+      :key="ctgItem.code"
+      @click="() => onSelectMainCtg(ctgItem, index)"
+      :class="getActiveMainCategory(ctgItem.code)"
+      :id="`mainCategoryId-${index}`"
+    ) {{ ctgItem.name }}
+  .background-white
+    .wrap-main-category-status
+      p.main-category-status-title 메뉴 노출여부
+      .main-category-status-button
+        button.main-category-status-visible(
+          @click="() => open(data[selectMainCategoryNumber].code, getUseCategory())"
+          :style="getAbleButtonColor(getUseCategory())"
+        ) 표시
+        button.main-category-status-unvisible(
+          @click="() => close(data[selectMainCategoryNumber].code, !getUseCategory())"
+          :style="getAbleButtonColor(!getUseCategory())"
+        ) 숨김
+    .wrap-sub-category-status(v-if="getSubCategoryStatus")
+      p.sub-category-status-title 서브 메뉴 노출여부
+      .wrap-sub-category-status-button
+        .sub-category-status(
+          v-for="(subCtgItem, subIndex) in subCategoryItem"
+          :key="subCtgItem.code"
+        )
+          p.sub-category-name {{subCtgItem.name}}
+          .sub-category-status-button
+            button.sub-category-status-visible(
+              @click="() => open(subCtgItem.code, subCtgItem.useCategory)"
+              :style="getAbleButtonColor(subCtgItem.useCategory)"
+            ) 표시
+            button.sub-category-status-unvisible(
+              @click="() => close(subCtgItem.code, !subCtgItem.useCategory)"
+              :style="getAbleButtonColor(!subCtgItem.useCategory)"
+            ) 숨김
 </template>
 
 <script>
@@ -22,22 +45,70 @@ export default {
   data() {
     return {
       selectMainCategoryItem: null,
+      selectMainCategoryNumber: 0,
+      selectSubCategoryItem: null,
     };
   },
   computed: {
     data() {
-      const { getAllCategories } = this.$store.getters;
-      return getAllCategories;
+      return this.$store.getters.getAllCategories;
     },
+    subCategoryItem() {
+      return this.data[this.selectMainCategoryNumber]?.subCategories ? this.data[this.selectMainCategoryNumber].subCategories : [];
+    },
+    getSubCategoryStatus() {
+      return this.subCategoryItem.length > 0;
+    }
   },
   async mounted() {
     await this.initialize();
   },
   methods: {
+    select(id) {
+      const wrap = document.querySelector(".main-categories");
+      const windowWidth = document.documentElement.clientWidth / 2;
+      const windowHeight = document.documentElement.clientHeight / 2;
+      const target = document.getElementById(id);
+      if(target) {
+        // document.querySelector(".wrap-category").scrollBy(150, 0);
+        if(!this.$store.getters.verticalTheme) {
+          if(windowWidth - target.getBoundingClientRect().left < 0) {
+            wrap.scrollBy({
+              left: -(windowWidth - (target.offsetWidth / 2) - target.getBoundingClientRect().left),
+              top: 0,
+              behavior: 'smooth',
+            });
+          } else if(wrap.getBoundingClientRect().left - target.getBoundingClientRect().left > 0){
+            wrap.scrollBy({
+              left: -(windowWidth - (target.offsetWidth / 2) - target.getBoundingClientRect().left),
+              top: 0,
+              behavior: 'smooth',
+            });
+          }
+        } else {
+          if(windowHeight - target.getBoundingClientRect().top < 0) {
+            wrap.scrollBy({
+              top: -(windowHeight - (target.offsetHeight / 2) - target.getBoundingClientRect().top),
+              left: 0,
+              behavior: 'smooth',
+            });
+          } else if(wrap.getBoundingClientRect().top - target.getBoundingClientRect().top > 0){
+            wrap.scrollBy({
+              top: -(wrap.getBoundingClientRect().top - target.getBoundingClientRect().top),
+              left: 0,
+              behavior: 'smooth',
+            });
+          }
+        }
+      }
+    },
     async initialize() {
       const fd = new FormData();
       fd.append('store_code', this.$store.state.auth.store.store_code);
       await this.$store.dispatch('setAllCategories', fd);
+    },
+    getUseCategory() {
+      return this.data[this.selectMainCategoryNumber]?.useCategory;
     },
     getSubCategories() {
       try {
@@ -46,6 +117,33 @@ export default {
         return data[0].subCategories;
       } catch (error) {
         return [];
+      }
+    },
+    onSelectMainCtg(item, index) {
+      this.selectMainCategoryItem = item;
+      this.selectMainCategoryNumber = index;
+      this.selectSubCategoryItem = item.subCategories[0];
+      this.select(`mainCategoryId-${index}`);
+    },
+    getActiveMainCategory(targetCode) {
+      try {
+        const { data, selectMainCategoryItem } = this;
+
+        if (!selectMainCategoryItem) {
+          const isDefaultActive = targetCode === data[0].code;
+          if (isDefaultActive) {
+            return 'active';
+          }
+          return '';
+        }
+
+        const isSelectedActive = selectMainCategoryItem.code === targetCode;
+        if (isSelectedActive) return 'active';
+
+        return '';
+      } catch (error) {
+        console.error(error);
+        return '';
       }
     },
     async open(code, useCategory) {
@@ -123,100 +221,167 @@ export default {
       }
 
       return {
-        backgroundColor: 'white',
-        color: 'black',
+        backgroundColor: '#e5e5e5',
+        color: '#666',
       };
     },
     apiException(status) {
       if (status !== 200) {
         return this.$store.commit('pushFlashMessage', '네트워크 상태가 불완전 합니다. 잠시후 시도 해주세요.');
       }
-    }
+    },
   },
 };
 </script>
 
-<style lang="scss">
-.container{
+<style lang="scss" scoped>
+a {
+  text-decoration: none;
+}
+
+.update-categories-container {
   flex: 1;
-  --c-1: #ffffff;
-  --c-2: #202020;
-  --c-3: #ff0000;
-  --c-7: #e0e0e0;
-  --c-8: #fafafa;
-  --c-9: #efefef;
-  --c-10: #000000;
-  overflow-y: auto;
-  margin: 0 10px !important;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+  font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+  color:#ffffff;
+  padding: 0.390625vw 0 0 !important;
+  box-sizing: border-box;
+  overflow: hidden;
 
-  .card {
-    flex-grow: 1;
-    flex-shrink: 0;
-    margin-top: 16px;
+  .update-categories-title {
+    font-family: "notosans";
+    font-weight: bold;
+    font-size: 1.71875vw;
+    padding: 1.5625vw 0 1.5625vw !important;
+    color: #fff;
+  }
+
+  .main-categories {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
     align-items: center;
-    background-color: var(--c-9);
-    border-radius: 8px;
-    color: var(--c-2);
-    padding: 16px;
-    height: auto;
+    gap: 0.78125vw;
+    max-width: 84.53125vw;
+    overflow: auto;
+    
+    .main-category {
+      font-size: 1.5625vw;
+      color: #ddd;
+      letter-spacing: -0.0390625vw;
+      background-color: #404144;
+      padding: 1.328125vw 1.5625vw !important;
+      box-sizing: border-box;
+      border-top-left-radius: 1.015625vw;
+      border-top-right-radius: 1.015625vw;
+      white-space:nowrap;
+      word-break: keep-all;
+    }
 
-    .header {
-      flex-grow: 1;
-      height: 50px;
-      display: flex;
-      font-weight: 900;
-      font-size: 32px;
-      justify-content: space-between;
-      width: 100%;
-      align-items: center;
-      border-bottom: .8px solid var(--c-2);
-      padding-bottom: 8px;
+    .active {
+      color: #000;
+      font-weight: bold;
+      background-color: #fff;
+    }
+  }
 
-      .toggles {
-        width: 220px;
+  .background-white {
+    height: calc(100vh - 10.546875vw);
+    background-color: #fff;
+    box-sizing: border-box;
+    overflow: auto;
+
+    .wrap-main-category-status {
+      padding: 2.34375vw !important;
+      box-sizing: border-box;
+
+      .main-category-status-title {
+        color: #000;
+        font-size: 1.5625vw;
+        letter-spacing: -0.078125vw;
+      }
+
+      .main-category-status-button {
+        margin-top: 1.5625vw !important;
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        gap: 0.781250vw; 
+
+        > button {
+          width: 15.625vw;
+          height: 4.6875vw;
+          font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+          font-size: 1.875vw;
+          font-weight: bold;
+          letter-spacing: -0.046875vw;
+          border-radius: 1.015625vw;
+          border: none;
+          background-color: #e5e5e5;
+          color: #666;
+        }
       }
     }
 
-    .sub-category {
-      height: 110px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-around;
-      margin: 4px;
-      font-weight: 900;
-      font-size: 24px;
-      align-items: center;
-      padding: 20px;
-      flex-grow: 1;
+    .wrap-sub-category-status {
+      padding: 2.34375vw !important;
+      box-sizing: border-box;
 
-      .toggles {
-        width: 220px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
+      .sub-category-status-title {
+        color: #000;
+        font-size: 1.5625vw;
+        letter-spacing: -0.078125vw;
+      }
+
+      .wrap-sub-category-status-button {
+        margin-top: 1.5625vw !important;
+        font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+        color: #000;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, 19.375vw);
+        gap: 0.78125vw;
+
+        .sub-category-status {
+          min-height: 11.71875vw;
+          background-color: #f5f5f5;
+          border: solid 0.078125vw #d6d6d6;
+          border-radius: 0.78125vw;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+
+          .sub-category-name {
+            flex: 1;
+            font-size: 1.5625vw;
+            font-weight: bold;
+            letter-spacing: -0.078125vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1.171875vw !important;
+            box-sizing: border-box;
+            word-break: break-all;
+          }
+
+          .sub-category-status-button {
+            width: 100%;
+            display: flex;
+            gap: 0.78125vw;
+            padding: 1.2890625vw 1.171875vw !important;
+            box-sizing: border-box;
+
+            > button {
+              flex: 1;
+              height: 3.125vw;
+              font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+              font-size: 1.40625vw;
+              color: #666;
+              border: none;
+              border-radius: 0.390625vw;
+              background-color: #e5e5e5;
+            }
+          }
+        }
       }
     }
   }
 }
-.btn {
-  width: 100px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 4px 16px;
-  font-weight: 900;
-  margin-top: 8px;
-  color: var(--c-9);
-  background-color: var(--c-2);
-}
+
 </style>
