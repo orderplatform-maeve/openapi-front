@@ -270,7 +270,7 @@ export default {
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    padding-bottom: 3.7vh !important;
+    padding-bottom: 3vh !important;
 
     .wrap-alarm-time {
       width: 100%;
