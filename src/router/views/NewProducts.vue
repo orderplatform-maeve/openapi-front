@@ -1,5 +1,6 @@
 <template lang="pug">
-.container-new
+.new-products-container
+  p.new-products-title 상품관리(신)(테스트)
   .main-categories
     .main-category(
       v-for="ctgItem in data"
@@ -7,37 +8,46 @@
       @click="() => onSelectMainCtg(ctgItem)"
       :class="getActiveMainCategory(ctgItem.code)"
     ) {{ ctgItem.name }}
-  .sub-categories
-    .sub-category(
-      v-for="subCtgItem in getSubCategories()"
-      :key="subCtgItem.code"
-      :name="subCtgItem.code"
-      @click="() => onSelectSubCtg(subCtgItem)"
-      :class="getActiveSubCategory(subCtgItem.code)"
-    ) {{ subCtgItem.name }}
-
-  .loading(v-if="isLoading") 데이터 요청 중 입니다.
-  .scroll(@scroll="handleScroll" ref="scroll" v-if="!isLoading")
-    .products(v-for="mainCtg in data" :key="mainCtg.code" :id="mainCtg.code" :ref="mainCtg.code")
-      .goods(v-for="subCtg in mainCtg.subCategories" :id="subCtg.code" :ref="subCtg.code")
-        .category-info
-          .main-category-text {{ mainCtg.name }}
-          .sub-category-text {{ subCtg.name }}
-        .good(
-          v-for="good in subCtg.goods"
-          :key="good.code"
+  .background-white
+    .sub-categories
+      .sub-category(
+        v-for="subCtgItem in getSubCategories()"
+        :key="subCtgItem.code"
+        :name="subCtgItem.code"
+        @click="() => onSelectSubCtg(subCtgItem)"
+        :class="getActiveSubCategory(subCtgItem.code)"
+      ) {{ subCtgItem.name }}
+    .loading(v-if="isLoading") 데이터 요청 중 입니다.
+    .product-list
+      .scroll(@scroll="handleScroll" ref="scroll" v-if="!isLoading")
+        .new-products(
+          v-for="mainCtg in data"
+          :key="mainCtg.code"
+          :id="mainCtg.code"
+          :ref="mainCtg.code"
         )
-          .good-image(:style="getGoodImage(good.image)")
-          .good-info
-            .name {{ good.displayName }}
-            .good-buttons
-              .button(@click="() => onNoUse(good)" :style="getButtonStatusStyle(good.noUse)") {{ getUseStatusText(good.noUse) }}
-              .button(@click="() => onSoldoutStatus(good)" :style="getButtonStatusStyle(good.soldout)") {{ getSoldoutStatusText(good.soldout) }}
-              .button(@click="() => onBestStatus(good)" :style="getButtonStatusStyle(good.best)") {{ getBestStatusText(good.best) }}
-              .button(@click="() => onHitStatus(good)" :style="getButtonStatusStyle(good.hit)") {{ getHitStatusText(good.hit) }}
-              .button(@click="() => onMdStatus(good)" :style="getButtonStatusStyle(good.md)") {{ getMdStatusText(good.md) }}
-              .button(@click="() => onSaleStatus(good)" :style="getButtonStatusStyle(good.sale)") {{ getSaleStatusText(good.sale) }}
-              .button(@click="() => onNewStatus(good)" :style="getButtonStatusStyle(good.new)") {{ getNewStatusText(good.new) }}
+          .new-product-goods-list(
+            v-for="subCtg in mainCtg.subCategories"
+            :id="subCtg.code"
+            :ref="subCtg.code"
+          ) 
+            p.wrap-category-name
+              span.main-cateogry-name {{mainCtg.name}}
+              span.bar |
+              span.sub-category-name {{subCtg.name}}
+            .new-product-goods(
+              v-for="good in subCtg.goods"
+              :key="good.code"
+            )
+              p.new-product-good-name {{ good.displayName }}
+              .good-buttons
+                .button(@click="() => onNoUse(good)" :class="getButtonStatusStyle(good.noUse)") {{ getUseStatusText(good.noUse) }}
+                .button(@click="() => onSoldoutStatus(good)" :class="getButtonStatusStyle(good.soldout)") {{ getSoldoutStatusText(good.soldout) }}
+                .button(@click="() => onBestStatus(good)" :class="getButtonStatusStyle(good.best)") {{ getBestStatusText(good.best) }}
+                .button(@click="() => onHitStatus(good)" :class="getButtonStatusStyle(good.hit)") {{ getHitStatusText(good.hit) }}
+                .button(@click="() => onMdStatus(good)" :class="getButtonStatusStyle(good.md)") {{ getMdStatusText(good.md) }}
+                .button(@click="() => onSaleStatus(good)" :class="getButtonStatusStyle(good.sale)") {{ getSaleStatusText(good.sale) }}
+                .button(@click="() => onNewStatus(good)" :class="getButtonStatusStyle(good.new)") {{ getNewStatusText(good.new) }}
 </template>
 
 <script>
@@ -162,10 +172,10 @@ export default {
     getNewStatusText(isVisivle) {
       return isVisivle ? '신제품 취소' : '신제품 적용';
     },
-    getButtonStatusStyle(visble) {
-      return {
-        backgroundColor: `var(${visble ? '--c-3' : '--c-2'})`,
-      };
+    getButtonStatusStyle(visible) {
+      if (visible) {
+        return 'buttonActive';
+      }
     },
     onNoUse(good) {
       const { noUse } = good;
@@ -324,7 +334,31 @@ export default {
         }, 0);
       }
     },
+    unVisibleScroll() {
+      const mainCategories = document.querySelector('.main-categories');
+      const clientWidth = mainCategories.clientWidth;
+      
+      const target = document.querySelector('.active');
+      const targetLeft = target?.getBoundingClientRect().left;
+
+      if(targetLeft) {
+        if(clientWidth - targetLeft < 0) {
+          mainCategories.scrollBy({
+            left: clientWidth,
+            top: 0,
+            behavior: 'smooth',
+          });
+        } else if(targetLeft < 0){
+          mainCategories.scrollBy({
+            left: -clientWidth,
+            top: 0,
+            behavior: 'smooth',
+          });
+        }
+      }
+    },
     handleScroll(e) {
+      this.unVisibleScroll();
       const products = e.target.children;
       let elBottom = 0;
       let subElBottom = 0;
@@ -351,7 +385,6 @@ export default {
             const findSubItem = this.getSubCategories().find((o) => o.code === element.id);
             this.selectSubCategoryItem = findSubItem;
           }
-
         });
       });
     },
@@ -689,179 +722,176 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.container-new {
+a {
+  text-decoration: none;
+}
+
+.new-products-container {
+  flex: 1;
+  font-family: 'Spoqa Han Sans Neo', 'sans-serif';
   color:#ffffff;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-  -ms-flex-direction: column;
-  flex-direction: column;
-  padding: 12px;
-  -webkit-box-flex: 1;
-  -ms-flex-positive: 1;
-  flex-grow: 1;
-  a {
-    text-decoration: none;
-    color: var(--c-1);
+  padding: 0.390625vw 0 0 !important;
+  box-sizing: border-box;
+  overflow: auto;
+
+  .new-products-title {
+    font-family: "notosans";
+    font-weight: bold;
+    font-size: 1.71875vw;
+    padding: 1.5625vw 0 1.5625vw !important;
+    color: #fff;
   }
 
-  --c-1: #ffffff;
-  --c-2: #202020;
-  --c-3: #ff0000;
-  --c-7: #e0e0e0;
-  --c-8: #fafafa;
-  --c-9: #efefef;
-  --c-10: #000000;
-
-  overflow: auto;
   .main-categories {
     display: flex;
-    justify-content: space-between;
-    flex-shrink: 0;
-    .main-category {
-      display: flex;
-      flex-grow: 1;
-      justify-content: center;
-      font-weight: 900;
-      font-size: 32px;
-      height: 60px;
-      align-items: center;
-      padding: 0 20px;
-    }
-    .active {
-      color: var(--c-3);
-    }
-  }
-  .sub-categories {
-    display: flex;
-    justify-content: space-between;
-    flex-shrink: 0;
-    .sub-category {
-      display: flex;
-      flex-grow: 1;
-      justify-content: center;
-      margin: 4px;
-      height: 44px;
-      font-weight: 900;
-      font-size: 16px;
-      align-items: center;
-      padding: 0 20px;
-    }
-    .active {
-      color: var(--c-3);
-      border-radius: 24px;
-      border: solid 2px var(--c-3);
-    }
-  }
-
-  .scroll {
+    align-items: center;
+    gap: 0.78125vw;
+    max-width: 84.53125vw;
     overflow: auto;
-    flex-direction: column;
-    .products {
-      flex-direction: column;
-      .goods {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: flex-start;
-        flex-shrink: 0;
-        .category-info {
-          width: calc(33.3333% - 16px);
-          height: 76vh;
-          display: flex;
-          margin: 8px;
-          color: var(--c-3);
-          flex-direction: column;
-          font-size: 4vh;
-          font-weight: 100;
-          position: relative;
-          text-align: center;
-          justify-content: center;
+    
+    .main-category {
+      font-size: 1.5625vw;
+      color: #ddd;
+      letter-spacing: -0.0390625vw;
+      background-color: #404144;
+      padding: 1.328125vw 1.5625vw !important;
+      box-sizing: border-box;
+      border-top-left-radius: 1.015625vw;
+      border-top-right-radius: 1.015625vw;
+      white-space:nowrap;
+      word-break: keep-all;
+    }
 
-          .sub-category-text {
-            font-size: 8vh;
-            text-align: right;
-            margin-top: 4vh !important;
-            padding-top: 4vh !important;
-            white-space: nowrap;
-          }
-          .sub-category-text::after {
-            content: "";
-            position: absolute;
-            top: 50%;
-            right: -100px;
-            height: 2px;
-            width: calc(50% + 100px);
-            background-color: var(--c-3);
-          }
-        }
-        .good {
-          z-index: 2;
-          width: calc(33.3333% - 16px);
-          height: 76vh;
-          background-color: var(--c-9);
-          display: flex;
-          margin: 8px !important;
-          color: var(--c-2);
-          flex-direction: column;
-          border-radius: 4px;
-          box-shadow: 0 0 8px -4px var(--c-7);
-          .good-image {
-            flex-grow: 1;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            border-top-left-radius: 4px;
-            border-top-right-radius: 4px;
-          }
-          .good-info {
-            display: flex;
-            flex-direction: column;
-            padding: 12px;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            font-size: 24px;
-            font-weight: 900;
-            word-break: normal;
-            .name {
-              text-align: center;
-              font-size: 24px;
-              font-weight: 900;
-              word-break: normal;
-            }
-            .button {
-              height: 40px;
+    .active {
+      color: #000;
+      font-weight: bold;
+      background-color: #fff;
+    }
+  }
+
+  .background-white {
+    margin-top: -0.078125vw !important;
+    background-color: #fff;
+
+    .sub-categories {
+      display: flex;
+      align-items: center;
+      gap: 0.78125vw;
+      width: 84.53125vw;
+      padding: 1.5625vw 0 1.5625vw 1.5625vw !important;
+      box-sizing: border-box;
+      overflow: scroll;
+
+      .sub-category {
+        font-size: 1.406250vw;
+        letter-spacing: -0.03515625vw;
+        color: #666;
+        background-color: #e5e5e5;
+        padding: 0.9375vw 2.34375vw !important;
+        border: none;
+        border-radius: 1.015625vw;
+        white-space:nowrap;
+        word-break: keep-all;
+        box-sizing: border-box;
+      }
+
+      .active {
+        color: #fff;
+        font-weight: bold;
+        background-color: #000;
+      }
+    }
+
+    .product-list {
+      position: relative;
+      max-height: calc(100vh - 18.125vw);
+      display: flex;
+      gap: 1.5625vw;
+      padding: 0 0.78125vw 0.78125vw !important;
+      box-sizing: border-box;
+
+      .scroll {
+        flex: 1;
+        overflow: auto;
+        padding-left: 1.5625vw !important;
+        box-sizing: border-box;
+
+        .new-products {
+          .new-product-goods-list {
+            margin-top: 2.34375vw !important;
+
+            .wrap-category-name {
               display: flex;
               align-items: center;
-              justify-content: center;
-              padding: 4px 16px !important;
-              font-weight: 900;
-              margin-top: 8px !important;
-              color: var(--c-9);
-              background-color: var(--c-2);
-              border-radius: 20px;
+              gap: 1.5625vw;
+
+              .main-cateogry-name {
+                font-size: 1.875vw;
+                color: #fc0000;
+                font-weight: bold;
+                letter-spacing: -0.09375vw;
+              }
+
+              .bar {
+                font-size: 1.875vw;
+                color: #999;
+              }
+
+              .sub-category-name {
+                font-size: 1.875vw;
+                letter-spacing: -0.09375vw;
+                color: #000;
+              }
+            }
+            .new-product-goods {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              padding: 1.5234375vw 0 !important;
+              border-bottom: solid 0.078125vw #ccc;
+
+              .new-product-good-name {
+                flex: 1;
+                font-size: 1.71875vw;
+                color: #000;
+                font-weight: bold;
+                word-break: break-all;
+              }
+              .good-buttons {
+                display: flex;
+                align-items: center;
+                gap: 0.390625vw;
+
+                .button {
+                  width: 7.8125vw;
+                  height: 2.8125vw;
+                  font-size: 1.25vw;
+                  letter-spacing: -0.0625vw;
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                  color: #000;
+                  border: solid 0.078125vw #000;
+                  border-radius: 0.390625vw;
+                  box-sizing: border-box;
+                }
+
+                .buttonActive {
+                  color: #fc0000;
+                  border: solid 0.15625vw #fc0000;
+                  background-color: #ffefef;
+                }
+              }
             }
           }
-          .good-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-around;
-            box-sizing: border-box;
-          }
+        }
+
+        .new-products:first-child {
+          margin-top: -2.34375vw !important;
         }
       }
     }
   }
-  .loading {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-grow: 1;
-    font-size: 40px;
-    font-weight: 900;
-  }
-
 }
+
 </style>

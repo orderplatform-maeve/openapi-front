@@ -49,7 +49,10 @@ export default {
 
 <style lang="scss">
 .container {
+  flex: 1;
   color:#ffffff;
+  padding: 0.78125vw 1.5625vw !important;
+  box-sizing: border-box;
 
   .top .title {
     font-size:24px;

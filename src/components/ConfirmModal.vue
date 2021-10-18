@@ -1,16 +1,13 @@
 <template lang="pug">
-#ModalConfirm(v-if="show")
-  .background
-  .container
-    .top
-      .title 조심해요!!
-    .body
-      .title(v-if="title") {{title}}
-      .message(v-if="message") {{message}}
-    .foot
-      .buttons
-        .button.button-commit(@click="confirm") 확인
-        .button.button(@click="close") 닫기
+.confirm-modal-container(v-if="show")
+  .wrap-confirm-modal
+    p.confirm-modal-title 조심해요!!
+    .confirm-modal-body
+      p.confirm-modal-body-title(v-if="title") {{title}}
+      p.confirm-modal-body-message(v-if="message") {{message}}
+    .confirm-modal-footer
+      button.confirm-modal-button-commit(@click="confirm") 확인
+      button.confirm-modal-button-close(@click="close") 닫기
 </template>
 
 <script>
@@ -40,116 +37,96 @@ export default {
 };
 </script>
 
-<style lang="scss">
-#ModalConfirm {
-  position:fixed;
-  top:0;
-  left:0;
-  display:flex;
-  align-items: center;
+<style lang="scss" scoped>
+.confirm-modal-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color:rgba(0,0,0,0.8);
+  z-index: 201;
+  display: flex;
   justify-content: center;
+  align-items: center;
 
-  width:100%;
-  height:100%;
-  z-index:201;
+  .wrap-confirm-modal {
+    width: 80%;
+    padding: 0 1.875vw !important;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 3.125vw;
 
-  > .background {
-    position:absolute;
-    top:0;
-    left:0;
-    display:flex;
-    width:100%;
-    height:100%;
-    z-index:102;
-    background-color:rgba(0,0,0,0.8);
-  }
-  > .container {
-    display:flex;
-    flex-direction:column;
-    align-items: center;
-    justify-content: center;
-    width:80%;
-    height:80%;
-    z-index:103;
-    flex-grow:0 !important;
-    padding:0 24px;
-
-    > * {
-      padding:24px;
+    .confirm-modal-title {
+      text-align: center;
+      font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+      font-size: 1.875vw;
+      font-weight: bold;
+      color: #fff;
+      background-color: rgb(255, 0, 0, 0.7);
+      padding: 1.875vw !important;
+      box-sizing: border-box;
+      border-radius: 1.875vw;
     }
-    > .top {
-      flex-shrink:0;
-      display:flex;
-      width:100%;
-      border-top-left-radius:24px;
-      border-top-right-radius:24px;
-      background-color:rgba(255,0,0,0.7);
-      color:#ffffff;
-      .title {
-        font-size:24px;
-        font-weight:900;
-      }
-    }
-    > .body {
-      flex-grow:1;
-      flex-shrink:1;
-      display:flex;
-      flex-direction:column;
-      width:100%;
-      align-items: center;
+
+    .confirm-modal-body {
+      font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+      color: #fff;
+      display: flex;
+      flex-direction: column;
       justify-content: center;
-      overflow:scroll;
-      background-color:rgba(255,0,0,0.8);
+      align-items: center;
+      gap: 1.5625vw;
+      padding: 1.875vw !important;
+      box-sizing: border-box;
+      border-radius: 1.875vw;
+      background-color: rgb(255, 0, 0, 0.8);
 
-      .title {
-        font-size: 80px;
-        font-weight: 900;
+      .confirm-modal-body-title {
+        font-size: 6.25vw;
+        font-weight: bold;
         word-break: keep-all;
       }
-      .message {
-        margin-top:12px;
-        font-size: 40px;
-        font-weight: 100;
+
+      .confirm-modal-body-message {
+        font-size: 3.125vw;
+        font-weight: lighter;
         word-break: keep-all;
       }
     }
-    > .foot {
-      flex-shrink:0;
-      width:100%;
-      background-color:rgba(255,255,255,0.8);
-      border-bottom-left-radius:24px;
-      border-bottom-right-radius:24px;
 
-      .buttons {
-        display:flex;
-        align-items: center;
-        justify-content: center;
-        width:100%;
-        .button {
-          margin:0;
-          display:flex;
-          flex-grow:1;
-          align-items: center;
-          justify-content: center;
-          height:80px;
-          border-radius:100px;
-          font-size:24px;
-          font-weight:900;
-          background-color:#ffffff;
-          color:#202020;
-          margin-left:24px;
-          box-shadow: 0 0 8px -4px #000000;
-        }
-        .button:first-child {
-          margin-left:0;
-        }
-        .button-commit {
-          flex-grow:1;
-          background-color:#ff0000;
-          color:#ffffff;
-        }
+    .confirm-modal-footer {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1.5625vw;
+      padding: 1.875vw !important;
+      box-sizing: border-box;
+      border-radius: 1.875vw;
+      background-color: rgb(255, 0, 0, 0.8);
+
+      > button {
+        flex: 1;
+        height: 6.25vw;
+        font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+        font-size: 1.875vw;
+        border-radius: 7.8125vw;
+        border: none;
+        box-shadow: 0 0 8px -4px #000000;
+      }
+
+      .confirm-modal-button-commit {
+        background-color: #ff0000;
+        color: #fff;
+      }
+
+      .confirm-modal-button-close {
+        background-color: #ffffff;
+        color: #202020;
       }
     }
   }
 }
+
 </style>
