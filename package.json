@@ -17,6 +17,8 @@
     "deploy:dev:demo": "cross-env NODE_ENV=development SERVER_TYPE=demo STOP_REDIRECT=true vue-cli-service build && node ./script/s3Uploader.dev.js"
   },
   "dependencies": {
+    "@sentry/tracing": "^6.13.3",
+    "@sentry/vue": "^6.13.3",
     "axios": "^0.19.2",
     "cross-env": "^5.0.5",
     "lodash": "^4.17.15",
