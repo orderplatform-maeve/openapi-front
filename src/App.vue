@@ -14,5 +14,4 @@
   font-family: "notosans-medium";
   src: url("https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/fonts/NotoSansKR-Medium.woff2") format("woff2");
 }
-
 </style>

@@ -7,6 +7,7 @@
   "private": true,
   "scripts": {
     "lint": "vue-cli-service lint",
+    "dev": "cross-env NODE_ENV=development SERVER_TYPE=rest STOP_REDIRECT=true vue-cli-service serve --open",
     "dev:stop-redirect": "cross-env NODE_ENV=development SERVER_TYPE=rest STOP_REDIRECT=true vue-cli-service serve --open",
     "demo:stop-redirect": "cross-env NODE_ENV=development SERVER_TYPE=demo STOP_REDIRECT=true vue-cli-service serve --open",
     "build": "vue-cli-service build",
@@ -16,6 +17,8 @@
     "deploy:dev:demo": "cross-env NODE_ENV=development SERVER_TYPE=demo STOP_REDIRECT=true vue-cli-service build && node ./script/s3Uploader.dev.js"
   },
   "dependencies": {
+    "@sentry/tracing": "^6.13.3",
+    "@sentry/vue": "^6.13.3",
     "axios": "^0.19.2",
     "cross-env": "^5.0.5",
     "lodash": "^4.17.15",
