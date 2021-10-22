@@ -460,7 +460,7 @@ export default {
     .activeButton {
       background-color: #fc0000;
       font-weight: bold;
-      color: #fff;
+      color: #fff !important;
     }
   }
 
