@@ -7,6 +7,7 @@
   "private": true,
   "scripts": {
     "lint": "vue-cli-service lint",
+    "dev": "cross-env NODE_ENV=development SERVER_TYPE=rest STOP_REDIRECT=true vue-cli-service serve --open",
     "dev:stop-redirect": "cross-env NODE_ENV=development SERVER_TYPE=rest STOP_REDIRECT=true vue-cli-service serve --open",
     "demo:stop-redirect": "cross-env NODE_ENV=development SERVER_TYPE=demo STOP_REDIRECT=true vue-cli-service serve --open",
     "build": "vue-cli-service build",

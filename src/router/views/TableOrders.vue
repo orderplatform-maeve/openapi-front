@@ -690,7 +690,6 @@ export default {
 
     .background-white {
       background-color: #fff;
-      margin-top: -0.078125vw !important;
 
       .sub-categories {
         display: flex;

@@ -51,7 +51,9 @@ const socket = {
     SOCKET_orderlog({ commit , state }, order) {
       //console.log('SOCKET_orderlog', order);
       if (validShopCode(state, order)) {
-        console.log('주문 커먼');
+        console.log('주문 커먼-order', order);
+        console.log('주문 커먼-state', state);
+        console.log('주문커먼-commit', commit);
         if (window?.UUID?.playOrderBell) {
           window.UUID.playOrderBell();
         }

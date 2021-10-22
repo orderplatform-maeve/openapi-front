@@ -770,7 +770,6 @@ a {
   }
 
   .background-white {
-    margin-top: -0.078125vw !important;
     background-color: #fff;
 
     .sub-categories {
