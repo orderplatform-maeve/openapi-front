@@ -21,18 +21,20 @@
         .wrap-on-off-button
           p 테블릿 화면
           .wrap-on-off-switch
-            label.on-off-switch(v-on:click.stop="toggleTabletScreen" :class="{switchOff: !statusTabletScreen, switchOn: statusTabletScreen}")
-              input(type='checkbox' :checked="statusTabletScreen" disabled="disabled")
+            .on-off-switch(v-on:click.stop="closeTabletScreen" :class="{activeSwitch: !statusTabletScreen}") OFF
+            .on-off-switch(v-on:click.stop="openTabletScreen" :class="{activeSwitch: statusTabletScreen}") ON
         .wrap-on-off-button
           p 테블릿 주문
           .wrap-on-off-switch
-            label.on-off-switch(v-on:click.stop="toggleOrder" :class="{switchOff: !statusOrder, switchOn: statusOrder}")
-              input(type='checkbox' :checked="statusOrder" disabled="disabled")
+            .on-off-switch(v-on:click.stop="rejectOrder" :class="{activeSwitch: !statusOrder}") OFF
+            .on-off-switch(v-on:click.stop="agreeOrder" :class="{activeSwitch: statusOrder}") ON
         .wrap-on-off-button
           p 주문 내역
           .wrap-on-off-switch
-            label.on-off-switch(v-on:click.stop="toggleRecentOrder" :class="{switchOff: !statusRecentOrder, switchOn: statusRecentOrder}")
-              input(type='checkbox' :checked="statusRecentOrder" disabled="disabled")
+            //- label.on-off-switch(v-on:click.stop="toggleRecentOrder" :class="{switchOff: !statusRecentOrder, switchOn: statusRecentOrder}")
+            //-   input(type='checkbox' :checked="statusRecentOrder" disabled="disabled")
+            .on-off-switch(v-on:click.stop="hideRecentOrder" :class="{activeSwitch: !statusRecentOrder}") OFF
+            .on-off-switch(v-on:click.stop="showRecentOrder" :class="{activeSwitch: statusRecentOrder}") ON
       button.wrap-refresh-button(@click="restart")
         p 새고고침
         icon-refresh-icon
@@ -133,9 +135,9 @@ export default {
       }, 1000);
     },
     closeTabletScreen() {
-      if (this.$store.state.device.serviceStatus) {
-        return this.$store.commit('pushFlashMessage', '이미 태블릿 닫기 상태로 되어있습니다.');
-      }
+      // if (this.$store.state.device.serviceStatus) {
+      //   return this.$store.commit('pushFlashMessage', '이미 태블릿 닫기 상태로 되어있습니다.');
+      // }
 
       const confirmModal = {};
 
@@ -148,9 +150,9 @@ export default {
       this.$store.commit('showConfirmModal', confirmModal);
     },
     openTabletScreen() {
-      if (!this.$store.state.device.serviceStatus) {
-        return this.$store.commit('pushFlashMessage', '이미 태블릿 열기 상태로 되어있습니다.');
-      }
+      // if (!this.$store.state.device.serviceStatus) {
+      //   return this.$store.commit('pushFlashMessage', '이미 태블릿 열기 상태로 되어있습니다.');
+      // }
       const confirmModal = {};
       confirmModal.show = true;
       confirmModal.close = this.closeConfirmModal;
@@ -160,9 +162,9 @@ export default {
       this.$store.commit('showConfirmModal', confirmModal);
     },
     agreeOrder() {
-      if (!this.$store.state.device.orderStatus) {
-        return this.$store.commit('pushFlashMessage', '이미 주문 받기 상태로 되어있습니다.');
-      }
+      // if (!this.$store.state.device.orderStatus) {
+      //   return this.$store.commit('pushFlashMessage', '이미 주문 받기 상태로 되어있습니다.');
+      // }
       const confirmModal = {};
       confirmModal.show = true;
       confirmModal.close = this.closeConfirmModal;
@@ -172,9 +174,9 @@ export default {
       this.$store.commit('showConfirmModal', confirmModal);
     },
     rejectOrder() {
-      if (this.$store.state.device.orderStatus) {
-        return this.$store.commit('pushFlashMessage', '이미 주문 중단 상태로 되어있습니다.');
-      }
+      // if (this.$store.state.device.orderStatus) {
+      //   return this.$store.commit('pushFlashMessage', '이미 주문 중단 상태로 되어있습니다.');
+      // }
       const confirmModal = {};
       confirmModal.show = true;
       confirmModal.close = this.closeConfirmModal;
@@ -184,9 +186,9 @@ export default {
       this.$store.commit('showConfirmModal', confirmModal);
     },
     showRecentOrder() {
-      if (!this.$store.state.device.recentOrderStatus) {
-        return this.$store.commit('pushFlashMessage', '이미 주문 내역 표시 상태로 되어있습니다.');
-      }
+      // if (!this.$store.state.device.recentOrderStatus) {
+      //   return this.$store.commit('pushFlashMessage', '이미 주문 내역 표시 상태로 되어있습니다.');
+      // }
       const confirmModal = {};
       confirmModal.show = true;
       confirmModal.close = this.closeConfirmModal;
@@ -196,9 +198,9 @@ export default {
       this.$store.commit('showConfirmModal', confirmModal);
     },
     hideRecentOrder() {
-      if (this.$store.state.device.recentOrderStatus) {
-        return this.$store.commit('pushFlashMessage', '이미 주문 내역 숨김 상태로 되어있습니다.');
-      }
+      // if (this.$store.state.device.recentOrderStatus) {
+      //   return this.$store.commit('pushFlashMessage', '이미 주문 내역 숨김 상태로 되어있습니다.');
+      // }
       const confirmModal = {};
       confirmModal.show = true;
       confirmModal.close = this.closeConfirmModal;
@@ -481,11 +483,11 @@ export default {
 
       .wrap-on-off-button {
         display: flex;
+        flex-direction: column;
         align-items: center;
-        gap: 0.625vw;
+        gap: 0.78125vw;
 
         > p {
-          flex: 1;
           font-size: 1.09375vw;
           letter-spacing: -0.02734375vw;
           color: #fff;
@@ -493,55 +495,25 @@ export default {
 
         .wrap-on-off-switch {
           position: relative;
-          width: 7.1875vw;
-          height: 2.734375vw;
-          background-color: #12151d;
-          border-radius: 1.25vw;
+          display: flex;
+          gap: 0.625vw;
 
           .on-off-switch {
-            display: inline-block;
-            > input {
-              opacity: 0;
-              width: 0;
-              height: 0;
-            }
-          }
-
-          .on-off-switch::before,
-          .on-off-switch::after {
-            position: absolute;
-            width: 3.203125vw;
-            top: 0.234375vw;
-            height: 2.265625vw;
-            font-size: 0.9375vw;
-            font-weight: bold;
-            color: #666;
+            width: 6.640625vw;
+            height: 2.96875vw;
+            font-size: 1.25vw;
             display: flex;
             justify-content: center;
             align-items: center;
+            color: #ddd;
+            background-color: #12151d;
             border-radius: 1.015625vw;
           }
 
-          .on-off-switch::before {
-            content: 'OFF';
-            left: 0.234375vw;
-          }
-
-          .on-off-switch::after {
-            content: 'ON';
-            right: 0.234375vw;
-          }
-
-          .switchOff::before {
-            color: #fff;
-            background-color: #2a2e39;
-            box-shadow: 0.234375vw 0.234375vw 0.46875vw 0 #000;
-          }
-
-          .switchOn::after {
-            color: #fff;
+          .activeSwitch {
             background-color: #fc0000;
-            box-shadow: 0.234375vw 0.234375vw 0.46875vw 0 #000;
+            color: #fff;
+            font-weight: bold;
           }
         }
       }
