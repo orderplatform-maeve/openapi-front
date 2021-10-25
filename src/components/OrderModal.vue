@@ -1,58 +1,61 @@
 <template lang="pug">
 .order-modal-container
-  .order-modal-header
-    .wrap-order-history-text
-      p.order-history-text 주문내역
-      p.order-table-name {{checkedTabletNum(order)}}
-    .wrap-order-time
-      .order-confirm-check
-        .check-svg(:class="{checkOn: order.commit == true}")
-        p.order-confirm-status(v-if="order.commit == true") 확인
-        p.order-confirm-status(v-else) 미확인
-      p.bar
-      p.order-time {{order.order_time}}
-  .wrap-order-history-all
-    .wrap-current-order-history
-      p.current-order-history-text 현재 주문내역
-      .current-order-history-list
-        .current-order-history(v-for="product in order.order_info")
-          .current-product-info
-            p.product-name {{getProjectGoodName(product)}}
-            .wrap-product-price
-              p.product-price {{ getItemPrice(product) }}원
-              p.product-quantity {{getProductQty(product)}}개
-          .product-option-list(v-if="isProductOpt(product)")
-            .product-option(v-for="option in product.option")
-              p.option-name {{getOptionDisplayName(option)}}
-              p.option-quantity {{getOptionGoodQty(option)}}개
-    .wrap-last-order-history(v-if="!order.paidOrder")
-      p.last-order-history-text 이전 주문내역
-      .last-order-history-list(v-if="order.paidOrder==false")
-        .last-order-history(v-for="c_product in order.total_orders")
-          .last-product-info
-            .last-order-product-name {{getBeforeProductDisplayName(c_product)}}
-            .last-order-product-quantity {{getBeforeProductOrderQty(c_product)}}개
-          .last-order-product-option-list(v-if="isBeforeProductOtp(c_product)")
-            .last-order-product-option(v-for="option in c_product.option") 
-              p.last-option-name {{getBeforeProductOptionDisplayName(option)}}
-              p.last-option-quantity {{getBeforeProductOptionOrderQty(option)}}개
-    .wrap-last-order-history(v-else-if="order.paidOrder")
-      p.last-order-history-text.credit-history 결제내역
-      .last-order-history-list
-        .last-order-history(v-for="c_product in order.creditArray")
-          .last-product-info
-            .last-order-product-name {{ getProductAmount(c_product) }}원
-            .last-order-product-quantity.credit-type {{ getProductOrderType(c_product) }}
-    .wrap-last-order-history(v-else-if="getVisibleCancelListArea(order)")
-      p.last-order-history-text.credit-history 결제 취소 내역
-      .last-order-history-list
-        .last-order-history(v-for="c_product in order.cancelArray")
-          .last-product-info
-            .last-order-product-name {{ getProductAmount(c_product) }}
-            .last-order-product-quantity.credit-type {{ getProductOrderType(c_product) }}
-  .wrap-confirm-button
-    button.confirm-button(@click="commitOrder(order)") 확인
-    span.confirm-time-message {{seconds}}초 후 닫혀요.
+  .wrap-close-button
+    button.close-button(@click="closeOrder") 닫기
+  .wrap-order-modal
+    .order-modal-header
+      .wrap-order-history-text
+        p.order-history-text 주문내역
+        p.order-table-name {{checkedTabletNum(order)}}
+      .wrap-order-time
+        .order-confirm-check
+          .check-svg(:class="{checkOn: order.commit == true}")
+          p.order-confirm-status(v-if="order.commit == true") 확인
+          p.order-confirm-status(v-else) 미확인
+        p.bar
+        p.order-time {{order.order_time}}
+    .wrap-order-history-all
+      .wrap-current-order-history
+        p.current-order-history-text 현재 주문내역
+        .current-order-history-list
+          .current-order-history(v-for="product in order.order_info")
+            .current-product-info
+              p.product-name {{getProjectGoodName(product)}}
+              .wrap-product-price
+                p.product-price {{ getItemPrice(product) }}원
+                p.product-quantity {{getProductQty(product)}}개
+            .product-option-list(v-if="isProductOpt(product)")
+              .product-option(v-for="option in product.option")
+                p.option-name {{getOptionDisplayName(option)}}
+                p.option-quantity {{getOptionGoodQty(option)}}개
+      .wrap-last-order-history(v-if="!order.paidOrder")
+        p.last-order-history-text 이전 주문내역
+        .last-order-history-list(v-if="order.paidOrder==false")
+          .last-order-history(v-for="c_product in order.total_orders")
+            .last-product-info
+              .last-order-product-name {{getBeforeProductDisplayName(c_product)}}
+              .last-order-product-quantity {{getBeforeProductOrderQty(c_product)}}개
+            .last-order-product-option-list(v-if="isBeforeProductOtp(c_product)")
+              .last-order-product-option(v-for="option in c_product.option") 
+                p.last-option-name {{getBeforeProductOptionDisplayName(option)}}
+                p.last-option-quantity {{getBeforeProductOptionOrderQty(option)}}개
+      .wrap-last-order-history(v-else-if="order.paidOrder")
+        p.last-order-history-text.credit-history 결제내역
+        .last-order-history-list
+          .last-order-history(v-for="c_product in order.creditArray")
+            .last-product-info
+              .last-order-product-name {{ getProductAmount(c_product) }}원
+              .last-order-product-quantity.credit-type {{ getProductOrderType(c_product) }}
+      .wrap-last-order-history(v-else-if="getVisibleCancelListArea(order)")
+        p.last-order-history-text.credit-history 결제 취소 내역
+        .last-order-history-list
+          .last-order-history(v-for="c_product in order.cancelArray")
+            .last-product-info
+              .last-order-product-name {{ getProductAmount(c_product) }}
+              .last-order-product-quantity.credit-type {{ getProductOrderType(c_product) }}
+    .wrap-confirm-button
+      button.confirm-button(@click="commitOrder(order)") 확인
+      span.confirm-time-message {{seconds}}초 후 닫혀요.
 </template>
 
 <script>
@@ -208,139 +211,235 @@ export default {
 <style lang="scss" scoped>
 .order-modal-container {
   position: fixed;
-  width: 83.75vw;
-  height: 76vh;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.9375vw;
   z-index: 101;
-  background-color: #fff;
-  border-radius: 1.5625vw;
-  padding: 1.5625vw 0 !important;
-  box-sizing: border-box;
 
-  .order-modal-header {
-    padding: 0.234375000vw 3.125vw 0.9375vw !important;
+  .wrap-close-button {
+    width: 100%;
     display: flex;
-    justify-content: space-between;
-    border-bottom: solid 0.15625vw #fc0000;
+    justify-content: flex-end;
+    padding: 0 1.5625vw !important;
+    box-sizing: border-box;
 
-    .wrap-order-history-text {
+    .close-button {
+      width: 11.40625vw;
+      height: 5vw;
+      background-color: #fff;
+      font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+      font-size: 2.34375vw;
+      font-weight: bold;
+      color: #000;
+      letter-spacing: -0.05859375vw;
+      border: none;
+      border-radius: 2.5vw;
       display: flex;
+      justify-content: center;
       align-items: center;
-      gap: 1.5625vw;
-
-      .order-history-text {
-        font-family: "notosans";
-        font-size: 2.1875vw;
-      }
-
-      .order-table-name {
-        font-family: 'Spoqa Han Sans Neo', 'sans-serif'; 
-        font-size: 2.65625vw;
-        font-weight: bold;
-        letter-spacing: -0.03984375vw;
-        color: #fc0000;
-      }
     }
 
-    .wrap-order-time {
-      display: flex;
-      align-items: center;
-      gap: 2.34375vw;
-
-      .order-confirm-check {
-        font-family: 'Spoqa Han Sans Neo', 'sans-serif';
-        font-size: 1.71875vw;
-        display: flex;
-        align-items: center;
-        gap: 0.59375vw;
-
-        .check-svg {
-          width: 2.1vw;
-          height: 2.109375vw;
-          background-image: url('https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/orderview/uncheck.svg');
-          background-size: contain;
-          background-position: center center;
-          background-repeat: no-repeat;
-        }
-        .checkOn{
-          background-image: url("https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/orderview/check.svg");
-        }
-      }
-
-      .bar {
-        height: 1.875vw;
-        border-left: solid 0.078125vw #707070;
-      }
-
-      .order-time {
-        font-family: 'Spoqa Han Sans Neo', 'sans-serif';
-        font-size: 2.03125vw;
-        font-weight: bold;
-      }
+    .close-button::before {
+      content: "\00d7";
+      font-size: 3vw;
+      font-weight: normal;
     }
   }
-  .wrap-order-history-all {
-    padding: 1.5625vw 3.90625vw !important;
+  
+  .wrap-order-modal {
+    width: 83.75vw;
+    height: 76vh;
+    background-color: #fff;
+    border-radius: 1.5625vw;
+    padding: 1.5625vw 0 !important;
     box-sizing: border-box;
-    display: flex;
-    gap: 4.0625vw;
 
-    .wrap-current-order-history {
-      width: 44.0625vw;
+    .order-modal-header {
+      padding: 0.234375000vw 3.125vw 0.9375vw !important;
+      display: flex;
+      justify-content: space-between;
+      border-bottom: solid 0.15625vw #fc0000;
 
-      .current-order-history-text {
-        font-family: "notosans";
-        font-weight: bold;
-        font-size: 1.25vw;
-        letter-spacing: -0.0625vw;
+      .wrap-order-history-text {
+        display: flex;
+        align-items: center;
+        gap: 1.5625vw;
+
+        .order-history-text {
+          font-family: "notosans";
+          font-size: 2.1875vw;
+        }
+
+        .order-table-name {
+          font-family: 'Spoqa Han Sans Neo', 'sans-serif'; 
+          font-size: 2.65625vw;
+          font-weight: bold;
+          letter-spacing: -0.03984375vw;
+          color: #fc0000;
+        }
       }
 
-      .current-order-history-list {
-        height: calc(76vh - 17.96875vw);
-        margin-top: 0.78125vw !important;
+      .wrap-order-time {
         display: flex;
-        flex-direction: column;
-        gap: 0.390625vw;
-        overflow: scroll;
+        align-items: center;
+        gap: 2.34375vw;
 
-        .current-order-history {
+        .order-confirm-check {
           font-family: 'Spoqa Han Sans Neo', 'sans-serif';
-          background-color: #f5f5f5;
-          border: solid 0.078125vw #d6d6d6;
-          border-radius: 0.78125vw;
+          font-size: 1.71875vw;
+          display: flex;
+          align-items: center;
+          gap: 0.59375vw;
+
+          .check-svg {
+            width: 2.1vw;
+            height: 2.109375vw;
+            background-image: url('https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/orderview/uncheck.svg');
+            background-size: contain;
+            background-position: center center;
+            background-repeat: no-repeat;
+          }
+          .checkOn{
+            background-image: url("https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/orderview/check.svg");
+          }
+        }
+
+        .bar {
+          height: 1.875vw;
+          border-left: solid 0.078125vw #707070;
+        }
+
+        .order-time {
+          font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+          font-size: 2.03125vw;
+          font-weight: bold;
+        }
+      }
+    }
+    .wrap-order-history-all {
+      padding: 1.5625vw 3.90625vw !important;
+      box-sizing: border-box;
+      display: flex;
+      gap: 4.0625vw;
+
+      .wrap-current-order-history {
+        width: 44.0625vw;
+
+        .current-order-history-text {
+          font-family: "notosans";
+          font-weight: bold;
+          font-size: 1.25vw;
+          letter-spacing: -0.0625vw;
+        }
+
+        .current-order-history-list {
+          height: calc(76vh - 17.96875vw);
+          margin-top: 0.78125vw !important;
           display: flex;
           flex-direction: column;
-          padding: 1.5625vw !important;
-          box-sizing: border-box;
-          gap: 0.625vw;
+          gap: 0.390625vw;
+          overflow: scroll;
 
-          .current-product-info {
+          .current-order-history {
+            font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+            background-color: #f5f5f5;
+            border: solid 0.078125vw #d6d6d6;
+            border-radius: 0.78125vw;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            flex-direction: column;
+            padding: 1.5625vw !important;
+            box-sizing: border-box;
+            gap: 0.625vw;
 
-            .product-name {
-              flex: 1;
-              font-size: 1.71875vw;
-              font-weight: bold;
-              letter-spacing: -0.04296875vw;
+            .current-product-info {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+
+              .product-name {
+                flex: 1;
+                font-size: 1.71875vw;
+                font-weight: bold;
+                letter-spacing: -0.04296875vw;
+              }
+
+              .wrap-product-price {
+                font-size: 1.5625vw;
+                display: flex;
+                gap: 3.125vw;
+              }
             }
 
-            .wrap-product-price {
-              font-size: 1.5625vw;
-              display: flex;
-              gap: 3.125vw;
+            .product-option-list {
+              font-size: 1.40625vw;
+              color: #666;
+              letter-spacing: -0.02734375vw;
+
+              .product-option {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+              }
             }
           }
+        }
+      }
 
-          .product-option-list {
-            font-size: 1.40625vw;
-            color: #666;
-            letter-spacing: -0.02734375vw;
+      .wrap-last-order-history {
+        flex: 1;
 
-            .product-option {
+        .last-order-history-text {
+          font-family: "notosans";
+          font-size: 1.25vw;
+          letter-spacing: -0.03125vw;
+          border-bottom: solid 0.078125vw #666;
+          padding-bottom: 0.78125vw !important;
+          box-sizing: border-box;
+        }
+
+        .credit-history {
+          color: #666;
+        }
+
+        .last-order-history-list {
+          margin-top: 1.5625vw !important;
+          height: calc(76vh - 19.53125vw);
+          display: flex;
+          flex-direction: column;
+          gap: 1.171875vw;
+          overflow: scroll;
+
+          .last-order-history {
+            display: flex;
+            flex-direction: column;
+            gap: 0.390625vw;
+
+            .last-product-info {
+              font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+
+              .last-order-product-name {
+                font-size: 1.25vw;
+                letter-spacing: -0.03125vw;
+              }
+
+              .last-order-product-quantity {
+                font-size: 1.09375vw;
+                letter-spacing: -0.02734375vw;
+                color: #666;
+              }
+            }
+
+            .last-order-product-option {
+              font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+              font-size: 1.015625vw;
+              color: #999;
               display: flex;
               justify-content: space-between;
               align-items: center;
@@ -350,93 +449,34 @@ export default {
       }
     }
 
-    .wrap-last-order-history {
-      flex: 1;
-
-      .last-order-history-text {
-        font-family: "notosans";
-        font-size: 1.25vw;
-        letter-spacing: -0.03125vw;
-        border-bottom: solid 0.078125vw #666;
-        padding-bottom: 0.78125vw !important;
-        box-sizing: border-box;
+    .wrap-confirm-button {
+      width: 100%;
+      font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+      display: flex;
+      align-items: center;
+      
+      .confirm-button {
+        margin-left: 23.515625vw;
+        display: block;
+        width: 37.5vw;
+        height: 4.53125vw;
+        background-color: #fc0000;
+        font-weight: bold;
+        font-size: 2.03125vw;
+        color: #fff;
+        letter-spacing: -0.05078125vw;
+        border: none;
+        border-radius: 1.015625vw;
       }
 
-      .credit-history {
-        color: #666;
+      .confirm-time-message {
+        flex: 1;
+        margin-right: 3.125vw !important;
+        text-align: right;
+        font-weight: bold;
+        font-size: 2.109375vw;
+        letter-spacing: -0.05078125vw;
       }
-
-      .last-order-history-list {
-        margin-top: 1.5625vw !important;
-        height: calc(76vh - 19.53125vw);
-        display: flex;
-        flex-direction: column;
-        gap: 1.171875vw;
-        overflow: scroll;
-
-        .last-order-history {
-          display: flex;
-          flex-direction: column;
-          gap: 0.390625vw;
-
-          .last-product-info {
-            font-family: 'Spoqa Han Sans Neo', 'sans-serif';
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-
-            .last-order-product-name {
-              font-size: 1.25vw;
-              letter-spacing: -0.03125vw;
-            }
-
-            .last-order-product-quantity {
-              font-size: 1.09375vw;
-              letter-spacing: -0.02734375vw;
-              color: #666;
-            }
-          }
-
-          .last-order-product-option {
-            font-family: 'Spoqa Han Sans Neo', 'sans-serif';
-            font-size: 1.015625vw;
-            color: #999;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-          }
-        }
-      }
-    }
-  }
-
-  .wrap-confirm-button {
-    width: 100%;
-    font-family: 'Spoqa Han Sans Neo', 'sans-serif';
-    display: flex;
-    align-items: center;
-    
-    .confirm-button {
-      margin-left: 23.515625vw;
-      display: block;
-      width: 37.5vw;
-      height: 4.53125vw;
-      background-color: #fc0000;
-      font-weight: bold;
-      font-size: 2.03125vw;
-      color: #fff;
-      letter-spacing: -0.05078125vw;
-      border: none;
-      border-radius: 1.015625vw;
-    }
-
-    .confirm-time-message {
-      flex: 1;
-      margin-right: 3.125vw !important;
-      text-align: right;
-      font-weight: bold;
-      font-size: 2.109375vw;
-      letter-spacing: -0.05078125vw;
     }
   }
 }

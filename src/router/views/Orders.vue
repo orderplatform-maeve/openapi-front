@@ -29,7 +29,7 @@
         p.order-title 주문시간
         p.order-title 총 인원수
       .wrap-order-information-lists
-        .order-information-lists(v-for="(order, index) in sortedOrders" :key="`order-index-`+index")
+        div(v-for="(order, index) in sortedOrders" :key="`order-index-`+index" :class="getOrderListStyle(order, index)")
           .order-information-list(v-if="visibleOrderItem(order)" @click="openView(order)")
             p.order-information-table-number(:class="orderStyleCheck(order)") {{checkedTabletNum(order)}}
             p.order-information-order-type(:class="orderStyleCheck(order)") {{orderTypeCheck(order)}}
@@ -114,6 +114,13 @@ export default {
     }
   },
   methods: {
+    getOrderListStyle(order, index) {
+      return {
+        'order-information-lists': true,
+        'confirm-status': order.commit,
+        'bg-gray': index % 2 === 0,
+      };
+    },
     async reqConfirmMisu(order) {
       if (order?.order_view_key) {
         const res = await requestMisuCommit(order.order_view_key);
@@ -395,6 +402,36 @@ export default {
               color: #fc0000;
               text-decoration: underline;
             }
+          }
+
+          .order-information-total-people {
+            height: 2.65625vw;
+            background-color: #fc0000;
+            color: #fff;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 0.390625vw;
+          }
+        }
+      }
+
+      .bg-gray {
+        background-color: #f5f5f5;
+      }
+
+      .confirm-status {
+        background-color: #343434 !important;
+
+        .order-information-list {
+          > p {
+            color: #fff !important;
+          }
+
+          .order-information-total-people {
+            background-color: #fff;
+            color: #000 !important;
           }
         }
       }
