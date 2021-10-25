@@ -58,14 +58,14 @@
                 )
                   p.new-product-good-name {{ good.displayName }}
                   p.new-product-good-price {{good.price.toLocaleString()}}원
-          .wrap-cart(ref="billBody")
+          .wrap-cart
             .cart-header
               p.cart-title 장바구니
               .wrap-reset-button
                 button.reset(@click="onDeleteOrder") 초기화
                 button.refresh(@click="reload") 새로고침
-            .cart-product-list
-              .cart-product(v-for="(order, orderIdx) in previousOrders" :class="getLastBorder(orderIdx)")
+            transition-group(name="cartEffect" tag="div").cart-product-list
+              .cart-product(v-for="(order, orderIdx) in getReverseCartList()" :class="getLastBorder(orderIdx)" :key="getCartListKey(orderIdx)")
                 .wrap-cart-product-name
                   p.cart-product-name {{ order.display_name }}
                   .wrap-cart-product-price
@@ -76,7 +76,7 @@
                   .wrap-cart-product-option-price
                     .cart-product-option-quantity {{option.order_qty}}개
                     .cart-product-option-price {{option.pos_price.toLocaleString()}}원
-              .cart-product(v-for="(order, orderIdx) in cartList" :class="getLastBorder(orderIdx)")
+              .cart-product(v-for="(order, orderIdx) in getReversePreviousOrders()" :class="getLastBorder(orderIdx)" :key="`previous-${orderIdx}`")
                 .wrap-cart-product-name
                   p.cart-product-name {{ order.display_name }}
                   .wrap-cart-product-price
@@ -163,6 +163,19 @@ export default {
     clearInterval(this.timer);
   },
   methods: {
+    getCartListKey(index) {
+      return `cart-${this.getReverseCartList().length - index}`;
+    },
+    getReversePreviousOrders() {
+      const cartList = [...this.previousOrders].reverse();
+
+      return cartList;
+    },
+    getReverseCartList() {
+      const cartList = [...this.cartList].reverse();
+
+      return cartList;
+    },
     reload() {
       const { store_code } = this.$store.state.auth.store;
       const fd = new FormData();
@@ -452,7 +465,8 @@ export default {
     billScrollBottom() {
       setTimeout(() => {
         // this.$refs.billBody.scrollTo(0, this.$refs.billBody.scrollHeight);
-        this.$refs.billBody.scrollTop = this.$refs.billBody.scrollHeight;
+        const cartProductList = document.querySelector('.cart-product-list');
+        cartProductList.scrollTo(0, 0);
       }, 0);
     },
     async yesOrder() {
@@ -786,6 +800,7 @@ export default {
         }
 
         .wrap-cart {
+          position: relative;
           width: 36.875vw;
           background-color: #1f222a;
           border-radius: 1.015625vw;
@@ -824,6 +839,13 @@ export default {
                 letter-spacing: -0.0625vw;
               }
             }
+          }
+
+          .cartEffect-enter-active, .cartEffect-leave-active {
+            transition: all 1.5s;
+          }
+          .cartEffect-enter, .cartEffect-leave-to /* .list-leave-active below version 2.1.8 */ {
+            background-color: #fc0000;
           }
 
           .cart-product-list {
