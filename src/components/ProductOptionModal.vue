@@ -93,7 +93,6 @@ export default {
       return this.selectedOptions.slice(0).reverse();
     },
     currentOption() {
-      console.log(this.product.options[this.currentIndex], '확인용');
       return this.product.options[this.currentIndex];
     }
   },
@@ -142,16 +141,12 @@ export default {
           return a.group.sort_number - b.group.sort_number;
         });
 
-        // // console.log(sortedOptions);
-
         const optionProducts = sortedOptions.map((o) => {
           return {
             ...this.$store.state.goods.find((p) => p.T_order_store_good_code === o.code),
             qty: o.qty,
           };
         });
-
-        // // console.log('optionProducts', [...optionProducts]);
 
         const currentOption = optionProducts.map((o) => ({
           img_url: o.T_order_store_good_image,
@@ -279,6 +274,9 @@ export default {
         this.popOption(option);
       }
     },
+  },
+  mounted() {
+    console.log(this.product.options, '테스트용2');
   }
 };
 </script>
