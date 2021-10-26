@@ -1,7 +1,5 @@
 <template lang="pug">
 .order-modal-container
-  .wrap-close-button
-    button.close-button(@click="closeOrder") 닫기
   .wrap-order-modal
     .order-modal-header
       .wrap-order-history-text
@@ -54,6 +52,7 @@
               .last-order-product-name {{ getProductAmount(c_product) }}
               .last-order-product-quantity.credit-type {{ getProductOrderType(c_product) }}
     .wrap-confirm-button
+      button.close-button(@click="closeOrder") 닫기
       button.confirm-button(@click="commitOrder(order)") 확인
       span.confirm-time-message {{seconds}}초 후 닫혀요.
 </template>
@@ -211,6 +210,8 @@ export default {
 <style lang="scss" scoped>
 .order-modal-container {
   position: fixed;
+  left: 0;
+  top: 0;
   width: 100vw;
   height: 100vh;
   display: flex;
@@ -219,36 +220,7 @@ export default {
   align-items: center;
   gap: 0.9375vw;
   z-index: 101;
-
-  .wrap-close-button {
-    width: 100%;
-    display: flex;
-    justify-content: flex-end;
-    padding: 0 1.5625vw !important;
-    box-sizing: border-box;
-
-    .close-button {
-      width: 11.40625vw;
-      height: 5vw;
-      background-color: #fff;
-      font-family: 'Spoqa Han Sans Neo', 'sans-serif';
-      font-size: 2.34375vw;
-      font-weight: bold;
-      color: #000;
-      letter-spacing: -0.05859375vw;
-      border: none;
-      border-radius: 2.5vw;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .close-button::before {
-      content: "\00d7";
-      font-size: 3vw;
-      font-weight: normal;
-    }
-  }
+  background-color: rgba(0, 0, 0, 0.7);
   
   .wrap-order-modal {
     width: 83.75vw;
@@ -454,13 +426,27 @@ export default {
       font-family: 'Spoqa Han Sans Neo', 'sans-serif';
       display: flex;
       align-items: center;
+      gap: 3.515625vw;
+
+      .close-button {
+        flex: 1;
+        height: 4.53125vw;
+        margin-left: 3.90625vw !important;
+        border: none;
+        border-radius: 1.015625vw;
+        background-color: #404144;
+        font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+        font-size: 2.03125vw;
+        font-weight: bold;
+        color: #fff;
+      }
       
       .confirm-button {
-        margin-left: 23.515625vw;
         display: block;
         width: 37.5vw;
         height: 4.53125vw;
         background-color: #fc0000;
+        font-family: 'Spoqa Han Sans Neo', 'sans-serif';
         font-weight: bold;
         font-size: 2.03125vw;
         color: #fff;
@@ -470,7 +456,7 @@ export default {
       }
 
       .confirm-time-message {
-        flex: 1;
+        width: 13.28125vw;
         margin-right: 3.125vw !important;
         text-align: right;
         font-weight: bold;

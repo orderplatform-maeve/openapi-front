@@ -195,7 +195,8 @@ const socket = {
         // console.log('findTargetIdx', payload.tableId, findTargetIdx, state.tables);
 
         if (findTargetIdx === -1) {
-          return commit('pushFlashMessage', '일치하는 테이블 아이디를 찾지 못했습니다.');
+          // 주석 해제 필수
+          // return commit('pushFlashMessage', '일치하는 테이블 아이디를 찾지 못했습니다.');
         }
         // if (findTargetIdx === -1) return false;
 
@@ -710,6 +711,7 @@ const table = {
     async setTableCartList({ commit }, params) {
       const url = endpoints.table.getCartList;
       const response = await axios.post(url, params);
+      console.log(response.data.order_info, '리스폰스 확인용');
 
       if (response.data && response.data.order_info) {
         commit('SET_TABLE_CART_LIST', response.data.order_info);

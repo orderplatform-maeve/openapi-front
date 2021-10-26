@@ -1,47 +1,49 @@
 <template lang="pug">
-  .orders-container
-    order-cash-out-standing-modal(
-      v-if="getCashOutPopVisble()"
-      :item="chooseOrder"
-      :closeItemModal="closeMisuModal"
-      :cashCommit="() => reqConfirmMisu(chooseOrder)"
-    )
-    p.store-name {{storeName}}{{version}}
-    .header-orders-status-list
-      .orders-status(@click="setViewMode('all')" :class="{activeButton: viewMode === 'all'}")
-        p 모든 주문
-        span {{lengthOrders}}
-      .orders-status(@click="setViewMode('notConfirm')" :class="{activeButton: viewMode === 'notConfirm'}")
-        p 미확인 주문
-        span {{unidentifiedOrders}}
-      .orders-status(@click="setViewMode('confirm')" :class="{activeButton: viewMode === 'confirm'}")
-        p 확인 주문
-        span {{lengthCommitedOrders}}
-    .wrap-order-list
-      .order-title-list
-        p.order-title 테이블번호
-        p.order-title 주문유형
-        p.order-title 주문금액
-        p.order-title 결제금액
-        p.order-title 미수금
-        p.order-title 선/후불
-        p.order-title 결제수단
-        p.order-title 주문시간
-        p.order-title 총 인원수
-      .wrap-order-information-lists
-        div(v-for="(order, index) in sortedOrders" :key="`order-index-`+index" :class="getOrderListStyle(order, index)")
-          .order-information-list(v-if="visibleOrderItem(order)" @click="openView(order)")
-            p.order-information-table-number(:class="orderStyleCheck(order)") {{checkedTabletNum(order)}}
-            p.order-information-order-type(:class="orderStyleCheck(order)") {{orderTypeCheck(order)}}
-            p.order-information-price {{getOrderPrice(order)}}원
-            p.order-information-paid-price {{getTotalAmount(order)}}원
-            p.order-information-unpaid-money(@click.stop="() => openMisuModal(order)")
-              span(:class="{unpaid: getMisu(order) !== '미수금없음'}") {{ getMisu(order) }}
-              span.unpaid(v-if="getVisibleWon(order)") 원 
-            p.order-information-paid-type {{paidTypeCheck(order)}}
-            p.order-information-credit-type {{creditTypeCheck(order)}}
-            p.order-information-order-time {{getOrderTime(order).substr(11)}}
-            p.order-information-total-people {{visitGroups(order)}}명
+  .wrap-orders-container
+    modal-order(v-if="order")
+    .orders-container
+      order-cash-out-standing-modal(
+        v-if="getCashOutPopVisble()"
+        :item="chooseOrder"
+        :closeItemModal="closeMisuModal"
+        :cashCommit="() => reqConfirmMisu(chooseOrder)"
+      )
+      p.store-name {{storeName}}{{version}}
+      .header-orders-status-list
+        .orders-status(@click="setViewMode('all')" :class="{activeButton: viewMode === 'all'}")
+          p 모든 주문
+          span {{lengthOrders}}
+        .orders-status(@click="setViewMode('notConfirm')" :class="{activeButton: viewMode === 'notConfirm'}")
+          p 미확인 주문
+          span {{unidentifiedOrders}}
+        .orders-status(@click="setViewMode('confirm')" :class="{activeButton: viewMode === 'confirm'}")
+          p 확인 주문
+          span {{lengthCommitedOrders}}
+      .wrap-order-list
+        .order-title-list
+          p.order-title 테이블번호
+          p.order-title 주문유형
+          p.order-title 주문금액
+          p.order-title 결제금액
+          p.order-title 미수금
+          p.order-title 선/후불
+          p.order-title 결제수단
+          p.order-title 주문시간
+          p.order-title 총 인원수
+        .wrap-order-information-lists
+          div(v-for="(order, index) in sortedOrders" :key="`order-index-`+index" :class="getOrderListStyle(order, index)")
+            .order-information-list(v-if="visibleOrderItem(order)" @click="openView(order)")
+              p.order-information-table-number(:class="orderStyleCheck(order)") {{checkedTabletNum(order)}}
+              p.order-information-order-type(:class="orderStyleCheck(order)") {{orderTypeCheck(order)}}
+              p.order-information-price {{getOrderPrice(order)}}원
+              p.order-information-paid-price {{getTotalAmount(order)}}원
+              p.order-information-unpaid-money(@click.stop="() => openMisuModal(order)")
+                span(:class="{unpaid: getMisu(order) !== '미수금없음'}") {{ getMisu(order) }}
+                span.unpaid(v-if="getVisibleWon(order)") 원 
+              p.order-information-paid-type {{paidTypeCheck(order)}}
+              p.order-information-credit-type {{creditTypeCheck(order)}}
+              p.order-information-order-time {{getOrderTime(order).substr(11)}}
+              p.order-information-total-people {{visitGroups(order)}}명
 </template>
 
 <script>
@@ -63,6 +65,9 @@ export default {
     };
   },
   computed: {
+    order() {
+      return !!this.$store.state.order;
+    },
     sortedOrders() {
       const { orders } = this.$store.state;
       return orders.sort((a, b) => b.timestamp - a.timestamp);
