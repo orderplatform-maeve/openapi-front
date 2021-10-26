@@ -1,8 +1,6 @@
 <template lang="pug">
 #orderview
   alert-modal(v-if="isAlertModal")
-  modal-order(v-if="order")
-  .dimBg(v-if="order")
   modal-all-refresh(
     :show="visibleAllRefreshModal"
     :close="onCloseAllRefreshModal"
