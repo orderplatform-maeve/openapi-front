@@ -711,7 +711,6 @@ const table = {
     async setTableCartList({ commit }, params) {
       const url = endpoints.table.getCartList;
       const response = await axios.post(url, params);
-      console.log(response.data.order_info, '리스폰스 확인용');
 
       if (response.data && response.data.order_info) {
         commit('SET_TABLE_CART_LIST', response.data.order_info);
