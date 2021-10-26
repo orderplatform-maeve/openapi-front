@@ -58,9 +58,42 @@
                 )
                   p.new-product-good-name {{ good.displayName }}
                   p.new-product-good-price {{good.price.toLocaleString()}}원
-          .wrap-cart
+          //- 이전주문내역
+          .wrap-cart(v-if="cartStatus === 'previous'")
             .cart-header
-              p.cart-title 장바구니
+              p.cart-title
+                span.active 이전주문
+                span.bar |
+                span(@click="cartStatusChange") 장바구니
+              .wrap-reset-button
+                button.reset(@click="onDeleteOrder") 초기화
+                button.refresh(@click="reload") 새로고침
+            transition-group(name="cartEffect" tag="div").cart-product-list
+              .cart-product(v-for="(order, orderIdx) in getReversePreviousOrders()" :class="getLastBorder(orderIdx)" :key="`previous-${orderIdx}`")
+                .wrap-cart-product-name
+                  p.cart-product-name {{ order.display_name }}
+                  .wrap-cart-product-price
+                    .cart-product-quantity {{ order.order_qty }}개
+                    .cart-product-price {{ getPrice(order.good_price) }}원
+                .wrap-cart-product-option(v-for="(option, index) in order.option" :key="`option-index:${index}`")
+                  p.cart-product-option-name +{{option.display_name}}
+                  .wrap-cart-product-option-price
+                    .cart-product-option-quantity {{option.order_qty}}개
+                    .cart-product-option-price {{option.pos_price.toLocaleString()}}원
+            .cart-total-information
+              p.cart-total-quantity {{ getPreviousOrderCount() }}건
+              p.cart-total-price 
+                span.text 합계: 
+                span.price {{ getTotalPreviousOrder() }}원
+            .wrap-confirm-button
+              button.close-button(@click="close") 닫기
+          //- 장바구니
+          .wrap-cart(v-else)
+            .cart-header
+              p.cart-title
+                span(@click="cartStatusChange") 이전주문
+                span.bar |
+                span.active 장바구니
               .wrap-reset-button
                 button.reset(@click="onDeleteOrder") 초기화
                 button.refresh(@click="reload") 새로고침
@@ -76,22 +109,11 @@
                   .wrap-cart-product-option-price
                     .cart-product-option-quantity {{option.order_qty}}개
                     .cart-product-option-price {{option.pos_price.toLocaleString()}}원
-              .cart-product(v-for="(order, orderIdx) in getReversePreviousOrders()" :class="getLastBorder(orderIdx)" :key="`previous-${orderIdx}`")
-                .wrap-cart-product-name
-                  p.cart-product-name {{ order.display_name }}
-                  .wrap-cart-product-price
-                    .cart-product-quantity {{ order.order_qty }}개
-                    .cart-product-price {{ getPrice(order.good_price) }}원
-                .wrap-cart-product-option(v-for="(option, index) in order.option" :key="`option-index:${index}`")
-                  p.cart-product-option-name +{{option.display_name}}
-                  .wrap-cart-product-option-price
-                    .cart-product-option-quantity {{option.order_qty}}개
-                    .cart-product-option-price {{option.pos_price.toLocaleString()}}원
             .cart-total-information
-              p.cart-total-quantity {{ getOrderCount() }}건
+              p.cart-total-quantity {{ getCartListOrderCount() }}건
               p.cart-total-price 
                 span.text 합계: 
-                span.price {{ getTotalPrice() }}원
+                span.price {{ getTotalCartList() }}원
             .wrap-confirm-button
               button.close-button(@click="close") 닫기
               button.submit-button(@click="yesOrder()") 주문하기
@@ -111,6 +133,7 @@ export default {
       optionModal: false,
       selectedProduct: null,
       timer: null,
+      cartStatus: 'previous',
     };
   },
   computed: {
@@ -163,6 +186,13 @@ export default {
     clearInterval(this.timer);
   },
   methods: {
+    cartStatusChange() {
+      if (this.cartStatus === 'previous') {
+        this.cartStatus = 'cart';
+      } else {
+        this.cartStatus = 'previous';
+      }
+    },
     getCartListKey(index) {
       return `cart-${this.getReverseCartList().length - index}`;
     },
@@ -216,28 +246,19 @@ export default {
     handleScroll(e) {
       this.unVisibleScroll();
       const products = e.target.children;
-      let elBottom = 0;
-      let subElBottom = 0;
 
       [...products].forEach((el) => {
         const elTop = el.offsetTop - this.$refs.scroll.offsetTop;
-        elBottom += el.offsetHeight;
-        const { scrollTop } = e.target;
-
-        // // console.log(i, elTop, elBottom, scrollTop, el.id, targetId);
-        if (elTop <= scrollTop && elBottom >= scrollTop) {
-          // // console.log(i, elTop, elBottom, scrollTop, el.id);
+        if (elTop <= this.$refs.scroll.scrollTop) {
 
           const findItem = this.menu.find((o) => o.code === el.id);
           this.selectMainCategoryItem = findItem;
         }
 
         [...el.children].forEach((element) => {
-          const subElTop = element.offsetTop - this.$refs.scroll.offsetTop;
-          subElBottom += element.offsetHeight;
+          const subElTop = element.offsetTop;
 
-          if (subElTop <= scrollTop && subElBottom >= scrollTop) {
-            // // console.log(subElTop, subElBottom, scrollTop, element.id);
+          if (subElTop <= this.$refs.scroll.scrollTop) {
             const findSubItem = this.getSubCategories().find((o) => o.code === element.id);
             this.selectSubCategoryItem = findSubItem;
           }
@@ -338,6 +359,7 @@ export default {
       fd.append('tablet_number', this.$route.params.id);
 
       const order = await this.$store.dispatch('setTableCartList', fd);
+
       // // console.log(orders);
       if (!order) return false;
 
@@ -384,7 +406,6 @@ export default {
       }
     },
     onSelectSubCtg(item) {
-      console.log(item.code, '테스트');
       this.selectSubCategoryItem = item;
 
       const elTop = this.$refs[item.code][0].offsetTop - this.$refs.scroll.offsetTop;
@@ -459,6 +480,7 @@ export default {
         };
 
         this.cartList = [...this.cartList, result];
+        this.cartStatus = 'cartList';
         this.billScrollBottom();
       }
     },
@@ -528,20 +550,25 @@ export default {
       this.billScrollBottom();
       this.optionModalClose();
     },
-    getOrderCount() {
-      const { previousOrders, cartList } = this;
+    getPreviousOrderCount() {
       try {
-        return previousOrders.length + cartList.length;
+        return this.previousOrders.length;
       } catch (error) {
         return 0;
       }
     },
-    getTotalPrice() {
-      const { previousOrders, cartList } = this;
+    getCartListOrderCount() {
+      try {
+        return this.cartList.length;
+      } catch (error) {
+        return 0;
+      }
+    },
+    getTotalCartList() {
       try {
         let total = 0;
 
-        [...previousOrders, ...cartList].forEach((order) => {
+        this.cartList.forEach((order) => {
           total += Number(order.good_price);
           if (order?.option) {
             order.option.forEach((option) => {
@@ -549,10 +576,30 @@ export default {
             });
           }
         });
+
         return won(total);
       } catch (error) {
         return 0;
       }
+    },
+    getTotalPreviousOrder() {
+      try {
+        let total = 0;
+
+        this.previousOrders.forEach((order) => {
+          total += Number(order.good_price);
+          if (order?.option) {
+            order.option.forEach((option) => {
+              total += Number(option.pos_price);
+            });
+          }
+        });
+
+        return won(total);
+      } catch (error) {
+        return 0;
+      }
+
     },
     getLastBorder(orderIdx) {
       const { previousOrders } = this;
@@ -710,6 +757,7 @@ export default {
         align-items: center;
         gap: 0.78125vw;
         width: 84.53125vw;
+        min-height: 7.03125vw;
         padding: 1.5625vw 0 1.5625vw 1.5625vw !important;
         box-sizing: border-box;
         overflow: scroll;
@@ -743,7 +791,7 @@ export default {
           flex: 1;
           overflow: auto;
           padding-left: 1.5625vw !important;
-          padding-bottom: 5vh !important;
+          padding-bottom: calc(100vh - 18.125vw) !important;
           box-sizing: border-box;
 
           .new-products {
@@ -821,6 +869,18 @@ export default {
               font-weight: bold;
               letter-spacing: -0.04296875vw;
               color: #fff;
+              display: flex;
+              align-items: center;
+              gap: 0.78125vw;
+
+              .bar {
+                font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+                color: #ccc;
+              }
+
+              .active {
+                color: #fc0000;
+              }
             }
 
             .wrap-reset-button {
@@ -841,10 +901,10 @@ export default {
             }
           }
 
-          .cartEffect-enter-active, .cartEffect-leave-active {
+          .cartEffect-enter-active {
             transition: all 1.5s;
           }
-          .cartEffect-enter, .cartEffect-leave-to /* .list-leave-active below version 2.1.8 */ {
+          .cartEffect-enter /* .list-leave-active below version 2.1.8 */ {
             background-color: #fc0000;
           }
 
