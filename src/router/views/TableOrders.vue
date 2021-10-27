@@ -458,42 +458,9 @@ export default {
           });
         }
 
-        const optionList = clone.options;
-        let optionQty = 0;
-        for (let idx = 0; idx < optionList.length; idx += 1) {
-          for (let ldx = 0; ldx < optionList[idx].option_items.length; ldx += 1) {
-            const option = this.$store.state.goods.find((p) => p.T_order_store_good_code === optionList[idx].option_items[ldx].code);
-            if (!option || option.length === 0) {
-              return this.$store.commit('pushFlashMessage', '옵션데이터 매칭 에러');
-            }
-            const authKey = [];
-            authKey.push(Object.prototype.hasOwnProperty.call(option, 'T_order_store_good_image'));
-            authKey.push(Object.prototype.hasOwnProperty.call(option, 'T_order_store_pos_code'));
-            authKey.push(Object.prototype.hasOwnProperty.call(option, 'T_order_store_good_name'));
-            authKey.push(Object.prototype.hasOwnProperty.call(option, 'T_order_store_non_show_cart'));
-            authKey.push(Object.prototype.hasOwnProperty.call(option, 'T_order_store_good_code'));
-            authKey.push(Object.prototype.hasOwnProperty.call(option, 'qty'));
-            authKey.push(Object.prototype.hasOwnProperty.call(option, 'T_order_store_good_defualt_price'));
-            authKey.push(Object.prototype.hasOwnProperty.call(option, 'T_order_store_good_display_name'));
-
-            const authAnswer = authKey.every((option) => {
-              return option;
-            });
-
-            if (!authAnswer) {
-              return this.$store.commit('pushFlashMessage', '옵션데이터 매칭 에러');
-            }
-
-            optionQty += 1;
-          }
-        }
-
-        if (optionQty === 0) {
-          return this.$store.commit('pushFlashMessage', '상품 옵션 목록이 없습니다.');
-        }
-
         this.selectedProduct = clone;
         this.optionModal = true;
+
       } else {
         const result = {
           option: good.options,
@@ -574,6 +541,7 @@ export default {
     optionModalClose() {
       setTimeout(() => {
         this.optionModal = false;
+        this.selectedProduct = null;
       }, 0);
     },
     optionMdalConfirm(newOrder) {
