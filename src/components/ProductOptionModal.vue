@@ -141,26 +141,23 @@ export default {
           return a.group.sort_number - b.group.sort_number;
         });
 
+
         const optionProducts = sortedOptions.map((o) => {
           return {
-            ...this.$store.state.goods.find((p) => p.T_order_store_good_code === o.code),
+            option: o,
             qty: o.qty,
           };
         });
 
         const currentOption = optionProducts.map((o) => ({
-          img_url: o.T_order_store_good_image,
-          pos_code: o.T_order_store_pos_code,
-          pos_name: o.T_order_store_good_name,
-          cart_show: String(o.T_order_store_non_show_cart),
-          good_code: o.T_order_store_good_code,
+          pos_code: o.option.code,
+          pos_name: o.option.name,
+          good_code: o.option.code,
           order_qty: o.qty,
-          pos_price: o.T_order_store_good_defualt_price,
-          good_price: o.T_order_store_good_defualt_price,
-          display_name: o.T_order_store_good_display_name,
+          pos_price: o.option.price,
+          good_price: o.option.price,
+          display_name: o.option.T_order_store_good_display_name,
         }));
-
-        // // console.log('currentOption', [...currentOption]);
 
         const processProdct = (good) => ({
           option: good.options,
@@ -183,7 +180,7 @@ export default {
           qty: 1,
           option: currentOption,
         };
-
+        
         const code = [this.product.code].concat(Array.from(sortedOptions, o => o.code +':' + o.qty)).join('-');
 
         const newOrder = {
@@ -256,7 +253,6 @@ export default {
       }
     },
     plusQty(option) {
-      console.log('찍힘?', option);
       let max_qty = 9;
       if (option.limit_qty) {
         max_qty = option.limit_qty;
@@ -276,7 +272,6 @@ export default {
     },
   },
   mounted() {
-    console.log(this.product.options, '테스트용2');
   }
 };
 </script>
@@ -328,7 +323,7 @@ export default {
           display: flex;
           align-items: center;
           gap: 0.78125vw;
-          height: 5.234375vw;
+          min-height: 5.234375vw;
           padding: 0 1.171875vw !important;
           border: solid 0.078125vw #d6d6d6;
           border-radius: 0.78125vw;
