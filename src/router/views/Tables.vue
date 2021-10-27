@@ -2,14 +2,16 @@
   .tables-page-container
     p.tables-page-title 테이블 주문 (테스트)
     .order-table-list
-      button.order-table-name(v-for="table in tables" :key="table.Ta_id" @click="openTableOrders(table)") 
+      button.order-table-name(v-for="table in sortedTables" :key="table.Ta_id" @click="openTableOrders(table)") 
         p {{getTableName(table)}}
         p {{table.ordering ? '주문중' : ''}}
     .wrap-all-table-reset-button
-      button.all-table-reset-button 테이블 전체 새로고침
+      button.all-table-reset-button(@click="onAllRefresh") 테이블 전체 새로고침
 </template>
 
 <script>
+/* eslint-disable vue/no-side-effects-in-computed-properties */
+
 import paths from '@router/paths';
 
 export default {
@@ -20,8 +22,11 @@ export default {
     };
   },
   computed: {
-    tables() {
-      return this.$store.state.tables;
+    sortedTables() {
+      const tables = this.$store.state.tables.sort((a, b) => {
+        return a.Tablet_name.length - b.Tablet_name.length || a.Tablet_name.localeCompare(b.Tablet_name);
+      });
+      return tables;
     },
   },
   watch: {
