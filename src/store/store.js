@@ -495,7 +495,6 @@ const order = {
 const shop = {
   mutations: {
     SET_STORES: (state, stores) => {
-      // console.log('stores', stores);
       Vue.set(state, 'stores', stores);
     },
   },
