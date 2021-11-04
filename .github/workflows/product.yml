@@ -61,7 +61,7 @@ jobs:
           fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
           custom_payload: |
             {
-              text: '*주문해 프로덕트 업데이트*',
+              text: '*오더뷰 프로덕트 업데이트*',
               attachments: [{
                 color: '${{ job.status }}' === 'success' ? 'good' : '${{ job.status }}' === 'failure' ? 'danger' : 'warning',
                 fields: [
