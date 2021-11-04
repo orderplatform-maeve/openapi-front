@@ -11,6 +11,7 @@
     "dev:stop-redirect": "cross-env NODE_ENV=development SERVER_TYPE=rest STOP_REDIRECT=true vue-cli-service serve --open",
     "demo:stop-redirect": "cross-env NODE_ENV=development SERVER_TYPE=demo STOP_REDIRECT=true vue-cli-service serve --open",
     "build": "vue-cli-service build",
+    "build:dev": "vue-cli-service build --mode development",
     "deploy": "node ./script/deploy.js",
     "deploy:tmp": "node ./script/deployTmp.js",
     "deploy:dev": "cross-env NODE_ENV=development SERVER_TYPE=rest STOP_REDIRECT=true vue-cli-service build && node ./script/s3Uploader.dev.js",
