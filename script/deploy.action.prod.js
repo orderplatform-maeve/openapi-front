@@ -89,43 +89,41 @@ const uploadDistFilesAtS3 = async (distKey) => {
 
       // ignore if directory
       if (fs.lstatSync(filePath).isDirectory()) {
-      // // console.log('is directory', filePath, fileName);
-        fs.readdir(filePath, (e, subFiles) => {
-          if (e) { throw e; }
+        const subFiles = await fs.promises.readdir(filePath);
 
-          if(!subFiles || subFiles.length === 0) {
-          // console.log(`provided folder '${filePath}' is empty or does not exist.`);
-          // console.log('Make sure your project was compiled!');
-            return;
+        if (!subFiles || subFiles.length === 0) {
+          console.log(`provided folder '${filePath}' is empty or does not exist.`);
+          console.log('Make sure your project was compiled!');
+          continue;
+        }
+
+        for (const subFileName of subFiles) {
+          console.log('subFileName', subFileName);
+          const subFilePath = `${filePath}/${subFileName}`;
+
+          const fileContent = await fs.promises.readFile(subFilePath);
+
+          if (!fileContent) {
+            throw 's3 파일 컨텐츠를 찾지 못했습니다.';
           }
 
-          for (const subFileName of subFiles) {
-            console.log('subFileName', subFileName);
-            const subFilePath = `${filePath}/${subFileName}`;
+          const ContentType = mime.getType(subFileName);
 
-            fs.readFile(subFilePath, async (err, fileContent) => {
-              if (err) { throw err; }
-
-              const ContentType = mime.getType(subFileName);
-
-              // upload file to S3
-              const subS3Data = await s3.upload({
-                Bucket: BUCKET_NAME,
-                Key: `${distKey}/${fileName}/${subFileName}`,
-                Body: fileContent,
-                ContentType,
-                CacheControl: 'no-cache',
-              }).promise();
-              console.log(subS3Data);
-              const isKey = Object.prototype.hasOwnProperty.call(subS3Data, 'key');
-              if (isKey) {
-                uploadFileCount = uploadFileCount -1;
-                console.log(`Successfully uploaded '${subS3Data.key}'!`);
-              }
-            });
+          // upload file to S3
+          const subS3Data = await s3.upload({
+            Bucket: BUCKET_NAME,
+            Key: `${distKey}/${fileName}/${subFileName}`,
+            Body: fileContent,
+            ContentType,
+            CacheControl: 'no-cache',
+          }).promise();
+          console.log(subS3Data);
+          const isKey = Object.prototype.hasOwnProperty.call(subS3Data, 'key');
+          if (isKey) {
+            uploadFileCount = uploadFileCount -1;
+            console.log(`Successfully uploaded '${subS3Data.key}'!`);
           }
-
-        });
+        }
         continue;
       }
 
@@ -203,7 +201,7 @@ async function createTag(tag) {
     const params = {
       owner,
       repo,
-      tag,
+      tag: tag.replaceAll('/', '.'),
       message: getMessage(),
       object: process.env.GITHUB_SHA,
       type: 'commit',
