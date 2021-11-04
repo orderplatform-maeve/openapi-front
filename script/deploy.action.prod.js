@@ -99,8 +99,7 @@ const uploadDistFilesAtS3 = async (distKey) => {
           }
 
           for (const subFileName of subFiles) {
-          // // console.log('subFileName', subFileName);
-
+          // console.log('subFileName', subFileName);
             const subFilePath = `${filePath}/${subFileName}`;
 
             fs.readFile(subFilePath, (err, fileContent) => {
@@ -117,7 +116,7 @@ const uploadDistFilesAtS3 = async (distKey) => {
                 CacheControl: 'no-cache',
               }, (err) => {
                 if (err) { throw err; }
-              // console.log(`Successfully uploaded '${subFileName}'`);
+                console.log(`Successfully uploaded '${subFileName}'`);
               });
 
             });
@@ -129,10 +128,6 @@ const uploadDistFilesAtS3 = async (distKey) => {
 
       const ContentType = mime.getType(fileName);
       const isGzip = ContentType.indexOf('gzip') > -1;
-      const isJs = ContentType.indexOf('javascript') > -1;
-      if (isJs) {
-        continue;
-      }
 
       // read file contents
       const fileContent = await fs.promises.readFile(filePath);
