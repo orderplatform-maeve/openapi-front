@@ -201,7 +201,7 @@ async function createTag(tag) {
     const params = {
       owner,
       repo,
-      tag: tag.replaceAll('/', '.'),
+      tag: tag.replace(/([/])/g, '.'),
       message: getMessage(),
       object: process.env.GITHUB_SHA,
       type: 'commit',
