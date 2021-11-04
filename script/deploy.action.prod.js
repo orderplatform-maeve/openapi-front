@@ -80,7 +80,7 @@ const uploadDistFilesAtS3 = async (distKey) => {
       throw '업로드 할 파일 없습니다. 빌드를 확인하시오.';
     }
 
-    let uploadFileCount = files.length;
+    let uploadFileCount = 3;
     // for each file in the directory
     for (const fileName of files) {
 
@@ -89,16 +89,46 @@ const uploadDistFilesAtS3 = async (distKey) => {
 
       // ignore if directory
       if (fs.lstatSync(filePath).isDirectory()) {
+        const subFiles = await fs.promises.readdir(filePath);
+
+        if (!subFiles || subFiles.length === 0) {
+          console.log(`provided folder '${filePath}' is empty or does not exist.`);
+          console.log('Make sure your project was compiled!');
+          continue;
+        }
+
+        for (const subFileName of subFiles) {
+          console.log('subFileName', subFileName);
+          const subFilePath = `${filePath}/${subFileName}`;
+
+          const fileContent = await fs.promises.readFile(subFilePath);
+
+          if (!fileContent) {
+            throw 's3 파일 컨텐츠를 찾지 못했습니다.';
+          }
+
+          const ContentType = mime.getType(subFileName);
+
+          // upload file to S3
+          const subS3Data = await s3.upload({
+            Bucket: BUCKET_NAME,
+            Key: `${distKey}/${fileName}/${subFileName}`,
+            Body: fileContent,
+            ContentType,
+            CacheControl: 'no-cache',
+          }).promise();
+          console.log(subS3Data);
+          const isKey = Object.prototype.hasOwnProperty.call(subS3Data, 'key');
+          if (isKey) {
+            uploadFileCount = uploadFileCount -1;
+            console.log(`Successfully uploaded '${subS3Data.key}'!`);
+          }
+        }
         continue;
       }
 
       const ContentType = mime.getType(fileName);
       const isGzip = ContentType.indexOf('gzip') > -1;
-      const isJs = ContentType.indexOf('javascript') > -1;
-      if (isJs) {
-        uploadFileCount = uploadFileCount - 1;
-        continue;
-      }
 
       // read file contents
       const fileContent = await fs.promises.readFile(filePath);
@@ -123,11 +153,10 @@ const uploadDistFilesAtS3 = async (distKey) => {
       console.log(s3Data);
       const isKey = Object.prototype.hasOwnProperty.call(s3Data, 'key');
       if (isKey) {
-        uploadFileCount = uploadFileCount - 1;
+        uploadFileCount = uploadFileCount -1;
         console.log(`Successfully uploaded '${s3Data.key}'!`);
       }
     }
-
     if (uploadFileCount > 0) {
       throw '업로드 필요한 파일들이 다올라가지 않았습니다.';
     }
@@ -172,7 +201,7 @@ async function createTag(tag) {
     const params = {
       owner,
       repo,
-      tag,
+      tag: tag.replace(/([/])/g, '.'),
       message: getMessage(),
       object: process.env.GITHUB_SHA,
       type: 'commit',
