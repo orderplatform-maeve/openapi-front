@@ -80,7 +80,6 @@ const uploadDistFilesAtS3 = async (distKey) => {
       throw '업로드 할 파일 없습니다. 빌드를 확인하시오.';
     }
 
-    let uploadFileCount = files.length;
     // for each file in the directory
     for (const fileName of files) {
 
@@ -89,6 +88,42 @@ const uploadDistFilesAtS3 = async (distKey) => {
 
       // ignore if directory
       if (fs.lstatSync(filePath).isDirectory()) {
+      // // console.log('is directory', filePath, fileName);
+        fs.readdir(filePath, (e, subFiles) => {
+          if (e) { throw e; }
+
+          if(!subFiles || subFiles.length === 0) {
+          // console.log(`provided folder '${filePath}' is empty or does not exist.`);
+          // console.log('Make sure your project was compiled!');
+            return;
+          }
+
+          for (const subFileName of subFiles) {
+          // // console.log('subFileName', subFileName);
+
+            const subFilePath = `${filePath}/${subFileName}`;
+
+            fs.readFile(subFilePath, (err, fileContent) => {
+              if (err) { throw err; }
+
+              const ContentType = mime.getType(subFileName);
+
+              // upload file to S3
+              s3.upload({
+                Bucket: BUCKET_NAME,
+                Key: `${fileName}/${subFileName}`,
+                Body: fileContent,
+                ContentType,
+                CacheControl: 'no-cache',
+              }, (err) => {
+                if (err) { throw err; }
+              // console.log(`Successfully uploaded '${subFileName}'`);
+              });
+
+            });
+          }
+
+        });
         continue;
       }
 
@@ -96,7 +131,6 @@ const uploadDistFilesAtS3 = async (distKey) => {
       const isGzip = ContentType.indexOf('gzip') > -1;
       const isJs = ContentType.indexOf('javascript') > -1;
       if (isJs) {
-        uploadFileCount = uploadFileCount - 1;
         continue;
       }
 
@@ -123,19 +157,9 @@ const uploadDistFilesAtS3 = async (distKey) => {
       console.log(s3Data);
       const isKey = Object.prototype.hasOwnProperty.call(s3Data, 'key');
       if (isKey) {
-        uploadFileCount = uploadFileCount - 1;
         console.log(`Successfully uploaded '${s3Data.key}'!`);
       }
     }
-
-    if (uploadFileCount > 0) {
-      throw '업로드 필요한 파일들이 다올라가지 않았습니다.';
-    }
-
-    if (uploadFileCount < 0) {
-      throw '업로드 필요한 파일 갯수가 초과 업로드 되었습니다.';
-    }
-
     return true;
   } catch (error) {
     core.setFailed('There was an error viewing your album: ' + error);
