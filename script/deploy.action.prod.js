@@ -80,6 +80,7 @@ const uploadDistFilesAtS3 = async (distKey) => {
       throw '업로드 할 파일 없습니다. 빌드를 확인하시오.';
     }
 
+    let uploadFileCount = 3;
     // for each file in the directory
     for (const fileName of files) {
 
@@ -102,23 +103,25 @@ const uploadDistFilesAtS3 = async (distKey) => {
             console.log('subFileName', subFileName);
             const subFilePath = `${filePath}/${subFileName}`;
 
-            fs.readFile(subFilePath, (err, fileContent) => {
+            fs.readFile(subFilePath, async (err, fileContent) => {
               if (err) { throw err; }
 
               const ContentType = mime.getType(subFileName);
 
               // upload file to S3
-              s3.upload({
+              const subS3Data = await s3.upload({
                 Bucket: BUCKET_NAME,
-                Key: `${distKey}${fileName}/${subFileName}`,
+                Key: `${distKey}/${fileName}/${subFileName}`,
                 Body: fileContent,
                 ContentType,
                 CacheControl: 'no-cache',
-              }, (err) => {
-                if (err) { throw err; }
-                console.log(`Successfully uploaded '${subFileName}'`);
-              });
-
+              }).promise();
+              console.log(subS3Data);
+              const isKey = Object.prototype.hasOwnProperty.call(subS3Data, 'key');
+              if (isKey) {
+                uploadFileCount = uploadFileCount -1;
+                console.log(`Successfully uploaded '${subS3Data.key}'!`);
+              }
             });
           }
 
@@ -152,9 +155,18 @@ const uploadDistFilesAtS3 = async (distKey) => {
       console.log(s3Data);
       const isKey = Object.prototype.hasOwnProperty.call(s3Data, 'key');
       if (isKey) {
+        uploadFileCount = uploadFileCount -1;
         console.log(`Successfully uploaded '${s3Data.key}'!`);
       }
     }
+    if (uploadFileCount > 0) {
+      throw '업로드 필요한 파일들이 다올라가지 않았습니다.';
+    }
+
+    if (uploadFileCount < 0) {
+      throw '업로드 필요한 파일 갯수가 초과 업로드 되었습니다.';
+    }
+
     return true;
   } catch (error) {
     core.setFailed('There was an error viewing your album: ' + error);
