@@ -99,7 +99,7 @@ const uploadDistFilesAtS3 = async (distKey) => {
           }
 
           for (const subFileName of subFiles) {
-          // console.log('subFileName', subFileName);
+            console.log('subFileName', subFileName);
             const subFilePath = `${filePath}/${subFileName}`;
 
             fs.readFile(subFilePath, (err, fileContent) => {
@@ -110,7 +110,7 @@ const uploadDistFilesAtS3 = async (distKey) => {
               // upload file to S3
               s3.upload({
                 Bucket: BUCKET_NAME,
-                Key: `${fileName}/${subFileName}`,
+                Key: `${distKey}${fileName}/${subFileName}`,
                 Body: fileContent,
                 ContentType,
                 CacheControl: 'no-cache',
