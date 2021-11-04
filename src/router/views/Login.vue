@@ -39,6 +39,7 @@ export default {
         const isLogin = await this.$store.dispatch('login', fd);
         if (isLogin) {
           // // console.log(this.$router.push, paths.store);
+
           this.$router.push(paths.store);
         }
       }

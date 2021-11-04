@@ -358,6 +358,7 @@ export default {
           });
         });
       } catch (error) {
+        console.log('여긴가?');
         // console.log(error);
       }
     },
@@ -631,12 +632,20 @@ export default {
       try {
         const params = { store_code: this.auth.store.store_code };
         const auth = JSON.parse(localStorage.auth);
-        console.log('getAuthentication', auth);
         this.$socket.emit('reqStoreInfo', params);
         this.$store.commit('SET_AUTH', auth);
-      } catch (error) {
-        // console.log(error);
-      }
+
+        if (auth.store.code) {
+          const data = {
+            storeCode: auth.store.code,
+            tableCode: '',
+          };
+
+          window.UUID.setStoreCode(JSON.stringify(data));
+        }
+      } catch {
+        console.log('안드로이드가 아니라 발생하는 에러 / 신경안써도 됨');
+      } 
     },
     getUCode() {
       // get uCode from localStorage
