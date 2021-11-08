@@ -67,6 +67,20 @@ export default {
       localStorage.auth = JSON.stringify(auth);
       await this.$store.dispatch('updateAuth', auth);
 
+      try {
+        if (auth.store.code) {
+          console.log(auth.store.code);
+          const data = {
+            storeCode: auth.store.code,
+            tableCode: '',
+          };
+
+          window.UUID.setStoreCode(JSON.stringify(data));
+        }
+      } catch(error) {
+        console.log('안드로이드 아니라서 발생하는 에러');
+      }
+
       const params = new FormData();
       params.append('store_code', this.auth.store.store_code);
       const res = await this.$store.dispatch('setStoreInit', params);
