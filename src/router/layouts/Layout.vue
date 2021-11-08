@@ -641,6 +641,7 @@ export default {
             tableCode: '',
           };
 
+          alert('window.uuid.setStoreCode 실행');
           window.UUID.setStoreCode(JSON.stringify(data));
         }
       } catch {
