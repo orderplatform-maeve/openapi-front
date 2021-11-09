@@ -38,10 +38,7 @@ jobs:
         if: steps.node-cache.outputs.cache-hit != 'true'
         run: yarn
 
-      - name: Build
-        run: yarn build:prod
-
-      - name: Deploy
+      - name: Build & Deploy
         env:
           BUCKET_NAME: orderview.torder.co.kr
           SIGNATURE_VERSION: v4

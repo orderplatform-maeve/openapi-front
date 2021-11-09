@@ -6,6 +6,8 @@ const S3 = require('aws-sdk/clients/s3');
 const path = require('path');
 const mime = require('mime');
 const { Client } = require("@notionhq/client");
+const util = require('util');
+const exec = util.promisify(require('child_process').exec);
 
 const {
   AWS_ACCESS_KEY_ID,
@@ -279,6 +281,25 @@ const writeNotionRow = async (hotfixNum, comment) => {
   }
 };
 
+async function build(hotfixVersion) {
+  try {
+    process.env.UPLOAD_TYPE = majorVersion;
+    process.env.UPLOAD_VERSION = `${minorVersion}/${hotfixVersion}`;
+    process.env.SERVER_TYPE = 'rest';
+
+    const { stdout, stderr } = await exec('vue-cli-service build --mode development && node ./script/s3Uploader.js');
+    if (stderr) {
+      core.setFailed(stderr);
+      return false;
+    }
+
+    console.log(stdout);
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
 async function run() {
   try {
     const s3BucketKey = await getCurrentBucketKey();
@@ -286,6 +307,9 @@ async function run() {
     if (!s3BucketKey.prefix) { throw 's3 업로드할 프리픽스를 찾지 못했습니다.'; }
     if (!s3BucketKey.hotfixVersion) { throw 's3 업로드할 핫픽스 버젼을 찾지 못했습니다.'; }
     if (!s3BucketKey.key) { throw 's3 업로드할 버킷 키를 찾지 못하였습니다.'; }
+
+    const isBuild = await build(s3BucketKey.hotfixVersion);
+    if (!isBuild) { throw '빌드 실패 하였습니다.'; }
 
     const isS3UploadOk = await uploadDistFilesAtS3(s3BucketKey.key);
     if (!isS3UploadOk) { throw 's3 업로드 에러 발생 조재훈 팀장에게 안내바람'; }
