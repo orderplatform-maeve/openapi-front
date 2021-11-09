@@ -287,7 +287,7 @@ async function build(hotfixVersion) {
     process.env.UPLOAD_VERSION = `${minorVersion}/${hotfixVersion}`;
     process.env.SERVER_TYPE = 'rest';
 
-    const { stdout, stderr } = await exec('vue-cli-service build --mode development && node ./script/s3Uploader.js');
+    const { stdout, stderr } = await exec('npx vue-cli-service build --mode development && node ./script/s3Uploader.js');
     if (stderr) {
       core.setFailed(stderr);
       return false;
