@@ -91,7 +91,7 @@ export default {
         selected: 'start',
       },
       activeButton: 'today',
-      weekday: ['월', '화', '수', '목', '금', '토', '일'],
+      weekday: ['일', '월', '화', '수', '목', '금', '토'],
     };
   },
   methods: {
