@@ -1,13 +1,12 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
+const exec = require('@actions/exec');
 const os = require('os');
 const fs = require('fs');
 const S3 = require('aws-sdk/clients/s3');
 const path = require('path');
 const mime = require('mime');
 const { Client } = require("@notionhq/client");
-const util = require('util');
-const exec = util.promisify(require('child_process').exec);
 
 const {
   AWS_ACCESS_KEY_ID,
@@ -287,7 +286,7 @@ async function build(hotfixVersion) {
     process.env.UPLOAD_VERSION = `${minorVersion}/${hotfixVersion}`;
     process.env.SERVER_TYPE = 'rest';
 
-    const { stdout, stderr } = await exec('npx vue-cli-service build --mode development');
+    const { stdout, stderr } = await exec('vue-cli-service build --mode development');
     if (stderr) {
       core.setFailed(stderr);
       return false;
