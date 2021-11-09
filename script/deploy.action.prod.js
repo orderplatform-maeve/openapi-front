@@ -69,6 +69,25 @@ const getCurrentBucketKey = async () => {
   }
 };
 
+async function build(hotfixVersion) {
+  try {
+    process.env.UPLOAD_TYPE = majorVersion;
+    process.env.UPLOAD_VERSION = `${minorVersion}/${hotfixVersion}`;
+    process.env.SERVER_TYPE = 'rest';
+
+    const { stdout, stderr } = await exec('vue-cli-service build --mode development');
+    if (stderr) {
+      core.setFailed(stderr);
+      return false;
+    }
+
+    core.notice(stdout ? stdout : '빌드 성공');
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
 const uploadDistFilesAtS3 = async (distKey) => {
   try {
     const folderPath  = '../dist';
@@ -279,25 +298,6 @@ const writeNotionRow = async (hotfixNum, comment) => {
     return false;
   }
 };
-
-async function build(hotfixVersion) {
-  try {
-    process.env.UPLOAD_TYPE = majorVersion;
-    process.env.UPLOAD_VERSION = `${minorVersion}/${hotfixVersion}`;
-    process.env.SERVER_TYPE = 'rest';
-
-    const { stdout, stderr } = await exec('vue-cli-service build --mode development');
-    if (stderr) {
-      core.setFailed(stderr);
-      return false;
-    }
-
-    console.log(stdout);
-    return true;
-  } catch (error) {
-    return false;
-  }
-}
 
 async function run() {
   try {
