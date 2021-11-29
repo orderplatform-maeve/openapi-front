@@ -1,5 +1,6 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
+const { exec } = require('@actions/exec');
 const os = require('os');
 const fs = require('fs');
 const S3 = require('aws-sdk/clients/s3');
@@ -67,6 +68,25 @@ const getCurrentBucketKey = async () => {
     return false;
   }
 };
+
+async function build(hotfixVersion) {
+  try {
+    process.env.UPLOAD_TYPE = majorVersion;
+    process.env.UPLOAD_VERSION = `${minorVersion}/${hotfixVersion}`;
+    process.env.SERVER_TYPE = 'rest';
+
+    const { stdout, stderr } = await exec('vue-cli-service build --mode development');
+    if (stderr) {
+      core.setFailed(stderr);
+      return false;
+    }
+
+    core.notice(stdout ? stdout : '빌드 성공');
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
 
 const uploadDistFilesAtS3 = async (distKey) => {
   try {
@@ -286,6 +306,9 @@ async function run() {
     if (!s3BucketKey.prefix) { throw 's3 업로드할 프리픽스를 찾지 못했습니다.'; }
     if (!s3BucketKey.hotfixVersion) { throw 's3 업로드할 핫픽스 버젼을 찾지 못했습니다.'; }
     if (!s3BucketKey.key) { throw 's3 업로드할 버킷 키를 찾지 못하였습니다.'; }
+
+    const isBuild = await build(s3BucketKey.hotfixVersion);
+    if (!isBuild) { throw '빌드 실패 하였습니다.'; }
 
     const isS3UploadOk = await uploadDistFilesAtS3(s3BucketKey.key);
     if (!isS3UploadOk) { throw 's3 업로드 에러 발생 조재훈 팀장에게 안내바람'; }
