@@ -290,8 +290,6 @@ const socket = {
         message: '소켓 서버 연결 요청 중 입니다. 잠시만 대기 해주십시요.',
       };
 
-      console.log(log);
-
       commit('setSignBoardStatus', payload);
     },
     SOCKET_connect({ commit }) {
@@ -435,6 +433,10 @@ const order = {
         orders[idx].totalMisu = 0;
         Vue.set(state, 'orders', orders);
       }
+    },
+    setPayloadStatus(state, payload) {
+      console.log('여기 찍힘?', payload);
+      state.payloadStatus = payload;
     },
   },
   actions: {
@@ -1232,6 +1234,7 @@ const payment = {
 const state = {
   order: undefined,
   orders: [],
+  payloadStatus: 0,
   device: {
     serviceStatus: false,
     orderStatus: false,
