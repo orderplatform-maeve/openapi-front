@@ -19,7 +19,10 @@
         .orders-status(@click="setViewMode('confirm')" :class="{activeButton: viewMode === 'confirm'}")
           p 확인 주문
           span {{lengthCommitedOrders}}
-      .wrap-order-list
+      .wrap-payload-info-status-select
+        p.payload-info(:class="{'payload-active': payloadStatus === 0}" @click="payloadInfoChange(0)") 결제포함
+        p.payload-info(:class="{'payload-active': payloadStatus === 1}" @click="payloadInfoChange(1)") 결제미포함
+      .wrap-order-list(v-if="payloadStatus === 0")
         .order-title-list
           p.order-title 테이블번호
           p.order-title 주문유형
@@ -44,6 +47,26 @@
               p.order-information-credit-type {{creditTypeCheck(order)}}
               p.order-information-order-time {{getOrderTime(order).substr(11)}}
               p.order-information-total-people {{visitGroups(order)}}명
+      .wrap-order-list(v-if="payloadStatus === 1")
+        .electronic-access-list-version
+          p.order-title 테이블번호
+          p.order-title 주문유형
+          p.order-title 주문시간
+          p.order-title 총 인원수
+          p.order-title 전자출입명부 인증수
+        .wrap-order-information-lists-electronic
+          div(v-for="(order, index) in sortedOrders" :key="`order-index-`+index" :class="getOrderListStyle(order, index)")
+            .order-information-list(v-if="visibleOrderItem(order)" @click="openView(order)")
+              p.order-information-table-number(:class="orderStyleCheck(order)") {{checkedTabletNum(order)}}
+              p.order-information-order-type(:class="orderStyleCheck(order)") {{orderTypeCheck(order)}}
+              p.order-information-order-time {{getOrderTime(order).substr(11)}}
+              p.order-information-people-group
+                span {{totalVisitPeopleDeepDepth(order)}}
+                span(v-if="totalVisitPeopleDeepDepth(order)") =
+                span.red-box {{visitGroups(order)}}명
+              p.order-information-total-people
+                span {{electronicAccessPeople(order)}}명
+                
 </template>
 
 <script>
@@ -105,6 +128,10 @@ export default {
     auth() {
       return this.$store.state.auth;
     },
+    payloadStatus() {
+
+      return this.$store.state.payloadStatus;
+    }
   },
   async mounted() {
     this.isLoading = true;
@@ -116,6 +143,12 @@ export default {
       setTimeout(() => {
         this.isLoading = false;
       }, 1000);
+    }
+
+    const payloadStatus = localStorage.getItem('payloadStatus');
+
+    if (payloadStatus) {
+      this.$store.commit('setPayloadStatus', parseInt(payloadStatus));
     }
   },
   methods: {
@@ -286,6 +319,32 @@ export default {
       return order?.visitGroups?.total ? order.visitGroups.total : 0;
     },
     ...utils,
+
+    payloadInfoChange(number) {
+      this.$store.commit('setPayloadStatus', number);
+      localStorage.setItem('payloadStatus', number);
+    },
+    totalVisitPeopleDeepDepth(order) {
+      const visitPeopleGroup = order?.visitGroups?.groupInfo;
+
+      if (visitPeopleGroup) {
+        let text = '';
+
+        try {
+          text += `${Object.keys(visitPeopleGroup)[0]} ${visitPeopleGroup[Object.keys(visitPeopleGroup)[0]]}명, `;
+          text += `${Object.keys(visitPeopleGroup)[1]} ${visitPeopleGroup[Object.keys(visitPeopleGroup)[1]]}명`;
+
+          return text;
+        } catch {
+          return false;
+        }
+      }
+    },
+    electronicAccessPeople(order) {
+      const people = order?.visitPeopleCnt;
+
+      return people ? people : 0;
+    }
   }
 };
 </script>
@@ -343,6 +402,36 @@ export default {
     }
   }
 
+  .wrap-payload-info-status-select {
+    padding-top: 1.5625vw !important;
+    height: 3.90625vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.78125vw;
+    background-color: #fff;
+
+    .payload-info {
+      width: 17.1875vw;
+      height: 3.90625vw;
+      background-color: #e5e5e5;
+      border-radius: 0.78125vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+      font-size: 1.5625vw;
+      letter-spacing: -0.0390625vw;
+      color: #666;
+    }
+
+    .payload-active {
+      background-color: #12151d;
+      font-weight: bold;
+      color: #fff;
+    }
+  }
+
   .wrap-order-list {
     flex:1;
     width: 84.53125vw;
@@ -365,8 +454,10 @@ export default {
         text-align: center;
       }
     }
+
+    // 결제 포함 버전
     .wrap-order-information-lists {
-      height: calc(92.5vh - 7.8125vw);
+      height: calc(92.5vh - 12.65125vw);
       overflow: auto;
       .order-information-lists {
         .order-information-list {
@@ -436,6 +527,136 @@ export default {
 
           .order-information-total-people {
             background-color: #fff;
+            color: #000 !important;
+          }
+        }
+      }
+    }
+
+    // 결제미포함 버전
+    .electronic-access-list-version {
+      display: grid;
+      grid-template-columns: 15.625vw 5.46875vw 4.53125vw 1fr 9.375vw;
+      gap: 3.90625vw;
+      padding: 3.75vh 1.5625vw 1.25vh !important;
+      border-bottom: solid 0.078125vw #333333;
+      box-sizing: border-box;
+
+      .order-title {
+        font-size: 1.09375vw;
+        color: #666;
+        text-align: center;
+      }
+    }
+
+    .wrap-order-information-lists-electronic {
+      height: calc(92.5vh - 12.65125vw);
+      overflow: auto;
+      .order-information-lists {
+        .order-information-list {
+          height: 4.375vw;
+          padding: 0 1.5625vw !important;
+          display: grid;
+          grid-template-columns: 15.625vw 5.46875vw 4.53125vw 1fr 9.375vw;
+          align-items: center;
+          gap: 3.90625vw;
+          box-sizing: border-box;
+
+          > p {
+            font-size: 1.406250vw;
+            letter-spacing: -0.02109375vw;
+            text-align: center;
+          }
+
+          .orderColorRed {
+            color: #fc0000;
+          }
+          .orderColorBlue {
+            color: #184fe1;
+          }
+          .orderColorGreen {
+            color: #1e9d2f;
+          }
+          .orderColorYellow {
+            color: #e5a11a;
+          }
+
+          .order-information-table-number {
+            font-weight: bold;
+          }
+
+          .order-information-unpaid-money {
+            color: #999;
+            .unpaid {
+              color: #fc0000;
+              text-decoration: underline;
+            }
+          }
+
+          .order-information-people-group {
+            height: 2.65625vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.78125vw;
+            border-radius: 0.390625vw;
+
+            .red-box {
+              min-width: 4.375vw;
+              height: 2.65625vw;
+              background-color: #fc0000;
+              color: #fff;
+              font-weight: bold;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              border-radius: 0.390625vw;
+            }
+          }
+
+          .order-information-total-people {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            > span {
+              min-width: 4.375vw;
+              height: 2.65625vw;
+              background-color: #fc0000;
+              color: #fff;
+              font-weight: bold;
+              border-radius: 0.390625vw;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+            }
+          }
+        }
+      }
+
+      .bg-gray {
+        background-color: #f5f5f5;
+      }
+
+      .confirm-status {
+        background-color: #343434 !important;
+
+        .order-information-people-group {
+          .red-box {
+            background-color: #fff !important;
+            color: #000 !important;
+          }
+        }
+
+        .order-information-list {
+          > p {
+            color: #fff !important;
+          }
+        }
+
+        .order-information-total-people {
+          > span {
+            background-color: #fff !important;
             color: #000 !important;
           }
         }

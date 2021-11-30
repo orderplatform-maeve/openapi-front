@@ -81,6 +81,7 @@ export default {
     },
   },
   mounted() {
+    console.log(this.order,' 확인');
     clearInterval(this.interval);
     this.seconds = 10;
 
