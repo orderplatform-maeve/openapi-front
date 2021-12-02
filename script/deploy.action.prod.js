@@ -206,7 +206,7 @@ async function createTag(tag) {
 
     const getMessage = () => {
       try {
-        if (!github.context.payload.pull_request?.body) {
+        if (!github.context.payload.pull_request.body) {
           throw 'git merge시 풀리퀘스트 바디내용을 기입 하지 않으셨습니다. 조재훈 팀장에게 알려주세요.';
         }
 
