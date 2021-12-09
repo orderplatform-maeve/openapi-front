@@ -4,9 +4,6 @@ import VueSocketIO from 'vue-socket.io';
 import moment from 'moment';
 
 import VCalendar from 'v-calendar';
-import * as Sentry from "@sentry/vue";
-import { Integrations } from "@sentry/tracing";
-
 
 import App from './App.vue';
 
@@ -43,21 +40,6 @@ import {
   PlusButton,
   MinusButton,
 } from '@svg';
-
-Sentry.init({
-  Vue,
-  dsn: "https://a56362fd3b3c404c921ab7be53b416d8@o1046478.ingest.sentry.io/6028261",
-  integrations: [
-    new Integrations.BrowserTracing({
-      routingInstrumentation: Sentry.vueRouterInstrumentation(router),
-      tracingOrigins: ["localhost", "my-site-url.com", /^\//],
-    }),
-  ],
-  // Set tracesSampleRate to 1.0 to capture 100%
-  // of transactions for performance monitoring.
-  // We recommend adjusting this value in production
-  tracesSampleRate: 1.0,
-});
 
 Vue.config.devtools = true;
 
