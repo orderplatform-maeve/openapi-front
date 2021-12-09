@@ -125,7 +125,7 @@
 
 <script>
 //import paths from '@router/paths';
-import { isDev } from '@utils/constants';
+import { STOP_REDIRECT } from '@utils/constants';
 import axios from 'axios';
 import endpoints from '@apis/endpoints';
 
@@ -542,7 +542,7 @@ export default {
           return this.showAlert(`!store_code(storeCd) 잘못된 형태입니다. 출력값: ${this.$store?.state?.auth?.store?.store_code}`);
         }
 
-        if (isDev) {
+        if (STOP_REDIRECT) {
           console.log('postMessage');
           return window.postMessage({
             methodName: 'callBackPayment',
@@ -574,7 +574,7 @@ export default {
               orderPrice: 0,
               resultText: '',
             })
-          }, 'http://localhost:8081');
+          }, 'http://localhost:8080');
         }
 
         if (window?.UUID) {
@@ -690,7 +690,7 @@ export default {
     box-sizing: border-box;
 
     > button {
-      font-family: 'Spoqa Han Sans Neo', 'sans-serif'; 
+      font-family: 'Spoqa Han Sans Neo', 'sans-serif';
       font-size: 1.25vw;
       letter-spacing: -0.03125vw;
       height: 3.515625vw;
@@ -837,7 +837,7 @@ export default {
 
           .payment-date {
            word-break: unset;
-           word-wrap: unset; 
+           word-wrap: unset;
           }
         }
       }
