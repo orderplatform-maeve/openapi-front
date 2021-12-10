@@ -22,6 +22,8 @@
       span (테스트)
     router-link.button-added(v-if="visibleOrderButton" :to="paths.newPaymentManagement") 신 결제내역<br>
       span (테스트)
+    router-link.button-added(v-if="visibleOrderButton" :to="paths.servingRobotManagement") 로봇 관리<br>
+      span (테스트)
 </template>
 
 <script>

@@ -4,6 +4,7 @@
 const REST_URL = 'http://rest.torder.co.kr';
 const ADMIN_URL = 'http://admin.torder.co.kr';
 const API_URL = 'http://api.torder.co.kr';
+const DEMO_URL = 'http://demo.api.torder.co.kr';
 
 // const SERVER_URL = isDemo ? DEMO_URL : REST_URL;
 
@@ -61,6 +62,9 @@ const endpoints = {
     deleteCartList: `${REST_URL}/credit/deleteCartList`,
     misuCommit: `${REST_URL}/credit/misuCommit`,
   },
+  servingRobot: {
+    servingRobotStatus: `${DEMO_URL}/message/_storeRobotList`
+  }
 };
 
 export default endpoints;

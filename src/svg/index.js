@@ -7,3 +7,4 @@ export { default as RefreshBlackIcon } from './RefreshBlackIcon';
 export { default as DeleteIcon } from './DeleteIcon';
 export { default as PlusButton } from './PlusButton';
 export { default as MinusButton } from './MinusButton';
+export { default as IconExitBlack } from './IconExitBlack';
