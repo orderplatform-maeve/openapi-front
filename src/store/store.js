@@ -12,6 +12,10 @@ import {
 import { isEmpty } from '@utils/CheckedType';
 import endpoints from '@apis/endpoints';
 
+import {
+  robot
+} from './modules';
+
 Vue.use(Vuex);
 
 function imagePreload(url) {
@@ -269,6 +273,48 @@ const socket = {
 
           commit('SET_TABLES', deepCopyArr);
         }
+      }
+
+      console.log(payload);
+
+      if (payload.type === 'Ready') {
+        try {
+          const config = {
+            robotId: payload.table.robot_id,
+            robotInfo: payload.robotInfo,
+            status: 'Ready',
+            destination: undefined,
+          };
+          this.commit('robot/updateRobotStatus', config);
+        } catch(error) {
+          console.log(error);
+        }
+      } else if (payload.type === 'Arrived') {
+        try {
+          const config = {
+            robotId: payload.table.robot_id,
+            robotInfo: payload.robotInfo,
+            status: 'Arrived',
+            destination: payload.table.name,
+          };
+          this.commit('robot/updateRobotStatus', config);
+        } catch(error) {
+          console.log(error);
+        }
+      } else if (payload.type === 'OnTheWay') {
+        try {
+          const config = {
+            robotId: payload.table.robot_id,
+            robotInfo: payload.robotInfo,
+            status: 'OnTheWay',
+            destination: payload.table.name,
+          };
+          this.commit('robot/updateRobotStatus', config);
+        } catch(error) {
+          console.log(error);
+        }
+      } else {
+        console.log('로봇 에러!!!!!', payload);
       }
     },
     SOCKET_disconnect({ commit }) {
@@ -1305,6 +1351,10 @@ const getters = {
   ...menu.getters,
 };
 
+const modules ={
+  robot,
+};
+
 const plugins = [];
 
 const storeInit = {
@@ -1313,6 +1363,7 @@ const storeInit = {
   mutations,
   actions,
   getters,
+  modules
 };
 
 const store = new Vuex.Store(storeInit);

@@ -3,18 +3,27 @@
     .serving-robot-back-modal
       .wrap-serving-robot-back-header
         p.serving-guide-header 서빙안내
-        icon-exit-black
+        icon-exit-black(@click.native="unVisibleModal")
       .wrap-serving-robot-back-message
-        p 김동주 테이블에 도착한 서빙로봇을 복귀시키시겠어요?
+        p 해당 테이블에 도착한 서빙로봇을 복귀시키시겠어요?
         p 수령 여부를 확인 후 [확인] 버튼을 눌러주세요.
       .wrap-confirm-button
-        button.cancel-button 취소
-        button.confirm-button 확인
+        button.cancel-button(@click="unVisibleModal") 취소
+        button.confirm-button(@click="goBackRobot") 확인
 </template>
 
 <script>
 export default {
-
+  props: {
+    unVisibleModal: {
+      type: Function,
+      required: true,
+    },
+    goBackRobot: {
+      type: Function,
+      required: true,
+    }
+  }
 };
 </script>
 

@@ -3,18 +3,23 @@
     .serving-robot-cancel-modal
       .wrap-serving-robot-cancel-header
         p.serving-guide-header 서빙안내
-        icon-exit-black
+        icon-exit-black(@click.native="unVisibleModal")
       .wrap-serving-robot-cancel-message
-        p 김동주 테이블의 진행중인 서빙을 취소하시겠습니까?
+        p 해당 테이블에 진행중인 서빙을 취소하시겠습니까?
         p 취소 시, 대기 장소로 서빙로봇이 이동합니다.
       .wrap-confirm-button
-        button.cancel-button 취소
+        button.cancel-button(@click="unVisibleModal") 취소
         button.confirm-button 확인
 </template>
 
 <script>
 export default {
-
+  props: {
+    unVisibleModal: {
+      type: Function,
+      required: true,
+    }
+  },
 };
 </script>
 
