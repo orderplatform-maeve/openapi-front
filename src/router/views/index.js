@@ -15,3 +15,4 @@ export { default as PaymentManagement } from './PaymentManagement';
 export { default as CancelPaymentOrder } from './CancelPaymentOrder';
 export { default as OldPaymentManagement } from './OldPaymentManagement';
 export { default as NewPaymentManagement } from './NewPaymentManagement';
+export { default as ServingRobotManagement } from './ServingRobotManagement';
