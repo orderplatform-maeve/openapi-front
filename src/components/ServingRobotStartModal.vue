@@ -9,9 +9,9 @@
         p.table-number(
           v-for="(table, index) in sortedTables"
           :key="`tableIndex-${index}`"
-          :class="{selectedTableStyle: selectedTable === table.Tablet_name}"
+          :class="{selectedTableStyle: selectedTable === table.torderTableName}"
           @click="selectTable(table)"
-        ) {{table.Tablet_name}}
+        ) {{table.torderTableName}}
       .wrap-confirm-button
         button.cancel-button(@click="unVisibleModal") 취소
         button.confirm-button(@click="startServingRobot") 확인

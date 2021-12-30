@@ -46,13 +46,13 @@ const robot = {
           state.allRobotStatus[index].rinfo.battery = payload.robotInfo.battery;
           if (payload.status === 'Ready') {
             state.allRobotStatus[index].rinfo.status = 'Ready';
-            state.destination = undefined;
+            state.allRobotStatus[index].destination = payload.destination;
           } else if (payload.status === 'Arrived') {
             state.allRobotStatus[index].rinfo.status = 'Arrived';
-            state.destination = payload.destination;
+            state.allRobotStatus[index].destination = payload.destination;
           } else if (payload.status === 'OnTheWay'){
             state.allRobotStatus[index].rinfo.status = 'Moving';
-            state.destination = payload.destination;
+            state.allRobotStatus[index].destination = payload.destination;
           }
         }
       });

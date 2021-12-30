@@ -211,7 +211,7 @@ const socket = {
           ordering: payload.ordering,
         };
 
-        commit('SET_TABLES', deepCopyArr);
+        // commit('SET_TABLES', deepCopyArr);
       }
 
       if (payload?.type === '@update/categories/useStatus') {
@@ -275,15 +275,13 @@ const socket = {
         }
       }
 
-      console.log(payload);
-
       if (payload.type === 'Ready') {
         try {
           const config = {
             robotId: payload.table.robot_id,
             robotInfo: payload.robotInfo,
             status: 'Ready',
-            destination: undefined,
+            destination: payload.table.name,
           };
           this.commit('robot/updateRobotStatus', config);
         } catch(error) {
@@ -313,7 +311,19 @@ const socket = {
         } catch(error) {
           console.log(error);
         }
-      } else {
+      } else if (payload.type === 'Returning') {
+        try {
+          const config = {
+            robotId: payload.table.robot_id,
+            robotInfo: payload.robotInfo,
+            status: 'Returning',
+            destination: payload.table.name,
+          };
+          this.commit('robot/updateRobotStatus', config);
+        } catch(error) {
+          console.log(error);
+        }
+      } else if (payload.type === 'Unknown' || payload.type === 'Error'){
         console.log('로봇 에러!!!!!', payload);
       }
     },
