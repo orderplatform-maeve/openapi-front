@@ -17,7 +17,8 @@ import {
   CancelPaymentOrder,
   OldPaymentManagement,
   NewPaymentManagement,
-  ServingRobotManagement
+  ServingRobotManagement,
+  AuctionManager,
 } from '@views';
 
 import paths from './paths';
@@ -139,7 +140,13 @@ const routes = [{
       name: paths.servingRobotManagement.replace('/', ''),
       component: ServingRobotManagement,
       meta: { requiresAuth: true },
-    }
+    },
+    {
+      path: paths.auctionManager,
+      name: paths.auctionManager.replace('/', ''),
+      component: AuctionManager,
+      meta: { requiresAuth: true },
+    },
   ],
 }];
 
