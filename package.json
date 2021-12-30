@@ -21,8 +21,6 @@
     "deploy:action:prod": "node ./script/deploy.action.prod.js"
   },
   "dependencies": {
-    "@sentry/tracing": "^6.13.3",
-    "@sentry/vue": "^6.13.3",
     "axios": "^0.19.2",
     "cross-env": "^5.0.5",
     "lodash": "^4.17.15",
