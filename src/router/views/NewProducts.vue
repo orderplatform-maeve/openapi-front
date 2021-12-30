@@ -30,7 +30,7 @@
             v-for="subCtg in mainCtg.subCategories"
             :id="subCtg.code"
             :ref="subCtg.code"
-          ) 
+          )
             p.wrap-category-name
               span.main-cateogry-name {{mainCtg.name}}
               span.bar |
@@ -67,7 +67,6 @@ export default {
   },
   watch: {
     data(newData) {
-
       if (!this.selectSubCategoryItem) {
         // console.log(newData[0].subCategories[0]);
         this.selectSubCategoryItem = newData[0]?.subCategories[0];
@@ -337,7 +336,7 @@ export default {
     unVisibleScroll() {
       const mainCategories = document.querySelector('.main-categories');
       const clientWidth = mainCategories.clientWidth;
-      
+
       const target = document.querySelector('.active');
       const targetLeft = target?.getBoundingClientRect().left;
 
@@ -748,7 +747,7 @@ a {
     gap: 0.78125vw;
     max-width: 84.53125vw;
     overflow: auto;
-    
+
     .main-category {
       font-size: 1.5625vw;
       color: #ddd;

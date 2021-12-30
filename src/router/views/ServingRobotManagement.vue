@@ -23,7 +23,7 @@
           p.serving-status(@click="visibleModal(robotStatus)") {{getRobotCommandText(robotStatus)}}
     serving-robot-start-modal(
       v-if="selectStartRobotModalStatus"
-      :sortedTables="sortedTables"
+      :sortedTables="startTableList"
       :selectedTable="startRobotSelectedTable"
       :selectTable="startRobotSelectTable"
       :startServingRobot="startServingRobot"
@@ -50,7 +50,6 @@ import {
 
 const {
   requestRobotOrder,
-  requestBackRobot,
 } = servingRobot;
 
 import {
@@ -66,6 +65,13 @@ export default {
     ServingRobotCancelModal,
     ServingRobotBackModal,
     ServingRobotErrorModal,
+  },
+  data() {
+    return {
+      interval: 0,
+      startTableList: [],
+      currentRobot: undefined,
+    };
   },
   computed: {
     storeCode() {
@@ -149,6 +155,10 @@ export default {
         return '충전중';
       }
 
+      if (robotStatus === 'Returning') {
+        return '복귀중';
+      }
+
       return false;
     },
     getRobotPosition(robot) {
@@ -167,22 +177,21 @@ export default {
     getRobotCommandText(robot) {
       const robotInfo = robot.rinfo;
       const robotStatus = robotInfo.status;
-      console.log(robot);
 
       if (robotStatus === 'Ready') {
-        return '서빙 진행';
+        return '이동';
       }
 
-      if (robotStatus === 'Moving') {
-        return '이동 취소';
+      if (robotStatus === 'Moving' || robotStatus === 'Returning') {
+        return '이동중';
       }
 
       if (robotStatus === 'Arrived') {
-        return '대기 장소 복귀';
+        return '이동';
       }
 
       if (robotStatus === 'Charge') {
-        return '충전중';
+        return '이동';
       }
 
       return '로봇 상태 확인';
@@ -213,7 +222,7 @@ export default {
       return robotInfo.battery;
     },
     startRobotSelectTable(table) {
-      const tableName = table?.Tablet_name;
+      const tableName = table?.torderTableName;
 
       this.$store.commit('robot/updateStartRobotSelectedTable', tableName);
     },
@@ -233,15 +242,14 @@ export default {
     },
     async goBackRobot() {
       try {
-        // const robotInfo = JSON.parse(this.selectStartRobot.rinfo);
         const config = {
-          ssid: this.selectStartRobot.ssid,
-          deviceid: this.selectStartRobot.deviceid,
+          id: this.selectStartRobot.deviceid,
+          tableName: this.currentRobot,
+          storeCode: this.selectStartRobot.storeid,
         };
-        // const deviceId = this.selectStartRobot.deviceid;
+        await requestRobotOrder(config);
+        this.unVisibleModal();
 
-        const res = await requestBackRobot(config);
-        console.log(res);
       } catch(error) {
         console.log(error);
       }
@@ -251,20 +259,27 @@ export default {
       const robotStatus = robotInfo.status;
 
       if (robotStatus === 'Ready') {
+        this.startTableList = robot.moveSpot;
         this.$store.commit('robot/updateStartRobot', robot);
         this.$store.commit('robot/updateStartRobotModalStatus', true);
         return;
       }
 
-      if (robotStatus === 'Moving') {
-        this.$store.commit('robot/updateCancelRobot', robot);
-        this.$store.commit('robot/updateRobotCancelModalStatus', true);
-        return;
+      // if (robotStatus === 'Moving') {
+      //   this.$store.commit('robot/updateCancelRobot', robot);
+      //   this.$store.commit('robot/updateRobotCancelModalStatus', true);
+      //   return;
+      // }
+      if (robotStatus === 'Charge') {
+        this.startTableList = robot.moveSpot;
+        this.$store.commit('robot/updateStartRobot', robot);
+        this.$store.commit('robot/updateStartRobotModalStatus', true);
       }
 
       if (robotStatus === 'Arrived') {
+        this.startTableList = robot.moveSpot;
         this.$store.commit('robot/updateStartRobot', robot);
-        this.$store.commit('robot/updateRobotBackModalStatus', true);
+        this.$store.commit('robot/updateStartRobotModalStatus', true);
         return;
       }
 
@@ -302,6 +317,12 @@ export default {
   },
   mounted() {
     this.$store.dispatch('robot/updateAllRobotStatus');
+    this.interval = setInterval(() => {
+      this.$store.dispatch('robot/updateAllRobotStatus');
+    }, 60000);
+  },
+  beforeDestroy() {
+    clearInterval(this.interval);
   },
   sockets: {
     connect() {

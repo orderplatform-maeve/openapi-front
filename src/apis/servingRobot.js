@@ -10,8 +10,7 @@ export const requestRobotStatus = async (storeCode) => {
 export const requestRobotOrder = async (config) => {
   const url = `${endpoints.servingRobot.robotOrder}`;
   const fd = new FormData();
-  fd.append('id', config.id);
-  fd.append('orderType', 'order');
+  fd.append('robotid', config.id);
   fd.append('tableName', config.tableName);
   fd.append('storeCode', config.storeCode);
   const res = await axios.post(url, fd);
