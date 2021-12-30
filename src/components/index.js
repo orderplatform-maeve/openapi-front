@@ -15,4 +15,7 @@ export { default as CreditCancelModal } from './CreditCancelModal';
 export { default as CashOutStandingModal } from './CashOutStandingModal';
 export { default as OrderCashOutStandingModal } from './OrderCashOutStandingModal';
 export { default as CancelCashPaymentModal } from './CancelCashPaymentModal';
-
+export { default as ServingRobotStartModal } from './ServingRobotStartModal';
+export { default as ServingRobotCancelModal } from './ServingRobotCancelModal';
+export { default as ServingRobotBackModal } from './ServingRobotBackModal';
+export { default as ServingRobotErrorModal } from './ServingRobotErrorModal';

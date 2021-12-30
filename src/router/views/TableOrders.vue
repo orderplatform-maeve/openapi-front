@@ -10,11 +10,11 @@
     .header
       p.table-number {{ getOrderTableNum() }}
       .wrap-order-information
-        p.order-number 
+        p.order-number
           span.text 주문번호:
           span.value {{ getOrderId() }}
-        p.customer-count 
-          span.text 고객수:  
+        p.customer-count
+          span.text 고객수:
           span.value {{ getOrderCustomerCount() }}명
         p.order-date {{ getOrderTime() }}
     .wrap-product-list
@@ -46,7 +46,7 @@
                 v-for="subCtg in mainCtg.subCategories"
                 :id="subCtg.code"
                 :ref="subCtg.code"
-              ) 
+              )
                 p.wrap-category-name
                   span.main-cateogry-name {{mainCtg.name}}
                   span.bar |
@@ -82,8 +82,8 @@
                     .cart-product-option-price {{option.pos_price.toLocaleString()}}원
             .cart-total-information
               p.cart-total-quantity {{ getPreviousOrderCount() }}건
-              p.cart-total-price 
-                span.text 합계: 
+              p.cart-total-price
+                span.text 합계:
                 span.price {{ getTotalPreviousOrder() }}원
             .wrap-confirm-button
               button.close-button(@click="close") 닫기
@@ -111,8 +111,8 @@
                     .cart-product-option-price {{option.pos_price.toLocaleString()}}원
             .cart-total-information
               p.cart-total-quantity {{ getCartListOrderCount() }}건
-              p.cart-total-price 
-                span.text 합계: 
+              p.cart-total-price
+                span.text 합계:
                 span.price {{ getTotalCartList() }}원
             .wrap-confirm-button
               button.close-button(@click="close") 닫기
@@ -223,7 +223,7 @@ export default {
     unVisibleScroll() {
       const mainCategories = document.querySelector('.main-categories');
       const clientWidth = mainCategories.clientWidth;
-      
+
       const target = document.querySelector('.active');
       const targetLeft = target?.getBoundingClientRect().left;
 
@@ -702,7 +702,7 @@ export default {
         letter-spacing: -0.0234375vw;
         word-break: break-all;
         white-space: nowrap;
-        
+
         .text {
           color: #ccc;
         }

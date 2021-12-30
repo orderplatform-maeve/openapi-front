@@ -2,7 +2,7 @@
   .tables-page-container
     p.tables-page-title 테이블 주문 (테스트)
     .order-table-list
-      button.order-table-name(v-for="table in sortedTables" :key="table.Ta_id" @click="openTableOrders(table)") 
+      button.order-table-name(v-for="table in sortedTables" :key="table.Ta_id" @click="openTableOrders(table)")
         p {{getTableName(table)}}
         p {{table.ordering ? '주문중' : ''}}
     .wrap-all-table-reset-button

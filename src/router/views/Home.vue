@@ -171,6 +171,7 @@ export default {
     orderview(message) {
       this.$socket.emit('res', message, () => {
         // console.log('socket res');
+        console.log(message, '확인');
       });
     },
   },

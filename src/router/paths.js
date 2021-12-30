@@ -17,4 +17,5 @@ export default {
   cancelPaymentOrder: '/cancelPaymentOrder',
   oldPaymentManagement: '/oldPaymentManagement',
   newPaymentManagement: '/newPaymentManagement',
+  servingRobotManagement: '/servingRobotManagement'
 };
