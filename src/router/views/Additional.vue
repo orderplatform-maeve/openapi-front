@@ -24,6 +24,8 @@
       span (테스트)
     router-link.button-added(v-if="visibleOrderButton" :to="paths.servingRobotManagement") 로봇 관리<br>
       span (테스트)
+    router-link.button-added(v-if="visibleOrderButton" :to="paths.auctionManager") 경매 관리<br>
+      span (테스트)
 </template>
 
 <script>
@@ -64,12 +66,12 @@ export default {
     display: grid;
     grid-template-columns: repeat(auto-fill, 19.53125vw);
     gap: 1.09375vw;
-    
+
     .button-added {
         width: 100%;
         height: 14.0625vw;
         padding: 1.5625vw 2.34375vw !important;
-        font-family: 'Spoqa Han Sans Neo', 'sans-serif'; 
+        font-family: 'Spoqa Han Sans Neo', 'sans-serif';
         font-size: 1.875vw;
         font-weight: bold;
         letter-spacing: -0.046875vw;
