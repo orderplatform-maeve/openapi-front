@@ -954,6 +954,7 @@ const menu = {
 
       const getSubCategoryItem = (subCategoryItem, products) => {
         const goods = getFilteredGoods(products, subCategoryItem.code);
+        console.log(goods,' ss');
         return {
           ...subCategoryItem,
           goods,

@@ -8,7 +8,7 @@
       :close="optionModalClose"
     )
     .header
-      p.table-number {{ getOrderTableNum() }}
+      p.table-number {{ tableName }}
       .wrap-order-information
         p.order-number
           span.text 주문번호:
@@ -134,6 +134,7 @@ export default {
       selectedProduct: null,
       timer: null,
       cartStatus: 'previous',
+      tableName: '',
     };
   },
   computed: {
@@ -144,8 +145,8 @@ export default {
       return this.selectMainCategoryItem;
     },
     menu() {
-      const { getCategoriesGoods } = this.$store.getters;
-      return getCategoriesGoods;
+      const { getNewCategoriesGoods } = this.$store.getters;
+      return getNewCategoriesGoods;
     },
   },
   watch: {
@@ -162,6 +163,8 @@ export default {
     await this.getPreviousOrders();
     await this.getOrderData();
     this.emitTargetTable();
+    this.initialize();
+    this.initTableName();
   },
   beforeRouteLeave(to, from, next) {
     if (this.$route?.params?.id) {
@@ -242,6 +245,15 @@ export default {
           });
         }
       }
+    },
+    initTableName() {
+      const tableList = this.$store.state.tables;
+
+      const table = tableList.find((item) => {
+        return item.Ta_id === this.$route?.params?.id;
+      });
+
+      this.tableName = table.Tablet_name;
     },
     handleScroll(e) {
       this.unVisibleScroll();
