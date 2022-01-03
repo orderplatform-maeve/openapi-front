@@ -18,7 +18,7 @@
           :style="getAbleButtonColor(getUseCategory())"
         ) 표시
         button.main-category-status-unvisible(
-          @click="() => close(data[selectMainCategoryNumber].code, !getUseCategory())"
+          @click="() => close(data[selectMainCategoryNumber].code, getUseCategory())"
           :style="getAbleButtonColor(!getUseCategory())"
         ) 숨김
     .wrap-sub-category-status(v-if="getSubCategoryStatus")
@@ -146,10 +146,10 @@ export default {
         return '';
       }
     },
-    async open(code, useCategory) {
-      if (useCategory) {
-        return this.$store.commit('pushFlashMessage', '해당 카테고리는 이미 개방이 되었습니다.');
-      }
+    async open(code) {
+      // if (useCategory) {
+      //   return this.$store.commit('pushFlashMessage', '해당 카테고리는 이미 개방이 되었습니다.');
+      // }
 
       const fd = new FormData();
       fd.append('store_code', this.$store.state.auth.store.store_code);
@@ -162,10 +162,10 @@ export default {
       }
       this.apiException(res.status);
     },
-    async close(code, useCategory) {
-      if (useCategory) {
-        return this.$store.commit('pushFlashMessage', '해당 카테고리는 이미 닫혀있습니다.');
-      }
+    async close(code) {
+      // if (useCategory) {
+      //   return this.$store.commit('pushFlashMessage', '해당 카테고리는 이미 닫혀있습니다.');
+      // }
 
       const fd = new FormData();
       fd.append('store_code', this.$store.state.auth.store.store_code);
@@ -261,7 +261,7 @@ a {
     gap: 0.78125vw;
     max-width: 84.53125vw;
     overflow: auto;
-    
+
     .main-category {
       font-size: 1.5625vw;
       color: #ddd;
@@ -302,7 +302,7 @@ a {
         margin-top: 1.5625vw !important;
         display: flex;
         align-items: center;
-        gap: 0.781250vw; 
+        gap: 0.781250vw;
 
         > button {
           width: 15.625vw;
