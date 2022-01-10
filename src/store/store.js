@@ -275,7 +275,7 @@ const socket = {
         }
       }
 
-      const isRobot = payload.type === 'Ready' || payload.type === 'OnTheWay' || payload.type === 'Arrived' || payload.type === 'Unknown' || payload.type === 'Returning' || payload.type === 'Charge' || payload.type === 'Error';
+      const isRobot = payload.type === 'Ready' || payload.type === 'OnTheWay' || payload.type === 'Arrived' || payload.type === 'Unknown' || payload.type === 'Returning' || payload.type === 'Charge';
 
       if (payload.type === 'Error') {
         this.commit('robot/updateErrorModalStatus', true);
@@ -285,13 +285,15 @@ const socket = {
         });
       }
 
+      console.log(payload);
+
       if (isRobot) {
         try {
           const config = {
             robotId: payload.robotInfo.robot_id,
             robotInfo: payload.robotInfo,
             status: payload.ment,
-            destination: payload.table.name,
+            ReverseDestination: payload.table.name,
           };
 
           config.robotInfo.reveseStatus = payload.ment;

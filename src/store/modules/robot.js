@@ -51,7 +51,7 @@ const robot = {
         if (robot.deviceid === payload.robotId) {
           state.allRobotStatus[index].rinfo.battery = payload.robotInfo.battery;
           state.allRobotStatus[index].rinfo.status = payload.status;
-          state.allRobotStatus[index].destination = payload.destination;
+          state.allRobotStatus[index].ReverseDestination = payload.ReverseDestination;
           state.allRobotStatus[index].rinfo.reveseStatus = payload.robotInfo.reveseStatus;
 
           // const robot = state.allRobotStatus[index];

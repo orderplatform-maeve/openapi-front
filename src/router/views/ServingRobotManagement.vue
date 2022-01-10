@@ -33,7 +33,6 @@
       v-if="errorModalStatus"
       :unVisibleModal="unVisibleModal"
       :errorRobotStatus="errorRobotStatus"
-
     )
 </template>
 
@@ -101,7 +100,7 @@ export default {
       return sortedTables;
     },
     getDestination() {
-      return this.$store.robot.destination;
+      return this.$store.robot.ReverseDestination;
     },
     errorModalStatus() {
       return this.$store.state.robot.errorModalStatus;
@@ -138,12 +137,13 @@ export default {
     },
     getRobotStatus(robot) {
       const robotInfo = robot.rinfo;
+      console.log(robotInfo.robot_id, robotInfo.destination, '헤');
       const robotStatus = robotInfo.reveseStatus;
 
       return robotStatus;
     },
     getRobotPosition(robot) {
-      const robotPosition = robot.destination;
+      const robotPosition = robot.ReverseDestination;
 
       if (!robotPosition) {
         return false;
@@ -157,7 +157,31 @@ export default {
     },
     getRobotCommandText(robot) {
       const robotInfo = robot.rinfo;
-      const robotStatus = robotInfo.reveseStatus;
+      let robotStatus = robotInfo.reveseStatus;
+
+      if (robotStatus === '대기중') {
+        return '서빙';
+      }
+
+      if (robotStatus === '도착') {
+        return '복귀';
+      }
+
+      if (robotStatus === '복귀중') {
+        return '이동중';
+      }
+
+      if (robotStatus === '충전중') {
+        return '복귀';
+      }
+
+      if (robotStatus === '확인필요') {
+        return '확인';
+      }
+
+      if (robotStatus === '가는중') {
+        return '이동중';
+      }
 
       return robotStatus;
     },
@@ -192,7 +216,6 @@ export default {
     },
     startRobotSelectTable(table) {
       const tableName = table?.torderTableName;
-      console.log(table);
 
       this.$store.commit('robot/updateStartRobotSelectedTable', tableName);
     },
@@ -203,6 +226,7 @@ export default {
           storeCode: this.selectStartRobot.storeid,
         };
         const res = await requestRobotOrder(config);
+
         return res.data;
 
       } catch(error) {
@@ -243,6 +267,7 @@ export default {
       await this.startServingRobot().then(
         result => {
           if (result?.tableList && Object.prototype.toString.call(result.tableList) !== '[object Object]') {
+
             this.startTableList = result?.tableList;
           } else {
             this.startTableList = [];
