@@ -9,9 +9,9 @@
         p.table-number(
           v-for="(table, index) in sortedTables"
           :key="`tableIndex-${index}`"
-          :class="{selectedTableStyle: selectedTable === table.torderTableName}"
+          :class="{selectedTableStyle: selectedTable === getTableName(table)}"
           @click="selectTable(table)"
-        ) {{table.torderTableName}}
+        ) {{getTableName(table)}}
       .wrap-confirm-button
         button.cancel-button(@click="unVisibleModal") 취소
         button.confirm-button(@click="startServingRobot") 확인
@@ -39,6 +39,11 @@ export default {
     unVisibleModal: {
       type: Function,
       required: true,
+    }
+  },
+  methods: {
+    getTableName(table) {
+      return table?.torderTableName;
     }
   }
 };
@@ -87,7 +92,7 @@ export default {
       margin-top: 1.5625vw !important;
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      grid-template-rows: auto;
+      grid-template-rows: repeat(auto-fit, 50px);
       gap: 1.5625vw;
       overflow: auto;
 

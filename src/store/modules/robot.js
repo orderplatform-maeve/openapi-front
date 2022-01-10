@@ -1,6 +1,7 @@
 import {
   servingRobot
 } from '@apis';
+// import Vue from 'vue';
 
 const {
   requestRobotStatus,
@@ -13,10 +14,15 @@ const robot = {
     selectStartRobot: undefined,
     startRobotSelectedTable: undefined,
     selectStartRobotModalStatus: false,
+    errorModalStatus: false,
     cancelRobot: undefined,
     robotCancelModalStatus: false,
     robotBackModalStatus: false,
     destination: undefined,
+    errorRobotStatus: {
+      name: '',
+      message: '',
+    }
   },
   mutations: {
     updateAllRobotStatus(state, payload) {
@@ -44,18 +50,21 @@ const robot = {
       state.allRobotStatus.forEach((robot, index) => {
         if (robot.deviceid === payload.robotId) {
           state.allRobotStatus[index].rinfo.battery = payload.robotInfo.battery;
-          if (payload.status === 'Ready') {
-            state.allRobotStatus[index].rinfo.status = 'Ready';
-            state.allRobotStatus[index].destination = payload.destination;
-          } else if (payload.status === 'Arrived') {
-            state.allRobotStatus[index].rinfo.status = 'Arrived';
-            state.allRobotStatus[index].destination = payload.destination;
-          } else if (payload.status === 'OnTheWay'){
-            state.allRobotStatus[index].rinfo.status = 'Moving';
-            state.allRobotStatus[index].destination = payload.destination;
-          }
+          state.allRobotStatus[index].rinfo.status = payload.status;
+          state.allRobotStatus[index].destination = payload.destination;
+          state.allRobotStatus[index].rinfo.reveseStatus = payload.robotInfo.reveseStatus;
+
+          // const robot = state.allRobotStatus[index];
+
+          // Vue.set(state.allRobotStatus, index, robot);
         }
       });
+    },
+    updateErrorModalStatus(state, payload) {
+      state.errorModalStatus = payload;
+    },
+    updateErrorRobotStatus(state, payload) {
+      state.errorRobotStatus = payload;
     }
   },
   actions: {
