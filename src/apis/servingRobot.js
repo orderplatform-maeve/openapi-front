@@ -39,8 +39,20 @@ export const requestBackRobot = async (config) => {
   return res;
 };
 
+export const requestRobotMoving = async (config) => {
+  const url = `${endpoints.servingRobot.robotMoving}`;
+  const fd = new FormData();
+  fd.append('robotid', config.id);
+  fd.append('tableName', config.tableName);
+  fd.append('storeCode', config.storeCode);
+  const res = await axios.post(url, fd);
+
+  return res;
+};
+
 export default {
   requestRobotStatus,
   requestRobotOrder,
   requestBackRobot,
+  requestRobotMoving
 };

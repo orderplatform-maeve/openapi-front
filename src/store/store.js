@@ -275,56 +275,32 @@ const socket = {
         }
       }
 
-      if (payload.type === 'Ready') {
+      const isRobot = payload.type === 'Ready' || payload.type === 'OnTheWay' || payload.type === 'Arrived' || payload.type === 'Unknown' || payload.type === 'Returning' || payload.type === 'Charge';
+
+      if (payload.type === 'Error') {
+        this.commit('robot/updateErrorModalStatus', true);
+        this.commit('robot/updateErrorRobotStatus', {
+          name: payload.robotInfo.name,
+          message: payload.robotInfo.message,
+        });
+      }
+
+      console.log(payload);
+
+      if (isRobot) {
         try {
           const config = {
-            robotId: payload.table.robot_id,
+            robotId: payload.robotInfo.robot_id,
             robotInfo: payload.robotInfo,
-            status: 'Ready',
-            destination: payload.table.name,
+            status: payload.ment,
+            ReverseDestination: payload.table.name,
           };
+
+          config.robotInfo.reveseStatus = payload.ment;
           this.commit('robot/updateRobotStatus', config);
         } catch(error) {
           console.log(error);
         }
-      } else if (payload.type === 'Arrived') {
-        try {
-          const config = {
-            robotId: payload.table.robot_id,
-            robotInfo: payload.robotInfo,
-            status: 'Arrived',
-            destination: payload.table.name,
-          };
-          this.commit('robot/updateRobotStatus', config);
-        } catch(error) {
-          console.log(error);
-        }
-      } else if (payload.type === 'OnTheWay') {
-        try {
-          const config = {
-            robotId: payload.table.robot_id,
-            robotInfo: payload.robotInfo,
-            status: 'OnTheWay',
-            destination: payload.table.name,
-          };
-          this.commit('robot/updateRobotStatus', config);
-        } catch(error) {
-          console.log(error);
-        }
-      } else if (payload.type === 'Returning') {
-        try {
-          const config = {
-            robotId: payload.table.robot_id,
-            robotInfo: payload.robotInfo,
-            status: 'Returning',
-            destination: payload.table.name,
-          };
-          this.commit('robot/updateRobotStatus', config);
-        } catch(error) {
-          console.log(error);
-        }
-      } else if (payload.type === 'Unknown' || payload.type === 'Error'){
-        console.log('로봇 에러!!!!!', payload);
       }
     },
     SOCKET_disconnect({ commit }) {
