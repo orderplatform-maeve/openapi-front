@@ -3,11 +3,9 @@
     .serving-robot-error-modal
       .wrap-serving-robot-error-header
         p.serving-guide-header 로봇 상태 확인
-          span(v-if="getRobotName")  ({{getRobotName}})
         icon-exit-black(@click.native="unVisibleModal")
       .wrap-serving-robot-error-message
-        p 에러내용: &nbsp;
-          span(v-html="getErrorMessage")
+        p(v-html="getErrorMessage")
       .wrap-confirm-button(@click="unVisibleModal")
         button.confirm-button 확인
 </template>

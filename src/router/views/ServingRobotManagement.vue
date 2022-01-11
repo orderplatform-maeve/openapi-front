@@ -137,7 +137,6 @@ export default {
     },
     getRobotStatus(robot) {
       const robotInfo = robot.rinfo;
-      console.log(robotInfo.robot_id, robotInfo.destination, '헤');
       const robotStatus = robotInfo.reveseStatus;
 
       return robotStatus;
@@ -263,14 +262,15 @@ export default {
     },
     async visibleModal(robot) {
       await this.$store.commit('robot/updateStartRobot', robot);
-
       await this.startServingRobot().then(
         result => {
+          console.log(result, '복귀 확인');
           if (result?.tableList && Object.prototype.toString.call(result.tableList) !== '[object Object]') {
-
             this.startTableList = result?.tableList;
           } else {
             this.startTableList = [];
+
+            this.$store.commit('pushFlashMessage', result.message);
           }
         },
         error => console.log(error),
