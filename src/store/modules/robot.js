@@ -70,8 +70,7 @@ const robot = {
   actions: {
     async updateAllRobotStatus({commit}) {
       try {
-        // const storeCode = this.state.auth.store.store_code;
-        const storeCode = 'TOD_TEST';
+        const storeCode = this.state.auth.store.store_code;
         const request = await requestRobotStatus(storeCode);
         const data = request.data.result;
         data.forEach(d => {
