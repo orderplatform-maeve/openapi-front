@@ -18,7 +18,7 @@
           span.red(v-else) -
         .wrap-serving-status
           .wrap-battery-status
-            p.battery-stats-text {{getBatteryText(robotStatus)}}%
+            p.battery-stats-text {{getBatteryText(robotStatus)}}
             img.battery-status(:src="getBatteryImage(robotStatus)")
           p.serving-status(@click="visibleModal(robotStatus)") {{getRobotCommandText(robotStatus)}}
     serving-robot-start-modal(
@@ -26,21 +26,14 @@
       :sortedTables="startTableList"
       :selectedTable="startRobotSelectedTable"
       :selectTable="startRobotSelectTable"
-      :startServingRobot="startServingRobot"
+      :startServingRobot="robotMoving"
       :unVisibleModal="unVisibleModal"
     )
-    serving-robot-cancel-modal(
-      v-if="robotCancelModalStatus"
+    serving-robot-error-modal(
+      v-if="errorModalStatus"
       :unVisibleModal="unVisibleModal"
-      :getRobotPosition="getRobotPosition"
+      :errorRobotStatus="errorRobotStatus"
     )
-    serving-robot-back-modal(
-      v-if="robotBackModalStatus"
-      :unVisibleModal="unVisibleModal"
-      :goBackRobot="goBackRobot"
-      :getRobotPosition="getRobotPosition"
-    )
-    serving-robot-error-modal(v-if="false")
 </template>
 
 <script>
@@ -50,6 +43,7 @@ import {
 
 const {
   requestRobotOrder,
+  requestRobotMoving,
 } = servingRobot;
 
 import {
@@ -106,7 +100,13 @@ export default {
       return sortedTables;
     },
     getDestination() {
-      return this.$store.robot.destination;
+      return this.$store.robot.ReverseDestination;
+    },
+    errorModalStatus() {
+      return this.$store.state.robot.errorModalStatus;
+    },
+    errorRobotStatus() {
+      return this.$store.state.robot.errorRobotStatus;
     }
   },
   methods: {
@@ -137,38 +137,18 @@ export default {
     },
     getRobotStatus(robot) {
       const robotInfo = robot.rinfo;
-      const robotStatus = robotInfo.status;
+      const robotStatus = robotInfo.reveseStatus;
 
-      if (robotStatus === 'Ready') {
-        return '대기중';
-      }
-
-      if (robotStatus === 'Moving') {
-        return '이동중';
-      }
-
-      if (robotStatus === 'Arrived') {
-        return '도착';
-      }
-
-      if (robotStatus === 'Charge') {
-        return '충전중';
-      }
-
-      if (robotStatus === 'Returning') {
-        return '복귀중';
-      }
-
-      return false;
+      return robotStatus;
     },
     getRobotPosition(robot) {
-      const robotPosition = robot.destination;
+      const robotPosition = robot.ReverseDestination;
 
       if (!robotPosition) {
         return false;
       }
 
-      if (robotPosition === 'homepoi') {
+      if (robotPosition === 'unknown') {
         return '-';
       }
 
@@ -176,25 +156,33 @@ export default {
     },
     getRobotCommandText(robot) {
       const robotInfo = robot.rinfo;
-      const robotStatus = robotInfo.status;
+      let robotStatus = robotInfo.reveseStatus;
 
-      if (robotStatus === 'Ready') {
-        return '이동';
+      if (robotStatus === '대기중') {
+        return '서빙';
       }
 
-      if (robotStatus === 'Moving' || robotStatus === 'Returning') {
+      if (robotStatus === '도착') {
+        return '복귀';
+      }
+
+      if (robotStatus === '복귀중') {
         return '이동중';
       }
 
-      if (robotStatus === 'Arrived') {
-        return '이동';
+      if (robotStatus === '충전중') {
+        return '복귀';
       }
 
-      if (robotStatus === 'Charge') {
-        return '이동';
+      if (robotStatus === '확인필요') {
+        return '확인';
       }
 
-      return '로봇 상태 확인';
+      if (robotStatus === '가는중') {
+        return '이동중';
+      }
+
+      return robotStatus;
     },
     getBatteryImage(robot) {
       const robotInfo = robot.rinfo;
@@ -219,7 +207,11 @@ export default {
     getBatteryText(robot) {
       const robotInfo = robot.rinfo;
 
-      return robotInfo.battery;
+      if (robotInfo.battery < 0) {
+        return '-';
+      }
+
+      return `${robotInfo.battery}%`;
     },
     startRobotSelectTable(table) {
       const tableName = table?.torderTableName;
@@ -230,10 +222,25 @@ export default {
       try {
         const config = {
           id: this.selectStartRobot.deviceid,
+          storeCode: this.selectStartRobot.storeid,
+        };
+        const res = await requestRobotOrder(config);
+
+        return res.data;
+
+      } catch(error) {
+        console.log(error);
+      }
+    },
+    async robotMoving() {
+      try {
+        const config = {
+          id: this.selectStartRobot.deviceid,
           tableName: this.startRobotSelectedTable,
           storeCode: this.selectStartRobot.storeid,
         };
-        await requestRobotOrder(config);
+        await requestRobotMoving(config);
+
         this.unVisibleModal();
 
       } catch(error) {
@@ -248,49 +255,34 @@ export default {
           storeCode: this.selectStartRobot.storeid,
         };
         await requestRobotOrder(config);
-        this.unVisibleModal();
 
       } catch(error) {
         console.log(error);
       }
     },
-    visibleModal(robot) {
-      const robotInfo = robot.rinfo;
-      const robotStatus = robotInfo.status;
+    async visibleModal(robot) {
+      await this.$store.commit('robot/updateStartRobot', robot);
+      await this.startServingRobot().then(
+        result => {
+          console.log(result, '복귀 확인');
+          if (result?.tableList && Object.prototype.toString.call(result.tableList) !== '[object Object]') {
+            this.startTableList = result?.tableList;
+          } else {
+            this.startTableList = [];
 
-      if (robotStatus === 'Ready') {
-        this.startTableList = robot.moveSpot;
-        this.$store.commit('robot/updateStartRobot', robot);
-        this.$store.commit('robot/updateStartRobotModalStatus', true);
-        return;
-      }
+            this.$store.commit('pushFlashMessage', result.message);
+          }
+        },
+        error => console.log(error),
+      );
 
-      // if (robotStatus === 'Moving') {
-      //   this.$store.commit('robot/updateCancelRobot', robot);
-      //   this.$store.commit('robot/updateRobotCancelModalStatus', true);
-      //   return;
-      // }
-      if (robotStatus === 'Charge') {
-        this.startTableList = robot.moveSpot;
-        this.$store.commit('robot/updateStartRobot', robot);
+      if (this.startTableList?.length > 0) {
         this.$store.commit('robot/updateStartRobotModalStatus', true);
       }
-
-      if (robotStatus === 'Arrived') {
-        this.startTableList = robot.moveSpot;
-        this.$store.commit('robot/updateStartRobot', robot);
-        this.$store.commit('robot/updateStartRobotModalStatus', true);
-        return;
-      }
-
-      return '로봇 상태 확인';
     },
     unVisibleModal() {
-      this.$store.commit('robot/updateStartRobot', undefined);
-      this.$store.commit('robot/updateCancelRobot', undefined);
-      this.$store.commit('robot/updateRobotCancelModalStatus', false);
       this.$store.commit('robot/updateStartRobotModalStatus', false);
-      this.$store.commit('robot/updateRobotBackModalStatus', false);
+      this.$store.commit('robot/updateErrorModalStatus', false);
     },
     modalClose(robot) {
       const robotInfo = robot.rinfo;
@@ -380,6 +372,7 @@ export default {
 
           img {
             width: 50%;
+            max-height: 40px;
             object-fit: contain;
           }
         }

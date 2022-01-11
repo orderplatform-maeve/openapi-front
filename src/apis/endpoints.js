@@ -67,6 +67,8 @@ const endpoints = {
     servingRobotStatus: `${DEMO_URL}/message/_storeRobotList`,
     robotOrder: `${DEMO_URL}/message/_robotOrder`,
     backRobot: `${ROBOT_TEXT}/ok`,
+    robotMoving: `${DEMO_URL}/message/orderMoving`
+
   }
 };
 

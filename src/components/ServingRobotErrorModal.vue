@@ -3,18 +3,33 @@
     .serving-robot-error-modal
       .wrap-serving-robot-error-header
         p.serving-guide-header 로봇 상태 확인
-        icon-exit-black
+        icon-exit-black(@click.native="unVisibleModal")
       .wrap-serving-robot-error-message
-        p 서빙 로봇의 상태를 확인해주세요.
-        p 서빙이 완료되지 않은 경우 다시 지정해주세요.
-        p.last 에러코드: T O R D E R E R R O R
-      .wrap-confirm-button
+        p(v-html="getErrorMessage")
+      .wrap-confirm-button(@click="unVisibleModal")
         button.confirm-button 확인
 </template>
 
 <script>
 export default {
-
+  props: {
+    errorRobotStatus: {
+      type: Object,
+      required: true,
+    },
+    unVisibleModal: {
+      type: Function,
+      required: true,
+    }
+  },
+  computed: {
+    getRobotName() {
+      return this.errorRobotStatus.name;
+    },
+    getErrorMessage() {
+      return this.errorRobotStatus.message;
+    }
+  }
 };
 </script>
 
