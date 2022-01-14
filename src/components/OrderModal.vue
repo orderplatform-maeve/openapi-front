@@ -34,7 +34,7 @@
               .last-order-product-name {{getBeforeProductDisplayName(c_product)}}
               .last-order-product-quantity {{getBeforeProductOrderQty(c_product)}}개
             .last-order-product-option-list(v-if="isBeforeProductOtp(c_product)")
-              .last-order-product-option(v-for="option in c_product.option") 
+              .last-order-product-option(v-for="option in c_product.option")
                 p.last-option-name {{getBeforeProductOptionDisplayName(option)}}
                 p.last-option-quantity {{getBeforeProductOptionOrderQty(option)}}개
       .wrap-last-order-history(v-else-if="order.paidOrder")
@@ -53,7 +53,8 @@
               .last-order-product-quantity.credit-type {{ getProductOrderType(c_product) }}
     .wrap-confirm-button
       button.close-button(@click="closeOrder") 닫기
-      button.confirm-button(@click="commitOrder(order)") 확인
+      button.confirm-button(@click="commitOrder(order)" v-if="order.commit == true") 미확인으로 변경
+      button.confirm-button(@click="commitOrder(order)" v-else) 확인으로 변경
       span.confirm-time-message {{seconds}}초 후 닫혀요.
 </template>
 
@@ -222,7 +223,7 @@ export default {
   gap: 0.9375vw;
   z-index: 101;
   background-color: rgba(0, 0, 0, 0.7);
-  
+
   .wrap-order-modal {
     width: 83.75vw;
     height: 76vh;
@@ -248,7 +249,7 @@ export default {
         }
 
         .order-table-name {
-          font-family: 'Spoqa Han Sans Neo', 'sans-serif'; 
+          font-family: 'Spoqa Han Sans Neo', 'sans-serif';
           font-size: 2.65625vw;
           font-weight: bold;
           letter-spacing: -0.03984375vw;
@@ -441,7 +442,7 @@ export default {
         font-weight: bold;
         color: #fff;
       }
-      
+
       .confirm-button {
         display: block;
         width: 37.5vw;
