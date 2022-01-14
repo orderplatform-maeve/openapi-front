@@ -2,21 +2,35 @@
   .control-order-page-container
     p.control-order-page-title 테이블 주류 주문 관리 (테스트)
     .order-table-list
-      button(v-for="table in tables" :key="table.Ta_id" @click="openTableOrders(table)" :class="orderStatus('order-table-name', !table.orderStatus)") 
+      button(v-for="table in tables" :key="table.Ta_id" @click="openTableOrders(table)" :class="orderStatus('order-table-name', !table.orderStatus)")
         p {{getTableName(table)}}
         p.order-status {{table.orderStatus ? '주문 가능' : '주문 막음'}}
 </template>
 
 <script>
 export default {
+  data() {
+    return {
+      reRequest : false,
+      timer : 0,
+      tableId : ''
+    };
+  },
+
   computed: {
     tables() {
-      return this.$store.state.tables;
-    },
+      const tables = this.$store.state.tables;
+      const sortedTables = tables.sort((a, b) => {
+        return a.Tablet_name.length - b.Tablet_name.length || a.Tablet_name.localeCompare(b.Tablet_name);
+      });
+      return sortedTables;
+    }
   },
-  mounted() {
-    this.initialized();
+
+  async mounted() {
+    await this.initialized();
   },
+
   methods: {
     orderStatus(defaultClass, status) {
       return {
@@ -41,7 +55,13 @@ export default {
     getTableNumberClass(orderStatus) {
       return orderStatus ? 'connect': 'disconnected';
     },
+
+    // 주류 주문 관리 상태 변경
     async openTableOrders(table) {
+      if (this.reRequest && this.tableId === table.Ta_id) {
+        return;
+      }
+
       console.log(table);
       const tables = JSON.parse(JSON.stringify(this.tables));
 
@@ -69,8 +89,20 @@ export default {
         }
         return o;
       });
-
       this.$store.commit('SET_TABLES', defineTabels);
+
+      // 각각 개별적으로 5초 뒤에 다시 실행 가능
+      this.reRequest = true;
+      this.tableId = table.Ta_id;
+
+      if (this.timer) {
+        clearTimeout(this.timer);
+      }
+
+      this.timer = setTimeout(() => {
+        this.reRequest = false;
+        return;
+      }, 5000);
     },
   },
 };
@@ -123,7 +155,7 @@ export default {
 
       .order-status {
         color: #999;
-        font-size: 1.2vw; 
+        font-size: 1.2vw;
       }
     }
 
