@@ -95,18 +95,18 @@ export default {
       justify-content: center;
       border-radius:100vh;
       flex-shrink:0;
-      padding:12px 32px;
-      margin:8px;
+      padding:12px 32px !important;
       background-color:#ff0000;
       color:#ffffff;
       box-shadow: 0 0 16px -4px #000000;
       font-size:28px;
       font-weight:900;
       white-space: normal;
-      max-width: calc(100% - 64px);
       text-align:center;
       line-height:1.2em;
       animation: slidein-flash-message 3s;
+      box-sizing: border-box;
+      max-width: 800px;
     }
   }
 
