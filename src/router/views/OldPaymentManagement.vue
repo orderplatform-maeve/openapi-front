@@ -690,7 +690,7 @@ export default {
     box-sizing: border-box;
 
     > button {
-      font-family: 'Spoqa Han Sans Neo', 'sans-serif'; 
+      font-family: 'Spoqa Han Sans Neo', 'sans-serif';
       font-size: 1.25vw;
       letter-spacing: -0.03125vw;
       height: 3.515625vw;
@@ -836,8 +836,8 @@ export default {
           }
 
           .payment-date {
-           word-break: unset;
-           word-wrap: unset; 
+            word-break: unset;
+            word-wrap: unset;
           }
         }
       }

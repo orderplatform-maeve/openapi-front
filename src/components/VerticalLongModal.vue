@@ -37,7 +37,7 @@ export default {
   top: 0;
   width: 100vw;
   height: 100vh;
-  font-family: 'Spoqa Han Sans Neo', 'sans-serif'; 
+  font-family: 'Spoqa Han Sans Neo', 'sans-serif';
   display: flex;
   justify-content: center;
   align-items: center;
@@ -54,6 +54,7 @@ export default {
     .vertical-long-modal-title {
       font-size: 1.5625vw;
       letter-spacing: -0.0390625vw;
+      color:#000;
     }
 
     .button-list {
