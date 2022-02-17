@@ -11,18 +11,60 @@
     ) {{ ctgItem.name }}
   .background-white
     .wrap-main-category-status
-      p.main-category-status-title 메뉴 노출여부
+      p.main-category-status-title 대분류 노출여부
       .main-category-status-button
         button.main-category-status-visible(
           @click="() => open(data[selectMainCategoryNumber].code, getUseCategory())"
           :style="getAbleButtonColor(getUseCategory())"
-        ) 표시
+        ) 항상 노출
         button.main-category-status-unvisible(
           @click="() => close(data[selectMainCategoryNumber].code, getUseCategory())"
           :style="getAbleButtonColor(!getUseCategory())"
         ) 숨김
+        button.main-category-status-unvisible(
+          @click="() => onConditionOpen(data[selectMainCategoryNumber].code, getUseCategory())"
+          :style="getAbleButtonColor(!getUseCategory())"
+        ) 제한 노출
+    .wrap-main-category-status
+      p.main-category-status-title 노출 요일 선택
+      .main-category-day-of-week
+        button(
+          @click="() => {}"
+          :style="getAbleButtonColor(true)"
+        ) 매일
+        button(
+          v-for="day of dayOfWeek"
+          @click="() => {}"
+          :style="getAbleButtonColor(false)"
+        ) {{ day }}
+    .wrap-main-category-status
+      p.main-category-status-title 노출 시간 선택
+      .main-category-day-of-week
+        input(placeholder="시")
+        input(placeholder="분")
+        span.tilde ~
+        input(placeholder="시")
+        input(placeholder="분")
+        button(
+          @click="() => {}"
+          :style="getAbleButtonColor(false)"
+        ) 적용
+    .wrap-main-category-status
+      p.main-category-status-title 노출시간 이후 표시여부
+      .main-category-status-button
+        button.main-category-status-visible(
+          @click="() => {}"
+          :style="getAbleButtonColor(getUseCategory())"
+        ) 분류표시
+        button.main-category-status-unvisible(
+          @click="() => {}"
+          :style="getAbleButtonColor(!getUseCategory())"
+        ) 분류숨김
+    pre.description *분류표시: 설정된 시간 이후 대분류가 제일 하단으로 이동하며 메뉴 선택시 주문 불가 팝업이 뜸
+      br
+      | *분류숨김: 설정된 시간 이후 분류가 숨겨짐
     .wrap-sub-category-status(v-if="getSubCategoryStatus")
-      p.sub-category-status-title 서브 메뉴 노출여부
+      p.sub-category-status-title 중분류 노출여부
       .wrap-sub-category-status-button
         .sub-category-status(
           v-for="(subCtgItem, subIndex) in subCategoryItem"
@@ -47,6 +89,9 @@ export default {
       selectMainCategoryItem: null,
       selectMainCategoryNumber: 0,
       selectSubCategoryItem: null,
+      dayOfWeek: [
+        '일', '월', '화', '수', '목', '금', '토',
+      ],
     };
   },
   computed: {
@@ -230,6 +275,9 @@ export default {
         return this.$store.commit('pushFlashMessage', '네트워크 상태가 불완전 합니다. 잠시후 시도 해주세요.');
       }
     },
+    onConditionOpen(code, flagCategory) {
+      console.log(code, flagCategory);
+    },
   },
 };
 </script>
@@ -317,6 +365,42 @@ a {
           color: #666;
         }
       }
+
+      .main-category-day-of-week {
+        margin-top: 1.5625vw !important;
+        display: flex;
+        align-items: center;
+        gap: 0.781250vw;
+
+        > button {
+          width: 4.1667vw;
+          height: 3.4722vw;
+          font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+          font-size: 1.2500vw;
+          font-weight: bold;
+          letter-spacing: -0.046875vw;
+          border-radius: 1.015625vw;
+          border: none;
+          background-color: #e5e5e5;
+          color: #666;
+        }
+
+        > input {
+          height: 3.3333vw;
+          width: 5.6944vw;
+          border: 1px solid #D3DCE6;
+          box-sizing: border-box;
+          border-radius: 5px;
+        }
+
+        .tilde {
+          color: #000;
+          font-style: normal;
+          font-size: 2.4306vw;
+          line-height: 1.6667vw;
+          text-transform: capitalize;
+        }
+      }
     }
 
     .wrap-sub-category-status {
@@ -380,6 +464,14 @@ a {
           }
         }
       }
+    }
+
+    .description {
+      padding-left: 2.34375vw !important;
+      box-sizing: border-box;
+      font-size: 0.9028vw;
+      line-height: 1.0417vw;
+      color: #929292;
     }
   }
 }
