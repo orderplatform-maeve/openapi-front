@@ -15,40 +15,61 @@
     )
     p.game-management-title 게임관리
     .main-categories
-      .main-category(class="active" v-for="(item, index) in mainCategory" :key="getMainCategoryKey(index)") {{ item }}
+      .main-category(
+        :class="getActiveCtgStyle(item)"
+        v-for="(item, index) in mainCategory"
+        :key="getMainCategoryKey(index)"
+        @click="getSelectMainCtg(item)"
+        ) {{ item }}
     .background-white
-      .game-select-wrap
-        button(@click.stop="openSearchModal('division')")
-          p.select-text {{optionName('division')}}
-          icon-under-arrow
+      div(v-if="selectCategory === '진행내역'")
+        .game-select-wrap
+          button(@click.stop="openSearchModal('division')")
+            p.select-text {{optionName('division')}}
+            icon-under-arrow
 
-        button.order-date(@click.stop="openSearchModal('date')")
-          p.select-text {{displayDate}}
-          icon-under-arrow
-        button.submit 조회
-      .game-progress-table-wrap
-        .table-title
-          p 순번
-          p 게임 일시
-          p 실행 게임
-          p 내기 종류
-          p 내기 상세
-          p 승리 테이블
-          p 패배 테이블
-        .table-body-wrap
-          .table-body-rows(v-for="(item, index) in progressData" :key="getGameProgressKey(index)")
-            p {{ index + 1 }}
-            p {{ dateFormat(item.gameStartDateTime) }}
-            p {{ item.gameName }}
-            p {{ formatGameBetType(item.gameBetType) }}
-            p {{ item.betDetail }}
-            p {{ formatTable(item.victoryTableList) }}
-            p {{ formatTable(item.defeatTableList) }}
-      .wrap-pagination
-        button.previous-button( v-on:click="selectPage({number: pagination.firstPage-1})") &lt;
-        button.page-number(v-for="(page, index) in pagination.pages" :key="index" @click="selectPage(page)" :class="{paginationActive: page.current}") {{page.number}}
-        button.next-button( v-on:click="selectPage({number: pagination.lastPage+1})") &gt;
-
+          button.order-date(@click.stop="openSearchModal('date')")
+            p.select-text {{displayDate}}
+            icon-under-arrow
+          button.submit(@click.stop="gameHistorySearch()") 조회
+        .game-progress-table-wrap
+          .table-title
+            p 순번
+            p 게임 일시
+            p 실행 게임
+            p 내기 종류
+            p 내기 상세
+            p 승리 테이블
+            p 패배 테이블
+          .table-body-wrap
+            p.empty-data(v-if="progressData.length === 0") 진행내역이 없습니다.
+            .table-body-rows(v-for="(item, index) in progressData" :key="getGameProgressKey(index)")
+              p {{ index + 1 }}
+              p {{ dateFormat(item.gameStartDateTime) }}
+              p {{ item.gameName }}
+              p {{ formatGameBetType(item.gameBetType) }}
+              p {{ item.betDetail }}
+              p {{ formatTable(item.victoryTableList) }}
+              p {{ formatTable(item.defeatTableList) }}
+        .wrap-pagination
+          button.previous-button(v-if="pagination.firstPage > 1" v-on:click="selectPage({number: pagination.firstPage-1})") &lt;
+          button.page-number(v-for="(page, index) in pagination.pages" :key="index" @click="selectPage(page)" :class="{paginationActive: page.current}") {{page.number}}
+          button.next-button(v-if="pagination.lastPage != pagination.maxPage" v-on:click="selectPage({number: pagination.lastPage+1})") &gt;
+      div(v-if="selectCategory === '게임상품 설정'")
+        div 업데이트 예정입니다.
+      div(v-if="selectCategory === '게임 설정'")
+        .game-setting-sub-ctg-wrap
+          .sub-category(
+            :class="getActiveSubCtgStyle(subCtg)"
+            v-for="(subCtg, index) in settingSubCategory"
+            :key="getSubCategoryKey(index)"
+            @click="getSelectSubCtg(subCtg)"
+            ) {{ subCtg }}
+        div(v-if="selectSetSubCtg === '게임 사용 여부'")
+          div 업데이트 예정입니다.
+        div(v-if="selectSetSubCtg === '퀵메세지 설정'")
+          input(placeholder="10자 이내로 입력해주세요" v-model="quickMessage")
+          button 추가
 </template>
 
 <script>
@@ -59,15 +80,17 @@ const { gameProgressHistory } = tableGame;
 export default {
   data() {
     return {
-      // mainCategory : ['진행내역', '게임상품 설정', '게임 설정']
-      mainCategory : ['진행내역'],
+      mainCategory : ['진행내역', '게임상품 설정', '게임 설정'],
+      selectCategory: '진행내역',
+      settingSubCategory : ['게임 사용 여부', '퀵메세지 설정'],
+      selectSetSubCtg : '퀵메세지 설정',
+      quickMessage: '',
       progressData: [],
       currentSearchModal: null,
       picker: {
         today: null,
         context: null,
         number: null,
-        numberRefeshTemp: null,
         selected: 'start',
       },
       searchOptions: {
@@ -75,20 +98,19 @@ export default {
           name: '게임 구분',
           selected: null,
           list: {
-            'roulette' : {
+            'ALL' : {
+              name: '전체'
+            },
+            'CROCODILE_GAME' : {
               name: '악어룰렛'
             },
-            'RPS' : {
+            'RSP_GAME' : {
               name: '가위바위보'
             },
+            'ARCHERY_GAME': {
+              name: '양궁'
+            },
           },
-        },
-        lookUp: {
-          name: '조회기간',
-          selected: null,
-          list: {
-            //
-          }
         },
         datetime: {
           start: new Date(),
@@ -104,7 +126,7 @@ export default {
   },
   computed: {
     verticalModalVisible() {
-      return this.currentSearchModal == 'division' || this.currentSearchModal == 'lookUp';
+      return this.currentSearchModal == 'division';
     },
     selectDate() {
       return this.selectStartDate && this.selectEndDate;
@@ -120,14 +142,50 @@ export default {
     getMainCategoryKey(index) {
       return `game-main-category-index:${index}`;
     },
+    getSelectMainCtg(item) {
+      this.selectCategory = item;
+    },
+    getActiveCtgStyle(item) {
+      return {
+        'main-category' : true,
+        'active' : this.selectCategory === item,
+      };
+    },
     getGameProgressKey(index) {
       return `game-progress-index:${index}`;
     },
-    async reqGameProgressHistory() {
+    getSubCategoryKey(index) {
+      return `game-setting-sub-ctg:${index}`;
+    },
+    getSelectSubCtg(item) {
+      this.selectSetSubCtg = item;
+    },
+    getActiveSubCtgStyle(item) {
+      return {
+        'sub-category' : true,
+        'sub-active' : this.selectSetSubCtg === item,
+      };
+    },
+    async reqGameProgressHistory(page) {
       try {
-        const res = await gameProgressHistory();
-        this.progressData = res.data.resultData.gameRoomList;
-        // console.log(this.progressData, '진행내역');
+
+        const maskMoment = 'YYYY-MM-DD';
+        const config = {
+          params : {
+            storeCode : this.$store.state.auth.store.store_code,
+            from : this.$moment(this.searchOptions.datetime.start).format(maskMoment),
+            to: this.$moment(this.searchOptions.datetime.end).format(maskMoment),
+            game: this.searchOptions.division.selected,
+            page: page,
+            size: 30,
+            sort: 'asc'
+          }
+        };
+        const res = await gameProgressHistory(config);
+        if (res?.data.resultCode === 200) {
+          this.progressData = res.data.resultData.gameRoomList;
+        }
+        // console.log(res, '진행내역');
       } catch (error) {
         console.error(error);
       }
@@ -236,13 +294,17 @@ export default {
         maxPage,
       };
     },
-    // selectPage(page) {
-    //   const number = page.number;
-    //   this.updatePaymentList(number);
-    // },
+    selectPage(page) {
+      const number = page.number;
+      this.reqGameProgressHistory(number);
+    },
+
+    gameHistorySearch() {
+      this.reqGameProgressHistory(1);
+    },
   },
   mounted() {
-    this.reqGameProgressHistory();
+    this.gameHistorySearch();
     this.pickerSelectToday();
 
     this.picker.today = this.$moment();
@@ -358,6 +420,12 @@ export default {
         margin-bottom: 0.7813vw !important;
         overflow: auto;
 
+        .empty-data {
+          font-size: 1.0938vw;
+          text-align: center;
+          margin-top: 30px !important;
+        }
+
         .table-body-rows {
           display: grid;
           height: 4.3750vw;
@@ -403,6 +471,29 @@ export default {
       align-items: center;
       font-size: 2vw;
       font-weight: 400;
+    }
+  }
+
+  .game-setting-sub-ctg-wrap {
+    display: flex;
+
+    .sub-category {
+      width: 134px;
+      height: 45px;
+      padding: 0 1.1718vw;
+      font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+      font-size: 1.25vw;
+      letter-spacing: -0.03125vw;
+      background-color: #efefef;
+      border-radius: 5px;
+      margin-right: 10px !important;
+      text-align: center;
+      line-height: 45px;
+    }
+
+    .sub-active {
+      background-color: #000;
+      color:#fff;
     }
   }
 }
