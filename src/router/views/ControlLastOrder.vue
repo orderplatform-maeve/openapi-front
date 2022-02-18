@@ -20,7 +20,7 @@
       button.reset-button(@click="resetMinute()") 리셋
   .wrap-bottom
     p.wrap-alarm-time
-      span.red-text {{minute}}분 
+      span.red-text {{minute}}분
       span 뒤 메세지가 노출 됩니다.
     .wrap-confirm-button
       button.confirm-buttom(@click="confirm") 확인
@@ -36,6 +36,9 @@ export default {
     hour: 0,
     tabIndex: 0,
     minute: 0,
+    // 확인 버튼 연속으로 누르는 것 방지용
+    timer : 0,
+    reRequest : false,
   }),
   methods: {
     setBaseMesage(msg, idx) {
@@ -86,7 +89,12 @@ export default {
     //     this.$store.commit('pushFlashMessage', '라스트오더 설정이 완료 되었습니다.');
     //   }
     // },
+
     async setLastOrder() {
+      if (this.reRequest) {
+        return;
+      }
+
       const fd = new FormData();
 
       const { store_code } = this.$store.state.auth.store;
@@ -106,6 +114,18 @@ export default {
       if (response.result) {
         this.$store.commit('pushFlashMessage', `${new Date(timestamp).toLocaleString('ko-KR')} 시간 설정이 완료 되었습니다.`);
       }
+
+      this.reRequest = true;
+
+      if (this.timer) {
+        clearTimeout(this.timer);
+      }
+
+      this.timer = setTimeout(() => {
+        this.reRequest = false;
+        return;
+      }, 10000);
+
     },
     async removeTimer() {
       const fd = new FormData();
@@ -184,7 +204,7 @@ export default {
       padding: 2.5vh 0 !important;
       box-sizing: border-box;
     }
-    
+
     .delete-timer-button {
       width: 25.78125vw;
       height: 6.71875vw;
