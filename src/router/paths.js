@@ -19,4 +19,5 @@ export default {
   newPaymentManagement: '/newPaymentManagement',
   servingRobotManagement: '/servingRobotManagement',
   auctionManager: '/auctionManager',
+  notice: '/notice',
 };

@@ -36,7 +36,7 @@
             .on-off-switch(v-on:click.stop="hideRecentOrder" :class="{activeSwitch: !statusRecentOrder}") OFF
             .on-off-switch(v-on:click.stop="showRecentOrder" :class="{activeSwitch: statusRecentOrder}") ON
       button.wrap-refresh-button(@click="restart")
-        p 새고고침
+        p 새로고침
         icon-refresh-icon
       button.wrap-logout-button(v-if="visibleLogoutButton" @click="logout")
         p 로그아웃
@@ -418,7 +418,7 @@ export default {
 
   .wrap-current-date {
     padding: 0 1.171875vw !important;
-    margin: 2.34375vw 0 !important;
+    margin: 1.5vw 0 !important;
     color: #fff;
     display: flex;
     flex-direction: column;
@@ -429,7 +429,7 @@ export default {
       font-size: 1.71875vw;
       letter-spacing: -0.02578125vw;
     }
-    
+
     .current-time {
       font-size: 2.578125vw;
       font-weight: bold;
@@ -471,7 +471,7 @@ export default {
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    
+
     .on-off-button-list {
       padding: 2.890625vw 1.171875vw !important;
       border-top: solid 0.078125vw #000;
