@@ -71,7 +71,11 @@ const endpoints = {
     robotMoving: `${DEMO_URL}/message/orderMoving`
   },
   tableGame: {
-    room : `${TABLE_GAME_URL}/table-game/admin/room`,
+    admin: {
+      master: {
+        room: `${TABLE_GAME_URL}/table-game/admin/master/room`,
+      }
+    }
   }
 };
 

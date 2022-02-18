@@ -42,8 +42,8 @@
             p 승리 테이블
             p 패배 테이블
           .table-body-wrap
-            p.empty-data(v-if="progressData.length === 0") 진행내역이 없습니다.
-            .table-body-rows(v-for="(item, index) in progressData" :key="getGameProgressKey(index)")
+            p.empty-data(v-if="resultData.gameRoomList.length === 0") 진행내역이 없습니다.
+            .table-body-rows(v-for="(item, index) in resultData.gameRoomList" :key="getGameProgressKey(index)")
               p {{ index + 1 }}
               p {{ dateFormat(item.gameStartDateTime) }}
               p {{ item.gameName }}
@@ -52,9 +52,9 @@
               p {{ formatTable(item.victoryTableList) }}
               p {{ formatTable(item.defeatTableList) }}
         .wrap-pagination
-          button.previous-button(v-if="pagination.firstPage > 1" v-on:click="selectPage({number: pagination.firstPage-1})") &lt;
+          button.previous-button(v-on:click="selectPage({number: pagination.firstPage-1})") &lt;
           button.page-number(v-for="(page, index) in pagination.pages" :key="index" @click="selectPage(page)" :class="{paginationActive: page.current}") {{page.number}}
-          button.next-button(v-if="pagination.lastPage != pagination.maxPage" v-on:click="selectPage({number: pagination.lastPage+1})") &gt;
+          button.next-button( v-on:click="selectPage({number: pagination.lastPage+1})") &gt;
       div(v-if="selectCategory === '게임상품 설정'")
         div 업데이트 예정입니다.
       div(v-if="selectCategory === '게임 설정'")
@@ -68,8 +68,10 @@
         div(v-if="selectSetSubCtg === '게임 사용 여부'")
           div 업데이트 예정입니다.
         div(v-if="selectSetSubCtg === '퀵메세지 설정'")
-          input(placeholder="10자 이내로 입력해주세요" v-model="quickMessage")
-          button 추가
+          .quick-message-container
+            .addition-wrap
+              input.add-input(placeholder="10자 이내로 입력해주세요" v-model="quickMessage")
+              button.add-bt 추가
 </template>
 
 <script>
@@ -85,7 +87,7 @@ export default {
       settingSubCategory : ['게임 사용 여부', '퀵메세지 설정'],
       selectSetSubCtg : '퀵메세지 설정',
       quickMessage: '',
-      progressData: [],
+      resultData: {},
       currentSearchModal: null,
       picker: {
         today: null,
@@ -168,7 +170,6 @@ export default {
     },
     async reqGameProgressHistory(page) {
       try {
-
         const maskMoment = 'YYYY-MM-DD';
         const config = {
           params : {
@@ -182,10 +183,11 @@ export default {
           }
         };
         const res = await gameProgressHistory(config);
+        this.test = res;
         if (res?.data.resultCode === 200) {
-          this.progressData = res.data.resultData.gameRoomList;
+          this.resultData = res.data.resultData;
         }
-        // console.log(res, '진행내역');
+        console.log(this.resultData.gameRoomList, '진행내역');
       } catch (error) {
         console.error(error);
       }
@@ -254,6 +256,7 @@ export default {
     },
     pagination() {
       const pageSize = 5;
+      console.log(this.test, '페이지네이션 테스트 조회');
 
       let currPage = this.$store.state.paymentListPage.currPage;
       let maxPage = this.$store.state.paymentListPage.allPages;
@@ -296,11 +299,12 @@ export default {
     },
     selectPage(page) {
       const number = page.number;
+      console.log(this.test, '페이지네이션 테스트 조회');
       this.reqGameProgressHistory(number);
     },
 
     gameHistorySearch() {
-      this.reqGameProgressHistory(1);
+      this.reqGameProgressHistory(0);
     },
   },
   mounted() {
@@ -486,7 +490,7 @@ export default {
       letter-spacing: -0.03125vw;
       background-color: #efefef;
       border-radius: 5px;
-      margin-right: 10px !important;
+      margin: 0 10px 30px 0 !important;
       text-align: center;
       line-height: 45px;
     }
@@ -495,6 +499,33 @@ export default {
       background-color: #000;
       color:#fff;
     }
+  }
+
+  .quick-message-container {
+
+    .addition-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      .add-input {
+        width: 164px;
+        height: 14px;
+        padding: 12px 20px !important;
+        border-radius: 5px;
+        border: 1px solid #d3dce6;
+      }
+
+      .add-bt {
+        width: 60px;
+        height: 40px;
+        background-color: #ef1515;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+      }
+    }
+
   }
 }
 </style>
