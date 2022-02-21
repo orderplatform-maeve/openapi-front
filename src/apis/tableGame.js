@@ -10,6 +10,14 @@ export const gameProgressHistory = async (config) => {
   return res;
 };
 
+export const gameQuickMsgSetting = async (body) => {
+  const url = `${endpoints.tableGame.admin.master.quick}`;
+
+  const res = await axios.post(url, body);
+  return res;
+};
+
 export default {
   gameProgressHistory,
+  gameQuickMsgSetting,
 };

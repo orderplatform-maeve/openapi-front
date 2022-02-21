@@ -71,10 +71,10 @@
           .quick-message-container
             .addition-wrap
               input.add-input(type="text" maxlength="10" placeholder="10자 이내로 입력해주세요" v-model="quickMsg")
-              button.add-bt 추가
+              button.add-bt(@click.stop="quickMsgAddOn()") 추가
             .message-list-wrap
-              .single-message(v-for="i in 20")
-                div 안녕하세요안녕하세요
+              .single-message(v-for="msg, index in quickMsgList" :key="getQuickMsgKey(index)")
+                div {{ msg }}
                 icon-x-white-button
             .save-bt 저장
             icon-x-white-button
@@ -210,6 +210,9 @@ export default {
     getPaginationKey(index) {
       return `game-pagination-index:${index}`;
     },
+    getQuickMsgKey(index) {
+      return `quick-msg-key:${index}`;
+    },
     getSelectSubCtg(item) {
       this.selectSetSubCtg = item;
     },
@@ -321,9 +324,15 @@ export default {
       const number = page.number;
       this.reqGameProgressHistory(number - 1);
     },
-
     gameHistorySearch() {
       this.reqGameProgressHistory(0);
+    },
+    quickMsgAddOn() {
+      this.quickMsgList.push(this.quickMsg);
+      console.log(this.quickMsgList);
+    },
+    quickMsgDelete() {
+      // findIndex, indexOf
     },
   },
   mounted() {
