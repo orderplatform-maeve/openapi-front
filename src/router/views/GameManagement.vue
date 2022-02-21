@@ -42,9 +42,9 @@
             p 승리 테이블
             p 패배 테이블
           .table-body-wrap
-            p.empty-data(v-if="resultData.gameRoomList.length === 0") 진행내역이 없습니다.
+            p.empty-data(v-if="resultData.totalContentCount === 0") 진행내역이 없습니다.
             .table-body-rows(v-for="(item, index) in resultData.gameRoomList" :key="getGameProgressKey(index)")
-              p {{ index + 1 }}
+              p {{ item.no }}
               p {{ dateFormat(item.gameStartDateTime) }}
               p {{ item.gameName }}
               p {{ formatGameBetType(item.gameBetType) }}
@@ -52,9 +52,9 @@
               p {{ formatTable(item.victoryTableList) }}
               p {{ formatTable(item.defeatTableList) }}
         .wrap-pagination
-          button.previous-button(v-on:click="selectPage({number: pagination.firstPage-1})") &lt;
+          button.previous-button(v-if="pagination.firstPage > 1" v-on:click="selectPage({number: pagination.firstPage-1})") &lt;
           button.page-number(v-for="(page, index) in pagination.pages" :key="index" @click="selectPage(page)" :class="{paginationActive: page.current}") {{page.number}}
-          button.next-button( v-on:click="selectPage({number: pagination.lastPage+1})") &gt;
+          button.next-button(v-if="pagination.lastPage != pagination.maxPage" v-on:click="selectPage({number: pagination.lastPage+1})") &gt;
       div(v-if="selectCategory === '게임상품 설정'")
         div 업데이트 예정입니다.
       div(v-if="selectCategory === '게임 설정'")
@@ -70,8 +70,14 @@
         div(v-if="selectSetSubCtg === '퀵메세지 설정'")
           .quick-message-container
             .addition-wrap
-              input.add-input(placeholder="10자 이내로 입력해주세요" v-model="quickMessage")
+              input.add-input(type="text" maxlength="10" placeholder="10자 이내로 입력해주세요" v-model="quickMsg")
               button.add-bt 추가
+            .message-list-wrap
+              .single-message(v-for="i in 20")
+                div 안녕하세요안녕하세요
+                icon-x-white-button
+            .save-bt 저장
+            icon-x-white-button
 </template>
 
 <script>
@@ -86,8 +92,15 @@ export default {
       selectCategory: '진행내역',
       settingSubCategory : ['게임 사용 여부', '퀵메세지 설정'],
       selectSetSubCtg : '퀵메세지 설정',
-      quickMessage: '',
-      resultData: {},
+      quickMsg: '',
+      quickMsgList: [],
+      resultData: {
+        currentPage: 0,
+        gameRoomList: [],
+        maxPageNo: 0,
+        pageSize: 0,
+        totalContentCount: 0
+      },
       currentSearchModal: null,
       picker: {
         today: null,
@@ -139,6 +152,47 @@ export default {
     selectDateModalVisible() {
       return this.currentSearchModal == 'date';
     },
+    pagination() {
+      const pageSize = 5;
+
+      let currPage = this.resultData.currentPage;
+      let maxPage = this.resultData.maxPageNo;
+
+      let firstPage = currPage - pageSize;
+      let lastPage = currPage + pageSize ;
+
+      if (firstPage < 1) {
+        lastPage = lastPage + (-1 *(firstPage));
+        firstPage = 1;
+      } else if (lastPage > maxPage) {
+        firstPage = firstPage + (maxPage - lastPage);
+        lastPage = maxPage;
+      }
+
+      if (firstPage < 1) {
+        firstPage = 1;
+      }
+      if (lastPage > maxPage) {
+        lastPage = maxPage;
+      }
+
+      let pages = [];
+      for (let i = firstPage; i <= lastPage; i++) {
+        let current = false;
+        if (i == currPage + 1) current = true;
+        pages.push({
+          number: i,
+          current: current,
+        });
+      }
+
+      return {
+        pages,
+        firstPage,
+        lastPage,
+        maxPage,
+      };
+    },
   },
   methods: {
     getMainCategoryKey(index) {
@@ -147,17 +201,14 @@ export default {
     getSelectMainCtg(item) {
       this.selectCategory = item;
     },
-    getActiveCtgStyle(item) {
-      return {
-        'main-category' : true,
-        'active' : this.selectCategory === item,
-      };
-    },
     getGameProgressKey(index) {
       return `game-progress-index:${index}`;
     },
     getSubCategoryKey(index) {
-      return `game-setting-sub-ctg:${index}`;
+      return `game-setting-sub-ctg-index:${index}`;
+    },
+    getPaginationKey(index) {
+      return `game-pagination-index:${index}`;
     },
     getSelectSubCtg(item) {
       this.selectSetSubCtg = item;
@@ -166,6 +217,19 @@ export default {
       return {
         'sub-category' : true,
         'sub-active' : this.selectSetSubCtg === item,
+      };
+    },
+    getActiveCtgStyle(item) {
+      return {
+        'main-category' : true,
+        'active' : this.selectCategory === item,
+      };
+    },
+    getActivePaginationStyle(page, index) {
+      console.log(page, index);
+      return {
+        'pagination-num-bt' : true,
+        'pagination-num-active' : page === index + 1,
       };
     },
     async reqGameProgressHistory(page) {
@@ -183,11 +247,10 @@ export default {
           }
         };
         const res = await gameProgressHistory(config);
-        this.test = res;
         if (res?.data.resultCode === 200) {
           this.resultData = res.data.resultData;
         }
-        console.log(this.resultData.gameRoomList, '진행내역');
+
       } catch (error) {
         console.error(error);
       }
@@ -201,8 +264,8 @@ export default {
     dateFormat(date) {
       const dateParam = new Date(date);
       const formatDate = `
-          ${dateParam.getFullYear()}.${this.fillZero(dateParam.getMonth() + 1)}.${this.fillZero(dateParam.getDate())}
-          ${this.fillZero(dateParam.getHours())}:${this.fillZero(dateParam.getMinutes())}:${this.fillZero((dateParam.getSeconds()))}`;
+        ${dateParam.getFullYear()}.${this.fillZero(dateParam.getMonth() + 1)}.${this.fillZero(dateParam.getDate())}
+        ${this.fillZero(dateParam.getHours())}:${this.fillZero(dateParam.getMinutes())}:${this.fillZero((dateParam.getSeconds()))}`;
       return formatDate;
     },
     formatGameBetType(gameBetType) {
@@ -254,53 +317,9 @@ export default {
       });
       this.currentSearchModal = null;
     },
-    pagination() {
-      const pageSize = 5;
-      console.log(this.test, '페이지네이션 테스트 조회');
-
-      let currPage = this.$store.state.paymentListPage.currPage;
-      let maxPage = this.$store.state.paymentListPage.allPages;
-
-      let firstPage = currPage - pageSize;
-      let lastPage = currPage + pageSize;
-
-      if (firstPage < 1) {
-        lastPage = lastPage + (-1 *(firstPage));
-        firstPage = 1;
-      } else if (lastPage > maxPage) {
-        firstPage = firstPage + (maxPage - lastPage);
-
-        lastPage = maxPage;
-      }
-
-      if (firstPage < 1) {
-        firstPage = 1;
-      }
-      if (lastPage > maxPage) {
-        lastPage = maxPage;
-      }
-
-      let pages = [];
-      for (let i= firstPage; i<=lastPage; i++) {
-        let current = false;
-        if (i == currPage) current = true;
-        pages.push({
-          number: i,
-          current: current,
-        });
-      }
-
-      return {
-        pages,
-        firstPage,
-        lastPage,
-        maxPage,
-      };
-    },
     selectPage(page) {
       const number = page.number;
-      console.log(this.test, '페이지네이션 테스트 조회');
-      this.reqGameProgressHistory(number);
+      this.reqGameProgressHistory(number - 1);
     },
 
     gameHistorySearch() {
@@ -313,7 +332,6 @@ export default {
 
     this.picker.today = this.$moment();
     this.picker.context = this.$moment();
-
   },
 };
 </script>
@@ -427,7 +445,7 @@ export default {
         .empty-data {
           font-size: 1.0938vw;
           text-align: center;
-          margin-top: 30px !important;
+          margin-top: 2.3438vw !important;
         }
 
         .table-body-rows {
@@ -482,17 +500,17 @@ export default {
     display: flex;
 
     .sub-category {
-      width: 134px;
-      height: 45px;
+      width: 10.4688vw;
+      height: 3.5156vw;
       padding: 0 1.1718vw;
       font-family: 'Spoqa Han Sans Neo', 'sans-serif';
       font-size: 1.25vw;
       letter-spacing: -0.03125vw;
       background-color: #efefef;
-      border-radius: 5px;
-      margin: 0 10px 30px 0 !important;
+      border-radius: 0.3906vw;
+      margin: 0 0.7813vw 2.3438vw 0 !important;
       text-align: center;
-      line-height: 45px;
+      line-height: 3.5156vw;
     }
 
     .sub-active {
@@ -506,24 +524,63 @@ export default {
     .addition-wrap {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 0.7813vw;
 
       .add-input {
-        width: 164px;
-        height: 14px;
-        padding: 12px 20px !important;
-        border-radius: 5px;
-        border: 1px solid #d3dce6;
+        width: 12.8125vw;
+        height: 1.0938vw;
+        padding: 0.9375vw 1.5625vw !important;
+        border-radius: 0.3906vw;
+        border: 0.0781vw solid #d3dce6;
+        font-size: 1.0938vw;
       }
 
       .add-bt {
-        width: 60px;
-        height: 40px;
+        width: 4.6875vw;
+        height: 3.125vw;
         background-color: #ef1515;
         color: #fff;
         border: none;
-        border-radius: 5px;
+        border-radius: 0.3906vw;
+        font-size: 1.25vw;
       }
+    }
+
+    .message-list-wrap {
+      display: flex;
+      margin: 1.5625vw 0 !important;
+      flex-wrap: wrap;
+      gap: 0.7813vw;
+      border: 0.0781vw solid #d3dce6;
+      border-radius: 0.7813vw;
+      padding: 1.5625vw !important;
+    }
+
+    .single-message {
+      font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.5625vw !important;
+      box-sizing: border-box;
+      font-size: 1.0938vw;
+      width: 14.8438vw;
+      height: 3.125vw;
+      border-radius: 1.1719vw;
+      background-color: #000;
+      color:#fff;
+    }
+
+    .save-bt {
+      width: 7.8125vw;
+      height: 3.125vw;
+      background-color: #ef1515;
+      color: #fff;
+      border: none;
+      border-radius: 0.3906vw;
+      font-size: 1.25vw;
+      text-align: center;
+      line-height: 3.125vw;
     }
 
   }
