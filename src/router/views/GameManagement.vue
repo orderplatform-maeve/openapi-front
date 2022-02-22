@@ -70,28 +70,40 @@
         div(v-if="selectSetSubCtg === '퀵메세지 설정'")
           .quick-message-container
             .addition-wrap
-              input.add-input(type="text" maxlength="10" placeholder="10자 이내로 입력해주세요" v-model="quickMsg")
+              input.add-input(
+                type="text"
+                maxlength="10"
+                placeholder="10자 이내로 입력해주세요"
+                v-model="quickMsg"
+                @keypress.enter="quickMsgAddOn()"
+                )
               button.add-bt(@click.stop="quickMsgAddOn()") 추가
             .message-list-wrap
               .single-message(v-for="msg, index in quickMsgList" :key="getQuickMsgKey(index)")
                 div {{ msg }}
                 div(@click="quickMsgDelete(index)")
                   icon-x-white-button
-            .save-bt 저장
+            .save-bt(@click="reqGameQuickMsgSave()") 저장
             icon-x-white-button
 </template>
 
 <script>
 import { tableGame } from '@apis';
 
-const { gameProgressHistory } = tableGame;
+const {
+  gameProgressHistory,
+  gameQuickMsgSave,
+  gameQuickMsgLoad
+} = tableGame;
 
 export default {
   data() {
     return {
-      mainCategory : ['진행내역', '게임상품 설정', '게임 설정'],
+      // mainCategory : ['진행내역', '게임상품 설정', '게임 설정'],
+      mainCategory : ['진행내역', '게임 설정'],
       selectCategory: '진행내역',
-      settingSubCategory : ['게임 사용 여부', '퀵메세지 설정'],
+      // settingSubCategory : ['게임 사용 여부', '퀵메세지 설정'],
+      settingSubCategory : ['퀵메세지 설정'],
       selectSetSubCtg : '퀵메세지 설정',
       quickMsg: '',
       quickMsgList: [],
@@ -333,20 +345,47 @@ export default {
         return this.showAlert('메세지를 입력해주세요.');
       }
       this.quickMsgList.push(this.quickMsg);
-      console.log(this.quickMsgList);
+      this.quickMsg = '';
     },
     quickMsgDelete(index) {
       this.quickMsgList.splice(index, 1);
-      console.log(this.quickMsgList);
     },
     showAlert(message) {
       this.$store.commit('updateAlertModalMessage', message);
       return this.$store.commit('updateIsAlertModal', true);
     },
+    async reqGameQuickMsgSave() {
+      try {
+        const body = {
+          messageList : this.quickMsgList,
+          storeCode : this.$store.state.auth.store.store_code,
+        };
+
+        const res = await gameQuickMsgSave(body);
+        if(res.data.resultCode === 200) {
+          this.showAlert('저장되었습니다.');
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async reqGameQuickMsgLoad() {
+      try {
+        const storeCode = this.$store.state.auth.store.store_code;
+        const res = await gameQuickMsgLoad(storeCode);
+        if(res.data.resultCode === 200) {
+          this.quickMsgList = res.data.resultData.quickMessageList;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
   },
+
   mounted() {
     this.gameHistorySearch();
     this.pickerSelectToday();
+    this.reqGameQuickMsgLoad();
 
     this.picker.today = this.$moment();
     this.picker.context = this.$moment();
@@ -354,7 +393,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .game-management-container {
   flex: 1;
   font-family: 'Spoqa Han Sans Neo', 'sans-serif';
