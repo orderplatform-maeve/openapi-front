@@ -75,7 +75,8 @@
             .message-list-wrap
               .single-message(v-for="msg, index in quickMsgList" :key="getQuickMsgKey(index)")
                 div {{ msg }}
-                icon-x-white-button
+                div(@click="quickMsgDelete(index)")
+                  icon-x-white-button
             .save-bt 저장
             icon-x-white-button
 </template>
@@ -328,11 +329,19 @@ export default {
       this.reqGameProgressHistory(0);
     },
     quickMsgAddOn() {
+      if(this.quickMsg === '') {
+        return this.showAlert('메세지를 입력해주세요.');
+      }
       this.quickMsgList.push(this.quickMsg);
       console.log(this.quickMsgList);
     },
-    quickMsgDelete() {
-      // findIndex, indexOf
+    quickMsgDelete(index) {
+      this.quickMsgList.splice(index, 1);
+      console.log(this.quickMsgList);
+    },
+    showAlert(message) {
+      this.$store.commit('updateAlertModalMessage', message);
+      return this.$store.commit('updateIsAlertModal', true);
     },
   },
   mounted() {

@@ -10,12 +10,15 @@ export const gameProgressHistory = async (config) => {
   return res;
 };
 
+// 퀵 메세지 등록
 export const gameQuickMsgSetting = async (body) => {
   const url = `${endpoints.tableGame.admin.master.quick}`;
 
   const res = await axios.post(url, body);
   return res;
 };
+
+// 퀵 메세지 조회
 
 export default {
   gameProgressHistory,
