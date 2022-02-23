@@ -1,9 +1,9 @@
 <template lang="pug">
-  .serving-robot-start-modal-container
-    .serving-robot-start-modal
+  .serving-robot-start-modal-container(@click="unVisibleModal")
+    .serving-robot-start-modal(@click.prevent.stop)
       .wrap-serving-robot-start-header
         p.serving-robot-start-header 서빙안내
-        icon-exit-black(@click.native="unVisibleModal")
+        icon-exit-black(@click.native.stop="unVisibleModal")
       p.serving-robot-start-notion 서빙을 진행하시고자 하는 테이블 번호를 선택해주세요.
       .table-number-list
         p.table-number(

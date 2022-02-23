@@ -1,6 +1,6 @@
 <template lang="pug">
-  .serving-robot-error-modal-container
-    .serving-robot-error-modal
+  .serving-robot-error-modal-container(@click="unVisibleModal")
+    .serving-robot-error-modal(@click.prevent.stop)
       .wrap-serving-robot-error-header
         p.serving-guide-header 로봇 상태 확인
         icon-exit-black(@click.native="unVisibleModal")
