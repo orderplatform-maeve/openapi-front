@@ -284,7 +284,7 @@ const writeNotionRow = async (hotfixNum, comment) => {
           people: [
             {
               object: 'user',
-              id: '7a109183-d748-4472-b925-65ade8a07fed'
+              id: '815ac529-2d8e-4337-ad30-c2b8ac9625be'
             }
           ]
         },
