@@ -20,4 +20,5 @@ export default {
   servingRobotManagement: '/servingRobotManagement',
   auctionManager: '/auctionManager',
   notice: '/notice',
+  gameManagement: '/gameManagement',
 };

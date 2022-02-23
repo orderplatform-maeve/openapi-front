@@ -18,3 +18,4 @@ export { default as NewPaymentManagement } from './NewPaymentManagement';
 export { default as ServingRobotManagement } from './ServingRobotManagement';
 export { default as AuctionManager } from './AuctionManager';
 export { default as NoticePage } from './NoticePage';
+export { default as GameManagement } from './GameManagement';

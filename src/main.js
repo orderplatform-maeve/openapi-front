@@ -40,6 +40,7 @@ import {
   PlusButton,
   MinusButton,
   IconExitBlack,
+  XWhiteButton,
 } from '@svg';
 
 Vue.config.devtools = true;
@@ -96,6 +97,7 @@ Vue.component('icon-delete-icon', DeleteIcon);
 Vue.component('icon-plus-button', PlusButton);
 Vue.component('icon-minus-button', MinusButton);
 Vue.component('icon-exit-black', IconExitBlack);
+Vue.component('icon-x-white-button', XWhiteButton);
 
 new Vue({
   router,
