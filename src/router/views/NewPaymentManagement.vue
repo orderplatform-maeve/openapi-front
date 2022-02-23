@@ -668,7 +668,7 @@ export default {
     box-sizing: border-box;
 
     > button {
-      font-family: 'Spoqa Han Sans Neo', 'sans-serif'; 
+      font-family: 'Spoqa Han Sans Neo', 'sans-serif';
       font-size: 1.25vw;
       letter-spacing: -0.03125vw;
       height: 3.515625vw;
@@ -775,6 +775,39 @@ export default {
           }
         }
       }
+    }
+  }
+
+  .wrap-pagination {
+    height: 5vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.78125vw;
+
+    > button {
+      width: 2.65625vw;
+      height: 2.65625vw;
+      font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+      font-size: 1.25vw;
+      color: #12151d;
+      background-color: #fff;
+      border: solid 0.078125vw #ccc;
+      border-radius: 0.390625vw;
+    }
+
+    .paginationActive {
+      color: #fff;
+      background-color: #000;
+    }
+
+    .previous-button,
+    .next-button {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 2vw;
+      font-weight: 400;
     }
   }
 }
