@@ -1,7 +1,7 @@
 <template lang="pug">
   .wrap-orders-container
-    //- modal-order(v-if="order")
-    auction-modal(v-if="order")
+    auction-modal(v-if="order && event")
+    modal-order(v-if="order && !event")
     .orders-container
       order-cash-out-standing-modal(
         v-if="getCashOutPopVisble()"
@@ -87,6 +87,7 @@ export default {
       isLoading: false,
       chooseOrder: {},
       version,
+      event: false,
     };
   },
   components: {
@@ -139,8 +140,6 @@ export default {
     }
   },
   async mounted() {
-    console.log(!!this.$store.state.order, '느낌표');
-    console.log(this.$store.state.order);
     this.isLoading = true;
     const fd = new FormData();
     fd.append('shop_code', this.$store.state.auth.store.store_code);
@@ -240,6 +239,9 @@ export default {
     },
     openView(order) {
       this.$store.dispatch('setOrder', order);
+      // 임시테스트 (경매) 2는 호출
+      this.event = order.viewType === 2;
+      console.log('openView 실행', this.event);
     },
     visibleOrderItem(order) {
       const commit = this.checkedCommit(order);
