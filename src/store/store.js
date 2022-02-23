@@ -430,7 +430,7 @@ const order = {
       state.orders.push(order);
     },
     SET_ORDERS: (state, orders) => {
-      // // console.log('orders!!!!!!!', orders);
+      // console.log('orders!!!!!!!', orders);
       Vue.set(state, 'orders', orders);
     },
     UPDATE_ORDER_CREDIT: (state, order, value) => {

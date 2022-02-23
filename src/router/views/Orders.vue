@@ -1,6 +1,7 @@
 <template lang="pug">
   .wrap-orders-container
-    modal-order(v-if="order")
+    //- modal-order(v-if="order")
+    auction-modal(v-if="order")
     .orders-container
       order-cash-out-standing-modal(
         v-if="getCashOutPopVisble()"
@@ -42,7 +43,7 @@
               p.order-information-paid-price {{getTotalAmount(order)}}원
               p.order-information-unpaid-money(@click.stop="() => openMisuModal(order)")
                 span(:class="{unpaid: getMisu(order) !== '미수금없음'}") {{ getMisu(order) }}
-                span.unpaid(v-if="getVisibleWon(order)") 원 
+                span.unpaid(v-if="getVisibleWon(order)") 원
               p.order-information-paid-type {{paidTypeCheck(order)}}
               p.order-information-credit-type {{creditTypeCheck(order)}}
               p.order-information-order-time {{getOrderTime(order).substr(11)}}
@@ -66,7 +67,7 @@
                 span.red-box {{visitGroups(order)}}명
               p.order-information-total-people
                 span {{electronicAccessPeople(order)}}명
-                
+
 </template>
 
 <script>
@@ -74,6 +75,7 @@ import utils from '@utils/orders.utils';
 import { won } from '@utils/regularExpressions';
 import { payments } from '@apis';
 import { version } from '@utils/constants';
+import AuctionModal from '@components/AuctionModal.vue';
 
 const {
   requestMisuCommit,
@@ -86,6 +88,9 @@ export default {
       chooseOrder: {},
       version,
     };
+  },
+  components: {
+    AuctionModal
   },
   computed: {
     order() {
@@ -134,6 +139,8 @@ export default {
     }
   },
   async mounted() {
+    console.log(!!this.$store.state.order, '느낌표');
+    console.log(this.$store.state.order);
     this.isLoading = true;
     const fd = new FormData();
     fd.append('shop_code', this.$store.state.auth.store.store_code);
@@ -276,7 +283,7 @@ export default {
     },
     orderStyleCheck(order) {
       const orderType = this.orderTypeCheck(order);
-      
+
       if (orderType === '첫주문' || orderType === '주문') {
         return 'orderColorRed';
       }
@@ -297,7 +304,7 @@ export default {
       if (order.paidOrder) {
         return '선불';
       }
-      
+
       return '후불';
     },
     creditTypeCheck(order) {
@@ -446,7 +453,7 @@ export default {
       padding: 3.75vh 1.5625vw 1.25vh !important;
       border-bottom: solid 0.078125vw #333333;
       box-sizing: border-box;
-      
+
 
       .order-title {
         font-size: 1.09375vw;
