@@ -253,13 +253,13 @@ export default {
           this.searchOptions.datetime.start = this.$moment([year, month, date]);
           if (this.searchOptions.datetime.start > this.searchOptions.datetime.end) {
             this.searchOptions.datetime.end = this.$moment({year, month, date, hour: 23, minute: 59});
-          } 
+          }
           this.picker.today = this.searchOptions.datetime.start;
         } else if (this.picker.selected == 'enddate') {
           this.searchOptions.datetime.end = this.$moment({year, month, date, hour: 23, minute: 59});
           if (this.searchOptions.datetime.start > this.searchOptions.datetime.end) {
             this.searchOptions.datetime.start = this.$moment([year, month, date]);
-          } 
+          }
           this.picker.today = this.searchOptions.datetime.end;
         }
       }
@@ -359,6 +359,7 @@ export default {
     background-color: #fff;
     box-sizing: border-box;
     border-radius: 1.5625vw;
+    color:#000;
 
     .select-date-modal-title {
       font-size: 1.5625vw;
