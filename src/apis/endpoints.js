@@ -1,4 +1,5 @@
 // import { isDemo } from '@utils/constants';
+import { isDev } from '@utils/constants';
 
 // const DEMO_URL = 'http:///demo.api.torder.co.kr';
 const REST_URL = 'http://rest.torder.co.kr';
@@ -6,7 +7,7 @@ const ADMIN_URL = 'http://admin.torder.co.kr';
 const API_URL = 'http://api.torder.co.kr';
 const DEMO_URL = 'http://demo.api.torder.co.kr';
 const ROBOT_TEXT = 'http://52.78.117.91:8888/v2/order';
-const TABLE_GAME_URL = 'https://dev-apigw.torder.co.kr';
+const TABLE_GAME_URL = isDev ? 'https://dev-apigw.torder.co.kr' : 'https://apigw.torder.co.kr';
 
 // const SERVER_URL = isDemo ? DEMO_URL : REST_URL;
 
