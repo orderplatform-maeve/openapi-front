@@ -377,7 +377,7 @@ export default {
               .last-order-product-name {
                 font-size: 1.25vw;
                 letter-spacing: -0.03125vw;
-                width: 1.7857vw;
+                width: 21.8750vw;
                 overflow: scroll;
               }
 
