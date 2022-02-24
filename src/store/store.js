@@ -476,7 +476,6 @@ const order = {
       state.payloadStatus = payload;
     },
     filterEvent(state, payload) {
-      console.log(payload, '뮤테이션');
       state.orders = payload;
     },
     auctionFlag(state, payload) {

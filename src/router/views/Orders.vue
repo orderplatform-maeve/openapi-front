@@ -25,7 +25,10 @@
           p.payload-info(:class="{'payload-active': payloadStatus === 0}" @click="payloadInfoChange(0)") 결제포함
           p.payload-info(:class="{'payload-active': payloadStatus === 1}" @click="payloadInfoChange(1)") 결제미포함
         .event-filter
-          input(type="checkbox" v-model="onlyEvent" @click="filterEvent(onlyEvent)")
+          div(v-if="onlyEvent" @click="filterEventDisable()")
+            check-box-active
+          div(v-if="!onlyEvent" @click="filterEventActive()")
+            check-box-disable
           p.event-text 이벤트 주문 내역만 보기
       .wrap-order-list(v-if="payloadStatus === 0")
         .order-title-list
@@ -371,18 +374,18 @@ export default {
       const people = order?.visitPeopleCnt;
       return people ? people : 0;
     },
-    filterEvent(onlyEvent) {
-      console.log(onlyEvent);
-      if(!onlyEvent) {
-        const { orders } = this.$store.state;
-        let eventList = orders.filter( order => order.viewType === 2);
-        this.$store.commit('filterEvent', eventList);
-        console.log(this.sortedOrders,'sortedOrders');
-      }
-      if(onlyEvent) {
-        this.$store.commit('filterEvent', this.sortedOrders);
-      }
-    }
+    filterEventDisable() {
+      this.onlyEvent = false;
+      const fd = new FormData();
+      fd.append('shop_code', this.$store.state.auth.store.store_code);
+      this.$store.dispatch('setOrders', fd);
+    },
+    filterEventActive() {
+      this.onlyEvent = true;
+      const { orders } = this.$store.state;
+      let eventList = orders.filter( order => order.viewType === 5);
+      this.$store.commit('filterEvent', eventList);
+    },
   }
 };
 </script>
@@ -475,6 +478,8 @@ export default {
 
     .event-filter {
       display: flex;
+      align-items: center;
+      gap: 5px;
 
       .event-text {
         font-family: "Spoqa Han Sans Neo", "sans-serif";
@@ -633,6 +638,10 @@ export default {
           }
           .orderColorYellow {
             color: #e5a11a;
+          }
+
+          .orderColorOrange {
+            color: #FF7A00;
           }
 
           .order-information-table-number {
