@@ -65,8 +65,6 @@ const socket = {
           state.auction = true;
         }
         commit('PUSH_ORDER', order);
-        console.log(state.auction, 'state.auction');
-
       }
     },
     async SOCKET_orderview({ commit, state, dispatch }, payload) {

@@ -256,7 +256,6 @@ export default {
       } else {
         this.$store.commit('auctionFlag', false);
       }
-      console.log('openView auction', this.auction);
     },
     visibleOrderItem(order) {
       const commit = this.checkedCommit(order);
@@ -449,7 +448,7 @@ export default {
     justify-content : space-between;
     align-items: center;
     background-color: #fff;
-    padding: 1.5625vw 20px 0 20px !important;
+    padding: 1.5625vw 1.5625vw 1.5625vw !important;
 
     .payload-wrap {
       display: flex;
@@ -479,7 +478,7 @@ export default {
     .event-filter {
       display: flex;
       align-items: center;
-      gap: 5px;
+      gap: 0.3906vw;
 
       .event-text {
         font-family: "Spoqa Han Sans Neo", "sans-serif";
