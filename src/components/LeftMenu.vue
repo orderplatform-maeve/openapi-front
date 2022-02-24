@@ -13,6 +13,9 @@
       p.current-date {{getNowDate()}}
       p.current-time {{getNowTime()}}
     .wrap-page-button-list
+      router-link.order-history(v-if="visibleOrderButton" :to="paths.notice" :class="{activeButton: path === '/notice'}")
+        span 공지사항
+        span.big-title {{getNoticeNewCount}}
       router-link.order-history(v-if="visibleOrderButton" :to="paths.order" :class="{activeButton: path === '/order'}") 주문보기
       router-link.additional-functions(v-if="visibleOrderButton" :to="paths.additional" :class="{activeButton: path === '/additional'}") 추가기능(테스트)
       router-link.paid-history(v-if="visibleOrderButton" :to="paths.paymentManagement" :class="{activeButton: path === '/paymentManagement'}") 결제내역
@@ -36,7 +39,7 @@
             .on-off-switch(v-on:click.stop="hideRecentOrder" :class="{activeSwitch: !statusRecentOrder}") OFF
             .on-off-switch(v-on:click.stop="showRecentOrder" :class="{activeSwitch: statusRecentOrder}") ON
       button.wrap-refresh-button(@click="restart")
-        p 새고고침
+        p 새로고침
         icon-refresh-icon
       button.wrap-logout-button(v-if="visibleLogoutButton" @click="logout")
         p 로그아웃
@@ -46,6 +49,13 @@
 <script>
 import { version } from '@utils/constants';
 import paths from '@router/paths';
+import {
+  notice
+} from '@apis';
+
+const {
+  getNoticeInfo,
+} = notice;
 
 export default {
   data() {
@@ -57,6 +67,15 @@ export default {
       },
       version,
       paths,
+      noticeData: {
+        totalContentCount: 10,
+        pageSize: 10,
+        currentPage: 0,
+        maxPageNo: 1,
+        noticeMasterList: [],
+        newStatus: 0,
+        noticeNewCount: 0,
+      },
     };
   },
   methods: {
@@ -350,6 +369,18 @@ export default {
         this.hideRecentOrder();
       }
     },
+    async getDefaultNoticeData() {
+      try {
+        const res = await getNoticeInfo('page=0&size=10&noticeCategory=ALL&noticeStatus=1&noticeSearchQuery=&noticeCaller=MASTER');
+
+        this.noticeData = res.data;
+      } catch {
+        console.log('에러');
+      }
+    },
+  },
+  created() {
+    this.getDefaultNoticeData();
   },
   mounted() {
     this.loopBeep();
@@ -394,6 +425,9 @@ export default {
     confirmModal() {
       return this.$store.state.confirmModal;
     },
+    getNoticeNewCount() {
+      return this.noticeData.noticeNewCount;
+    }
   }
 };
 </script>
@@ -418,7 +452,7 @@ export default {
 
   .wrap-current-date {
     padding: 0 1.171875vw !important;
-    margin: 2.34375vw 0 !important;
+    margin: 1.5vw 0 0 !important;
     color: #fff;
     display: flex;
     flex-direction: column;
@@ -429,7 +463,7 @@ export default {
       font-size: 1.71875vw;
       letter-spacing: -0.02578125vw;
     }
-    
+
     .current-time {
       font-size: 2.578125vw;
       font-weight: bold;
@@ -464,6 +498,17 @@ export default {
       font-weight: bold;
       color: #fff !important;
     }
+
+    .order-history {
+      display: flex;
+      align-items: center;
+      gap: 0.390625vw;
+
+      .big-title {
+        font-size: 2.34375vw;
+        color: #fff;
+      }
+    }
   }
 
   .wrap-bottom-button-area {
@@ -471,7 +516,7 @@ export default {
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    
+
     .on-off-button-list {
       padding: 2.890625vw 1.171875vw !important;
       border-top: solid 0.078125vw #000;

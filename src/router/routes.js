@@ -19,6 +19,7 @@ import {
   NewPaymentManagement,
   ServingRobotManagement,
   AuctionManager,
+  NoticePage,
   GameManagement,
 } from '@views';
 
@@ -152,6 +153,12 @@ const routes = [{
       path: paths.gameManagement,
       name: paths.gameManagement.replace('/', ''),
       component: GameManagement,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: paths.notice,
+      name: paths.notice.replace('/', ''),
+      component: NoticePage,
       meta: { requiresAuth: true },
     },
   ],
