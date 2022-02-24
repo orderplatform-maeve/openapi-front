@@ -316,10 +316,6 @@ export default {
   beforeDestroy() {
     clearInterval(this.interval);
   },
-  sockets: {
-    connect() {
-    },
-  },
 };
 </script>
 
