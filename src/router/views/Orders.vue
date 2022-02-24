@@ -448,7 +448,7 @@ export default {
     justify-content : space-between;
     align-items: center;
     background-color: #fff;
-    padding: 1.5625vw 1.5625vw 1.5625vw !important;
+    padding: 1.5625vw 1.5625vw 0 !important;
 
     .payload-wrap {
       display: flex;
