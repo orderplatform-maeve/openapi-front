@@ -27,13 +27,15 @@
       p.main-category-status-title 노출 상태(미구현)
       .main-category-status-button
         button.main-category-status-unvisible(
-          :style="getAbleButtonColor(false)"
+          @click="categoryVisibleOption=!categoryVisibleOption"
+          :style="getAbleButtonColor(categoryVisibleOption)"
         ) 항상 노출
         button.main-category-status-unvisible(
-          :style="getAbleButtonColor(false)"
+          @click="categoryVisibleOption=!categoryVisibleOption"
+          :style="getAbleButtonColor(!categoryVisibleOption)"
         ) 제한 노출
     // 노출 요일 선택
-    .wrap-main-category-status(v-if="getUseCategory()")
+    .wrap-main-category-status(v-if="!categoryVisibleOption && getUseCategory()")
       p.main-category-status-title 노출 요일 선택(미구현)
       .main-category-day-of-week
         button(
@@ -46,7 +48,7 @@
           :style="getAbleButtonColor(dayOfWeekStyle(day))"
         ) {{ day }}
     // 노출 시간 선택
-    .wrap-main-category-status(v-if="getUseCategory()")
+    .wrap-main-category-status(v-if="!categoryVisibleOption && getUseCategory()")
       p.main-category-status-title 노출 시간 선택(미구현)
       .main-category-day-of-week
         input(placeholder="시")
@@ -59,16 +61,16 @@
           :style="getAbleButtonColor(false)"
         ) 적용
     // 노출시간 이후 표시여부
-    .wrap-main-category-status(v-if="getUseCategory()")
+    .wrap-main-category-status(v-if="!categoryVisibleOption && getUseCategory()")
       p.main-category-status-title 노출시간 이후 표시여부(미구현)
       .main-category-status-button
         button.main-category-status-visible(
-          @click="() => {}"
-          :style="getAbleButtonColor(getUseCategory())"
+          @click="categoryVisibleAfterState=!categoryVisibleAfterState"
+          :style="getAbleButtonColor(categoryVisibleAfterState)"
         ) 분류표시
         button.main-category-status-unvisible(
-          @click="() => {}"
-          :style="getAbleButtonColor(!getUseCategory())"
+          @click="categoryVisibleAfterState=!categoryVisibleAfterState"
+          :style="getAbleButtonColor(!categoryVisibleAfterState)"
         ) 분류숨김
     pre.description *분류표시: 설정된 시간 이후 대분류가 제일 하단으로 이동하며 메뉴 선택시 주문 불가 팝업이 뜸
       br
@@ -103,11 +105,20 @@ export default {
       dayOfWeek: [
         '일', '월', '화', '수', '목', '금', '토',
       ],
-      selectedDayOfWeek : []
+      // 노출 요일 선택
+      categoryVisibleDayOfWeek : [],
+      // 노출 상태 (true - 항상 노출 / false - 제한 노출)
+      categoryVisibleOption : true,
+      // 노출 시간 이후 표시여부(true - 분류 표시 / false - 분류 숨김 )
+      categoryVisibleAfterState : true,
+      // 노출 시간
+      categoryVisibleOptionStartTime : '00:00',
+      categoryVisibleOptionEndTime : '30:00'
     };
   },
   computed: {
     data() {
+      console.log('카테고리 데이터', this.$store.getters.getAllCategories);
       return this.$store.getters.getAllCategories;
     },
     subCategoryItem() {
@@ -291,33 +302,36 @@ export default {
       console.log(code, flagCategory);
     },
     dayOfWeekStyle(day) {
-      if (this.selectedDayOfWeek.includes(day)) {
+      if (this.categoryVisibleDayOfWeek.includes(day)) {
         return true;
       }
       return false;
     },
+    // 노출 상태 요일 '특정 요일' 눌렀을때
     clickDayOfWeek(day) {
       // 들어 있으면
-      if(this.selectedDayOfWeek.includes(day)) {
-        const deleteIndex = this.selectedDayOfWeek.findIndex((dayArray) => dayArray === day);
-        this.selectedDayOfWeek.splice(deleteIndex,1);
+      if(this.categoryVisibleDayOfWeek.includes(day)) {
+        const deleteIndex = this.categoryVisibleDayOfWeek.findIndex((dayArrayItem) => dayArrayItem === day);
+        this.categoryVisibleDayOfWeek.splice(deleteIndex,1);
         return;
       }
-      this.selectedDayOfWeek.push(day);
+      this.categoryVisibleDayOfWeek.push(day);
     },
+    // 노출 상태 요일 '매일' 눌렀을때
+    clickAllDayOfWeek() {
+      if(this.categoryVisibleDayOfWeek.length === 0) {
+        this.categoryVisibleDayOfWeek = ['일', '월', '화', '수', '목', '금', '토'];
+        return;
+      }
+      this.categoryVisibleDayOfWeek = [];
+    },
+    // 노출 요일 선택 '매일' 스타일
     dayOfWeekAllStyle() {
-      if(this.selectedDayOfWeek.length === 7) {
+      if(this.categoryVisibleDayOfWeek.length === 7) {
         return true;
       }
       return false;
     },
-    clickAllDayOfWeek() {
-      if(this.selectedDayOfWeek.length === 0) {
-        this.selectedDayOfWeek = ['일', '월', '화', '수', '목', '금', '토'];
-        return;
-      }
-      this.selectedDayOfWeek = [];
-    }
   },
 };
 </script>
