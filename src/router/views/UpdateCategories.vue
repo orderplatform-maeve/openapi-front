@@ -1,5 +1,11 @@
 <template lang="pug">
 .update-categories-container
+  category-visible-select-date-modal(
+    v-if="isCategoryVisibleSelectDateModal"
+    :data="datetime"
+    :closeModal="closeModal"
+    :selectDateModalSubmit="selectDateModalSubmit"
+    :categoryVisibleTime="categoryVisibleTime")
   p.update-categories-title 분류관리 (테스트)
   .main-categories
     .main-category(
@@ -28,11 +34,11 @@
       .main-category-status-button
         button.main-category-status-unvisible(
           @click="categoryVisibleOption=!categoryVisibleOption"
-          :style="getAbleButtonColor(categoryVisibleOption)"
+          :style="getAbleButtonColor(data[selectMainCategoryNumber].scheduleOn)"
         ) 항상 노출
         button.main-category-status-unvisible(
           @click="categoryVisibleOption=!categoryVisibleOption"
-          :style="getAbleButtonColor(!categoryVisibleOption)"
+          :style="getAbleButtonColor(!data[selectMainCategoryNumber].scheduleOn)"
         ) 제한 노출
     // 노출 요일 선택
     .wrap-main-category-status(v-if="!categoryVisibleOption && getUseCategory()")
@@ -46,16 +52,16 @@
           v-for="day of dayOfWeek"
           @click="clickDayOfWeek(day)"
           :style="getAbleButtonColor(dayOfWeekStyle(day))"
-        ) {{ day }}
+        ) {{ getDayText(day) }}
     // 노출 시간 선택
     .wrap-main-category-status(v-if="!categoryVisibleOption && getUseCategory()")
       p.main-category-status-title 노출 시간 선택(미구현)
-      .main-category-day-of-week
-        input(placeholder="시")
-        input(placeholder="분")
+      .main-category-day-of-week(@click="isCategoryVisibleSelectDateModal = true")
+        input(disabled placeholder="시" v-model="categoryVisibleTime.startHour")
+        input(disabled placeholder="분" v-model="categoryVisibleTime.startMinute")
         span.tilde ~
-        input(placeholder="시")
-        input(placeholder="분")
+        input(disabled placeholder="시" v-model="categoryVisibleTime.endHour")
+        input(disabled placeholder="분" v-model="categoryVisibleTime.endMinute")
         button(
           @click="() => {}"
           :style="getAbleButtonColor(false)"
@@ -66,11 +72,11 @@
       .main-category-status-button
         button.main-category-status-visible(
           @click="categoryVisibleAfterState=!categoryVisibleAfterState"
-          :style="getAbleButtonColor(categoryVisibleAfterState)"
+          :style="getAbleButtonColor(data[selectMainCategoryNumber].isHide)"
         ) 분류표시
         button.main-category-status-unvisible(
           @click="categoryVisibleAfterState=!categoryVisibleAfterState"
-          :style="getAbleButtonColor(!categoryVisibleAfterState)"
+          :style="getAbleButtonColor(!data[selectMainCategoryNumber].isHide)"
         ) 분류숨김
     pre.description *분류표시: 설정된 시간 이후 대분류가 제일 하단으로 이동하며 메뉴 선택시 주문 불가 팝업이 뜸
       br
@@ -96,24 +102,36 @@
 </template>
 
 <script>
+import { CategoryVisibleSelectDateModal } from '@components';
+
 export default {
+  components : {
+    CategoryVisibleSelectDateModal
+  },
   data() {
     return {
       selectMainCategoryItem: null,
       selectMainCategoryNumber: 0,
       selectSubCategoryItem: null,
       dayOfWeek: [
-        '일', '월', '화', '수', '목', '금', '토',
+        0, 1, 2, 3, 4, 5, 6
       ],
-      // 노출 요일 선택
-      categoryVisibleDayOfWeek : [],
       // 노출 상태 (true - 항상 노출 / false - 제한 노출)
       categoryVisibleOption : true,
       // 노출 시간 이후 표시여부(true - 분류 표시 / false - 분류 숨김 )
       categoryVisibleAfterState : true,
-      // 노출 시간
-      categoryVisibleOptionStartTime : '00:00',
-      categoryVisibleOptionEndTime : '30:00'
+      // 시간 선택 모달
+      isCategoryVisibleSelectDateModal : false,
+      datetime: {
+        start: new Date(),
+        end: new Date(),
+      },
+      categoryVisibleTime : {
+        startHour : '00',
+        startMinute : '00',
+        endHour : '30',
+        endMinute : '00'
+      }
     };
   },
   computed: {
@@ -126,6 +144,12 @@ export default {
     },
     getSubCategoryStatus() {
       return this.subCategoryItem.length > 0;
+    },
+    categoryVisibleStartTime() {
+      return this.data[this.selectMainCategoryNumber].categoryVisibleStartTime;
+    },
+    categoryVisibleEndTime() {
+      return this.data[this.selectMainCategoryNumber].categoryVisibleEndTime;
     }
   },
   async mounted() {
@@ -174,6 +198,11 @@ export default {
       const fd = new FormData();
       fd.append('store_code', this.$store.state.auth.store.store_code);
       await this.$store.dispatch('setAllCategories', fd);
+
+      this.categoryVisibleTime.startHour = this.data[this.selectMainCategoryNumber].categoryVisibleStartTime.split(':')[0];
+      this.categoryVisibleTime.startMinute = this.data[this.selectMainCategoryNumber].categoryVisibleStartTime.split(':')[1];
+      this.categoryVisibleTime.endHour = this.data[this.selectMainCategoryNumber].categoryVisibleEndTime.split(':')[0];
+      this.categoryVisibleTime.endMinute = this.data[this.selectMainCategoryNumber].categoryVisibleEndTime.split(':')[1];
     },
     getUseCategory() {
       return this.data[this.selectMainCategoryNumber]?.useCategory;
@@ -301,8 +330,9 @@ export default {
     onConditionOpen(code, flagCategory) {
       console.log(code, flagCategory);
     },
+    // 노출 상태 '특정 요일' 스타일
     dayOfWeekStyle(day) {
-      if (this.categoryVisibleDayOfWeek.includes(day)) {
+      if (this.data[this.selectMainCategoryNumber].weekArray.includes(day)) {
         return true;
       }
       return false;
@@ -310,29 +340,53 @@ export default {
     // 노출 상태 요일 '특정 요일' 눌렀을때
     clickDayOfWeek(day) {
       // 들어 있으면
-      if(this.categoryVisibleDayOfWeek.includes(day)) {
-        const deleteIndex = this.categoryVisibleDayOfWeek.findIndex((dayArrayItem) => dayArrayItem === day);
-        this.categoryVisibleDayOfWeek.splice(deleteIndex,1);
+      if(this.data[this.selectMainCategoryNumber].weekArray.includes(day)) {
+        const deleteIndex = this.data[this.selectMainCategoryNumber].weekArray.findIndex((dayArrayItem) => dayArrayItem === day);
+        this.data[this.selectMainCategoryNumber].weekArray.splice(deleteIndex,1);
         return;
       }
-      this.categoryVisibleDayOfWeek.push(day);
+      this.data[this.selectMainCategoryNumber].weekArray.push(day);
     },
     // 노출 상태 요일 '매일' 눌렀을때
     clickAllDayOfWeek() {
-      if(this.categoryVisibleDayOfWeek.length === 0) {
-        this.categoryVisibleDayOfWeek = ['일', '월', '화', '수', '목', '금', '토'];
+      if(this.data[this.selectMainCategoryNumber].weekArray.length === 0) {
+        this.data[this.selectMainCategoryNumber].weekArray = [0, 1, 2, 3, 4, 5, 6];
         return;
       }
-      this.categoryVisibleDayOfWeek = [];
+      this.data[this.selectMainCategoryNumber].weekArray = [];
     },
     // 노출 요일 선택 '매일' 스타일
     dayOfWeekAllStyle() {
-      if(this.categoryVisibleDayOfWeek.length === 7) {
+      if(this.data[this.selectMainCategoryNumber].weekArray.length === 7) {
         return true;
       }
       return false;
     },
+    getDayText(day) {
+      if (day === 0) { return '일'; }
+      if (day === 1) { return '월'; }
+      if (day === 2) { return '화'; }
+      if (day === 3) { return '수'; }
+      if (day === 4) { return '목'; }
+      if (day === 5) { return '금'; }
+      if (day === 6) { return '토'; }
+    },
+    closeModal() {
+      this.isCategoryVisibleSelectDateModal = false;
+    },
+    selectDateModalSubmit(time) {
+      console.log('213123', time);
+      // this.categoryVisibleTime.startHour =  (new Date(date.start)).getHours();
+      // this.categoryVisibleTime.startMinute =  (new Date(date.start)).getMinutes();
+      // this.categoryVisibleTime.endHour =  (new Date(date.end)).getHours();
+      // this.categoryVisibleTime.endMinute =  (new Date(date.end)).getMinutes();
+
+      // console.log('뭐가바꼈누', this.categoryVisibleTime.startHour);
+      // console.log('뭐가바꼈누2', this.categoryVisibleTime.endHour);
+      this.closeModal();
+    },
   },
+
 };
 </script>
 

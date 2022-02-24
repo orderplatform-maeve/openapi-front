@@ -1,31 +1,30 @@
 <template lang="pug">
-  .select-date-modal-container(@click.self="closeSearchModal")
+  .select-date-modal-container(@click.self="closeModal")
     .wrap-select-date-modal
-      .select-date-modal-title 날짜/시간별 조회
+      .select-date-modal-title 노출 시간 선택
       .select-date-modal
         .select-date-modal-information
           .wrap-start-date
-            p.select-date-title 시작일
+            p.select-date-title 시작 시간
             .select-date
-              input.date(type='text' name='' v-bind:value="$moment(searchOptions.datetime.start).format('YYYY-MM-DD')" readonly v-on:click.stop="pickerSelectStartDate")
               .wrap-time
-                input.time(type='text' name='' v-bind:value="$moment(searchOptions.datetime.start).format('HH')" readonly v-on:click.stop="pickerSelectStartHour")
+                input.time(type='text' name='' v-bind:value="categoryVisibleTime.startHour" readonly v-on:click.stop="pickerSelectStartHour")
                 span 시
               .wrap-minute
-                input.minute(type='text' name='' v-bind:value="$moment(searchOptions.datetime.start).format('mm')" readonly v-on:click.stop="pickerSelectStartMinute")
+                input.minute(type='text' name='' v-bind:value="categoryVisibleTime.startMinute" readonly v-on:click.stop="pickerSelectStartMinute")
                 span 분
           .wrap-end-date
-            p.select-date-title 종료일
+            p.select-date-title 종료 시간
             .select-date
-              input.date(type='text' name='' v-bind:value="$moment(searchOptions.datetime.end).format('YYYY-MM-DD')" readonly v-on:click.stop="pickerSelectEndDate")
               .wrap-time
-                input.time(type='text' name='' v-bind:value="$moment(searchOptions.datetime.end).format('HH')" readonly v-on:click.stop="pickerSelectEndHour")
+                input.time(type='text' name='' v-bind:value="categoryVisibleTime.endHour" readonly v-on:click.stop="pickerSelectEndHour")
                 span 시
               .wrap-minute
-                input.minute(type='text' name='' v-bind:value="$moment(searchOptions.datetime.end).format('mm')" readonly v-on:click.stop="pickerSelectEndMinute")
+                input.minute(type='text' name='' v-bind:value="categoryVisibleTime.endMinute" readonly v-on:click.stop="pickerSelectEndMinute")
                 span 분
+          div 시간 시간이나 종료 시간을 선택 해 주세요.
         .select-date-modal-calendar
-          .wrap-select-time(v-if="['startHour', 'startMinute', 'endMinute', 'endHour'].includes(picker.selected)")
+          .wrap-select-time
             .select-time-header
               button.time-minus-button(@click.stop="pickerDownNumber") -
               span.time-information {{picker.number}}
@@ -37,28 +36,13 @@
               button.number-button(@click.stop="pickerSelectButton(0)") 0
               button.delete-button(@click.stop="pickerSelectButton('d')")
                 icon-delete-icon
-          .wrap-select-date(v-if="['startDate', 'enddate'].includes(picker.selected)")
-            .select-date-header
-              button.previous-button(@click.stop="pickerPrevMonth") &lt;
-              span.date-information {{calendarYear}}년 {{calendarMonth}}월
-              button.next-button(@click.stop="pickerNextMonth") &gt;
-            .wrap-calendar
-              .wrap-weekdays
-                p.week(v-for="day in weekday" :key="day") {{day}}
-              .calendar
-                p.week(v-for="date in calendarFirstDayOfMonth")
-                p.week(
-                  v-for="date in calendarDaysInMonth"
-                  :class="{'active': activeDate(date), 'deactivate': deactivateDate(date)}"
-                  v-on:click.stop="pickerSelectDate(calendarYear, calendarMonth, date)"
-                ) {{date}}
       .select-confirm-button
-        button.confirm-button(@click="selectDateModalSubmit(searchOptions.datetime)") 선택완료
+        button.confirm-button(@click="selectDateModalSubmit(categoryVisibleTime)") 설정완료
 </template>
 
 <script>
 export default {
-  name: 'SelectDateModal',
+  name: 'CategoryVisibleSelectDateModal',
   props: {
     data: {
       type: Object,
@@ -66,8 +50,11 @@ export default {
     selectDateModalSubmit: {
       type: Function,
     },
-    closeSearchModal: {
+    closeModal: {
       type: Function,
+    },
+    categoryVisibleTime : {
+      type : Object
     }
   },
   data() {
@@ -85,22 +72,15 @@ export default {
         numberRefeshTemp: null,
         selected: 'start',
       },
-      activeButton: 'today',
-      weekday: ['일', '월', '화', '수', '목', '금', '토'],
     };
   },
   methods: {
-    activeDate(date) {
-      return date == this.initialDate && this.calendarMonth == this.initialMonth && this.calendarYear == this.initialYear;
-    },
-    deactivateDate(date) {
-      const today = new Date().getDate();
-      const currentMonth = new Date().getMonth() + 1;
-      const currentYear = new Date().getFullYear();
-
-      return today < date && this.calendarMonth == currentMonth && this.calendarYear == currentYear;
-    },
     pickerSelectButton(k) {
+      if (this.picker.selected === 'start') {
+        return;
+      }
+
+      console.log('k', k);
       let tmp = 0;
 
       if (k=='r') {
@@ -110,21 +90,21 @@ export default {
         let stringNumber = String(number);
         stringNumber = stringNumber.substr(0, stringNumber.length -1);
 
-        if (stringNumber.length<1) stringNumber =0;
+        if (stringNumber.length < 1) stringNumber = 0;
 
         tmp = parseInt(stringNumber);
-      } else if (parseInt(k)) {
+      } else if (parseInt(k) | k === 0) {
         let number = this.picker.number;
         let stringNumber = String(number);
 
-        stringNumber+=k;
+        stringNumber += k;
+
         if (stringNumber.length > 2) {
           stringNumber = stringNumber.substr(stringNumber.length -2, stringNumber.length -1);
-
         }
+
         tmp = parseInt(stringNumber);
       }
-
 
       if (this.picker.selected == 'startHour' || this.picker.selected == 'endHour') {
         if (tmp > 23) {
@@ -136,21 +116,26 @@ export default {
         }
       }
 
-
       this.picker.number = tmp;
 
-      if (this.picker.selected == 'startHour') {
-        this.searchOptions.datetime.start = this.$moment(this.searchOptions.datetime.start).set({ hour: tmp });
-      } else if (this.picker.selected == 'endHour') {
-        this.searchOptions.datetime.end = this.$moment(this.searchOptions.datetime.end).set({ hour: tmp });
-      } else if (this.picker.selected == 'startMinute') {
-        this.searchOptions.datetime.start = this.$moment(this.searchOptions.datetime.start).set({ minute: tmp });
-      } else if (this.picker.selected == 'endMinute') {
-        this.searchOptions.datetime.end = this.$moment(this.searchOptions.datetime.end).set({ minute: tmp });
+      if (this.picker.number < 10) {
+        tmp = `0${this.picker.number}`;
       }
 
+      if (this.picker.selected == 'startHour') {
+        this.categoryVisibleTime.startHour = tmp;
+      } else if (this.picker.selected == 'endHour') {
+        this.categoryVisibleTime.endHour = tmp;
+      } else if (this.picker.selected == 'startMinute') {
+        this.categoryVisibleTime.startMinute = tmp;
+      } else if (this.picker.selected == 'endMinute') {
+        this.categoryVisibleTime.endMinute = tmp;
+      }
     },
     pickerUpNumber() {
+      if (this.picker.selected === 'start') {
+        return;
+      }
       let tmp = this.picker.number;
 
       tmp = parseInt(tmp);
@@ -168,17 +153,24 @@ export default {
 
       this.picker.number = tmp;
 
+      if (this.picker.number < 10) {
+        tmp = `0${this.picker.number}`;
+      }
+
       if (this.picker.selected == 'startHour') {
-        this.searchOptions.datetime.start = this.$moment(this.searchOptions.datetime.start).set({ hour: tmp });
+        this.categoryVisibleTime.startHour = tmp;
       } else if (this.picker.selected == 'endHour') {
-        this.searchOptions.datetime.end = this.$moment(this.searchOptions.datetime.end).set({ hour: tmp });
+        this.categoryVisibleTime.endHour = tmp;
       } else if (this.picker.selected == 'startMinute') {
-        this.searchOptions.datetime.start = this.$moment(this.searchOptions.datetime.start).set({ minute: tmp });
+        this.categoryVisibleTime.startMinute = tmp;
       } else if (this.picker.selected == 'endMinute') {
-        this.searchOptions.datetime.end = this.$moment(this.searchOptions.datetime.end).set({ minute: tmp });
+        this.categoryVisibleTime.endMinute = tmp;
       }
     },
     pickerDownNumber() {
+      if (this.picker.selected === 'start') {
+        return;
+      }
       let tmp = this.picker.number;
       tmp = parseInt(tmp);
 
@@ -196,112 +188,50 @@ export default {
 
       this.picker.number = tmp;
 
+      if (this.picker.number < 10) {
+        tmp = `0${this.picker.number}`;
+      }
+
       if (this.picker.selected == 'startHour') {
-        this.searchOptions.datetime.start = this.$moment(this.searchOptions.datetime.start).set({ hour: tmp });
+        this.categoryVisibleTime.startHour = tmp;
       } else if (this.picker.selected == 'endHour') {
-        this.searchOptions.datetime.end = this.$moment(this.searchOptions.datetime.end).set({ hour: tmp });
+        this.categoryVisibleTime.endHour = tmp;
       } else if (this.picker.selected == 'startMinute') {
-        this.searchOptions.datetime.start = this.$moment(this.searchOptions.datetime.start).set({ minute: tmp });
+        this.categoryVisibleTime.startMinute = tmp;
       } else if (this.picker.selected == 'endMinute') {
-        this.searchOptions.datetime.end = this.$moment(this.searchOptions.datetime.end).set({ minute: tmp });
+        this.categoryVisibleTime.endMinute = tmp;
       }
     },
     pickerSelectStartHour() {
-      let tmp = this.$moment(this.searchOptions.datetime.start).format('H');
+      let tmp = this.categoryVisibleTime.startHour;
       this.picker.number = tmp;
       this.picker.numberRefeshTemp = tmp;
       this.picker.selected = 'startHour';
     },
     pickerSelectEndHour() {
-      let tmp = this.$moment(this.searchOptions.datetime.end).format('H');
+      let tmp = this.categoryVisibleTime.endHour;
       this.picker.number = tmp;
       this.picker.numberRefeshTemp = tmp;
       this.picker.selected = 'endHour';
     },
     pickerSelectStartMinute() {
-      let tmp = this.$moment(this.searchOptions.datetime.start).format('m');
+      let tmp = this.categoryVisibleTime.startMinute;
       this.picker.number = tmp;
       this.picker.numberRefeshTemp = tmp;
       this.picker.selected = 'startMinute';
     },
     pickerSelectEndMinute() {
-      let tmp = this.$moment(this.searchOptions.datetime.end).format('m');
+      let tmp = this.categoryVisibleTime.endMinute;
       this.picker.number = tmp;
       this.picker.numberRefeshTemp = tmp;
       this.picker.selected = 'endMinute';
     },
-    pickerSelectStartDate() {
-      this.picker.today = this.searchOptions.datetime.start;
-      this.picker.context = this.searchOptions.datetime.start;
-      this.picker.selected = 'startDate';
-    },
-    pickerSelectEndDate() {
-      this.picker.today = this.searchOptions.datetime.end;
-      this.picker.context = this.searchOptions.datetime.end;
-      this.picker.selected = 'enddate';
-    },
-    pickerSelectDate(year, month, date) {
-      if (!this.deactivateDate(date)) {
-        this.activeButton = 'none';
-        month = parseInt(month) - 1;
-        if (this.picker.selected == 'startDate') {
-          this.searchOptions.datetime.start = this.$moment([year, month, date]);
-          if (this.searchOptions.datetime.start > this.searchOptions.datetime.end) {
-            this.searchOptions.datetime.end = this.$moment({year, month, date, hour: 23, minute: 59});
-          }
-          this.picker.today = this.searchOptions.datetime.start;
-        } else if (this.picker.selected == 'enddate') {
-          this.searchOptions.datetime.end = this.$moment({year, month, date, hour: 23, minute: 59});
-          if (this.searchOptions.datetime.start > this.searchOptions.datetime.end) {
-            this.searchOptions.datetime.start = this.$moment([year, month, date]);
-          }
-          this.picker.today = this.searchOptions.datetime.end;
-        }
-      }
-    },
-    pickerPrevMonth() {
-      this.picker.context = this.$moment(this.picker.context).subtract(1, 'months');
-    },
-    pickerNextMonth() {
-      if(this.calendarMonth != new Date().getMonth() + 1) {
-        this.picker.context = this.$moment(this.picker.context).add(1, 'months');
-      }
-    },
-    activeSelectButton() {
-      console.log(this.searchOptions.datetime.start, this.$moment({ hour:0, minute:0 }), 'te');
-      if (this.searchOptions.datetime.start == this.$moment({ hour:0, minute:0 }) && this.searchOptions.datetime.end == this.$moment({ hour:24, minute:0 })) {
-        return 'today';
-      }
-    }
   },
   computed: {
-    calendarYear() {
-      return this.picker.context.format('YYYY');
-    },
-    calendarMonth() {
-      return this.picker.context.format('MM');
-    },
-    calendarDaysInMonth() {
-      return this.picker.context.daysInMonth();
-    },
-    calendarFirstDayOfMonth: function () {
-      let firstDay = this.$moment(this.picker.context).subtract((this.picker.context.get('date') - 1), 'days');
-      return firstDay.weekday();
-    },
-    initialDate() {
-      return this.picker.today.get('date');
-    },
-    initialMonth() {
-      return this.picker.today.format('MM');
-    },
-    initialYear() {
-      return this.picker.today.format('YYYY');
-    },
+    //
   },
   mounted() {
-    this.pickerSelectToday();
     this.searchOptions.datetime = this.data;
-    this.pickerSelectStartDate();
   }
 };
 </script>
