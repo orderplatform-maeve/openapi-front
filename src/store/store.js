@@ -57,6 +57,9 @@ const socket = {
         if (window?.UUID?.playOrderBell) {
           window.UUID.playOrderBell();
         }
+        if (order.viewType == 5) {
+          state.auction = true;
+        }
         commit('PUSH_ORDER', order);
       }
     },
@@ -426,7 +429,7 @@ const order = {
       state.orders.push(order);
     },
     SET_ORDERS: (state, orders) => {
-      // // console.log('orders!!!!!!!', orders);
+      // console.log('orders!!!!!!!', orders);
       Vue.set(state, 'orders', orders);
     },
     UPDATE_ORDER_CREDIT: (state, order, value) => {
@@ -466,6 +469,12 @@ const order = {
       console.log('여기 찍힘?', payload);
       state.payloadStatus = payload;
     },
+    filterEvent(state, payload) {
+      state.orders = payload;
+    },
+    auctionFlag(state, payload) {
+      state.auction = payload;
+    }
   },
   actions: {
     async commitOrder(context, payload) {
@@ -1262,6 +1271,7 @@ const payment = {
 
 const state = {
   order: undefined,
+  auction : false,
   orders: [],
   payloadStatus: 0,
   device: {
