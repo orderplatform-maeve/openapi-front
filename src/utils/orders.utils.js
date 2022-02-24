@@ -199,6 +199,10 @@ const beforeProductMethods = {
     if (!option) return '';
     return option.display_name;
   },
+  getBeforeAuctionPrice(cProduct) {
+    if (!cProduct) return '';
+    return cProduct.good_price.toLocaleString();
+  }
 };
 
 export const getRatingText = (type) => {

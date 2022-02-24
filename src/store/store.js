@@ -61,7 +61,12 @@ const socket = {
         if (window?.UUID?.playOrderBell) {
           window.UUID.playOrderBell();
         }
+        if (order.viewType == 5) {
+          state.auction = true;
+        }
         commit('PUSH_ORDER', order);
+        console.log(state.auction, 'state.auction');
+
       }
     },
     async SOCKET_orderview({ commit, state, dispatch }, payload) {
@@ -470,6 +475,13 @@ const order = {
       console.log('여기 찍힘?', payload);
       state.payloadStatus = payload;
     },
+    filterEvent(state, payload) {
+      console.log(payload, '뮤테이션');
+      state.orders = payload;
+    },
+    auctionFlag(state, payload) {
+      state.auction = payload;
+    }
   },
   actions: {
     async commitOrder(context, payload) {
@@ -1266,6 +1278,7 @@ const payment = {
 
 const state = {
   order: undefined,
+  auction : false,
   orders: [],
   payloadStatus: 0,
   device: {

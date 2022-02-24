@@ -16,38 +16,16 @@
       .wrap-current-order-history
         p.current-order-history-text 경매 결과
         .current-order-history-list
-          .current-order-history(v-for="product in order.order_info")
+          .current-order-history
             .current-product-info
-              p.product-name {{getProjectGoodName(product)}}
-            .product-option-list(v-if="isProductOpt(product)")
-              .product-option(v-for="option in product.option")
-                p.option-name {{getOptionDisplayName(option)}}
-                p.option-quantity {{getOptionGoodQty(option)}}개
-      .wrap-last-order-history(v-if="!order.paidOrder")
+              p.product-name 경매 낙찰
+      .wrap-last-order-history
         p.last-order-history-text 경매 낙찰 내역
-        .last-order-history-list(v-if="order.paidOrder==false")
-          .last-order-history(v-for="c_product in order.total_orders")
+        .last-order-history-list
+          .last-order-history(v-for="c_product in order.auctionInfo")
             .last-product-info
               .last-order-product-name {{getBeforeProductDisplayName(c_product)}}
-              .last-order-product-quantity {{getBeforeProductOrderQty(c_product)}}개
-            .last-order-product-option-list(v-if="isBeforeProductOtp(c_product)")
-              .last-order-product-option(v-for="option in c_product.option")
-                p.last-option-name {{getBeforeProductOptionDisplayName(option)}}
-                p.last-option-quantity {{getBeforeProductOptionOrderQty(option)}}개
-      .wrap-last-order-history(v-else-if="order.paidOrder")
-        p.last-order-history-text.credit-history 결제내역
-        .last-order-history-list
-          .last-order-history(v-for="c_product in order.creditArray")
-            .last-product-info
-              .last-order-product-name {{ getProductAmount(c_product) }}원
-              .last-order-product-quantity.credit-type {{ getProductOrderType(c_product) }}
-      .wrap-last-order-history(v-else-if="getVisibleCancelListArea(order)")
-        p.last-order-history-text.credit-history 결제 취소 내역
-        .last-order-history-list
-          .last-order-history(v-for="c_product in order.cancelArray")
-            .last-product-info
-              .last-order-product-name {{ getProductAmount(c_product) }}
-              .last-order-product-quantity.credit-type {{ getProductOrderType(c_product) }}
+              .last-order-product-quantity {{getBeforeAuctionPrice(c_product)}}원
     p.auction-info-text 낙찰 내용을 확인하시고 포스에 정보를 입력해주세요.
     .wrap-confirm-button
       button.close-button(@click="closeOrder") 닫기
@@ -399,6 +377,8 @@ export default {
               .last-order-product-name {
                 font-size: 1.25vw;
                 letter-spacing: -0.03125vw;
+                width: 280px;
+                overflow: scroll;
               }
 
               .last-order-product-quantity {
