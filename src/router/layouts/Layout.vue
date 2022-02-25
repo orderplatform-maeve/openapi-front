@@ -275,7 +275,6 @@ export default {
                   index: null,
                 });
 
-                this.$router.replace('/paymentManagement');
                 return;
 
               } else {

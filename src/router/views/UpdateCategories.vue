@@ -2,10 +2,9 @@
 .update-categories-container
   category-visible-select-date-modal(
     v-if="isCategoryVisibleSelectDateModal"
-    :data="datetime"
     :closeModal="closeModal"
     :selectDateModalSubmit="selectDateModalSubmit"
-    :categoryVisibleTime="categoryVisibleTime")
+    :categoryVisibleTime="cloneDate")
   p.update-categories-title 분류관리 (테스트)
   .main-categories
     .main-category(
@@ -30,15 +29,15 @@
         ) 숨김
     // 노출 상태
     .wrap-main-category-status(v-if="getUseCategory()")
-      p.main-category-status-title 노출 상태(미구현)
+      p.main-category-status-title 노출 상태
       .main-category-status-button
         button.main-category-status-unvisible(
-          @click="categoryVisibleOption=!categoryVisibleOption"
-          :style="getAbleButtonColor(data[selectMainCategoryNumber].scheduleOn)"
+          @click="postCategoryUpdateCategoryScheduleOn"
+          :style="getAbleButtonColor(categoryVisibleOption)"
         ) 항상 노출
         button.main-category-status-unvisible(
-          @click="categoryVisibleOption=!categoryVisibleOption"
-          :style="getAbleButtonColor(!data[selectMainCategoryNumber].scheduleOn)"
+          @click="postCategoryUpdateCategoryScheduleOff"
+          :style="getAbleButtonColor(!categoryVisibleOption)"
         ) 제한 노출
     // 노출 요일 선택
     .wrap-main-category-status(v-if="!categoryVisibleOption && getUseCategory()")
@@ -55,16 +54,16 @@
         ) {{ getDayText(day) }}
     // 노출 시간 선택
     .wrap-main-category-status(v-if="!categoryVisibleOption && getUseCategory()")
-      p.main-category-status-title 노출 시간 선택(미구현)
-      .main-category-day-of-week(@click="isCategoryVisibleSelectDateModal = true")
-        input(disabled placeholder="시" v-model="categoryVisibleTime.startHour")
-        input(disabled placeholder="분" v-model="categoryVisibleTime.startMinute")
+      p.main-category-status-title 노출 시간 선택
+      .main-category-day-of-week
+        .category-visible-time(@click="isCategoryVisibleSelectDateModal = true") {{ categoryVisibleTime.startHour }}시
+        .category-visible-time(@click="isCategoryVisibleSelectDateModal = true") {{ categoryVisibleTime.startMinute }}분
         span.tilde ~
-        input(disabled placeholder="시" v-model="categoryVisibleTime.endHour")
-        input(disabled placeholder="분" v-model="categoryVisibleTime.endMinute")
+        .category-visible-time(@click="isCategoryVisibleSelectDateModal = true") {{ categoryVisibleTime.endHour }}시
+        .category-visible-time(@click="isCategoryVisibleSelectDateModal = true") {{ categoryVisibleTime.endMinute }}분
         button(
           @click="postCategoryUpdateCategoryTimeApi()"
-          :style="getAbleButtonColor(false)"
+          :style="getAbleButtonColor(true)"
         ) 적용
     // 노출시간 이후 표시여부
     .wrap-main-category-status(v-if="!categoryVisibleOption && getUseCategory()")
@@ -105,7 +104,7 @@
 import { CategoryVisibleSelectDateModal } from '@components';
 import { category } from '@apis';
 
-const { postCategoryUpdateCategoryTime } = category;
+const { postCategoryUpdateCategoryTime, postCategoryUpdateCategoryScheduleOff, postCategoryUpdateCategoryScheduleOn } = category;
 
 export default {
   components : {
@@ -125,16 +124,13 @@ export default {
       categoryVisibleAfterState : true,
       // 시간 선택 모달
       isCategoryVisibleSelectDateModal : false,
-      datetime: {
-        start: new Date(),
-        end: new Date(),
-      },
       categoryVisibleTime : {
         startHour : '00',
         startMinute : '00',
         endHour : '30',
         endMinute : '00'
-      }
+      },
+      cloneDate : {}
     };
   },
   computed: {
@@ -151,6 +147,7 @@ export default {
   },
   async mounted() {
     await this.initialize();
+    this.cloneDate = {...this.categoryVisibleTime};
   },
   methods: {
     select(id) {
@@ -327,6 +324,7 @@ export default {
     onConditionOpen(code, flagCategory) {
       console.log(code, flagCategory);
     },
+
     // 노출 상태 '특정 요일' 스타일
     dayOfWeekStyle(day) {
       if (this.data[this.selectMainCategoryNumber].weekArray.includes(day)) {
@@ -334,6 +332,7 @@ export default {
       }
       return false;
     },
+
     // 노출 상태 요일 '특정 요일' 눌렀을때
     clickDayOfWeek(day) {
       // 들어 있으면
@@ -344,6 +343,7 @@ export default {
       }
       this.data[this.selectMainCategoryNumber].weekArray.push(day);
     },
+
     // 노출 상태 요일 '매일' 눌렀을때
     clickAllDayOfWeek() {
       if(this.data[this.selectMainCategoryNumber].weekArray.length === 0) {
@@ -352,6 +352,7 @@ export default {
       }
       this.data[this.selectMainCategoryNumber].weekArray = [];
     },
+
     // 노출 요일 선택 '매일' 스타일
     dayOfWeekAllStyle() {
       if(this.data[this.selectMainCategoryNumber].weekArray.length === 7) {
@@ -359,6 +360,8 @@ export default {
       }
       return false;
     },
+
+    // 요일 텍스트
     getDayText(day) {
       if (day === 0) { return '일'; }
       if (day === 1) { return '월'; }
@@ -368,20 +371,36 @@ export default {
       if (day === 5) { return '금'; }
       if (day === 6) { return '토'; }
     },
+
+    // 시간 선택 모달창
     closeModal() {
       this.isCategoryVisibleSelectDateModal = false;
     },
+
+    // 모달 창 안에서 시간 설정 하기
     selectDateModalSubmit(time) {
       console.log('213123', time);
-      // this.categoryVisibleTime.startHour =  (new Date(date.start)).getHours();
-      // this.categoryVisibleTime.startMinute =  (new Date(date.start)).getMinutes();
-      // this.categoryVisibleTime.endHour =  (new Date(date.end)).getHours();
-      // this.categoryVisibleTime.endMinute =  (new Date(date.end)).getMinutes();
+      if (this.cloneDate.startHour > this.cloneDate.endHour) {
+        this.$store.commit('pushFlashMessage', '시작 시간이 종료 시간 보다 큽니다.');
+        return;
+      }
 
-      // console.log('뭐가바꼈누', this.categoryVisibleTime.startHour);
-      // console.log('뭐가바꼈누2', this.categoryVisibleTime.endHour);
+      // 시(hour)는 같은데 분이 클때
+      if (this.cloneDate.startHour === this.cloneDate.endHour) {
+        if (this.cloneDate.startMinute > this.cloneDate.endMinute) {
+          this.$store.commit('pushFlashMessage', '시작 시간이 종료 시간 보다 큽니다.');
+          return;
+        }
+      }
+
+      this.categoryVisibleTime.startHour = this.cloneDate.startHour;
+      this.categoryVisibleTime.startMinute = this.cloneDate.startMinute;
+      this.categoryVisibleTime.endHour = this.cloneDate.endHour;
+      this.categoryVisibleTime.endMinute = this.cloneDate.endMinute;
+
       this.closeModal();
     },
+
     // 노출 시간 선택 API
     async postCategoryUpdateCategoryTimeApi() {
       const config = {
@@ -394,40 +413,42 @@ export default {
       };
       console.log(config);
       const res = await postCategoryUpdateCategoryTime(config);
+      this.$store.commit('pushFlashMessage', '노출 시간이 변경 되었습니다.');
       console.log('노출 시간 선택' , res);
     },
 
-    // 스케쥴 온
-    async postCategoryUpdateCategoryScheduleOff() {
-      const config = {
-        body : {
-          store_code : this.$store.state.auth.store.store_code,
-          good_categroty_code : this.data[this.selectMainCategoryNumber]?.code,
-          startTime : `${this.categoryVisibleTime.startHour}:${this.categoryVisibleTime.startMinute}`,
-          endTime : `${this.categoryVisibleTime.endHour}:${this.categoryVisibleTime.endMinute}`,
-        }
-      };
-      console.log(config);
-      const res = await postCategoryUpdateCategoryTime(config);
-      console.log('스케쥴 온' , res);
-    },
-
-    // 스케쥴 오프
+    // 노출 상태 -> 항상 노출로 변경
     async postCategoryUpdateCategoryScheduleOn() {
       const config = {
         body : {
           store_code : this.$store.state.auth.store.store_code,
           good_categroty_code : this.data[this.selectMainCategoryNumber]?.code,
-          startTime : `${this.categoryVisibleTime.startHour}:${this.categoryVisibleTime.startMinute}`,
-          endTime : `${this.categoryVisibleTime.endHour}:${this.categoryVisibleTime.endMinute}`,
         }
       };
       console.log(config);
-      const res = await postCategoryUpdateCategoryTime(config);
-      console.log('스케쥴 오프' , res);
-    }
-  },
+      const res = await postCategoryUpdateCategoryScheduleOn(config);
 
+      this.categoryVisibleOption = true;
+      this.$store.commit('pushFlashMessage', '노출 상태가 항상 노출로 변경 되었습니다.');
+      console.log('노출 상태 -> 항상 노출로 변경' , res);
+    },
+
+    // 노출 상태 -> 제한 노출로 변경
+    async postCategoryUpdateCategoryScheduleOff() {
+      const config = {
+        body : {
+          store_code : this.$store.state.auth.store.store_code,
+          good_categroty_code : this.data[this.selectMainCategoryNumber]?.code,
+        }
+      };
+      console.log(config);
+      const res = await postCategoryUpdateCategoryScheduleOff(config);
+
+      this.categoryVisibleOption = false;
+      this.$store.commit('pushFlashMessage', '노출 상태가 제한 노출로 변경 되었습니다.');
+      console.log('노출 상태 -> 제한 노출로 변경' , res);
+    },
+  },
 };
 </script>
 
@@ -520,6 +541,18 @@ a {
         display: flex;
         align-items: center;
         gap: 0.781250vw;
+
+        .category-visible-time {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          border: 1px solid #D3DCE6;
+          width: 72.88px;
+          height: 42.66px;
+          border-radius: 5px;
+          color: #000;
+          font-size: 20px;
+        }
 
         > button {
           width: 4.1667vw;

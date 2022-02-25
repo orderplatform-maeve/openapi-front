@@ -80,9 +80,9 @@ const endpoints = {
     }
   },
   category : {
-    updateCategoryScheduleOff : `${REST_URL}/category/updateCategoryScheduleOff`,
-    updateCategoryScheduleOn : `${REST_URL}/category/updateCategoryScheduleOn`,
-    updateCategoryTime : `${REST_URL}/category/updateCategoryTime`
+    updateCategoryScheduleOff : `${ADMIN_URL}/category/updateCategoryScheduleOff`,
+    updateCategoryScheduleOn : `${ADMIN_URL}/category/updateCategoryScheduleOn`,
+    updateCategoryTime : `${ADMIN_URL}/category/updateCategoryTime`
   }
 };
 
