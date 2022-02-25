@@ -22,7 +22,7 @@
               .wrap-minute
                 input.minute(type='text' name='' v-bind:value="categoryVisibleTime.endMinute" readonly v-on:click.stop="pickerSelectEndMinute")
                 span 분
-          div 시간 시간이나 종료 시간을 선택 해 주세요.
+          div 시작 시간이 종료 시간 보다 큽니다.
         .select-date-modal-calendar
           .wrap-select-time
             .select-time-header
@@ -37,7 +37,7 @@
               button.delete-button(@click.stop="pickerSelectButton('d')")
                 icon-delete-icon
       .select-confirm-button
-        button.confirm-button(@click="selectDateModalSubmit(categoryVisibleTime)") 설정완료
+        button.confirm-button(@click="settingConfirmButton()") 설정완료
 </template>
 
 <script>
@@ -106,8 +106,18 @@ export default {
         tmp = parseInt(stringNumber);
       }
 
-      if (this.picker.selected == 'startHour' || this.picker.selected == 'endHour') {
+      if (this.picker.selected == 'startHour') {
         if (tmp > 23) {
+          tmp = 0;
+        }
+      } else {
+        if (tmp > 59) {
+          tmp = 0;
+        }
+      }
+
+      if (this.picker.selected == 'endHour') {
+        if (tmp > 30) {
           tmp = 0;
         }
       } else {
@@ -141,8 +151,18 @@ export default {
       tmp = parseInt(tmp);
       tmp  += 1;
 
-      if (this.picker.selected == 'startHour' || this.picker.selected == 'endHour') {
+      if (this.picker.selected == 'startHour') {
         if (tmp > 23) {
+          tmp = 0;
+        }
+      } else {
+        if (tmp > 59) {
+          tmp = 0;
+        }
+      }
+
+      if (this.picker.selected == 'endHour') {
+        if (tmp > 30) {
           tmp = 0;
         }
       } else {
@@ -176,13 +196,23 @@ export default {
 
       tmp  -= 1;
 
-      if (this.picker.selected == 'startHour' || this.picker.selected== 'endHour') {
-        if (tmp < 0) {
-          tmp = 23;
+      if (this.picker.selected == 'startHour') {
+        if (tmp > 23) {
+          tmp = 0;
         }
       } else {
-        if (tmp < 0) {
-          tmp = 59;
+        if (tmp > 59) {
+          tmp = 0;
+        }
+      }
+
+      if (this.picker.selected == 'endHour') {
+        if (tmp > 30) {
+          tmp = 0;
+        }
+      } else {
+        if (tmp > 59) {
+          tmp = 0;
         }
       }
 
@@ -226,6 +256,24 @@ export default {
       this.picker.numberRefeshTemp = tmp;
       this.picker.selected = 'endMinute';
     },
+    settingConfirmButton() {
+      // 시(hour) 가 클때
+      if (this.categoryVisibleTime.startHour > this.categoryVisibleTime.endHour) {
+        console.log('시작 시간이 종료 시간 보다 큼');
+        return;
+      }
+
+      // 시(hour)는 같은데 분이 클때
+      if (this.categoryVisibleTime.startHour === this.categoryVisibleTime.endHour) {
+        if (this.categoryVisibleTime.startMinute > this.categoryVisibleTime.endMinute) {
+          console.log('시작 분이 종료 분 보다 큼');
+          return;
+        }
+      }
+      console.log('정상');
+      console.log('123');
+      // this.closeModal();
+    }
   },
   computed: {
     //
