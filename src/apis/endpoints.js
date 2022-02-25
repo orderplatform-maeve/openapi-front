@@ -78,6 +78,11 @@ const endpoints = {
         quick: `${TABLE_GAME_URL}/table-game/admin/master/quick`,
       }
     }
+  },
+  category : {
+    updateCategoryScheduleOff : `${REST_URL}/category/updateCategoryScheduleOff`,
+    updateCategoryScheduleOn : `${REST_URL}/category/updateCategoryScheduleOn`,
+    updateCategoryTime : `${REST_URL}/category/updateCategoryTime`
   }
 };
 

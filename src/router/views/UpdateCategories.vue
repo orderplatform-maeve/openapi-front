@@ -63,7 +63,7 @@
         input(disabled placeholder="시" v-model="categoryVisibleTime.endHour")
         input(disabled placeholder="분" v-model="categoryVisibleTime.endMinute")
         button(
-          @click="() => {}"
+          @click="postCategoryUpdateCategoryTimeApi()"
           :style="getAbleButtonColor(false)"
         ) 적용
     // 노출시간 이후 표시여부
@@ -103,6 +103,9 @@
 
 <script>
 import { CategoryVisibleSelectDateModal } from '@components';
+import { category } from '@apis';
+
+const { postCategoryUpdateCategoryTime } = category;
 
 export default {
   components : {
@@ -144,12 +147,6 @@ export default {
     },
     getSubCategoryStatus() {
       return this.subCategoryItem.length > 0;
-    },
-    categoryVisibleStartTime() {
-      return this.data[this.selectMainCategoryNumber].categoryVisibleStartTime;
-    },
-    categoryVisibleEndTime() {
-      return this.data[this.selectMainCategoryNumber].categoryVisibleEndTime;
     }
   },
   async mounted() {
@@ -385,6 +382,50 @@ export default {
       // console.log('뭐가바꼈누2', this.categoryVisibleTime.endHour);
       this.closeModal();
     },
+    // 노출 시간 선택 API
+    async postCategoryUpdateCategoryTimeApi() {
+      const config = {
+        body : {
+          store_code : this.$store.state.auth.store.store_code,
+          good_categroty_code : this.data[this.selectMainCategoryNumber]?.code,
+          startTime : `${this.categoryVisibleTime.startHour}:${this.categoryVisibleTime.startMinute}`,
+          endTime : `${this.categoryVisibleTime.endHour}:${this.categoryVisibleTime.endMinute}`,
+        }
+      };
+      console.log(config);
+      const res = await postCategoryUpdateCategoryTime(config);
+      console.log('노출 시간 선택' , res);
+    },
+
+    // 스케쥴 온
+    async postCategoryUpdateCategoryScheduleOff() {
+      const config = {
+        body : {
+          store_code : this.$store.state.auth.store.store_code,
+          good_categroty_code : this.data[this.selectMainCategoryNumber]?.code,
+          startTime : `${this.categoryVisibleTime.startHour}:${this.categoryVisibleTime.startMinute}`,
+          endTime : `${this.categoryVisibleTime.endHour}:${this.categoryVisibleTime.endMinute}`,
+        }
+      };
+      console.log(config);
+      const res = await postCategoryUpdateCategoryTime(config);
+      console.log('스케쥴 온' , res);
+    },
+
+    // 스케쥴 오프
+    async postCategoryUpdateCategoryScheduleOn() {
+      const config = {
+        body : {
+          store_code : this.$store.state.auth.store.store_code,
+          good_categroty_code : this.data[this.selectMainCategoryNumber]?.code,
+          startTime : `${this.categoryVisibleTime.startHour}:${this.categoryVisibleTime.startMinute}`,
+          endTime : `${this.categoryVisibleTime.endHour}:${this.categoryVisibleTime.endMinute}`,
+        }
+      };
+      console.log(config);
+      const res = await postCategoryUpdateCategoryTime(config);
+      console.log('스케쥴 오프' , res);
+    }
   },
 
 };
