@@ -215,7 +215,7 @@ const socket = {
 
       if (payload?.type === '@update/categories/useStatus') {
         commit('SET_MENU_USE', payload.target);
-        commit('pushFlashMessage', `${payload.target.name} ${payload.target.depthStr} 카테고리 상태가 ${payload.target.T_order_store_menu_use === 'Y' ? '개방' : '닫힘'}으로 변경이 되었습니다.`);
+        commit('pushFlashMessage', `${payload.target.name} ${payload.target.depthStr} 카테고리 상태가 ${payload.target?.T_order_store_menu_use === 'Y' ? '개방' : '닫힘'}으로 변경이 되었습니다.`);
       }
 
       if (payload?.type === '@update/device/serviceStatus') {
@@ -801,7 +801,7 @@ const menu = {
     SET_GOODS: (state, goods) => Vue.set(state, 'goods', goods),
     SET_ALL_CATEGORIES: (state, categories) => Vue.set(state, 'allCategories', categories),
     SET_MENU_USE: (state, targetCategory) => {
-      state.allCategories[targetCategory.index].T_order_store_menu_use = targetCategory.T_order_store_menu_use;
+      state.allCategories[targetCategory.index].T_order_store_menu_use = targetCategory?.T_order_store_menu_use;
     },
     SET_MENU_CONFIG: (state, config) => Vue.set(state, 'menuConfig', config),
   },
