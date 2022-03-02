@@ -4,7 +4,7 @@ import endpoints from '@apis/endpoints';
 export const getNoticeInfo = async (query) => {
   const url = `${endpoints.notice.getNoticeInfo}?${query}`;
 
-  const res = await axios.get(url, url);
+  const res = await axios.get(url);
 
   return res;
 };
@@ -12,7 +12,7 @@ export const getNoticeInfo = async (query) => {
 export const getDetailNoticeInfo = async (query) => {
   const url = `${endpoints.notice.getNoticeInfo}/${query}?noticeCaller=MASTER`;
 
-  const res = await axios.get(url, url);
+  const res = await axios.get(url);
 
   return res;
 };
