@@ -81,6 +81,10 @@ export default {
         console.log('안드로이드 아니라서 발생하는 에러');
       }
 
+      if (!this.$cookies.get('NoVisiblePopup') && this.$store.state.noticePopup.noticePopupData.length > 0) {
+        this.$store.commit('noticePopup/updatePopupVisible', true);
+      }
+
       const params = new FormData();
       params.append('store_code', this.auth.store.store_code);
       const res = await this.$store.dispatch('setStoreInit', params);
@@ -104,7 +108,6 @@ export default {
         // console.log('리다이렉션 버젼 주소가 없습니다.');
         return this.$router.push(paths.order);
       }
-
     },
     getStoreItemKey(store) {
       try {

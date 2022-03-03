@@ -10,7 +10,15 @@ export const getNoticeInfo = async (query) => {
 };
 
 export const getDetailNoticeInfo = async (query) => {
-  const url = `${endpoints.notice.getNoticeInfo}/${query}?noticeCaller=MASTER`;
+  const url = `${endpoints.notice.getNoticeInfo}/${query}`;
+
+  const res = await axios.get(url);
+
+  return res;
+};
+
+export const getNoticePopup = async () => {
+  const url = endpoints.notice.getNoticePopup;
 
   const res = await axios.get(url);
 
@@ -19,5 +27,6 @@ export const getDetailNoticeInfo = async (query) => {
 
 export default {
   getNoticeInfo,
-  getDetailNoticeInfo
+  getDetailNoticeInfo,
+  getNoticePopup,
 };

@@ -13,7 +13,8 @@ import { isEmpty } from '@utils/CheckedType';
 import endpoints from '@apis/endpoints';
 
 import {
-  robot
+  robot,
+  noticePopup,
 } from './modules';
 
 Vue.use(Vuex);
@@ -54,6 +55,7 @@ const socket = {
         console.log('주문 커먼-order', order);
         console.log('주문 커먼-state', state);
         console.log('주문커먼-commit', commit);
+        console.log(order, '확인 오더로그');
         if (window?.UUID?.playOrderBell) {
           window.UUID.playOrderBell();
         }
@@ -61,6 +63,7 @@ const socket = {
       }
     },
     async SOCKET_orderview({ commit, state, dispatch }, payload) {
+      console.log(payload, '확인 오더뷰');
       //console.log('out SOCKET_orderview', payload);
 
       if (payload?.type_msg === 'commit') {
@@ -281,8 +284,6 @@ const socket = {
         });
       }
 
-      console.log(payload);
-
       if (isRobot) {
         try {
           const config = {
@@ -300,7 +301,6 @@ const socket = {
       }
     },
     SOCKET_disconnect({ commit }) {
-
       const now = new Date(Date.now());
       const log = `disconnected socket ${now}`;
 
@@ -463,7 +463,6 @@ const order = {
       }
     },
     setPayloadStatus(state, payload) {
-      console.log('여기 찍힘?', payload);
       state.payloadStatus = payload;
     },
   },
@@ -1336,6 +1335,7 @@ const getters = {
 
 const modules ={
   robot,
+  noticePopup,
 };
 
 const plugins = [];

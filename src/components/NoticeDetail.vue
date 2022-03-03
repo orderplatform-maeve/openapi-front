@@ -1,5 +1,13 @@
 <template lang="pug">
   .notice-detail-container
+    send-file-modal(
+      v-if="sendFileModalVisible"
+      :fileList="sendFileList"
+      :phoneNumber="phoneNumber"
+      :updatePhoneNumber="updatePhoneNumber"
+      :cancelSendFile="cancelSendFile"
+      :sendFile="sendFile"
+    )
     p.notice-detail-header 상세내용
     .wrap-notice-detail-title
       .notice-detail-title
@@ -12,14 +20,23 @@
         p.notice-write-date {{noticeWriteDate}}
     .wrap-notice-detail-info(v-html="noticeContents")
     .wrap-notice-file-all-list
-      p.notice-list-title 첨부파일 (총 {{this.getFileQuantity}}개)
+      .wrap-notice-list-title
+        p.notice-list-title 첨부파일 (총 {{this.getFileQuantity}}개)
+        p.notice-file-notion 선택하신 첨부파일은 카카오 알림톡으로 전송됩니다.
       .wrap-notice-file-list
         .notice-file-list(v-for="(file, index) in noticeFileList" :key="`file-key-${index}`")
           .notice-file
-            .notice-file-title
+            label.notice-file-title
+              input.notice-file-check(type="checkbox" :value="index" v-model="getFileCheckboxList")
               paper-clip
               p.file-info {{getFileName(file)}} ({{getFileSize(file)}}MB)
-            button.notice-file-send 휴대폰 전송
+    .wrap-file-send-button
+      button.select-send(
+        @click="sendCheckFileModal"
+      ) 선택 전송
+      button.all-send(
+        @click="sendAllFileModal"
+      ) 전체 전송
     .wrap-back-notice-page
       button(@click="goNoticeList") 목록
 </template>
@@ -29,9 +46,12 @@ import {
   PaperClip
 } from '@svg';
 
+import SendFileModal from '@components/SendFileModal.vue';
+
 export default {
   components: {
     PaperClip,
+    SendFileModal,
   },
   props: {
     isMainNotice: {
@@ -69,12 +89,60 @@ export default {
     goNoticeList: {
       type: Function,
       required: true,
+    },
+    fileCheckboxList: {
+      type: Array,
+      required: true,
+    },
+    updateFileCheckbox: {
+      type: Function,
+      required: true,
+    },
+    sendCheckFileModal: {
+      type: Function,
+      required: true,
+    },
+    sendAllFileModal: {
+      type: Function,
+      required: true,
+    },
+    sendFileModalVisible: {
+      type: Boolean,
+      required: true,
+    },
+    sendFileList: {
+      type: Array,
+      required: true,
+    },
+    phoneNumber: {
+      type: String,
+      required: true,
+    },
+    updatePhoneNumber: {
+      type: Function,
+      required: true,
+    },
+    sendFile: {
+      type: Function,
+      required: true,
+    },
+    cancelSendFile: {
+      type: Function,
+      required: true,
     }
   },
   computed: {
     getFileQuantity() {
       return this.noticeFileList.length;
     },
+    getFileCheckboxList: {
+      get() {
+        return this.fileCheckboxList;
+      },
+      set(value){
+        this.updateFileCheckbox(value);
+      }
+    }
   },
   methods: {
     getFileName(file) {
@@ -168,11 +236,22 @@ export default {
     flex-direction: column;
     gap: 0.390625vw;
 
-    .notice-list-title {
-      box-sizing: border-box;
-      padding: 1.25vw 1.5625vw !important;
-      font-weight: bold;
+    .wrap-notice-list-title {
       border-bottom: solid 0.078125vw #ddd;
+      padding: 1.25vw 1.5625vw !important;
+      display: flex;
+      flex-direction: column;
+      gap: 0.390625vw;
+
+      .notice-list-title {
+        box-sizing: border-box;
+        font-weight: bold;
+        font-size: 1.25vw;
+      }
+      .notice-file-notion {
+        font-size: 1.015625vw;
+        color: #aaa;
+      }
     }
 
     .wrap-notice-file-list {
@@ -193,6 +272,11 @@ export default {
             display: flex;
             align-items: center;
             gap: 0.390625vw;
+
+            .notice-file-check {
+              width: 1.171875vw;
+              height: 1.171875vw;
+            }
           }
 
           .notice-file-send {
@@ -209,6 +293,32 @@ export default {
           }
         }
       }
+    }
+  }
+  .wrap-file-send-button {
+    padding: 1.25vw 1.5625vw !important;
+    display: flex;
+    gap: 10px;
+
+    > button {
+      width: 8vw;
+      height: 2.4vw;
+      font-size: 1.25vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 1.015625vw;
+      border: none;
+    }
+
+    .select-send {
+      background-color: #aaa;
+      color: #fff;
+    }
+
+    .all-send {
+      background-color: #12151d;
+      color: #fff;
     }
   }
 

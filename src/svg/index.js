@@ -10,3 +10,4 @@ export { default as MinusButton } from './MinusButton';
 export { default as IconExitBlack } from './IconExitBlack';
 export { default as PaperClip } from './PaperClip';
 export { default as XWhiteButton } from './XWhiteButton';
+export { default as NumberDeleteButton } from './NumberDeleteButton';

@@ -371,7 +371,7 @@ export default {
     },
     async getDefaultNoticeData() {
       try {
-        const res = await getNoticeInfo('page=0&size=10&noticeCategory=ALL&noticeStatus=1&noticeSearchQuery=&noticeCaller=MASTER');
+        const res = await getNoticeInfo(`page=0&size=10&noticeCategoryList=EVENT,UPDATE,NOTICE&noticeStatusList=1&noticeSearchQuery=&noticeCaller=MASTER&storeCode=${this.getStoreCode}`);
 
         this.noticeData = res.data;
       } catch {
@@ -427,6 +427,9 @@ export default {
     },
     getNoticeNewCount() {
       return this.noticeData.noticeNewCount;
+    },
+    getStoreCode() {
+      return this.$store.state.auth.store.store_code;
     }
   }
 };
