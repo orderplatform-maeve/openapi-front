@@ -70,6 +70,7 @@ const endpoints = {
   },
   notice: {
     getNoticeInfo: `${NOTICE_URL}/notice/info`,
+    getNoticePopup: `${NOTICE_URL}/notice/popup`,
   },
   tableGame: {
     admin: {

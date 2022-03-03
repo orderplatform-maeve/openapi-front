@@ -2,6 +2,7 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 import VueSocketIO from 'vue-socket.io';
 import moment from 'moment';
+import VueCookies from 'vue-cookies';
 
 import VCalendar from 'v-calendar';
 
@@ -60,6 +61,8 @@ Vue.use(new VueSocketIO(socketConfig));
 Vue.use(VCalendar, {
   componentPrefix: 'vc',
 });
+
+Vue.use(VueCookies);
 
 Vue.filter('moment', function (value, format) {
   if (value === null || value === undefined || format === undefined) {

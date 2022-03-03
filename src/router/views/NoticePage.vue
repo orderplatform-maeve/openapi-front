@@ -38,7 +38,7 @@
               .wrap-notice-title
                 p.notice-title {{getNoticeTitle(notice)}}
                 paper-clip(v-if="isNoticeFile(notice)")
-                p.notice-new(v-if="isNoticeNew(notice)") N
+                //- p.notice-new(v-if="isNoticeNew(notice)") N
               p.notice-writer {{getNoticeAuthor(notice)}}
               p.notice-write-date {{getNoticeDate(notice)}}
         .wrap-pagination
@@ -61,6 +61,16 @@
         :noticeContents="getDetailNoticeContents"
         :noticeFileList="getDetailNoticeFileList"
         :goNoticeList="goNoticeList"
+        :fileCheckboxList="fileCheckboxList"
+        :updateFileCheckbox="updateFileCheckbox"
+        :sendCheckFileModal="sendCheckFileModal"
+        :sendAllFileModal="sendAllFileModal"
+        :sendFileModalVisible="sendFileModalVisible"
+        :sendFileList="sendFileList"
+        :phoneNumber="phoneNumber"
+        :updatePhoneNumber="updatePhoneNumber"
+        :cancelSendFile="cancelSendFile"
+        :sendFile="sendFile"
       )
 </template>
 
@@ -70,7 +80,9 @@ import {
 } from '@svg';
 import { version } from '@utils/constants';
 import paths from '@router/paths';
-import NoticeDetail from '@components/NoticeDetail.vue';
+import {
+  NoticeDetail,
+} from '@components';
 import {
   notice
 } from '@apis';
@@ -88,7 +100,7 @@ export default {
   },
   data () {
     return {
-      viewMode: 'ALL',
+      viewMode: 'EVENT, UPDATE, NOTICE',
       isLoading: false,
       chooseOrder: {},
       version,
@@ -113,13 +125,20 @@ export default {
         topFix: 0,
         noticeFileList: [],
         newStatus: 0,
-      }
+      },
+      sendFileModalVisible: false,
+      fileCheckboxList: [],
+      sendFileList: [],
+      phoneNumber: '010-',
     };
   },
   computed: {
     storeName() {
       const { auth } = this;
       return auth && auth.store && auth.store.store_name;
+    },
+    getStoreCode() {
+      return this.$store.state.auth.store.store_code;
     },
     isDetailInfo() {
       return this.$route.query?.noticeId;
@@ -137,7 +156,7 @@ export default {
         return maxPage;
       }
 
-      const currentPage = this.getCurrentPage;
+      const currentPage = this.getCurrentPage - 1;
       const startPage = currentPage - (currentPage % 10) + 1;
       const endPage = startPage + 9 < maxPage ? startPage + 9 : maxPage;
 
@@ -234,6 +253,7 @@ export default {
     getNoticeStyle(data) {
       return {
         'notice-info': true,
+        'new-notice': data?.newStatus === 1,
         'main-notice': data?.topFix === 1,
       };
     },
@@ -273,7 +293,8 @@ export default {
     },
     async getDefaultNoticeData() {
       try {
-        const res = await getNoticeInfo('page=0&size=10&noticeCategory=ALL&noticeStatus=1&noticeSearchQuery=&noticeCaller=MASTER');
+        const res = await getNoticeInfo(`page=0&size=10&noticeCategoryList=EVENT,UPDATE,NOTICE&noticeStatusList=1&noticeSearchQuery=&noticeCaller=MASTER&storeCode=${this.getStoreCode}`);
+        console.log(res.data);
 
         this.noticeData = res.data;
       } catch {
@@ -286,7 +307,7 @@ export default {
       const viewMode = this.viewMode;
       if (page !== this.getCurrentPage || this.noticeList.length === 0) {
         try {
-          const res = await getNoticeInfo(`page=${page - 1}&size=10&noticeCategory=${viewMode}&noticeStatus=1&noticeSearchType=${type}&noticeSearchQuery=${contents}&noticeCaller=MASTER`);
+          const res = await getNoticeInfo(`page=${page - 1}&size=10&noticeCategoryList=${viewMode}&noticeStatusList=1&noticeSearchType=${type}&noticeSearchQuery=${contents}&noticeCaller=MASTER&storeCode=${this.getStoreCode}`);
 
           this.noticeData = res.data;
         } catch {
@@ -302,7 +323,7 @@ export default {
 
       if (this.isNotLastPage) {
         try {
-          const res = await getNoticeInfo(`page=${page}&size=10&noticeCategory=${viewMode}&noticeStatus=1&noticeSearchType=${type}&noticeSearchQuery=${contents}&noticeCaller=MASTER`);
+          const res = await getNoticeInfo(`page=${page}&size=10&noticeCategoryList=${viewMode}&noticeStatusList=1&noticeSearchType=${type}&noticeSearchQuery=${contents}&noticeCaller=MASTER&storeCode=${this.getStoreCode}`);
 
           this.noticeData = res.data;
         } catch {
@@ -318,7 +339,7 @@ export default {
 
       if (this.isNotFirstPage) {
         try {
-          const res = await getNoticeInfo(`page=${page - 2}&size=10&noticeCategory=${viewMode}&noticeStatus=1&noticeSearchType=${type}&noticeSearchQuery=${contents}&noticeCaller=MASTER`);
+          const res = await getNoticeInfo(`page=${page - 2}&size=10&noticeCategoryList=${viewMode}&noticeStatusList=1&noticeSearchType=${type}&noticeSearchQuery=${contents}&noticeCaller=MASTER&storeCode=${this.getStoreCode}`);
 
           this.noticeData = res.data;
         } catch {
@@ -329,7 +350,7 @@ export default {
     async getNoticeSelectCategory(category) {
       if (this.viewMode !== category) {
         try {
-          const res = await getNoticeInfo(`page=$0&size=10&noticeCategory=${category}&noticeStatus=1&noticeSearchQuery=&noticeCaller=MASTER`);
+          const res = await getNoticeInfo(`page=$0&size=10&noticeCategoryList=${category}&noticeStatusList=1&noticeSearchQuery=&noticeCaller=MASTER&storeCode=${this.getStoreCode}`);
 
           this.noticeData = res.data;
         } catch {
@@ -344,7 +365,7 @@ export default {
 
       if (contents !== '') {
         try {
-          const res = await getNoticeInfo(`page=$0&size=10&noticeCategory=${viewMode}&noticeStatus=1&noticeSearchType=${type}&noticeSearchQuery=${contents}&noticeCaller=MASTER`);
+          const res = await getNoticeInfo(`page=$0&size=10&noticeCategoryList=${viewMode}&noticeStatusList=1&noticeSearchType=${type}&noticeSearchQuery=${contents}&noticeCaller=MASTER&storeCode=${this.getStoreCode}`);
 
           this.noticeData = res.data;
         } catch {
@@ -353,15 +374,16 @@ export default {
       }
     },
     async getNoticeDetailInfo(data) {
-      const query = `${data.noticeId}`;
+      const query = `${data.noticeId}?noticeCaller=MASTER&storeCode=${this.getStoreCode}`;
 
       try {
         const res = await getDetailNoticeInfo(query);
-
         this.noticeDetailData = res.data.noticeMasterDetailVo;
-        console.log(this.noticeDetailData);
+
+        return res;
       } catch(error) {
         console.log('에러' ,error);
+        return false;
       }
     },
     async goNoticeList() {
@@ -372,28 +394,85 @@ export default {
         name: 'notice',
       });
     },
-    goDetailNotice(data) {
-      this.getNoticeDetailInfo(data);
-
-      this.$router.push({
-        name: 'notice',
-        query: {
-          noticeId: data.noticeId,
-        },
-      });
+    async goDetailNotice(data) {
+      const res = await this.getNoticeDetailInfo(data);
+      if (res?.status === 200) {
+        this.$router.push({
+          name: 'notice',
+          query: {
+            noticeId: data.noticeId,
+          },
+        });
+      }
     },
+    updateFileCheckbox(data) {
+      this.fileCheckboxList = data;
+    },
+    sendCheckFileModal() {
+      if (this.fileCheckboxList.length > 0) {
+        const fileList = [];
+        this.fileCheckboxList.forEach((index) => {
+          fileList.push(this.noticeDetailData.noticeFileList[index]);
+        });
+
+        this.sendFileList = fileList;
+        this.sendFileModalVisible = true;
+      } else {
+        this.$store.commit('pushFlashMessage', '선택한 파일이 없습니다.');
+      }
+    },
+    sendAllFileModal() {
+      this.sendFileList = this.noticeDetailData.noticeFileList.slice();
+      this.sendFileModalVisible = true;
+    },
+    autoHypenPhone(str){
+      str = str.replace(/[^0-9]/g, '');
+      var tmp = '';
+
+      if( str.length < 4){
+        return str;
+      } else if(str.length < 8){
+        tmp += str.substr(0, 3);
+        tmp += '-';
+        tmp += str.substr(3);
+        return tmp;
+      } else{
+        tmp += str.substr(0, 3);
+        tmp += '-';
+        tmp += str.substr(3, 4);
+        tmp += '-';
+        tmp += str.substr(7);
+        return tmp;
+      }
+    },
+    updatePhoneNumber(key) {
+      if (/^\d+$/g.test(key)) {
+        //this.phoneNumber += String(key.code);
+
+        if (this.phoneNumber.length < 13) {
+          this.phoneNumber = this.autoHypenPhone(this.phoneNumber + String(key));
+        }
+      } else if(key=='d') {
+        this.phoneNumber = this.autoHypenPhone(this.phoneNumber.slice(0,-1));
+        //this.phoneNumber = this.phoneNumber.slice(0,-1);
+      } else if(key=='r') {
+        this.phoneNumber = '010-';
+      }
+    },
+    sendFile() {
+
+    },
+    cancelSendFile() {
+      this.sendFileModalVisible = false;
+    }
   },
   created() {
-    console.log('테스트');
     if (this.isDetailInfo) {
       this.getNoticeDetailInfo(this.$route.query);
     }
 
     this.getDefaultNoticeData();
   },
-  mounted() {
-    console.log('테스트');
-  }
 };
 </script>
 <style lang="scss" scoped>
@@ -507,7 +586,7 @@ input {
       display: flex;
       align-items: center;
       justify-content: flex-end;
-      padding: 1.25vw 0 0.78125vw !important;
+      padding: 0.6vw 0 0.78125vw !important;
 
       .search_notice {
         display: flex;
@@ -516,10 +595,10 @@ input {
 
         .search_notice_select {
           box-sizing: border-box;
-          width: 6.25vw;
-          height: 2.578125vw;
+          width: 8vw;
+          height: 3.7vw;
           padding: 0 0.9375vw;
-          font-size: 1.015625vw;
+          font-size: 1.5vw;
           color: #aaa;
           letter-spacing: -0.05078125vw;
           background-color: #fcfcfc;
@@ -530,19 +609,20 @@ input {
 
         .search_notice_input {
           box-sizing: border-box;
-          width: 17.1875vw;
-          height: 2.578125vw;
+          width: 20vw;
+          height: 3.7vw;
           padding: 0 0.9375vw;
           background-color: #fcfcfc;
           border: solid 0.078125vw #e9e8eb;
           border-radius: 0.234375vw;
           box-shadow: inset 0.15625vw 0.15625vw 0.15625vw 0 rgba(0, 0, 0, 0.05);
+          font-size: 1.5vw;
         }
 
         .search_notice_submit {
-          width: 4.6875vw;
-          height: 2.578125vw;
-          font-size: 1.09375vw;
+          width: 5.5vw;
+          height: 3.7vw;
+          font-size: 1.5vw;
           font-weight: bold;
           color: #fff;
           letter-spacing: -0.0546875vw;
@@ -562,7 +642,7 @@ input {
         align-items: center;
         grid-template-columns: 1fr 2fr 10fr 2fr 2fr;
         gap: 2.34375vw;
-        padding: 0.78125vw !important;
+        padding: 0 0.78125vw 0.78125vw !important;
         border-bottom: solid 0.078125vw #333333;
         box-sizing: border-box;
 
@@ -614,7 +694,8 @@ input {
           }
         }
 
-        .main-notice {
+        .main-notice,
+        .new-notice {
           font-weight: bold;
           background-color: #555;
 
@@ -643,6 +724,10 @@ input {
             background-color: #fc0000;
             border-radius: 0.234375vw;
           }
+        }
+
+        .main-notice {
+          background-color: #1f222a;
         }
       }
     }

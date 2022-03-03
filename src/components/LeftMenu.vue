@@ -13,9 +13,9 @@
       p.current-date {{getNowDate()}}
       p.current-time {{getNowTime()}}
     .wrap-page-button-list
-      //- router-link.order-history(v-if="visibleOrderButton" :to="paths.notice" :class="{activeButton: path === '/notice'}")
-      //-   span 공지사항
-      //-   span.big-title {{getNoticeNewCount}}
+      router-link.order-history(v-if="visibleOrderButton" :to="paths.notice" :class="{activeButton: path === '/notice'}")
+        span 공지사항
+        span.big-title {{getNoticeNewCount}}
       router-link.order-history(v-if="visibleOrderButton" :to="paths.order" :class="{activeButton: path === '/order'}") 주문보기
       router-link.additional-functions(v-if="visibleOrderButton" :to="paths.additional" :class="{activeButton: path === '/additional'}") 추가기능(테스트)
       router-link.paid-history(v-if="visibleOrderButton" :to="paths.paymentManagement" :class="{activeButton: path === '/paymentManagement'}") 결제내역
@@ -371,7 +371,7 @@ export default {
     },
     async getDefaultNoticeData() {
       try {
-        const res = await getNoticeInfo('page=0&size=10&noticeCategory=ALL&noticeStatus=1&noticeSearchQuery=&noticeCaller=MASTER');
+        const res = await getNoticeInfo(`page=0&size=10&noticeCategoryList=EVENT,UPDATE,NOTICE&noticeStatusList=1&noticeSearchQuery=&noticeCaller=MASTER&storeCode=${this.getStoreCode}`);
 
         this.noticeData = res.data;
       } catch {
@@ -427,6 +427,9 @@ export default {
     },
     getNoticeNewCount() {
       return this.noticeData.noticeNewCount;
+    },
+    getStoreCode() {
+      return this.$store.state.auth.store.store_code;
     }
   }
 };
@@ -452,8 +455,8 @@ export default {
 
   .wrap-current-date {
     padding: 0 1.171875vw !important;
-    // margin: 1.5vw 0 0 !important; 김동주 - 이걸로 변경해야 함 (공지사항)
-    margin: 2.34375vw 0 !important;
+    margin: 1.5vw 0 0 !important;
+    // margin: 2.34375vw 0 !important; 김동주 - 이걸로 하면 공지사항 숨겼을때임
     color: #fff;
     display: flex;
     flex-direction: column;
