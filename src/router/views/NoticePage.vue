@@ -38,7 +38,7 @@
               .wrap-notice-title
                 p.notice-title {{getNoticeTitle(notice)}}
                 paper-clip(v-if="isNoticeFile(notice)")
-                //- p.notice-new(v-if="isNoticeNew(notice)") N
+                p.notice-new(v-if="isNoticeNew(notice)") N
               p.notice-writer {{getNoticeAuthor(notice)}}
               p.notice-write-date {{getNoticeDate(notice)}}
         .wrap-pagination
@@ -253,7 +253,7 @@ export default {
     getNoticeStyle(data) {
       return {
         'notice-info': true,
-        'new-notice': data?.newStatus === 1,
+        'new-notice': data?.noticeCheckStatus === 1,
         'main-notice': data?.topFix === 1,
       };
     },
