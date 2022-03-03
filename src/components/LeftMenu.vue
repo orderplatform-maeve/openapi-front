@@ -456,6 +456,7 @@ export default {
   .wrap-current-date {
     padding: 0 1.171875vw !important;
     margin: 1.5vw 0 0 !important;
+    // margin: 2.34375vw 0 !important; 김동주 - 이걸로 하면 공지사항 숨겼을때임
     color: #fff;
     display: flex;
     flex-direction: column;
