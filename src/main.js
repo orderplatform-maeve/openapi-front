@@ -63,6 +63,7 @@ Vue.use(VCalendar, {
 });
 
 Vue.use(VueCookies);
+Vue.$cookies.config("1d");
 
 Vue.filter('moment', function (value, format) {
   if (value === null || value === undefined || format === undefined) {
