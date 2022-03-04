@@ -146,8 +146,7 @@ export default {
       return this.$store.state.auth.store.store_code;
     },
     getNoticeEmergency() {
-      console.log(this.$store.state.noticePopup.isNoticeEmergency, 'ㅁㄴㅇㅁㄴㅇㅁㄴㅇ');
-      return this.$store.state.noticePopup.isNoticeEmergency;
+      return this.$store.state.noticePopup?.isNoticeEmergency;
     },
   },
   watch: {

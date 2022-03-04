@@ -3,7 +3,7 @@
     .orders-container
       p.store-name {{storeName}}{{version}}
       .header-orders-status-list
-        .orders-status(@click="setViewMode('ALL')" :class="{activeButton: viewMode === 'ALL'}")
+        .orders-status(@click="setViewMode('EVENT, UPDATE, NOTICE')" :class="{activeButton: viewMode === 'EVENT, UPDATE, NOTICE'}")
           p 전체
         .orders-status(@click="setViewMode('NOTICE')" :class="{activeButton: viewMode === 'NOTICE'}")
           p 공지사항
