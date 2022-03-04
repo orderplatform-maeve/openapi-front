@@ -225,17 +225,24 @@ export default {
   methods: {
     async setViewMode(value) {
       document.querySelector(".header-orders-status-list").scrollTop = 0;
-      await this.getNoticeSelectCategory(value);
+      let data = '';
+
+      if (value === 'ALL') {
+        data = 'UPDATE, EVENT, NOTICE';
+      } else {
+        data = value;
+      }
+      await this.getNoticeSelectCategory(data);
       this.viewMode = value;
       this.noticeDetailData = {
-        "noticeTitle": "",
-        "noticeCategory": "",
-        "noticeDesc": "",
-        "author": "",
-        "createDate": "",
-        "topFix": 0,
-        "noticeFileList": [],
-        "newStatus": 0,
+        noticeTitle: '',
+        noticeCategory: '',
+        noticeDesc: '',
+        author: '',
+        createDate: '',
+        topFix: 0,
+        noticeFileList: [],
+        newStatus: 0,
       };
 
       if (this.isDetailInfo) {
