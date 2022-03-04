@@ -19,7 +19,7 @@
         p.notice-writer {{noticeAuthor}}
         p.notice-write-date {{noticeWriteDate}}
     .wrap-notice-detail-info(v-html="noticeContents")
-    .wrap-notice-file-all-list
+    .wrap-notice-file-all-list(v-if="getFileQuantity")
       .wrap-notice-list-title
         p.notice-list-title 첨부파일 (총 {{this.getFileQuantity}}개)
         p.notice-file-notion 선택하신 첨부파일은 카카오 알림톡으로 전송됩니다.
@@ -30,7 +30,7 @@
               input.notice-file-check(type="checkbox" :value="index" v-model="getFileCheckboxList")
               paper-clip
               p.file-info {{getFileName(file)}} ({{getFileSize(file)}}MB)
-    .wrap-file-send-button
+    .wrap-file-send-button(v-if="getFileQuantity")
       button.select-send(
         @click="sendCheckFileModal"
       ) 선택 전송
