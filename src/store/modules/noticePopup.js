@@ -14,6 +14,7 @@ const noticePopup = {
     noticePopupPage: 0,
     isPopupVisible: false,
     isNoticeEmergency: false,
+    noticeQuantity: 0,
   },
   mutations: {
     updatePopupVisible(state, payload) {
@@ -41,6 +42,10 @@ const noticePopup = {
     updateNoticeEmergency(state, payload) {
       state.isNoticeEmergency = payload;
     },
+    updateNoticeQuantity(state, payload) {
+      console.log(payload,'asdasdasda');
+      state.noticeQuantity = payload;
+    }
   },
   actions: {
     async updateNoticePopupData({commit}) {

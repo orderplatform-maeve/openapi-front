@@ -417,6 +417,7 @@ export default {
     async goDetailNotice(data) {
       const res = await this.getNoticeDetailInfo(data);
       if (res?.status === 200) {
+        this.$store.commit('noticePopup/updateNoticeQuantity', res.data?.noticeMasterDetailVo?.noticeNewCount);
         this.$router.push({
           name: 'notice',
           query: {
