@@ -16,6 +16,7 @@
     :popupTouchEnd="popupTouchEnd"
     :oneDayNoPopup="oneDayNoPopup"
     :closePopup="closePopup"
+    :noticeEmergency="getNoticeEmergency"
   )
   router-view(
     :auth="auth"
@@ -143,7 +144,11 @@ export default {
     },
     getStoreCode() {
       return this.$store.state.auth.store.store_code;
-    }
+    },
+    getNoticeEmergency() {
+      console.log(this.$store.state.noticePopup.isNoticeEmergency, 'ㅁㄴㅇㅁㄴㅇㅁㄴㅇ');
+      return this.$store.state.noticePopup.isNoticeEmergency;
+    },
   },
   watch: {
     '$route'(to, from) {
@@ -730,6 +735,7 @@ export default {
     },
     closePopup() {
       this.$store.commit('noticePopup/updatePopupVisible', false);
+      this.$store.commit('noticePopup/updateNoticeEmergency', false);
     },
     oneDayNoPopup() {
       this.$cookies.set('NoVisiblePopup', true);

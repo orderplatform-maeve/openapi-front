@@ -16,14 +16,17 @@
           p.notice-write-date {{getNoticePopupCreateDate}}
       .wrap-notice-popup-info
         .notice-popup-info(v-html="getNoticePopupDesc")
-        .wrap-notice-popup-page
+        .wrap-notice-popup-page(v-if="!noticeEmergency")
           p(
             v-for="page in getNoticePopupQuantity"
             :key="`popup-page-key-${page}`"
             :class="getNoticePopupPageStyle(page)"
           )
       .wrap-notice-popup-button-list
-        button.one-day-no-button(@click="oneDayNoPopup") 하루 동안 보지 않기
+        button.one-day-no-button(
+          @click="oneDayNoPopup"
+          v-if="!noticeEmergency"
+        ) 하루 동안 보지 않기
         button.close-button(@click="closePopup") 닫기
 </template>
 
@@ -51,6 +54,10 @@ export default {
       required: true,
     },
     closePopup: {
+      type: Function,
+      required: true,
+    },
+    noticeEmergency: {
       type: Function,
       required: true,
     },
@@ -120,6 +127,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 100;
 
   .notice-popup-list-modal {
     width: 70vw;

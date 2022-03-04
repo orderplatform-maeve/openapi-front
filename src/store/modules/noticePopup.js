@@ -13,6 +13,7 @@ const noticePopup = {
     noticePopupData: [],
     noticePopupPage: 0,
     isPopupVisible: false,
+    isNoticeEmergency: false,
   },
   mutations: {
     updatePopupVisible(state, payload) {
@@ -36,6 +37,9 @@ const noticePopup = {
       }
 
       state.noticePopupPage -= 1;
+    },
+    updateNoticeEmergency(state, payload) {
+      state.isNoticeEmergency = payload;
     },
   },
   actions: {
