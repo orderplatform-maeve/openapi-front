@@ -323,6 +323,18 @@ export default {
         }
       }
     },
+    async getNoticeSelectDetailPageData(page) {
+      const type = this.searchType;
+      const contents = this.searchText;
+      const viewMode = this.viewMode;
+      try {
+        const res = await getNoticeInfo(`page=${page - 1}&size=10&noticeCategoryList=${viewMode}&noticeStatusList=1&noticeSearchType=${type}&noticeSearchQuery=${contents}&noticeCaller=MASTER&storeCode=${this.getStoreCode}`);
+
+        this.noticeData = res.data;
+      } catch {
+        console.log('에러');
+      }
+    },
     async getNoticeNextPageData() {
       const page = this.getCurrentPage;
       const type = this.searchType;
@@ -397,7 +409,7 @@ export default {
     async goNoticeList() {
       const page = this.getCurrentPage;
 
-      await this.getNoticeSelectPageData(page);
+      await this.getNoticeSelectDetailPageData(page);
       this.$router.push({
         name: 'notice',
       });
@@ -405,6 +417,7 @@ export default {
     async goDetailNotice(data) {
       const res = await this.getNoticeDetailInfo(data);
       if (res?.status === 200) {
+        this.$store.commit('noticePopup/updateNoticeQuantity', res.data?.noticeMasterDetailVo?.noticeNewCount);
         this.$router.push({
           name: 'notice',
           query: {
