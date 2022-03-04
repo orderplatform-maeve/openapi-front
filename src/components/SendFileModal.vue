@@ -24,7 +24,7 @@
               number-delete-button
       .wrap-input-submit-button
         button.cancel(@click="cancelSendFile") 취소
-        button.submit 전송하기
+        button.submit(@click="sendFile(fileList, phoneNumber)") 전송하기
 </template>
 
 <script>
@@ -86,7 +86,7 @@ export default {
   background-color: rgba(0, 0, 0, 0.7);
 
   .wrap-send-file-modal {
-    width: 40vw;
+    width: 37vw;
     height: 76vh;
     background-color: #fff;
     border-radius: 1.5625vw;
