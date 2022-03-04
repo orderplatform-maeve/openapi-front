@@ -89,7 +89,8 @@ import {
 
 const {
   getNoticeInfo,
-  getDetailNoticeInfo
+  getDetailNoticeInfo,
+  postNoticeMessage
 } = notice;
 
 
@@ -459,8 +460,21 @@ export default {
         this.phoneNumber = '010-';
       }
     },
-    sendFile() {
+    async sendFile(fileList, phoneNumber) {
+      const data = {
+        noticeId: Number(this.isDetailInfo),
+        noticeFiles: fileList.map((file) => file.filePath),
+        phoneNumber: phoneNumber.replace(/-/gi, ''),
+      };
 
+      try {
+        const res = await postNoticeMessage(data);
+        if (res.status === 200) {
+          this.cancelSendFile();
+        }
+      } catch(error) {
+        console.log(error);
+      }
     },
     cancelSendFile() {
       this.sendFileModalVisible = false;

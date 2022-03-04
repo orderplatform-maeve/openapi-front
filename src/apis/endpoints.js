@@ -3,7 +3,7 @@ const ADMIN_URL = 'http://admin.torder.co.kr';
 const API_URL = 'http://api.torder.co.kr';
 const DEMO_URL = 'http://demo.api.torder.co.kr';
 const ROBOT_TEXT = 'http://52.78.117.91:8888/v2/order';
-const NOTICE_URL = 'http://dev-apigw.torder.co.kr/v2';
+// const NOTICE_URL = 'http://dev-apigw.torder.co.kr/v2';
 
 // const SERVER_URL = isDemo ? DEMO_URL : REST_URL;
 const TABLE_GAME_URL = 'https://apigw.torder.co.kr';
@@ -69,8 +69,9 @@ const endpoints = {
     robotMoving: `${DEMO_URL}/message/orderMoving`
   },
   notice: {
-    getNoticeInfo: `${NOTICE_URL}/notice/info`,
-    getNoticePopup: `${NOTICE_URL}/notice/popup`,
+    info: `${REST_URL}/notice/info`,
+    popup: `${REST_URL}/notice/popup`,
+    message: `${REST_URL}/notice/message`,
   },
   tableGame: {
     admin: {
