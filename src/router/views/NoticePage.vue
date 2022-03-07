@@ -1,5 +1,12 @@
 <template lang="pug">
   .wrap-notice-page
+    notice-search-type-modal(
+      v-if="isNoticeTypeModalVisible"
+      :data="noticeTypeList"
+      :currentType="getSearchType"
+      :selectType="selectNoticeType"
+      :closeSearchModal="closeNoticeTypeModal"
+    )
     .orders-container
       p.store-name {{storeName}}{{version}}
       .header-orders-status-list
@@ -12,14 +19,17 @@
         .orders-status(@click="setViewMode('EVENT')" :class="{activeButton: viewMode === 'EVENT'}")
           p 이벤트
       .wrap-order-list(v-if="!isDetailInfo")
-        .wrap_search_notice
-          .search_notice
-            select.search_notice_select(v-model="searchType")
-              option(value="TITLE") 제목
-              option(value="DESC") 내용
-            input.search_notice_input(type="text" v-model="searchText")
-            button.search_notice_submit(@click="searchNoticeList") 검색
-        .wrap-search_notice_list
+        .wrap-search-notice
+          .search-notice
+            //- select.search-notice-select(v-model="searchType")
+            //-   option(value="TITLE") 제목
+            //-   option(value="DESC") 내용
+            button.search-notice-select(@click="openNoticeTypeModal")
+              p.select-button {{getSearchType}}
+              icon-under-arrow
+            input.search-notice-input(type="text" v-model="searchText")
+            button.search-notice-submit(@click="searchNoticeList") 검색
+        .wrap-search-notice_list
           .wrap-notice-list-title
             p.notice-list-title 번호
             p.notice-list-title 구분
@@ -76,12 +86,13 @@
 
 <script>
 import {
-  PaperClip
+  PaperClip,
 } from '@svg';
 import { version } from '@utils/constants';
 import paths from '@router/paths';
 import {
   NoticeDetail,
+  NoticeSearchTypeModal,
 } from '@components';
 import {
   notice
@@ -98,6 +109,7 @@ export default {
   components: {
     NoticeDetail,
     PaperClip,
+    NoticeSearchTypeModal,
   },
   data () {
     return {
@@ -131,6 +143,11 @@ export default {
       fileCheckboxList: [],
       sendFileList: [],
       phoneNumber: '010-',
+      noticeTypeList: [
+        '제목',
+        '내용',
+      ],
+      isNoticeTypeModalVisible: false,
     };
   },
   computed: {
@@ -220,6 +237,18 @@ export default {
     },
     getDetailNoticeFileList() {
       return this.noticeDetailData.noticeFileList;
+    },
+    getSearchType() {
+      const data = this.searchType;
+      if (data === 'TITLE') {
+        return '제목';
+      }
+
+      if (data === 'DESC') {
+        return '내용';
+      }
+
+      return data;
     },
   },
   methods: {
@@ -498,7 +527,26 @@ export default {
     },
     cancelSendFile() {
       this.sendFileModalVisible = false;
-    }
+    },
+    openNoticeTypeModal() {
+      this.isNoticeTypeModalVisible = true;
+    },
+    closeNoticeTypeModal() {
+      this.isNoticeTypeModalVisible = false;
+    },
+    selectNoticeType(data) {
+      this.closeNoticeTypeModal();
+      if (data === '제목') {
+        this.searchType = 'TITLE';
+        return;
+      }
+      if (data === '내용') {
+        this.searchType = 'DESC';
+        return;
+      }
+
+      this.searchType = data;
+    },
   },
   created() {
     if (this.isDetailInfo) {
@@ -616,18 +664,18 @@ input {
     flex-direction: column;
     overflow-y: auto;
 
-    .wrap_search_notice {
+    .wrap-search-notice {
       display: flex;
       align-items: center;
       justify-content: flex-end;
       padding: 0.6vw 0 0.78125vw !important;
 
-      .search_notice {
+      .search-notice {
         display: flex;
         align-items: center;
         gap: 0.625vw;
 
-        .search_notice_select {
+        .search-notice-select {
           box-sizing: border-box;
           width: 8vw;
           height: 3.7vw;
@@ -637,11 +685,14 @@ input {
           letter-spacing: -0.05078125vw;
           background-color: #fcfcfc;
           border: solid 0.078125vw #e9e8eb;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
           border-radius: 0.234375vw;
           box-shadow: inset 0.15625vw 0.15625vw 0.15625vw 0 rgba(0, 0, 0, 0.05);
         }
 
-        .search_notice_input {
+        .search-notice-input {
           box-sizing: border-box;
           width: 20vw;
           height: 3.7vw;
@@ -653,7 +704,7 @@ input {
           font-size: 1.5vw;
         }
 
-        .search_notice_submit {
+        .search-notice-submit {
           width: 5.5vw;
           height: 3.7vw;
           font-size: 1.5vw;
@@ -669,7 +720,7 @@ input {
 
     }
 
-    .wrap-search_notice_list {
+    .wrap-search-notice_list {
       flex: 1;
       .wrap-notice-list-title {
         display: grid;

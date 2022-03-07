@@ -58,7 +58,7 @@ export default {
       required: true,
     },
     noticeEmergency: {
-      type: Function,
+      type: Boolean,
       required: true,
     },
   },
@@ -197,6 +197,7 @@ export default {
       gap: 0.390625vw;
       font-size: 1.5625vw;
       flex: 1;
+      overflow-y: auto;
 
       .notice-popup-info {
         padding: 1.25vw 1.5625vw !important;

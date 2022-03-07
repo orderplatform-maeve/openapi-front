@@ -146,7 +146,7 @@ export default {
       return this.$store.state.auth.store.store_code;
     },
     getNoticeEmergency() {
-      return this.$store.state.noticePopup?.isNoticeEmergency;
+      return this.$store.state.noticePopup.isNoticeEmergency;
     },
   },
   watch: {
@@ -222,6 +222,7 @@ export default {
     watchPayment() {
       window.addEventListener('message', async (event) => {
         try {
+          console.log(event, 'ㅁㄴㅇㅁㄴㅇ');
           const msg = event?.data;
           const methodName = msg?.methodName;
           if (methodName === 'callBackPayment') {

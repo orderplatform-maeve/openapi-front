@@ -1269,6 +1269,7 @@ const payment = {
 
       const url = endpoints.payment.creditList;
       const res = await axios.get(url, {params});
+      console.log(res.data ,'dasdasdasd');
 
       context.commit('updatePaymentList', res.data);
     }
