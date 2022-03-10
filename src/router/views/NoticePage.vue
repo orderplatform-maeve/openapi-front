@@ -7,6 +7,20 @@
       :selectType="selectNoticeType"
       :closeSearchModal="closeNoticeTypeModal"
     )
+    send-file-modal(
+      v-if="sendFileModalVisible"
+      :fileList="sendFileList"
+      :phoneNumber="phoneNumber"
+      :updatePhoneNumber="updatePhoneNumber"
+      :cancelSendFile="cancelSendFile"
+      :sendFile="sendFile"
+    )
+    send-file-result-modal(
+      v-if="fileResultModalVisible"
+      :fileResultModalCount="fileResultModalCount"
+      :fileResultModalCountClose="fileResultModalCountClose"
+      :phoneNumber="phoneNumber"
+    )
     .orders-container
       p.store-name {{storeName}}{{version}}
       .header-orders-status-list
@@ -80,12 +94,6 @@
         :updateFileCheckbox="updateFileCheckbox"
         :sendCheckFileModal="sendCheckFileModal"
         :sendAllFileModal="sendAllFileModal"
-        :sendFileModalVisible="sendFileModalVisible"
-        :sendFileList="sendFileList"
-        :phoneNumber="phoneNumber"
-        :updatePhoneNumber="updatePhoneNumber"
-        :cancelSendFile="cancelSendFile"
-        :sendFile="sendFile"
       )
 </template>
 
@@ -99,7 +107,10 @@ import paths from '@router/paths';
 import {
   NoticeDetail,
   NoticeSearchTypeModal,
+  SendFileModal,
+  SendFileResultModal
 } from '@components';
+
 import {
   notice
 } from '@apis';
@@ -117,6 +128,8 @@ export default {
     PaperClip,
     NoticeSearchTypeModal,
     NewIcon,
+    SendFileModal,
+    SendFileResultModal,
   },
   data () {
     return {
@@ -155,6 +168,9 @@ export default {
         '내용',
       ],
       isNoticeTypeModalVisible: false,
+      fileResultModalVisible: false,
+      fileResultModalCount: 10,
+      fileResultModalInterval: 0,
     };
   },
   computed: {
@@ -537,6 +553,7 @@ export default {
         const res = await postNoticeMessage(data);
         if (res.status === 200) {
           this.cancelSendFile();
+          this.openSendFileResultModal();
         }
       } catch(error) {
         console.log(error);
@@ -563,6 +580,22 @@ export default {
       }
 
       this.searchType = data;
+    },
+    fileResultModalCountClose() {
+      this.fileResultModalVisible = false;
+      this.fileResultModalInterval = 0;
+      this.phoneNumber = '010-';
+      this.fileResultModalCount = 10;
+    },
+    openSendFileResultModal() {
+      this.fileResultModalVisible = true;
+      this.fileResultModalInterval = setInterval(() => {
+        if (this.fileResultModalCount > 0) {
+          this.fileResultModalCount -= 1;
+        } else {
+          this.fileResultModalCountClose();
+        }
+      }, 1000);
     },
   },
   created() {
