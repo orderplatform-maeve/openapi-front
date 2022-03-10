@@ -13,9 +13,9 @@
       p.current-date {{getNowDate()}}
       p.current-time {{getNowTime()}}
     .wrap-page-button-list
-      router-link.order-history(v-if="visibleOrderButton" :to="paths.notice" :class="{activeButton: path === '/notice'}")
+      router-link.order-history.wrap-notice(v-if="visibleOrderButton" :to="paths.notice" :class="{activeButton: path === '/notice'}")
         span 공지사항
-        span.big-title {{getNoticeQuantity}}
+        p.big-title {{getNoticeQuantity}}
       router-link.order-history(v-if="visibleOrderButton" :to="paths.order" :class="{activeButton: path === '/order'}") 주문보기
       router-link.additional-functions(v-if="visibleOrderButton" :to="paths.additional" :class="{activeButton: path === '/additional'}") 추가기능(테스트)
       router-link.paid-history(v-if="visibleOrderButton" :to="paths.paymentManagement" :class="{activeButton: path === '/paymentManagement'}") 결제내역
@@ -449,7 +449,7 @@ export default {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  padding: 2.1875vw 0 0 !important;
+  padding: 1.171875vw 0 0 !important;
   box-sizing: border-box !important;
   overflow: auto;
 
@@ -483,7 +483,7 @@ export default {
 
   .wrap-page-button-list {
     width: 100%;
-    padding: 0 1.171875vw !important;
+    padding: 1.5625vw 1.171875vw 0 !important;
     display: flex;
     flex-direction: column;
     gap: 0.78125vw;
@@ -513,10 +513,29 @@ export default {
       display: flex;
       align-items: center;
       gap: 0.390625vw;
+    }
+
+    .wrap-notice {
+      position: relative;
 
       .big-title {
-        font-size: 2.34375vw;
-        color: #fff;
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: 3.90625vw;
+        height: 2.34375vw;
+        border-radius: 1.171875vw;
+        border: solid 0.156250vw #fc0000;
+        background-color: #fff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transform: translateY(-50%);
+        font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+        font-size: 1.875;
+        font-weight: bold;
+        letter-spacing: -0.046875vw;
+        color: #fc0000;
       }
     }
   }

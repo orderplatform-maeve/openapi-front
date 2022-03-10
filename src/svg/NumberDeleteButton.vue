@@ -1,5 +1,5 @@
 <template functional>
-  <svg xmlns="http://www.w3.org/2000/svg" width="2vw" height="1.36vw" viewBox="0 0 51.369 34.913">
+  <svg xmlns="http://www.w3.org/2000/svg" :width="props.width" :height="props.height" viewBox="0 0 51.369 34.913">
     <defs>
     </defs>
     <g id="numberDeleteButton_bt" transform="translate(1 1)">
@@ -11,7 +11,16 @@
 
 <script>
 export default {
-
+  props: {
+    width: {
+      type: String,
+      default: '2vw',
+    },
+    height: {
+      type: String,
+      default: '1.36vw',
+    }
+  }
 };
 </script>
 
