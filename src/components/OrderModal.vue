@@ -25,7 +25,9 @@
             .product-option-list(v-if="isProductOpt(product)")
               .product-option(v-for="option in product.option")
                 p.option-name {{getOptionDisplayName(option)}}
-                p.option-quantity {{getOptionGoodQty(option)}}개
+                .wrap-product-option-price
+                  p.option-price {{getOptionPrice(option)}}원
+                  p.option-quantity {{getOptionGoodQty(option)}}개
       .wrap-last-order-history(v-if="!order.paidOrder")
         p.last-order-history-text 이전 주문내역
         .last-order-history-list(v-if="order.paidOrder==false")
@@ -137,6 +139,10 @@ export default {
       } catch (error) {
         return 0;
       }
+    },
+    getOptionPrice(option) {
+      if (!option) return 0;
+      return won(option.good_price);
     },
     async commitOrder(order) {
       const auth = this.$store.state.auth;
@@ -345,6 +351,11 @@ export default {
                 font-size: 1.5625vw;
                 display: flex;
                 gap: 3.125vw;
+
+                .product-quantity {
+                  width: 3.90625vw;
+                  text-align: right;
+                }
               }
             }
 
@@ -357,6 +368,20 @@ export default {
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
+
+                .option-name {
+                  flex: 1;
+                }
+
+                .wrap-product-option-price {
+                  display: flex;
+                  gap: 3.125vw;
+
+                  .option-quantity {
+                    width: 3.90625vw;
+                    text-align: right;
+                  }
+                }
               }
             }
           }
