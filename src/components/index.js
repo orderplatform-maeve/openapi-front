@@ -24,3 +24,4 @@ export { default as NoticePopupListModal } from './NoticePopupListModal';
 export { default as SendFileModal } from './SendFileModal';
 export { default as AuctionModal } from './AuctionModal';
 export { default as NoticeSearchTypeModal } from './NoticeSearchTypeModal';
+export { default as SendFileResultModal } from './SendFileResultModal';

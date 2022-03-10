@@ -1,13 +1,5 @@
 <template lang="pug">
   .notice-detail-container
-    send-file-modal(
-      v-if="sendFileModalVisible"
-      :fileList="sendFileList"
-      :phoneNumber="phoneNumber"
-      :updatePhoneNumber="updatePhoneNumber"
-      :cancelSendFile="cancelSendFile"
-      :sendFile="sendFile"
-    )
     p.notice-detail-header 공지사항 상세
     .wrap-notice-detail-title
       .notice-detail-title
@@ -46,12 +38,9 @@ import {
   PaperClip
 } from '@svg';
 
-import SendFileModal from '@components/SendFileModal.vue';
-
 export default {
   components: {
     PaperClip,
-    SendFileModal,
   },
   props: {
     isMainNotice: {
@@ -106,30 +95,6 @@ export default {
       type: Function,
       required: true,
     },
-    sendFileModalVisible: {
-      type: Boolean,
-      required: true,
-    },
-    sendFileList: {
-      type: Array,
-      required: true,
-    },
-    phoneNumber: {
-      type: String,
-      required: true,
-    },
-    updatePhoneNumber: {
-      type: Function,
-      required: true,
-    },
-    sendFile: {
-      type: Function,
-      required: true,
-    },
-    cancelSendFile: {
-      type: Function,
-      required: true,
-    }
   },
   computed: {
     getFileQuantity() {

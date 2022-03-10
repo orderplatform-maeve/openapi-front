@@ -186,6 +186,7 @@ export default {
           letter-spacing: -0.1484375vw;
           color: #000;
           width: 25.625vw;
+          height: 5.11718750vw;
           box-sizing: border-box;
           padding-bottom: 0.7421875vw !important;
           border-bottom: 0.078125vw solid #000;
@@ -195,6 +196,7 @@ export default {
           margin-top: 1.484375vw !important;
           display: flex;
           justify-content: center;
+
           .input-phone-number {
             color: #000;
             border-collapse: collapse;
