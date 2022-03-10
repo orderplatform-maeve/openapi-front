@@ -8,10 +8,10 @@
       :closeSearchModal="closeSearchModal"
     )
     select-date-modal(
-    v-if="selectDateModalVisible"
-    :data="searchOptions.datetime"
-    :selectDateModalSubmit="selectDateModalSubmit"
-    :closeSearchModal="closeSearchModal"
+      v-if="selectDateModalVisible"
+      :data="searchOptions.datetime"
+      :selectDateModalSubmit="selectDateModalSubmit"
+      :closeSearchModal="closeSearchModal"
     )
     p.game-management-title 게임관리
     .main-categories
@@ -23,15 +23,25 @@
         ) {{ item }}
     .background-white
       div(v-if="selectCategory === '진행내역'")
-        .game-select-wrap
-          button(@click.stop="openSearchModal('division')")
-            p.select-text {{optionName('division')}}
-            icon-under-arrow
+        .wrap-game-select
+          .game-select
+            button(@click.stop="openSearchModal('division')")
+              p.select-text {{optionName('division')}}
+              icon-under-arrow
 
-          button.order-date(@click.stop="openSearchModal('date')")
-            p.select-text {{displayDate}}
-            icon-under-arrow
-          button.submit(@click.stop="gameHistorySearch()") 조회
+            button.order-date(@click.stop="openSearchModal('date')")
+              p.select-text {{displayDate}}
+              icon-under-arrow
+            button.submit(@click.stop="gameHistorySearch()") 조회
+          .wrap-auto-refresh
+            .notice-file-list
+              input.notice-file-check(
+                type="checkbox"
+                id="autoRefresh"
+                v-model="gameAutoRefresh"
+              )
+              label.notice-file-title(for="autoRefresh")
+                p.file-info 자동 새로고침
         .game-progress-table-wrap
           .table-title
             p 순번
@@ -100,7 +110,8 @@ export default {
   data() {
     return {
       // mainCategory : ['진행내역', '게임상품 설정', '게임 설정'],
-      mainCategory : ['진행내역', '게임 설정'],
+      // mainCategory : ['진행내역', '게임 설정'],
+      mainCategory : ['진행내역'],
       selectCategory: '진행내역',
       // settingSubCategory : ['게임 사용 여부', '퀵메세지 설정'],
       settingSubCategory : ['퀵메세지 설정'],
@@ -150,6 +161,8 @@ export default {
       },
       selectStartDate: undefined,
       selectEndDate: undefined,
+      gameAutoRefresh: false,
+      gameAutoRefreshInterval: -1,
     };
   },
   computed: {
@@ -381,7 +394,17 @@ export default {
       }
     },
   },
-
+  watch: {
+    gameAutoRefresh() {
+      if (this.gameAutoRefresh) {
+        this.gameAutoRefreshInterval = setInterval(() => {
+          this.gameHistorySearch();
+        }, 10000);
+      } else {
+        this.gameAutoRefreshInterval = -1;
+      }
+    }
+  },
   mounted() {
     this.gameHistorySearch();
     this.pickerSelectToday();
@@ -390,6 +413,9 @@ export default {
     this.picker.today = this.$moment();
     this.picker.context = this.$moment();
   },
+  beforeDestroy() {
+    this.gameAutoRefreshInterval = -1;
+  }
 };
 </script>
 
@@ -445,34 +471,64 @@ export default {
     color:#000;
     box-sizing: border-box;
 
-    .game-select-wrap {
+    .wrap-game-select {
       display: flex;
-      justify-content: flex-start;
-      gap: 0.7813vw;
-      margin-bottom: 1.5625vw !important;
+      justify-content: space-between;
+      align-items: center;
 
-      > button {
-        font-family: 'Spoqa Han Sans Neo', 'sans-serif';
-        font-size: 1.25vw;
-        letter-spacing: -0.03125vw;
-        height: 3.515625vw;
-        padding: 0 1.171875vw ;
+      .game-select {
         display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border: none;
-        border-radius: 0.390625vw;
+        justify-content: flex-start;
+        gap: 0.7813vw;
+        margin-bottom: 1.5625vw !important;
+
+        > button {
+          font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+          font-size: 1.25vw;
+          letter-spacing: -0.03125vw;
+          height: 3.515625vw;
+          padding: 0 1.171875vw ;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          border: none;
+          border-radius: 0.390625vw;
+        }
+
+        .select-text {
+          font-size: 1.25vw;
+          margin-right: 0.7813vw !important;
+        }
+
+        .submit {
+          color: #fff;
+          justify-content: center;
+          background-color: #fc0000;
+        }
       }
 
-      .select-text {
-        font-size: 1.25vw;
-        margin-right: 0.7813vw !important;
-      }
+      .wrap-auto-refresh {
+        font-size: 1.5625vw;
 
-      .submit {
-        color: #fff;
-        justify-content: center;
-        background-color: #fc0000;
+        .notice-file-list {
+          display: flex;
+          align-items: center;
+          gap: 0.78125vw;
+          input[type="checkbox"]+label {
+            display: block;
+            background-size: 1.875vw 1.875vw;
+            padding-left: 2.734375vw !important;
+            background: url('https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/check_off_icon.svg') no-repeat 0 1px / contain;
+          }
+          input[type='checkbox']:checked+label {
+            background-size: 1.875vw 1.875vw;
+            padding-left: 2.734375vw !important;
+            background: url('https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/check_on_icon.svg') no-repeat 0 1px / contain;
+          }
+          .notice-file-check {
+            display: none;
+          }
+        }
       }
     }
 
