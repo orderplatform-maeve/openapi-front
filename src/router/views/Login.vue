@@ -38,6 +38,7 @@ export default {
 
         const isLogin = await this.$store.dispatch('login', fd);
         if (isLogin) {
+          await this.$store.dispatch('noticePopup/updateNoticePopupData');
           // // console.log(this.$router.push, paths.store);
 
           this.$router.push(paths.store);

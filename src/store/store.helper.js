@@ -78,7 +78,7 @@ export const getNewCategories = (categories) => {
       startTime: item.T_order_store_menu_starttime,
       endTime: item.T_order_store_menu_endtime,
       serviceUse: item.T_order_store_menu_serviceUse,
-      useCategory: item.T_order_store_menu_use === 'Y',
+      useCategory: item?.T_order_store_menu_use === 'Y',
       goods: item.T_order_category_goods,
     }));
 

@@ -8,6 +8,16 @@
   )
   flash-message
   left-menu
+  notice-popup-list-modal(
+    v-if="isPopupVisible"
+    :noticePopupData="getNoticePopupData"
+    :noticePopupPage="getNoticePopupPage"
+    :popupTouchStart="popupTouchStart"
+    :popupTouchEnd="popupTouchEnd"
+    :oneDayNoPopup="oneDayNoPopup"
+    :closePopup="closePopup"
+    :noticeEmergency="getNoticeEmergency"
+  )
   router-view(
     :auth="auth"
     :orders="orders"
@@ -22,8 +32,12 @@ import store from '@store/store';
 import paths from '@router/paths';
 import { version } from '@utils/constants';
 import { Torder } from '@svg';
-import { AlertModal } from '@components';
+import {
+  AlertModal,
+  NoticePopupListModal,
+} from '@components';
 import { payments } from '@apis';
+
 const {
   requestCardCancelCommit,
 } = payments;
@@ -31,6 +45,7 @@ export default {
   components: {
     Torder,
     'alert-modal': AlertModal,
+    NoticePopupListModal,
   },
   // https://vuex.vuejs.org/kr/guide/state.html#vuex-%EC%83%81%ED%83%9C%EB%A5%BC-vue-%EC%BB%B4%ED%8F%AC%EB%84%8C%ED%8A%B8%EC%97%90%EC%84%9C-%EA%B0%80%EC%A0%B8%EC%98%A4%EA%B8%B0
   store,
@@ -45,6 +60,8 @@ export default {
       paths,
       logo: 'https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/logo/torder_color_white.png',
       version,
+      popupTouchStartPosition: 0,
+      popupTouchEndPosition: 0,
     };
   },
   computed: {
@@ -115,6 +132,21 @@ export default {
     },
     signboardMessage() {
       return this.$store.state.signboardMessage;
+    },
+    isPopupVisible() {
+      return this.$store.state.noticePopup.isPopupVisible;
+    },
+    getNoticePopupData() {
+      return this.$store.state.noticePopup.noticePopupData;
+    },
+    getNoticePopupPage() {
+      return this.$store.state.noticePopup.noticePopupPage;
+    },
+    getStoreCode() {
+      return this.$store.state.auth.store.store_code;
+    },
+    getNoticeEmergency() {
+      return this.$store.state.noticePopup.isNoticeEmergency;
     },
   },
   watch: {
@@ -190,6 +222,7 @@ export default {
     watchPayment() {
       window.addEventListener('message', async (event) => {
         try {
+          console.log(event, 'ㅁㄴㅇㅁㄴㅇ');
           const msg = event?.data;
           const methodName = msg?.methodName;
           if (methodName === 'callBackPayment') {
@@ -696,6 +729,26 @@ export default {
       const now = new Date(this.time.now);
       const ISONow = now.toISOString();
       return this.$moment(ISONow).format('MM.DD HH:mm:ss');
+    },
+    popupTouchStart(e) {
+      this.popupTouchStartPosition = e.changedTouches[0].screenX;
+    },
+    popupTouchEnd(e) {
+      const endPosition = e.changedTouches[0].screenX;
+
+      if (this.popupTouchStartPosition > endPosition + 40) {
+        this.$store.commit('noticePopup/noticePopupNext');
+      } else if (this.popupTouchStartPosition + 40 < endPosition) {
+        this.$store.commit('noticePopup/noticePopupPrevious');
+      }
+    },
+    closePopup() {
+      this.$store.commit('noticePopup/updatePopupVisible', false);
+      this.$store.commit('noticePopup/updateNoticeEmergency', false);
+    },
+    oneDayNoPopup() {
+      this.$cookies.set('NoVisiblePopup', true);
+      this.closePopup();
     },
   },
 };

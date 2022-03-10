@@ -1,15 +1,12 @@
-// import { isDemo } from '@utils/constants';
-import { isDev } from '@utils/constants';
-
-// const DEMO_URL = 'http:///demo.api.torder.co.kr';
 const REST_URL = 'http://rest.torder.co.kr';
 const ADMIN_URL = 'http://admin.torder.co.kr';
 const API_URL = 'http://api.torder.co.kr';
 const DEMO_URL = 'http://demo.api.torder.co.kr';
 const ROBOT_TEXT = 'http://52.78.117.91:8888/v2/order';
-const TABLE_GAME_URL = isDev ? 'https://dev-apigw.torder.co.kr' : 'https://apigw.torder.co.kr';
+// const NOTICE_URL = 'http://dev-apigw.torder.co.kr/v2';
 
 // const SERVER_URL = isDemo ? DEMO_URL : REST_URL;
+const TABLE_GAME_URL = 'https://apigw.torder.co.kr';
 
 const endpoints = {
   authentication: {
@@ -70,6 +67,11 @@ const endpoints = {
     robotOrder: `${DEMO_URL}/message/_robotOrder`,
     backRobot: `${ROBOT_TEXT}/ok`,
     robotMoving: `${DEMO_URL}/message/orderMoving`
+  },
+  notice: {
+    info: `${REST_URL}/notice/info`,
+    popup: `${REST_URL}/notice/popup`,
+    message: `${REST_URL}/notice/message`,
   },
   tableGame: {
     admin: {

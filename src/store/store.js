@@ -13,7 +13,8 @@ import { isEmpty } from '@utils/CheckedType';
 import endpoints from '@apis/endpoints';
 
 import {
-  robot
+  robot,
+  noticePopup,
 } from './modules';
 
 Vue.use(Vuex);
@@ -33,10 +34,6 @@ function imagePreload(url) {
 */
 const socket = {
   mutations: {
-    SOCKET_res(state, message) {
-      //console.log(message);
-      message;
-    },
     SOCKET_orderlog(state, order) {
       if (validShopCode(state, order)) {
         if (router.currentRoute.name !== 'paymentManagement') {
@@ -58,13 +55,18 @@ const socket = {
         console.log('주문 커먼-order', order);
         console.log('주문 커먼-state', state);
         console.log('주문커먼-commit', commit);
+        console.log(order, '확인 오더로그');
         if (window?.UUID?.playOrderBell) {
           window.UUID.playOrderBell();
+        }
+        if (order.viewType == 5) {
+          state.auction = true;
         }
         commit('PUSH_ORDER', order);
       }
     },
     async SOCKET_orderview({ commit, state, dispatch }, payload) {
+      console.log(payload, '확인 오더뷰');
       //console.log('out SOCKET_orderview', payload);
 
       if (payload?.type_msg === 'commit') {
@@ -216,7 +218,7 @@ const socket = {
 
       if (payload?.type === '@update/categories/useStatus') {
         commit('SET_MENU_USE', payload.target);
-        commit('pushFlashMessage', `${payload.target.name} ${payload.target.depthStr} 카테고리 상태가 ${payload.target.T_order_store_menu_use === 'Y' ? '개방' : '닫힘'}으로 변경이 되었습니다.`);
+        commit('pushFlashMessage', `${payload.target.name} ${payload.target.depthStr} 카테고리 상태가 ${payload.target?.T_order_store_menu_use === 'Y' ? '개방' : '닫힘'}으로 변경이 되었습니다.`);
       }
 
       if (payload?.type === '@update/device/serviceStatus') {
@@ -275,6 +277,13 @@ const socket = {
         }
       }
 
+      if (payload?.type === 'notice') {
+        const data = [payload.data];
+        this.commit('noticePopup/updateNoticeEmergency', true);
+        this.commit('noticePopup/updateNoticePopupData', data);
+        this.commit('noticePopup/updatePopupVisible', true);
+      }
+
       const isRobot = payload.type === 'Ready' || payload.type === 'OnTheWay' || payload.type === 'Arrived' || payload.type === 'Unknown' || payload.type === 'Returning' || payload.type === 'Charge';
 
       if (payload.type === 'Error') {
@@ -284,8 +293,6 @@ const socket = {
           message: payload.robotInfo.message,
         });
       }
-
-      console.log(payload);
 
       if (isRobot) {
         try {
@@ -304,7 +311,6 @@ const socket = {
       }
     },
     SOCKET_disconnect({ commit }) {
-
       const now = new Date(Date.now());
       const log = `disconnected socket ${now}`;
 
@@ -430,7 +436,7 @@ const order = {
       state.orders.push(order);
     },
     SET_ORDERS: (state, orders) => {
-      // // console.log('orders!!!!!!!', orders);
+      // console.log('orders!!!!!!!', orders);
       Vue.set(state, 'orders', orders);
     },
     UPDATE_ORDER_CREDIT: (state, order, value) => {
@@ -467,9 +473,14 @@ const order = {
       }
     },
     setPayloadStatus(state, payload) {
-      console.log('여기 찍힘?', payload);
       state.payloadStatus = payload;
     },
+    filterEvent(state, payload) {
+      state.orders = payload;
+    },
+    auctionFlag(state, payload) {
+      state.auction = payload;
+    }
   },
   actions: {
     async commitOrder(context, payload) {
@@ -796,7 +807,7 @@ const menu = {
     SET_GOODS: (state, goods) => Vue.set(state, 'goods', goods),
     SET_ALL_CATEGORIES: (state, categories) => Vue.set(state, 'allCategories', categories),
     SET_MENU_USE: (state, targetCategory) => {
-      state.allCategories[targetCategory.index].T_order_store_menu_use = targetCategory.T_order_store_menu_use;
+      state.allCategories[targetCategory.index].T_order_store_menu_use = targetCategory?.T_order_store_menu_use;
     },
     SET_MENU_CONFIG: (state, config) => Vue.set(state, 'menuConfig', config),
   },
@@ -1258,6 +1269,7 @@ const payment = {
 
       const url = endpoints.payment.creditList;
       const res = await axios.get(url, {params});
+      console.log(res.data ,'dasdasdasd');
 
       context.commit('updatePaymentList', res.data);
     }
@@ -1266,6 +1278,7 @@ const payment = {
 
 const state = {
   order: undefined,
+  auction : false,
   orders: [],
   payloadStatus: 0,
   device: {
@@ -1340,6 +1353,7 @@ const getters = {
 
 const modules ={
   robot,
+  noticePopup,
 };
 
 const plugins = [];

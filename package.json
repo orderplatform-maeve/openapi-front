@@ -30,6 +30,7 @@
     "v-calendar": "^2.2.4",
     "vue": "^2.6.11",
     "vue-axios": "^2.1.5",
+    "vue-cookies": "^1.7.4",
     "vue-datetime": "^1.0.0-beta.14",
     "vue-infinite-loading": "^2.4.5",
     "vue-router": "^3.1.6",

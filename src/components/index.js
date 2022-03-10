@@ -20,3 +20,8 @@ export { default as ServingRobotCancelModal } from './ServingRobotCancelModal';
 export { default as ServingRobotBackModal } from './ServingRobotBackModal';
 export { default as ServingRobotErrorModal } from './ServingRobotErrorModal';
 export { default as CategoryVisibleSelectDateModal } from './CategoryVisibleSelectDateModal';
+export { default as NoticeDetail } from './NoticeDetail';
+export { default as NoticePopupListModal } from './NoticePopupListModal';
+export { default as SendFileModal } from './SendFileModal';
+export { default as AuctionModal } from './AuctionModal';
+export { default as NoticeSearchTypeModal } from './NoticeSearchTypeModal';

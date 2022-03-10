@@ -1,6 +1,7 @@
 <template lang="pug">
   .wrap-orders-container
-    modal-order(v-if="order")
+    auction-modal(v-if="order && auction")
+    modal-order(v-if="order && !auction")
     .orders-container
       order-cash-out-standing-modal(
         v-if="getCashOutPopVisble()"
@@ -20,8 +21,15 @@
           p 확인 주문
           span {{lengthCommitedOrders}}
       .wrap-payload-info-status-select
-        p.payload-info(:class="{'payload-active': payloadStatus === 0}" @click="payloadInfoChange(0)") 결제포함
-        p.payload-info(:class="{'payload-active': payloadStatus === 1}" @click="payloadInfoChange(1)") 결제미포함
+        .payload-wrap
+          p.payload-info(:class="{'payload-active': payloadStatus === 0}" @click="payloadInfoChange(0)") 결제포함
+          p.payload-info(:class="{'payload-active': payloadStatus === 1}" @click="payloadInfoChange(1)") 결제미포함
+        .event-filter
+          div(v-if="onlyEvent" @click="filterEventDisable()")
+            check-box-active
+          div(v-if="!onlyEvent" @click="filterEventActive()")
+            check-box-disable
+          p.event-text 이벤트 주문 내역만 보기
       .wrap-order-list(v-if="payloadStatus === 0")
         .order-title-list
           p.order-title 테이블번호
@@ -42,7 +50,7 @@
               p.order-information-paid-price {{getTotalAmount(order)}}원
               p.order-information-unpaid-money(@click.stop="() => openMisuModal(order)")
                 span(:class="{unpaid: getMisu(order) !== '미수금없음'}") {{ getMisu(order) }}
-                span.unpaid(v-if="getVisibleWon(order)") 원 
+                span.unpaid(v-if="getVisibleWon(order)") 원
               p.order-information-paid-type {{paidTypeCheck(order)}}
               p.order-information-credit-type {{creditTypeCheck(order)}}
               p.order-information-order-time {{getOrderTime(order).substr(11)}}
@@ -66,7 +74,7 @@
                 span.red-box {{visitGroups(order)}}명
               p.order-information-total-people
                 span {{electronicAccessPeople(order)}}명
-                
+
 </template>
 
 <script>
@@ -74,6 +82,8 @@ import utils from '@utils/orders.utils';
 import { won } from '@utils/regularExpressions';
 import { payments } from '@apis';
 import { version } from '@utils/constants';
+import AuctionModal from '@components/AuctionModal.vue';
+import { checkBoxActive, checkBoxDisable  } from '@svg';
 
 const {
   requestMisuCommit,
@@ -85,11 +95,20 @@ export default {
       isLoading: false,
       chooseOrder: {},
       version,
+      onlyEvent: false,
     };
+  },
+  components: {
+    AuctionModal,
+    checkBoxActive,
+    checkBoxDisable
   },
   computed: {
     order() {
       return !!this.$store.state.order;
+    },
+    auction() {
+      return this.$store.state.auction;
     },
     sortedOrders() {
       const { orders } = this.$store.state;
@@ -129,9 +148,8 @@ export default {
       return this.$store.state.auth;
     },
     payloadStatus() {
-
       return this.$store.state.payloadStatus;
-    }
+    },
   },
   async mounted() {
     this.isLoading = true;
@@ -233,6 +251,11 @@ export default {
     },
     openView(order) {
       this.$store.dispatch('setOrder', order);
+      if (order.viewType === 5) {
+        this.$store.commit('auctionFlag', true);
+      } else {
+        this.$store.commit('auctionFlag', false);
+      }
     },
     visibleOrderItem(order) {
       const commit = this.checkedCommit(order);
@@ -273,10 +296,13 @@ export default {
       if (viewType === 4) {
         return '평가';
       }
+      if (viewType === 5) {
+        return '경매';
+      }
     },
     orderStyleCheck(order) {
       const orderType = this.orderTypeCheck(order);
-      
+
       if (orderType === '첫주문' || orderType === '주문') {
         return 'orderColorRed';
       }
@@ -292,12 +318,15 @@ export default {
       if (orderType === '평가') {
         return 'orderColorYellow';
       }
+      if (orderType === '경매') {
+        return 'orderColorOrange';
+      }
     },
     paidTypeCheck(order) {
       if (order.paidOrder) {
         return '선불';
       }
-      
+
       return '후불';
     },
     creditTypeCheck(order) {
@@ -342,9 +371,20 @@ export default {
     },
     electronicAccessPeople(order) {
       const people = order?.visitPeopleCnt;
-
       return people ? people : 0;
-    }
+    },
+    filterEventDisable() {
+      this.onlyEvent = false;
+      const fd = new FormData();
+      fd.append('shop_code', this.$store.state.auth.store.store_code);
+      this.$store.dispatch('setOrders', fd);
+    },
+    filterEventActive() {
+      this.onlyEvent = true;
+      const { orders } = this.$store.state;
+      let eventList = orders.filter( order => order.viewType === 5);
+      this.$store.commit('filterEvent', eventList);
+    },
   }
 };
 </script>
@@ -403,32 +443,47 @@ export default {
   }
 
   .wrap-payload-info-status-select {
-    padding-top: 1.5625vw !important;
     height: 3.90625vw;
     display: flex;
-    justify-content: center;
+    justify-content : space-between;
     align-items: center;
-    gap: 0.78125vw;
     background-color: #fff;
+    padding: 1.5625vw 1.5625vw 0 !important;
 
-    .payload-info {
-      width: 17.1875vw;
-      height: 3.90625vw;
-      background-color: #e5e5e5;
-      border-radius: 0.78125vw;
+    .payload-wrap {
       display: flex;
-      justify-content: center;
-      align-items: center;
-      font-family: 'Spoqa Han Sans Neo', 'sans-serif';
-      font-size: 1.5625vw;
-      letter-spacing: -0.0390625vw;
-      color: #666;
+      gap: 0.78125vw;
+
+      .payload-info {
+        width: 17.1875vw;
+        height: 3.90625vw;
+        background-color: #e5e5e5;
+        border-radius: 0.78125vw;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+        font-size: 1.5625vw;
+        letter-spacing: -0.0390625vw;
+        color: #666;
+      }
+
+      .payload-active {
+        background-color: #12151d;
+        font-weight: bold;
+        color: #fff;
+      }
     }
 
-    .payload-active {
-      background-color: #12151d;
-      font-weight: bold;
-      color: #fff;
+    .event-filter {
+      display: flex;
+      align-items: center;
+      gap: 0.3906vw;
+
+      .event-text {
+        font-family: "Spoqa Han Sans Neo", "sans-serif";
+        font-size: 1.5625vw;
+      }
     }
   }
 
@@ -446,7 +501,7 @@ export default {
       padding: 3.75vh 1.5625vw 1.25vh !important;
       border-bottom: solid 0.078125vw #333333;
       box-sizing: border-box;
-      
+
 
       .order-title {
         font-size: 1.09375vw;
@@ -486,6 +541,9 @@ export default {
           }
           .orderColorYellow {
             color: #e5a11a;
+          }
+          .orderColorOrange {
+            color: #FF7A00;
           }
 
           .order-information-table-number {
@@ -579,6 +637,10 @@ export default {
           }
           .orderColorYellow {
             color: #e5a11a;
+          }
+
+          .orderColorOrange {
+            color: #FF7A00;
           }
 
           .order-information-table-number {
