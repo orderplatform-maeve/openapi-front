@@ -29,11 +29,11 @@
               icon-under-arrow
             input.search-notice-input(type="text" v-model="searchText")
             button.search-notice-submit(@click="searchNoticeList") 검색
-        .wrap-search-notice_list
+        .wrap-search-notice-list
           .wrap-notice-list-title
-            p.notice-list-title 번호
+            p.notice-list-title No
             p.notice-list-title 구분
-            p.notice-list-title.title 제목
+            p.notice-list-title 제목
             p.notice-list-title 작성자
             p.notice-list-title 작성일
           .notice-list
@@ -43,12 +43,17 @@
               :key="`notice-list-key-${index}`"
               @click="goDetailNotice(notice)"
             )
-              p.notice-no {{getNoticeNumber(notice)}}
-              p.notice-type {{getNoticeType(notice)}}
+              .wrap-notice-no
+                p.notice-no {{getNoticeNumber(notice)}}
+              p(:class="getNoticeTypeStyle(notice)") {{getNoticeType(notice)}}
               .wrap-notice-title
                 p.notice-title {{getNoticeTitle(notice)}}
-                paper-clip(v-if="isNoticeFile(notice)")
-                p.notice-new(v-if="isNoticeNew(notice)") N
+                paper-clip(
+                  v-if="isNoticeFile(notice)"
+                  :width="'1.103515625vw'"
+                  :height="'1.154921875vw'"
+                )
+                new-icon(v-if="isNoticeNew(notice)")
               p.notice-writer {{getNoticeAuthor(notice)}}
               p.notice-write-date {{getNoticeDate(notice)}}
         .wrap-pagination
@@ -87,6 +92,7 @@
 <script>
 import {
   PaperClip,
+  NewIcon,
 } from '@svg';
 import { version } from '@utils/constants';
 import paths from '@router/paths';
@@ -110,6 +116,7 @@ export default {
     NoticeDetail,
     PaperClip,
     NoticeSearchTypeModal,
+    NewIcon,
   },
   data () {
     return {
@@ -288,9 +295,10 @@ export default {
       return data?.noticeId;
     },
     getNoticeStyle(data) {
+      console.log(data.noticeCheckStatus, 'ㅁㄴㅇㅁㄴㅇㅁㄴㅇ');
       return {
         'notice-info': true,
-        'new-notice': data?.noticeCheckStatus === 1,
+        'read-notice': data?.noticeCheckStatus === 0,
         'main-notice': data?.topFix === 1,
       };
     },
@@ -306,6 +314,15 @@ export default {
       }
 
       return '공지사항';
+    },
+    getNoticeTypeStyle(data) {
+      const type = data?.noticeCategory;
+
+      return {
+        'type-update': type === 'UPDATE',
+        'type-event': type === 'EVENT',
+        'type-notice': type === 'NOTICE',
+      };
     },
     getNoticeTitle(data) {
       return data?.noticeTitle;
@@ -668,7 +685,7 @@ input {
       display: flex;
       align-items: center;
       justify-content: flex-end;
-      padding: 0.6vw 0 0.78125vw !important;
+      padding: 1.171875vw 0 0.7421875vw !important;
 
       .search-notice {
         display: flex;
@@ -676,43 +693,43 @@ input {
         gap: 0.625vw;
 
         .search-notice-select {
+          font-family: 'Spoqa Han Sans Neo', 'sans-serif';
           box-sizing: border-box;
-          width: 8vw;
-          height: 3.7vw;
-          padding: 0 0.9375vw;
-          font-size: 1.5vw;
-          color: #aaa;
-          letter-spacing: -0.05078125vw;
+          width: 7.8125vw;
+          height: 3.125vw;
+          padding: 0.7421875vw 1.171875vw !important;
+          font-size: 1.25vw;
+          letter-spacing: -0.03125vw;
           background-color: #fcfcfc;
-          border: solid 0.078125vw #e9e8eb;
           display: flex;
           justify-content: space-between;
           align-items: center;
-          border-radius: 0.234375vw;
-          box-shadow: inset 0.15625vw 0.15625vw 0.15625vw 0 rgba(0, 0, 0, 0.05);
+          border-radius: 0.390625vw;
+          border: solid 1px #000;
         }
 
         .search-notice-input {
+          font-family: 'Spoqa Han Sans Neo', 'sans-serif';
           box-sizing: border-box;
-          width: 20vw;
-          height: 3.7vw;
-          padding: 0 0.9375vw;
-          background-color: #fcfcfc;
-          border: solid 0.078125vw #e9e8eb;
-          border-radius: 0.234375vw;
-          box-shadow: inset 0.15625vw 0.15625vw 0.15625vw 0 rgba(0, 0, 0, 0.05);
-          font-size: 1.5vw;
+          width: 15.625vw;
+          height: 3.125vw;
+          padding: 0.7421875vw 1.171875vw !important;
+          border: solid 1px #000;
+          border-radius: 0.390625vw;
+          font-size: 1.25vw;
+          letter-spacing: -0.03125vw;
         }
 
         .search-notice-submit {
-          width: 5.5vw;
-          height: 3.7vw;
-          font-size: 1.5vw;
-          font-weight: bold;
-          color: #fff;
-          letter-spacing: -0.0546875vw;
+          font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+          width: 6.25vw;
+          height: 3.125vw;
           cursor: pointer;
-          background-color: #2f2f39;
+          background-color: #12151d;
+          font-size: 1.40625vw;
+          font-weight: bold;
+          letter-spacing: -0.03515625vw;
+          color: #fff;
           border: none;
           border-radius: 0.390625vw;
         }
@@ -720,99 +737,142 @@ input {
 
     }
 
-    .wrap-search-notice_list {
-      flex: 1;
+    .wrap-search-notice-list {
       .wrap-notice-list-title {
         display: grid;
         align-items: center;
-        grid-template-columns: 1fr 2fr 10fr 2fr 2fr;
-        gap: 2.34375vw;
-        padding: 0 0.78125vw 0.78125vw !important;
-        border-bottom: solid 0.078125vw #333333;
-        box-sizing: border-box;
+        grid-template-columns: 7.677543186fr 11.516314779fr 55.854126679fr 12.476007678fr 12.476007678fr;
+        padding: 1.2109375vw 0vw !important;
+        border-bottom: solid 0.078125vw #ccc;
+        border-top: solid 0.078125vw #ccc;
+        box-sizing: border-box;;
+        height: 3.90625vw;
 
         .notice-list-title {
           text-align: center;
           font-size: 1.25vw;
           color: #000;
-          text-align: center;
+          font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+          font-size: 1.09375vw;
+          color: #666
         }
       }
 
       .notice-list {
-        height: 40vw;
+        height: 39.53125vw;
+        .notice-info:nth-child(2n - 1) {
+          background-color: #f5f5f5;
+        }
         .notice-info {
+          height: 3.90625vw;
           display: grid;
           align-items: center;
-          grid-template-columns: 1fr 2fr 10fr 2fr 2fr;
-          gap: 2.34375vw;
-          padding: 1.09375vw 0.78125vw !important;
+          grid-template-columns: 7.677543186fr 11.516314779fr 55.854126679fr 12.476007678fr 12.476007678fr;
+          padding: 1.125vw 0vw !important;
           box-sizing: border-box;
-          border-bottom: solid 0.078125vw #ccc;
 
           > p {
+            font-family: 'Spoqa Han Sans Neo', 'sans-serif';
             text-align: center;
-            font-size: 1.09375vw;
-            color: #666;
+            font-size: 1.25vw;
+            color: #999;
           }
 
           .wrap-notice-title {
             display: flex;
             align-items: center;
-            gap: 0.390625vw;
-            height: 1.875vw;
+            gap: 0.78125vw;
 
             .notice-title {
               text-align: left;
-              font-size: 1.09375vw;
-              color: #666;
+              font-size: 1.25vw;
+              font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+              color: #999;
             }
+          }
 
-            .notice-new {
-              background-color: #666;
-              color: #fff;
-              font-size: 0.9375vw;
-              padding: 0.234375vw 0.625vw !important;
-              box-sizing: border-box;
-              border-radius: 0.390625vw;
+          .wrap-notice-no {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            .notice-no {
+              font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+              font-size: 1.25vw;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              color: #999;
             }
           }
         }
 
-        .main-notice,
-        .new-notice {
+        .main-notice {
           font-weight: bold;
-          background-color: #555;
 
           > p {
             font-weight: bold;
-            color: #fff;
+            color: #000;
           }
 
           .wrap-notice-title {
             .notice-title {
               font-weight: bold;
-              color: #fff;
-            }
-
-            .notice-new {
-              background-color: #666;
-              color: #fff;
-              font-size: 0.9375vw;
-              padding: 0.234375vw 0.625vw !important;
-              box-sizing: border-box;
-              border-radius: 0.390625vw;
+              color: #000;
             }
           }
 
-          .notice-no {
-            background-color: #fc0000;
-            border-radius: 0.234375vw;
+          .wrap-notice-no {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            .notice-no {
+              width: 3.75vw;
+              height: 1.875vw;
+              font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+              background-color: #fc0000;
+              border-radius: 0.9375vw;
+              font-size: 1.09375vw;
+              letter-spacing: -0.02734375vw;
+              color: #fff !important;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+            }
+          }
+
+          .type-update {
+            color: #0071d4;
+          }
+
+          .type-event {
+            color: #7b01e5;
           }
         }
 
-        .main-notice {
-          background-color: #1f222a;
+        .read-notice {
+          > p {
+            color: #000;
+          }
+
+          .wrap-notice-no {
+            .notice-no {
+              color: #000;
+            }
+          }
+
+          .wrap-notice-title {
+            .notice-title {
+              color: #000;
+            }
+          }
+
+          .type-update {
+            color: #0071d4;
+          }
+
+          .type-event {
+            color: #7b01e5;
+          }
         }
       }
     }
