@@ -841,7 +841,6 @@ const menu = {
       const response = await axios.post(url, params);
 
       if (response && response.data) {
-        console.log('asdasd', response);
         commit('SET_ALL_CATEGORIES', response.data);
         return response.data;
       }

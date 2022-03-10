@@ -82,7 +82,10 @@ const endpoints = {
   category : {
     updateCategoryScheduleOff : `${ADMIN_URL}/category/updateCategoryScheduleOff`,
     updateCategoryScheduleOn : `${ADMIN_URL}/category/updateCategoryScheduleOn`,
-    updateCategoryTime : `${ADMIN_URL}/category/updateCategoryTime`
+    updateCategoryTime : `${ADMIN_URL}/category/updateCategoryTime`,
+    updateCategoryScheduleDateArray  : `${ADMIN_URL}/category/updateCategoryScheduleDateArray`,
+    updateCategoryHide : `${ADMIN_URL}/category/updateCategoryHide`,
+    updateCategoryShow : `${ADMIN_URL}/category/updateCategoryShow`
   }
 };
 

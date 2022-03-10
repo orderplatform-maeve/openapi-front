@@ -30,7 +30,7 @@
               button.time-plus-button(@click.stop="pickerUpNumber") +
             .number-button-list
               button.number-button(v-for="number in 9" :key="'number-'+number" @click.stop="pickerSelectButton(number)") {{number}}
-              button.reset-button(@click.stop="pickerSelectButton('r')")
+              button.reset-button(@click.stop="timeReset()")
                 icon-refresh-black-icon
               button.number-button(@click.stop="pickerSelectButton(0)") 0
               button.delete-button(@click.stop="pickerSelectButton('d')")
@@ -51,6 +51,9 @@ export default {
     },
     categoryVisibleTime : {
       type : Object
+    },
+    timeReset : {
+      type : Function
     }
   },
   data() {
@@ -79,9 +82,9 @@ export default {
       console.log('k', k);
       let tmp = 0;
 
-      if (k=='r') {
-        tmp = this.picker.numberRefeshTemp;
-      } else if (k=='d') {
+      console.log(this.picker.numberRefeshTemp);
+
+      if (k=='d') {
         let number = this.picker.number;
         let stringNumber = String(number);
         stringNumber = stringNumber.substr(0, stringNumber.length -1);
@@ -113,7 +116,7 @@ export default {
       }
 
       if (this.picker.selected == 'endHour') {
-        if (tmp > 30) {
+        if (tmp > 30 || tmp === 24) {
           tmp = 0;
         }
       } else {
@@ -158,6 +161,10 @@ export default {
       }
 
       if (this.picker.selected == 'endHour') {
+        if (tmp === 24) {
+          tmp = 25;
+        }
+
         if (tmp > 30) {
           tmp = 0;
         }
@@ -205,6 +212,10 @@ export default {
       console.log(tmp);
 
       if (this.picker.selected == 'endHour') {
+        if (tmp === 24) {
+          tmp = 23;
+        }
+
         if (tmp > 30) {
           tmp = 0;
         }
