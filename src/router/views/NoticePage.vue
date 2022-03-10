@@ -169,7 +169,7 @@ export default {
       ],
       isNoticeTypeModalVisible: false,
       fileResultModalVisible: false,
-      fileResultModalCount: 10,
+      fileResultModalCount: 5,
       fileResultModalInterval: 0,
     };
   },
@@ -585,12 +585,12 @@ export default {
       this.fileResultModalVisible = false;
       this.fileResultModalInterval = 0;
       this.phoneNumber = '010-';
-      this.fileResultModalCount = 10;
+      this.fileResultModalCount = 5;
     },
     openSendFileResultModal() {
       this.fileResultModalVisible = true;
       this.fileResultModalInterval = setInterval(() => {
-        if (this.fileResultModalCount > 0) {
+        if (this.fileResultModalCount > 1) {
           this.fileResultModalCount -= 1;
         } else {
           this.fileResultModalCountClose();
