@@ -475,12 +475,13 @@ export default {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      margin-bottom: 1.5625vw !important;
+
 
       .game-select {
         display: flex;
         justify-content: flex-start;
         gap: 0.7813vw;
-        margin-bottom: 1.5625vw !important;
 
         > button {
           font-family: 'Spoqa Han Sans Neo', 'sans-serif';
