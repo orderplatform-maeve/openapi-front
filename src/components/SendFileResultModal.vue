@@ -31,7 +31,14 @@ export default {
     phoneNumber: {
       type: String,
       require: true,
+    },
+    startSendFileResultInterval: {
+      type: Function,
+      require: true,
     }
+  },
+  mounted() {
+    this.startSendFileResultInterval();
   },
   beforeDestroy() {
     this.fileResultModalCountClose();
