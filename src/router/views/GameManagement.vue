@@ -401,7 +401,7 @@ export default {
           this.gameHistorySearch();
         }, 10000);
       } else {
-        this.gameAutoRefreshInterval = -1;
+        clearInterval(this.gameAutoRefreshInterval);
       }
     }
   },
@@ -414,7 +414,7 @@ export default {
     this.picker.context = this.$moment();
   },
   beforeDestroy() {
-    this.gameAutoRefreshInterval = -1;
+    clearInterval(this.gameAutoRefreshInterval);
   }
 };
 </script>
