@@ -20,6 +20,7 @@
       :fileResultModalCount="fileResultModalCount"
       :fileResultModalCountClose="fileResultModalCountClose"
       :phoneNumber="phoneNumber"
+      :startSendFileResultInterval="startSendFileResultInterval"
     )
     .orders-container
       p.store-name {{storeName}}{{version}}
@@ -170,7 +171,7 @@ export default {
       isNoticeTypeModalVisible: false,
       fileResultModalVisible: false,
       fileResultModalCount: 5,
-      fileResultModalInterval: 0,
+      fileResultModalInterval: -1,
     };
   },
   computed: {
@@ -583,12 +584,14 @@ export default {
     },
     fileResultModalCountClose() {
       this.fileResultModalVisible = false;
-      this.fileResultModalInterval = 0;
+      this.closeSendFileResultInterval();
       this.phoneNumber = '010-';
       this.fileResultModalCount = 5;
     },
     openSendFileResultModal() {
       this.fileResultModalVisible = true;
+    },
+    startSendFileResultInterval() {
       this.fileResultModalInterval = setInterval(() => {
         if (this.fileResultModalCount > 1) {
           this.fileResultModalCount -= 1;
@@ -597,6 +600,9 @@ export default {
         }
       }, 1000);
     },
+    closeSendFileResultInterval() {
+      clearInterval(this.fileResultModalInterval);
+    }
   },
   created() {
     if (this.isDetailInfo) {
