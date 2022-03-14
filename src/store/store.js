@@ -277,12 +277,14 @@ const socket = {
         }
       }
 
-      if (payload?.type === 'notice') {
-        const data = [payload.data];
-        this.commit('noticePopup/updateNoticeEmergency', true);
-        this.commit('noticePopup/updateNoticePopupData', data);
-        this.commit('noticePopup/updatePopupVisible', true);
-      }
+      // 공지사항 팝업 관련
+
+      // if (payload?.type === 'notice') {
+      //   const data = [payload.data];
+      //   this.commit('noticePopup/updateNoticeEmergency', true);
+      //   this.commit('noticePopup/updateNoticePopupData', data);
+      //   this.commit('noticePopup/updatePopupVisible', true);
+      // }
 
       const isRobot = payload.type === 'Ready' || payload.type === 'OnTheWay' || payload.type === 'Arrived' || payload.type === 'Unknown' || payload.type === 'Returning' || payload.type === 'Charge';
 
