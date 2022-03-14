@@ -26,16 +26,18 @@
       span (테스트)
     router-link.button-added(v-if="visibleOrderButton" :to="paths.auctionManager") 경매 관리<br>
       span (테스트)
-    //- router-link.button-added(v-if="visibleOrderButton" :to="paths.gameManagement") 게임 관리<br>
-    //-   span (테스트)
+    router-link.button-added(v-if="stopRedirect" :to="paths.gameManagement") 게임 관리<br>
+      span (테스트)
 </template>
 
 <script>
 import paths from '@router/paths';
+import { STOP_REDIRECT } from '@utils/constants';
 
 export default {
   data: () => ({
     paths,
+    stopRedirect: STOP_REDIRECT,
   }),
   methods: {
     visibleOrderButton() {
