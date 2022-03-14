@@ -1,9 +1,31 @@
 <template lang="pug">
   .wrap-notice-page
+    notice-search-type-modal(
+      v-if="isNoticeTypeModalVisible"
+      :data="noticeTypeList"
+      :currentType="getSearchType"
+      :selectType="selectNoticeType"
+      :closeSearchModal="closeNoticeTypeModal"
+    )
+    send-file-modal(
+      v-if="sendFileModalVisible"
+      :fileList="sendFileList"
+      :phoneNumber="phoneNumber"
+      :updatePhoneNumber="updatePhoneNumber"
+      :cancelSendFile="cancelSendFile"
+      :sendFile="sendFile"
+    )
+    send-file-result-modal(
+      v-if="fileResultModalVisible"
+      :fileResultModalCount="fileResultModalCount"
+      :fileResultModalCountClose="fileResultModalCountClose"
+      :phoneNumber="phoneNumber"
+      :startSendFileResultInterval="startSendFileResultInterval"
+    )
     .orders-container
       p.store-name {{storeName}}{{version}}
       .header-orders-status-list
-        .orders-status(@click="setViewMode('ALL')" :class="{activeButton: viewMode === 'ALL'}")
+        .orders-status(@click="setViewMode('EVENT, UPDATE, NOTICE')" :class="{activeButton: viewMode === 'EVENT, UPDATE, NOTICE'}")
           p 전체
         .orders-status(@click="setViewMode('NOTICE')" :class="{activeButton: viewMode === 'NOTICE'}")
           p 공지사항
@@ -12,18 +34,21 @@
         .orders-status(@click="setViewMode('EVENT')" :class="{activeButton: viewMode === 'EVENT'}")
           p 이벤트
       .wrap-order-list(v-if="!isDetailInfo")
-        .wrap_search_notice
-          .search_notice
-            select.search_notice_select(v-model="searchType")
-              option(value="TITLE") 제목
-              option(value="DESC") 내용
-            input.search_notice_input(type="text" v-model="searchText")
-            button.search_notice_submit(@click="searchNoticeList") 검색
-        .wrap-search_notice_list
+        .wrap-search-notice
+          .search-notice
+            //- select.search-notice-select(v-model="searchType")
+            //-   option(value="TITLE") 제목
+            //-   option(value="DESC") 내용
+            button.search-notice-select(@click="openNoticeTypeModal")
+              p.select-button {{getSearchType}}
+              icon-under-arrow
+            input.search-notice-input(type="text" v-model="searchText")
+            button.search-notice-submit(@click="searchNoticeList") 검색
+        .wrap-search-notice-list
           .wrap-notice-list-title
-            p.notice-list-title 번호
+            p.notice-list-title No
             p.notice-list-title 구분
-            p.notice-list-title.title 제목
+            p.notice-list-title 제목
             p.notice-list-title 작성자
             p.notice-list-title 작성일
           .notice-list
@@ -33,12 +58,17 @@
               :key="`notice-list-key-${index}`"
               @click="goDetailNotice(notice)"
             )
-              p.notice-no {{getNoticeNumber(notice)}}
-              p.notice-type {{getNoticeType(notice)}}
+              .wrap-notice-no
+                p.notice-no {{getNoticeNumber(notice)}}
+              p(:class="getNoticeTypeStyle(notice)") {{getNoticeType(notice)}}
               .wrap-notice-title
                 p.notice-title {{getNoticeTitle(notice)}}
-                paper-clip(v-if="isNoticeFile(notice)")
-                p.notice-new(v-if="isNoticeNew(notice)") N
+                paper-clip(
+                  v-if="isNoticeFile(notice)"
+                  :width="'1.103515625vw'"
+                  :height="'1.154921875vw'"
+                )
+                new-icon(v-if="isNoticeNew(notice)")
               p.notice-writer {{getNoticeAuthor(notice)}}
               p.notice-write-date {{getNoticeDate(notice)}}
         .wrap-pagination
@@ -61,23 +91,35 @@
         :noticeContents="getDetailNoticeContents"
         :noticeFileList="getDetailNoticeFileList"
         :goNoticeList="goNoticeList"
+        :fileCheckboxList="fileCheckboxList"
+        :updateFileCheckbox="updateFileCheckbox"
+        :sendCheckFileModal="sendCheckFileModal"
+        :sendAllFileModal="sendAllFileModal"
       )
 </template>
 
 <script>
 import {
-  PaperClip
+  PaperClip,
+  NewIcon,
 } from '@svg';
 import { version } from '@utils/constants';
 import paths from '@router/paths';
-import NoticeDetail from '@components/NoticeDetail.vue';
+import {
+  NoticeDetail,
+  NoticeSearchTypeModal,
+  SendFileModal,
+  SendFileResultModal
+} from '@components';
+
 import {
   notice
 } from '@apis';
 
 const {
   getNoticeInfo,
-  getDetailNoticeInfo
+  getDetailNoticeInfo,
+  postNoticeMessage
 } = notice;
 
 
@@ -85,10 +127,14 @@ export default {
   components: {
     NoticeDetail,
     PaperClip,
+    NoticeSearchTypeModal,
+    NewIcon,
+    SendFileModal,
+    SendFileResultModal,
   },
   data () {
     return {
-      viewMode: 'ALL',
+      viewMode: 'EVENT, UPDATE, NOTICE',
       isLoading: false,
       chooseOrder: {},
       version,
@@ -113,13 +159,28 @@ export default {
         topFix: 0,
         noticeFileList: [],
         newStatus: 0,
-      }
+      },
+      sendFileModalVisible: false,
+      fileCheckboxList: [],
+      sendFileList: [],
+      phoneNumber: '010-',
+      noticeTypeList: [
+        '제목',
+        '내용',
+      ],
+      isNoticeTypeModalVisible: false,
+      fileResultModalVisible: false,
+      fileResultModalCount: 5,
+      fileResultModalInterval: -1,
     };
   },
   computed: {
     storeName() {
       const { auth } = this;
       return auth && auth.store && auth.store.store_name;
+    },
+    getStoreCode() {
+      return this.$store.state.auth.store.store_code;
     },
     isDetailInfo() {
       return this.$route.query?.noticeId;
@@ -137,7 +198,7 @@ export default {
         return maxPage;
       }
 
-      const currentPage = this.getCurrentPage;
+      const currentPage = this.getCurrentPage - 1;
       const startPage = currentPage - (currentPage % 10) + 1;
       const endPage = startPage + 9 < maxPage ? startPage + 9 : maxPage;
 
@@ -201,21 +262,40 @@ export default {
     getDetailNoticeFileList() {
       return this.noticeDetailData.noticeFileList;
     },
+    getSearchType() {
+      const data = this.searchType;
+      if (data === 'TITLE') {
+        return '제목';
+      }
+
+      if (data === 'DESC') {
+        return '내용';
+      }
+
+      return data;
+    },
   },
   methods: {
     async setViewMode(value) {
       document.querySelector(".header-orders-status-list").scrollTop = 0;
-      await this.getNoticeSelectCategory(value);
+      let data = '';
+
+      if (value === 'ALL') {
+        data = 'UPDATE, EVENT, NOTICE';
+      } else {
+        data = value;
+      }
+      await this.getNoticeSelectCategory(data);
       this.viewMode = value;
       this.noticeDetailData = {
-        "noticeTitle": "",
-        "noticeCategory": "",
-        "noticeDesc": "",
-        "author": "",
-        "createDate": "",
-        "topFix": 0,
-        "noticeFileList": [],
-        "newStatus": 0,
+        noticeTitle: '',
+        noticeCategory: '',
+        noticeDesc: '',
+        author: '',
+        createDate: '',
+        topFix: 0,
+        noticeFileList: [],
+        newStatus: 0,
       };
 
       if (this.isDetailInfo) {
@@ -232,8 +312,10 @@ export default {
       return data?.noticeId;
     },
     getNoticeStyle(data) {
+      console.log(data.noticeCheckStatus, 'ㅁㄴㅇㅁㄴㅇㅁㄴㅇ');
       return {
         'notice-info': true,
+        'read-notice': data?.noticeCheckStatus === 0,
         'main-notice': data?.topFix === 1,
       };
     },
@@ -249,6 +331,15 @@ export default {
       }
 
       return '공지사항';
+    },
+    getNoticeTypeStyle(data) {
+      const type = data?.noticeCategory;
+
+      return {
+        'type-update': type === 'UPDATE',
+        'type-event': type === 'EVENT',
+        'type-notice': type === 'NOTICE',
+      };
     },
     getNoticeTitle(data) {
       return data?.noticeTitle;
@@ -273,7 +364,8 @@ export default {
     },
     async getDefaultNoticeData() {
       try {
-        const res = await getNoticeInfo('page=0&size=10&noticeCategory=ALL&noticeStatus=1&noticeSearchQuery=&noticeCaller=MASTER');
+        const res = await getNoticeInfo(`page=0&size=10&noticeCategoryList=EVENT,UPDATE,NOTICE&noticeStatusList=1&noticeSearchQuery=&noticeCaller=MASTER&storeCode=${this.getStoreCode}`);
+        console.log(res.data);
 
         this.noticeData = res.data;
       } catch {
@@ -286,12 +378,24 @@ export default {
       const viewMode = this.viewMode;
       if (page !== this.getCurrentPage || this.noticeList.length === 0) {
         try {
-          const res = await getNoticeInfo(`page=${page - 1}&size=10&noticeCategory=${viewMode}&noticeStatus=1&noticeSearchType=${type}&noticeSearchQuery=${contents}&noticeCaller=MASTER`);
+          const res = await getNoticeInfo(`page=${page - 1}&size=10&noticeCategoryList=${viewMode}&noticeStatusList=1&noticeSearchType=${type}&noticeSearchQuery=${contents}&noticeCaller=MASTER&storeCode=${this.getStoreCode}`);
 
           this.noticeData = res.data;
         } catch {
           console.log('에러');
         }
+      }
+    },
+    async getNoticeSelectDetailPageData(page) {
+      const type = this.searchType;
+      const contents = this.searchText;
+      const viewMode = this.viewMode;
+      try {
+        const res = await getNoticeInfo(`page=${page - 1}&size=10&noticeCategoryList=${viewMode}&noticeStatusList=1&noticeSearchType=${type}&noticeSearchQuery=${contents}&noticeCaller=MASTER&storeCode=${this.getStoreCode}`);
+
+        this.noticeData = res.data;
+      } catch {
+        console.log('에러');
       }
     },
     async getNoticeNextPageData() {
@@ -302,7 +406,7 @@ export default {
 
       if (this.isNotLastPage) {
         try {
-          const res = await getNoticeInfo(`page=${page}&size=10&noticeCategory=${viewMode}&noticeStatus=1&noticeSearchType=${type}&noticeSearchQuery=${contents}&noticeCaller=MASTER`);
+          const res = await getNoticeInfo(`page=${page}&size=10&noticeCategoryList=${viewMode}&noticeStatusList=1&noticeSearchType=${type}&noticeSearchQuery=${contents}&noticeCaller=MASTER&storeCode=${this.getStoreCode}`);
 
           this.noticeData = res.data;
         } catch {
@@ -318,7 +422,7 @@ export default {
 
       if (this.isNotFirstPage) {
         try {
-          const res = await getNoticeInfo(`page=${page - 2}&size=10&noticeCategory=${viewMode}&noticeStatus=1&noticeSearchType=${type}&noticeSearchQuery=${contents}&noticeCaller=MASTER`);
+          const res = await getNoticeInfo(`page=${page - 2}&size=10&noticeCategoryList=${viewMode}&noticeStatusList=1&noticeSearchType=${type}&noticeSearchQuery=${contents}&noticeCaller=MASTER&storeCode=${this.getStoreCode}`);
 
           this.noticeData = res.data;
         } catch {
@@ -329,7 +433,7 @@ export default {
     async getNoticeSelectCategory(category) {
       if (this.viewMode !== category) {
         try {
-          const res = await getNoticeInfo(`page=$0&size=10&noticeCategory=${category}&noticeStatus=1&noticeSearchQuery=&noticeCaller=MASTER`);
+          const res = await getNoticeInfo(`page=$0&size=10&noticeCategoryList=${category}&noticeStatusList=1&noticeSearchQuery=&noticeCaller=MASTER&storeCode=${this.getStoreCode}`);
 
           this.noticeData = res.data;
         } catch {
@@ -344,7 +448,7 @@ export default {
 
       if (contents !== '') {
         try {
-          const res = await getNoticeInfo(`page=$0&size=10&noticeCategory=${viewMode}&noticeStatus=1&noticeSearchType=${type}&noticeSearchQuery=${contents}&noticeCaller=MASTER`);
+          const res = await getNoticeInfo(`page=$0&size=10&noticeCategoryList=${viewMode}&noticeStatusList=1&noticeSearchType=${type}&noticeSearchQuery=${contents}&noticeCaller=MASTER&storeCode=${this.getStoreCode}`);
 
           this.noticeData = res.data;
         } catch {
@@ -353,47 +457,160 @@ export default {
       }
     },
     async getNoticeDetailInfo(data) {
-      const query = `${data.noticeId}`;
+      const query = `${data.noticeId}?noticeCaller=MASTER&storeCode=${this.getStoreCode}`;
 
       try {
         const res = await getDetailNoticeInfo(query);
-
         this.noticeDetailData = res.data.noticeMasterDetailVo;
-        console.log(this.noticeDetailData);
+
+        return res;
       } catch(error) {
         console.log('에러' ,error);
+        return false;
       }
     },
     async goNoticeList() {
       const page = this.getCurrentPage;
 
-      await this.getNoticeSelectPageData(page);
+      await this.getNoticeSelectDetailPageData(page);
       this.$router.push({
         name: 'notice',
       });
     },
-    goDetailNotice(data) {
-      this.getNoticeDetailInfo(data);
+    async goDetailNotice(data) {
+      const res = await this.getNoticeDetailInfo(data);
+      if (res?.status === 200) {
+        this.$store.commit('noticePopup/updateNoticeQuantity', res.data?.noticeMasterDetailVo?.noticeNewCount);
+        this.$router.push({
+          name: 'notice',
+          query: {
+            noticeId: data.noticeId,
+          },
+        });
+      }
+    },
+    updateFileCheckbox(data) {
+      this.fileCheckboxList = data;
+    },
+    sendCheckFileModal() {
+      if (this.fileCheckboxList.length > 0) {
+        const fileList = [];
+        this.fileCheckboxList.forEach((index) => {
+          fileList.push(this.noticeDetailData.noticeFileList[index]);
+        });
 
-      this.$router.push({
-        name: 'notice',
-        query: {
-          noticeId: data.noticeId,
-        },
-      });
+        this.sendFileList = fileList;
+        this.sendFileModalVisible = true;
+      } else {
+        this.$store.commit('pushFlashMessage', '선택한 파일이 없습니다.');
+      }
     },
+    sendAllFileModal() {
+      this.sendFileList = this.noticeDetailData.noticeFileList.slice();
+      this.sendFileModalVisible = true;
+    },
+    autoHypenPhone(str){
+      str = str.replace(/[^0-9]/g, '');
+      var tmp = '';
+
+      if( str.length < 4){
+        return str;
+      } else if(str.length < 8){
+        tmp += str.substr(0, 3);
+        tmp += '-';
+        tmp += str.substr(3);
+        return tmp;
+      } else{
+        tmp += str.substr(0, 3);
+        tmp += '-';
+        tmp += str.substr(3, 4);
+        tmp += '-';
+        tmp += str.substr(7);
+        return tmp;
+      }
+    },
+    updatePhoneNumber(key) {
+      if (/^\d+$/g.test(key)) {
+        //this.phoneNumber += String(key.code);
+
+        if (this.phoneNumber.length < 13) {
+          this.phoneNumber = this.autoHypenPhone(this.phoneNumber + String(key));
+        }
+      } else if(key=='d') {
+        this.phoneNumber = this.autoHypenPhone(this.phoneNumber.slice(0,-1));
+        //this.phoneNumber = this.phoneNumber.slice(0,-1);
+      } else if(key=='r') {
+        this.phoneNumber = '010-';
+      }
+    },
+    async sendFile(fileList, phoneNumber) {
+      const data = {
+        noticeId: Number(this.isDetailInfo),
+        noticeFiles: fileList.map((file) => file.filePath),
+        phoneNumber: phoneNumber.replace(/-/gi, ''),
+      };
+
+      try {
+        const res = await postNoticeMessage(data);
+        if (res.status === 200) {
+          this.cancelSendFile();
+          this.openSendFileResultModal();
+        }
+      } catch(error) {
+        console.log(error);
+      }
+    },
+    cancelSendFile() {
+      this.sendFileModalVisible = false;
+    },
+    openNoticeTypeModal() {
+      this.isNoticeTypeModalVisible = true;
+    },
+    closeNoticeTypeModal() {
+      this.isNoticeTypeModalVisible = false;
+    },
+    selectNoticeType(data) {
+      this.closeNoticeTypeModal();
+      if (data === '제목') {
+        this.searchType = 'TITLE';
+        return;
+      }
+      if (data === '내용') {
+        this.searchType = 'DESC';
+        return;
+      }
+
+      this.searchType = data;
+    },
+    fileResultModalCountClose() {
+      this.fileResultModalVisible = false;
+      this.closeSendFileResultInterval();
+      this.phoneNumber = '010-';
+      this.fileResultModalCount = 5;
+    },
+    openSendFileResultModal() {
+      this.fileResultModalVisible = true;
+    },
+    startSendFileResultInterval() {
+      this.fileResultModalInterval = setInterval(() => {
+        if (this.fileResultModalCount > 1) {
+          this.fileResultModalCount -= 1;
+        } else {
+          this.fileResultModalCountClose();
+        }
+      }, 1000);
+    },
+    closeSendFileResultInterval() {
+      clearInterval(this.fileResultModalInterval);
+    }
   },
   created() {
-    console.log('테스트');
     if (this.isDetailInfo) {
       this.getNoticeDetailInfo(this.$route.query);
     }
 
     this.getDefaultNoticeData();
   },
-  mounted() {
-    console.log('테스트');
-  }
 };
 </script>
 <style lang="scss" scoped>
@@ -503,51 +720,55 @@ input {
     flex-direction: column;
     overflow-y: auto;
 
-    .wrap_search_notice {
+    .wrap-search-notice {
       display: flex;
       align-items: center;
       justify-content: flex-end;
-      padding: 1.25vw 0 0.78125vw !important;
+      padding: 1.171875vw 0 0.7421875vw !important;
 
-      .search_notice {
+      .search-notice {
         display: flex;
         align-items: center;
         gap: 0.625vw;
 
-        .search_notice_select {
+        .search-notice-select {
+          font-family: 'Spoqa Han Sans Neo', 'sans-serif';
           box-sizing: border-box;
+          width: 7.8125vw;
+          height: 3.125vw;
+          padding: 0.7421875vw 1.171875vw !important;
+          font-size: 1.25vw;
+          letter-spacing: -0.03125vw;
+          background-color: #fcfcfc;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          border-radius: 0.390625vw;
+          border: solid 1px #000;
+        }
+
+        .search-notice-input {
+          font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+          box-sizing: border-box;
+          width: 15.625vw;
+          height: 3.125vw;
+          padding: 0.7421875vw 1.171875vw !important;
+          border: solid 1px #000;
+          border-radius: 0.390625vw;
+          font-size: 1.25vw;
+          letter-spacing: -0.03125vw;
+        }
+
+        .search-notice-submit {
+          font-family: 'Spoqa Han Sans Neo', 'sans-serif';
           width: 6.25vw;
-          height: 2.578125vw;
-          padding: 0 0.9375vw;
-          font-size: 1.015625vw;
-          color: #aaa;
-          letter-spacing: -0.05078125vw;
-          background-color: #fcfcfc;
-          border: solid 0.078125vw #e9e8eb;
-          border-radius: 0.234375vw;
-          box-shadow: inset 0.15625vw 0.15625vw 0.15625vw 0 rgba(0, 0, 0, 0.05);
-        }
-
-        .search_notice_input {
-          box-sizing: border-box;
-          width: 17.1875vw;
-          height: 2.578125vw;
-          padding: 0 0.9375vw;
-          background-color: #fcfcfc;
-          border: solid 0.078125vw #e9e8eb;
-          border-radius: 0.234375vw;
-          box-shadow: inset 0.15625vw 0.15625vw 0.15625vw 0 rgba(0, 0, 0, 0.05);
-        }
-
-        .search_notice_submit {
-          width: 4.6875vw;
-          height: 2.578125vw;
-          font-size: 1.09375vw;
-          font-weight: bold;
-          color: #fff;
-          letter-spacing: -0.0546875vw;
+          height: 3.125vw;
           cursor: pointer;
-          background-color: #2f2f39;
+          background-color: #12151d;
+          font-size: 1.40625vw;
+          font-weight: bold;
+          letter-spacing: -0.03515625vw;
+          color: #fff;
           border: none;
           border-radius: 0.390625vw;
         }
@@ -555,93 +776,141 @@ input {
 
     }
 
-    .wrap-search_notice_list {
-      flex: 1;
+    .wrap-search-notice-list {
       .wrap-notice-list-title {
         display: grid;
         align-items: center;
-        grid-template-columns: 1fr 2fr 10fr 2fr 2fr;
-        gap: 2.34375vw;
-        padding: 0.78125vw !important;
-        border-bottom: solid 0.078125vw #333333;
-        box-sizing: border-box;
+        grid-template-columns: 7.677543186fr 11.516314779fr 55.854126679fr 12.476007678fr 12.476007678fr;
+        padding: 1.2109375vw 0vw !important;
+        border-bottom: solid 0.078125vw #ccc;
+        border-top: solid 0.078125vw #ccc;
+        box-sizing: border-box;;
+        height: 3.90625vw;
 
         .notice-list-title {
           text-align: center;
           font-size: 1.25vw;
           color: #000;
-          text-align: center;
+          font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+          font-size: 1.09375vw;
+          color: #666
         }
       }
 
       .notice-list {
-        height: 40vw;
+        height: 39.53125vw;
+        .notice-info:nth-child(2n - 1) {
+          background-color: #f5f5f5;
+        }
         .notice-info {
+          height: 3.90625vw;
           display: grid;
           align-items: center;
-          grid-template-columns: 1fr 2fr 10fr 2fr 2fr;
-          gap: 2.34375vw;
-          padding: 1.09375vw 0.78125vw !important;
+          grid-template-columns: 7.677543186fr 11.516314779fr 55.854126679fr 12.476007678fr 12.476007678fr;
+          padding: 1.125vw 0vw !important;
           box-sizing: border-box;
-          border-bottom: solid 0.078125vw #ccc;
 
           > p {
+            font-family: 'Spoqa Han Sans Neo', 'sans-serif';
             text-align: center;
-            font-size: 1.09375vw;
-            color: #666;
+            font-size: 1.25vw;
+            color: #999;
           }
 
           .wrap-notice-title {
             display: flex;
             align-items: center;
-            gap: 0.390625vw;
-            height: 1.875vw;
+            gap: 0.78125vw;
 
             .notice-title {
               text-align: left;
-              font-size: 1.09375vw;
-              color: #666;
+              font-size: 1.25vw;
+              font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+              color: #999;
             }
+          }
 
-            .notice-new {
-              background-color: #666;
-              color: #fff;
-              font-size: 0.9375vw;
-              padding: 0.234375vw 0.625vw !important;
-              box-sizing: border-box;
-              border-radius: 0.390625vw;
+          .wrap-notice-no {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            .notice-no {
+              font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+              font-size: 1.25vw;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              color: #999;
             }
           }
         }
 
         .main-notice {
           font-weight: bold;
-          background-color: #555;
 
           > p {
             font-weight: bold;
-            color: #fff;
+            color: #000;
           }
 
           .wrap-notice-title {
             .notice-title {
               font-weight: bold;
-              color: #fff;
-            }
-
-            .notice-new {
-              background-color: #666;
-              color: #fff;
-              font-size: 0.9375vw;
-              padding: 0.234375vw 0.625vw !important;
-              box-sizing: border-box;
-              border-radius: 0.390625vw;
+              color: #000;
             }
           }
 
-          .notice-no {
-            background-color: #fc0000;
-            border-radius: 0.234375vw;
+          .wrap-notice-no {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            .notice-no {
+              width: 3.75vw;
+              height: 1.875vw;
+              font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+              background-color: #fc0000;
+              border-radius: 0.9375vw;
+              font-size: 1.09375vw;
+              letter-spacing: -0.02734375vw;
+              color: #fff !important;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+            }
+          }
+
+          .type-update {
+            color: #0071d4;
+          }
+
+          .type-event {
+            color: #7b01e5;
+          }
+        }
+
+        .read-notice {
+          > p {
+            color: #000;
+          }
+
+          .wrap-notice-no {
+            .notice-no {
+              color: #000;
+            }
+          }
+
+          .wrap-notice-title {
+            .notice-title {
+              color: #000;
+            }
+          }
+
+          .type-update {
+            color: #0071d4;
+          }
+
+          .type-event {
+            color: #7b01e5;
           }
         }
       }

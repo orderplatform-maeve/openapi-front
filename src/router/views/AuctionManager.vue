@@ -1,5 +1,5 @@
 <template lang="pug">
-  .auction-manager-container
+  .auction-manager-container()
     iframe.frame(src="http://entertainment-admin.torder.co.kr/#/")
 </template>
 

@@ -1,27 +1,36 @@
 <template lang="pug">
   .notice-detail-container
-    p.notice-detail-header 상세내용
+    p.notice-detail-header 공지사항 상세
     .wrap-notice-detail-title
       .notice-detail-title
-        p.notice-no(v-if="isMainNotice") 공지
+        .wrap-notice-no(v-if="isMainNotice")
+          p.notice-no 공지
         p.notice-type [{{noticeType}}]
         p.notice-title {{noticeTitle}}
         p.is-notice-new(v-if="isNoticeNew")
       .notice-detail-writer
         p.notice-writer {{noticeAuthor}}
         p.notice-write-date {{noticeWriteDate}}
-    .wrap-notice-detail-info(v-html="noticeContents")
-    .wrap-notice-file-all-list
-      p.notice-list-title 첨부파일 (총 {{this.getFileQuantity}}개)
-      .wrap-notice-file-list
-        .notice-file-list(v-for="(file, index) in noticeFileList" :key="`file-key-${index}`")
-          .notice-file
-            .notice-file-title
-              paper-clip
+    .wrap-notice-detail-info
+      .notice-detail-info(v-html="noticeContents")
+      .wrap-notice-file-all-list(v-if="getFileQuantity")
+        .wrap-notice-list-title
+          p.notice-list-title 첨부파일 (총 {{this.getFileQuantity}}개)
+          p.notice-file-notion 선택하신 첨부파일은 카카오 알림톡으로 전송됩니다.
+        .wrap-notice-file-list
+          .notice-file-list(v-for="(file, index) in noticeFileList" :key="`file-key-${index}`")
+            input.notice-file-check(type="checkbox" :value="index" v-model="getFileCheckboxList" :id="`file-${index}`")
+            label.notice-file-title(:for="`file-${index}`")
               p.file-info {{getFileName(file)}} ({{getFileSize(file)}}MB)
-            button.notice-file-send 휴대폰 전송
+        .wrap-file-send-button(v-if="getFileQuantity")
+          button.select-send(
+            @click="sendCheckFileModal"
+          ) 선택 전송
+          button.all-send(
+            @click="sendAllFileModal"
+          ) 전체 전송
     .wrap-back-notice-page
-      button(@click="goNoticeList") 목록
+      button(@click="goNoticeList") 목록으로 돌아가기
 </template>
 
 <script>
@@ -69,12 +78,36 @@ export default {
     goNoticeList: {
       type: Function,
       required: true,
-    }
+    },
+    fileCheckboxList: {
+      type: Array,
+      required: true,
+    },
+    updateFileCheckbox: {
+      type: Function,
+      required: true,
+    },
+    sendCheckFileModal: {
+      type: Function,
+      required: true,
+    },
+    sendAllFileModal: {
+      type: Function,
+      required: true,
+    },
   },
   computed: {
     getFileQuantity() {
       return this.noticeFileList.length;
     },
+    getFileCheckboxList: {
+      get() {
+        return this.fileCheckboxList;
+      },
+      set(value){
+        this.updateFileCheckbox(value);
+      }
+    }
   },
   methods: {
     getFileName(file) {
@@ -103,19 +136,17 @@ export default {
   .notice-detail-header {
     display: flex;
     align-items: center;
-    padding: 1.25vw 1.5625vw !important;
+    padding: 1.5625vw !important;
     font-family: 'Spoqa Han Sans Neo', 'sans-serif';
-    font-size: 1.953125vw;
-    font-weight: bold;
-    background-color: #aaa;
+    font-size: 1.5625vw;
+    box-sizing: border-box;
   }
 
   .wrap-notice-detail-title {
-    padding: 1.25vw 1.5625vw !important;
+    padding: 0 1.5625vw !important;
     display: flex;
     flex-direction: column;
-    gap: 0.390625vw;
-    border-bottom: solid 0.078125vw #ddd;
+    gap: 0.78125vw;
 
     .notice-detail-title {
       display: flex;
@@ -124,111 +155,164 @@ export default {
 
       > p {
         font-family: 'Spoqa Han Sans Neo', 'sans-serif';
-        font-size: 1.953125vw;
+        font-size: 1.875vw;
         font-weight: bold;
       }
 
-      .notice-no {
-        font-size: 1.5625vw;
-        background-color: #fc0000;
-        border-radius: 0.234375vw;
-        color: #fff;
-        padding: 0.390625vw 0.9375vw !important;
-        box-sizing: border-box;
-      }
-
-      .notice-type {
-        color: #666;
+      .wrap-notice-no {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        .notice-no {
+          width: 3.75vw;
+          height: 1.875vw;
+          font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+          background-color: #fc0000;
+          border-radius: 0.9375vw;
+          font-size: 1.09375vw;
+          letter-spacing: -0.02734375vw;
+          color: #fff !important;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
       }
     }
 
     .notice-detail-writer {
+      padding-bottom: 1.1328125vw !important;
+      border-bottom: solid 0.078125vw #ddd;
       display: flex;
       align-items: center;
       gap: 0.78125vw;
-      font-size: 1.5625vw;
-      color: #999;
+      font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+      font-size: 1.25vw;
+      color: #666;
+      box-sizing: border-box;
     }
   }
 
   .wrap-notice-detail-info {
-    display: flex;
-    flex-direction: column;
-    gap: 0.390625vw;
     padding: 1.25vw 1.5625vw !important;
     font-size: 1.5625vw;
     flex: 1;
-    border-bottom: solid 0.078125vw #ddd;
-  }
-
-  .wrap-notice-file-all-list {
-    font-size: 1.25vw;
-    border-bottom: solid 0.078125vw #ddd;
     display: flex;
     flex-direction: column;
-    gap: 0.390625vw;
+    gap: 2.34375vw;
+    overflow-y: auto;
 
-    .notice-list-title {
-      box-sizing: border-box;
-      padding: 1.25vw 1.5625vw !important;
-      font-weight: bold;
-      border-bottom: solid 0.078125vw #ddd;
+    .notice-detail-info {
+      flex: 1;
     }
 
-    .wrap-notice-file-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0.78125vw;
-      padding: 1.25vw 1.5625vw !important;
+    .wrap-notice-file-all-list {
+      padding: 1.25vw !important;
+      box-sizing: border-box;
+      border-radius: 0.78125vw;
+      background-color: #eff0f2;
 
-      .notice-file-list {
+      .wrap-notice-list-title {
+        display: flex;
+        flex-direction: column;
+        gap: 0.78125vw;
+        padding-bottom: 0.7421875vw !important;
         box-sizing: border-box;
+        border-bottom: solid 0.078125vw #ccc;
 
-        .notice-file {
+        .notice-list-title {
+          font-size: 1.25vw;
+          font-weight: bold;
+          letter-spacing: -0.0625vw;
+          color: #000;
+        }
+
+        .notice-file-notion {
+          font-size: 1.09375vw;
+          color: #666;
+        }
+      }
+
+      .wrap-notice-file-list {
+        margin-top: 1.5625vw !important;
+        display: flex;
+        flex-direction: column;
+        gap: 0.78125vw;
+
+        .notice-file-list {
           display: flex;
           align-items: center;
-          justify-content: space-between;
+          gap: 0.78125vw;
 
-          .notice-file-title {
-            display: flex;
-            align-items: center;
-            gap: 0.390625vw;
+          input[type="checkbox"]+label {
+            display: block;
+            background-size: 1.875vw 1.875vw;
+            padding-left: 2.734375vw !important;
+            background: url('https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/check_off_icon.svg') no-repeat 0 1px / contain;
           }
 
-          .notice-file-send {
-            width: 7.8125vw;
-            height: 2.96875vw;
-            font-size: 1.25vw;
-            font-weight: bold;
-            color: #fff;
-            letter-spacing: -0.7px;
-            cursor: pointer;
-            background-color: #2f2f39;
-            border: none;
-            border-radius: 5px;
+          input[type='checkbox']:checked+label {
+            background-size: 1.875vw 1.875vw;
+            padding-left: 2.734375vw !important;
+            background: url('https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/check_on_icon.svg') no-repeat 0 1px / contain;
+          }
+
+
+          .notice-file-check {
+            display: none;
           }
         }
       }
+
+      .wrap-file-send-button {
+        margin-top: 2.265625vw !important;
+        display: flex;
+        align-items: center;
+        gap: 0.78125vw;
+
+        > button {
+          width: 8.90625vw;
+          height: 2.96875vw;
+          border-radius: 0.390625vw;
+          border: solid 0.15625vw #000;
+          background-color: #fff;
+          box-sizing: border-box;
+          font-size: 1.40625vw;
+        }
+
+        .all-send {
+          background-color: #12151d;
+          color: #fff;
+          border: none;
+        }
+      }
+
+      // input[type="checkbox"]:checked+label {
+      //   background-image: url('https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/check_on_icon.svg') !important;
+      //   background-size: contain !important;
+      //   background-repeat: no-repeat !important;
+      // }
     }
   }
 
   .wrap-back-notice-page {
-    padding: 1.25vw 1.5625vw !important;
+    border-top: solid 0.078125vw #ddd;
+    padding: 1.25vw !important;
     display: flex;
     align-items: center;
-    justify-content: center;
+    height: 6.09375vw;
+    box-sizing: border-box;
 
     > button {
-      width: 6.25vw;
       height: 2.96875vw;
-      font-size: 1.25vw;
-      font-weight: bold;
+      font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+      font-size: 1.40625vw;
       color: #fff;
-      letter-spacing: -0.7px;
       cursor: pointer;
-      background-color: #2f2f39;
+      background-color: #12151d;;
       border: none;
       border-radius: 5px;
+      padding: 0 1.171875vw;
+      box-sizing: border-box;
     }
   }
 }
