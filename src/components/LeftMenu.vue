@@ -12,13 +12,13 @@
     .wrap-current-date
       p.current-date {{getNowDate()}}
       p.current-time {{getNowTime()}}
-    //- .wrap-page-button-list
-    //-   router-link.order-history.wrap-notice(v-if="visibleOrderButton" :to="paths.notice" :class="{activeButton: path === '/notice'}")
-    //-     span 공지사항
-    //-     p.big-title {{getNoticeQuantity}}
-    //-   router-link.order-history(v-if="visibleOrderButton" :to="paths.order" :class="{activeButton: path === '/order'}") 주문보기
-    //-   router-link.additional-functions(v-if="visibleOrderButton" :to="paths.additional" :class="{activeButton: path === '/additional'}") 추가기능(테스트)
-    //-   router-link.paid-history(v-if="visibleOrderButton" :to="paths.paymentManagement" :class="{activeButton: path === '/paymentManagement'}") 결제내역
+    .wrap-page-button-list
+      //- router-link.order-history.wrap-notice(v-if="visibleOrderButton" :to="paths.notice" :class="{activeButton: path === '/notice'}")
+      //-   span 공지사항
+      //-   p.big-title {{getNoticeQuantity}}
+      router-link.order-history(v-if="visibleOrderButton" :to="paths.order" :class="{activeButton: path === '/order'}") 주문보기
+      router-link.additional-functions(v-if="visibleOrderButton" :to="paths.additional" :class="{activeButton: path === '/additional'}") 추가기능(테스트)
+      router-link.paid-history(v-if="visibleOrderButton" :to="paths.paymentManagement" :class="{activeButton: path === '/paymentManagement'}") 결제내역
     .wrap-bottom-button-area
       .on-off-button-list
         .wrap-on-off-button
