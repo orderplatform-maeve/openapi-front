@@ -277,6 +277,8 @@ const socket = {
         }
       }
 
+      // 공지사항 팝업 관련
+
       if (payload?.type === 'notice') {
         const data = [payload.data];
         this.commit('noticePopup/updateNoticeEmergency', true);
