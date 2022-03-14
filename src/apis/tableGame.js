@@ -24,8 +24,17 @@ export const gameQuickMsgLoad =  async (storeCode) => {
   return res;
 };
 
+// 테이블 게임 매장 정보 조회
+export const gameStoreInfo = async (storeCode) => {
+  const url = `${endpoints.tableGame.admin.store}/${storeCode}`;
+  const res = await axios.get(url);
+
+  return res;
+};
+
 export default {
   gameProgressHistory,
   gameQuickMsgSave,
-  gameQuickMsgLoad
+  gameQuickMsgLoad,
+  gameStoreInfo
 };

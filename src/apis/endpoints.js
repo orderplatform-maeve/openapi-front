@@ -80,7 +80,8 @@ const endpoints = {
       master: {
         room: `${TABLE_GAME_URL}/table-game/admin/master/room`,
         quick: `${TABLE_GAME_URL}/table-game/admin/master/quick`,
-      }
+      },
+      store: `${TABLE_GAME_URL}/table-game/admin/store`,
     }
   }
 };
