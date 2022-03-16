@@ -48,12 +48,14 @@ export default {
 
   .wrap-send-file-modal {
     width: 62.265625vw;
-    height: 26vw;
+    height: 32.03125vw;
     background-color: #fff;
     border-radius: 1.5625vw;
     // padding: 1.5625vw !important;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
 
     .wrap-send-file-modal-title {
       border-radius: 1.5625vw 1.5625vw 0 0;
@@ -80,6 +82,7 @@ export default {
     }
 
     .wrap-file-information {
+      flex: 1;
       display: flex;
       flex-direction: column;
       justify-content: center;
