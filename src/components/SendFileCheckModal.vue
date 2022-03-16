@@ -45,6 +45,7 @@ export default {
   justify-content: center;
   align-items: center;
   background-color: rgba(0, 0, 0, 0.7);
+  font-family: 'Spoqa Han Sans Neo', 'sans-serif';
 
   .wrap-send-file-modal {
     width: 62.265625vw;
