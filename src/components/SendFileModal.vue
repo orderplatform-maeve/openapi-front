@@ -39,7 +39,7 @@
                   )
       .wrap-input-submit-button
         button.cancel(@click="cancelSendFile") 취소
-        button.submit(@click="sendFile(fileList, phoneNumber)") 전송하기
+        button.submit(@click="openSendFileCheckModal") 전송하기
 </template>
 
 <script>
@@ -66,7 +66,7 @@ export default {
       type: Function,
       required: true,
     },
-    sendFile: {
+    openSendFileCheckModal: {
       type: Function,
       required: true,
     },
