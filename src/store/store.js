@@ -278,13 +278,12 @@ const socket = {
       }
 
       // 공지사항 팝업 관련
-
-      // if (payload?.type === 'notice') {
-      //   const data = [payload.data];
-      //   this.commit('noticePopup/updateNoticeEmergency', true);
-      //   this.commit('noticePopup/updateNoticePopupData', data);
-      //   this.commit('noticePopup/updatePopupVisible', true);
-      // }
+      if (payload?.type === 'notice') {
+        const data = [payload.data];
+        this.commit('noticePopup/updateNoticeEmergency', true);
+        this.commit('noticePopup/updateNoticePopupData', data);
+        this.commit('noticePopup/updatePopupVisible', true);
+      }
 
       const isRobot = payload.type === 'Ready' || payload.type === 'OnTheWay' || payload.type === 'Arrived' || payload.type === 'Unknown' || payload.type === 'Returning' || payload.type === 'Charge';
 
@@ -434,7 +433,6 @@ const order = {
       Vue.set(state, 'order', undefined);
     },
     PUSH_ORDER: (state, order) => {
-      console.log('PUSH_ORDER');
       state.orders.push(order);
     },
     SET_ORDERS: (state, orders) => {
@@ -452,6 +450,7 @@ const order = {
 
     },
     UPDATE_ORDERS: (state, order) => {
+      console.log(order, '업데이트 오더즈');
       const { orders } = state;
       const idx = orders.findIndex((item) => item.order_view_key === order.order_view_key);
 
@@ -507,12 +506,20 @@ const order = {
       const response = await axios.post(url, params);
 
       if (response.status === 200) {
-        const orders = [];
+        // const orders = [];
 
-        for (let item of response.data) {
-          // api 서버에서 가공해서 주는 요청으로 변경 할 필요 있음
-          orders.push(JSON.parse(item.json_data));
-        }
+        console.log(response.data, 'res. data', '김동주 - 여기서 검증하는 key, value 데이터 다시 만들면 됨');
+
+        // for (let item of response.data) {
+        //   // api 서버에서 가공해서 주는 요청으로 변경 할 필요 있음
+        //   orders.push(JSON.parse(item.json_data));
+        //   console.log(item, '아이템 확인');
+        // }
+
+        const orders = response.data.map((item) => {
+          return JSON.parse(item.json_data);
+        });
+
         commit('SET_ORDERS', orders);
       }
 
