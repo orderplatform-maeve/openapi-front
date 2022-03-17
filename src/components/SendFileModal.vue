@@ -1,30 +1,45 @@
 <template lang="pug">
   .send-file-modal-component
     .wrap-send-file-modal
-      p.send-file-modal-title 첨부파일 전송
-      .wrap-send-file-list
-        p.send-file-list-title 해당번호의 카카오 알림톡으로 첨부파일을 보내드립니다.
-        .notice-file
-          paper-clip
-          p.file-info {{getFileName}}
-      .wrap-phone-number
-        p.phone-number {{phoneNumber}}
-      .wrap-input-phone-number
-        table.input-phone-number
-          tr
-            td.number(v-for="number in [1, 2, 3]" :key="number" @click="updatePhoneNumber(number)") {{number}}
-          tr
-            td.number(v-for="number in [4, 5, 6]" :key="number" @click="updatePhoneNumber(number)") {{number}}
-          tr
-            td.number(v-for="number in [7, 8, 9]" :key="number" @click="updatePhoneNumber(number)") {{number}}
-          tr
-            td.reset(@click="updatePhoneNumber('r')") Reset
-            td.number(@click="updatePhoneNumber(0)") 0
-            td.number(@click="updatePhoneNumber('d')")
-              number-delete-button
+      .wrap-send-file-modal-title
+        p.send-file-modal-title 첨부파일 전송
+        p.send-file-modal-message
+          span 해당번호의
+          span.red  카카오 알림톡
+          span 으로 첨부파일을 보내드립니다.
+      .wrap-file-information
+        .wrap-send-file-list
+          p.send-file-list-title 첨부파일(총 {{getFileQuantity}}개)
+          .notice-file(
+            v-for="(file, index) in fileList"
+            :key="`file-key-${index}`"
+          )
+            paper-clip(
+              :width="'1.5625vw'"
+              :height="'1.640625vw'"
+            )
+            p.file-info {{getFileName(file)}} ({{getFileSize(file)}}MB)
+        .wrap-phone-number
+          p.phone-number {{phoneNumber}}
+          .wrap-input-phone-number
+            table.input-phone-number
+              tr
+                td.number(v-for="number in [1, 2, 3]" :key="number" @click="updatePhoneNumber(number)") {{number}}
+              tr
+                td.number(v-for="number in [4, 5, 6]" :key="number" @click="updatePhoneNumber(number)") {{number}}
+              tr
+                td.number(v-for="number in [7, 8, 9]" :key="number" @click="updatePhoneNumber(number)") {{number}}
+              tr
+                td.reset(@click="updatePhoneNumber('r')") Reset
+                td.number(@click="updatePhoneNumber(0)") 0
+                td.number(@click="updatePhoneNumber('d')")
+                  number-delete-button(
+                    :width="'2.96875vw'"
+                    :height="'2.03125vw'"
+                  )
       .wrap-input-submit-button
         button.cancel(@click="cancelSendFile") 취소
-        button.submit(@click="sendFile(fileList, phoneNumber)") 전송하기
+        button.submit(@click="openSendFileCheckModal") 전송하기
 </template>
 
 <script>
@@ -51,7 +66,7 @@ export default {
       type: Function,
       required: true,
     },
-    sendFile: {
+    openSendFileCheckModal: {
       type: Function,
       required: true,
     },
@@ -60,15 +75,20 @@ export default {
       required: true,
     }
   },
+  methods: {
+    getFileName(file) {
+      return file?.fileName;
+    },
+    getFileSize(file) {
+      return file?.fileSize;
+    }
+  },
   computed: {
-    getFileName() {
+    getFileQuantity() {
       const fileList = this.fileList;
 
-      if (fileList.length > 1) {
-        return `${fileList[0].fileName} (${fileList[0].fileSize}MB) 외 ${fileList.length - 1}건`;
-      }
-      return `${fileList[0].fileName} (${fileList[0].fileSize}MB)`;
-    },
+      return fileList.length;
+    }
   },
 };
 </script>
@@ -86,104 +106,132 @@ export default {
   background-color: rgba(0, 0, 0, 0.7);
 
   .wrap-send-file-modal {
-    width: 37vw;
-    height: 76vh;
+    width: 62.265625vw;
+    height: 45.31255vw;
     background-color: #fff;
     border-radius: 1.5625vw;
     // padding: 1.5625vw !important;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
 
-    .send-file-modal-title {
+    .wrap-send-file-modal-title {
+      border-radius: 1.5625vw 1.5625vw 0 0;
+      padding: 30px 19px 20px 30px !important;
       display: flex;
       align-items: center;
-      padding: 1.25vw 1.5625vw !important;
-      font-family: "Spoqa Han Sans Neo", "sans-serif";
-      font-size: 1.953125vw;
-      font-weight: bold;
-      background-color: #aaa;
-      border-radius: 1.5625vw 1.5625vw 0 0;
-    }
+      justify-content: space-between;
+      border-bottom: solid 0.15625vw #fc0000;
 
-    .wrap-send-file-list {
-      padding: 1.25vw 1.5625vw !important;
-
-      .send-file-list-title {
-        font-size: 1.4vw;
+      .send-file-modal-title {
+        font-size: 1.875vw;
+        font-weight: bold;
       }
 
-      .notice-file {
-        display: flex;
-        gap: 0.78125vw;
-        padding: 0.8vw 0 !important;
-        align-items: center;
+      .send-file-modal-message {
+        font-size: 1.40625vw;
+        letter-spacing: -0.0703125vw;
+        font-weight: bold;
 
-        .file-info {
-          font-size: 1vw;
-          letter-spacing: -0.7px;
-          cursor: pointer;
-          border: none;
-          border-radius: 5px;
+        .red {
+          color: #fc0000;
         }
       }
     }
 
-    .wrap-phone-number {
-      padding: 0 6vw !important;
-      .phone-number {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 2.4vw;
-        font-weight: 500;
-        letter-spacing: -.07421875vw;
-        color: #000;
-        height: 7.887323944vh;
-        border-bottom: 0.0781vw solid #000;
-        box-sizing: border-box;
-      }
-    }
-
-    .wrap-input-phone-number {
-      margin-top: 1.25vw !important;
-      padding: 0 6vw !important;
+    .wrap-file-information {
       display: flex;
-      justify-content: center;
-      .input-phone-number {
-        color: #000;
-        border-collapse: collapse;
+      border-bottom: solid 0.078125vw #ccc;
+
+      .wrap-send-file-list {
+        padding: 2.34375vw !important;
+        flex: 1;
+        height: 30.234375vw;
         box-sizing: border-box;
-        margin-top: 0.78125vw !important;
+        display: flex;
+        flex-direction: column;
+        gap: 0.78125vw;
+        overflow-y: auto;
 
-        tr {
-          box-sizing: border-box;
-          border-top: solid 2px #f0f0f0;
-
-          td {
-            width: 7.7vw;
-            height: 8.7vh;
-            font-family: "notosans";
-            font-size: 1.65vw;
-            letter-spacing: -0.078125vw;
-            background-color: unset;
-            box-sizing: border-box;
-            text-align: center;
-            padding: 0;
-            border-left: solid 2px #f0f0f0;
-          }
-
-          .reset {
-            font-size: 1.5vw;
-            letter-spacing: -0.0625vw;
-          }
-
-          td:first-child {
-            border-left: none;
-          }
+        .send-file-list-title {
+          font-size: 1.25vw;
+          letter-spacing: -0.0625vw;
+          font-weight: bold;
+          margin-bottom: 0.78125vw !important;
         }
 
-        tr:first-child {
-          border-top: none;
+        .notice-file {
+          display: flex;
+          gap: 0.78125vw;
+
+          .file-info {
+            flex: 1;
+            font-size: 1.09375vw;
+            border: none;
+            border-radius: 5px;
+          }
+        }
+      }
+
+      .wrap-phone-number {
+        padding: 2.34375vw 2.34375vw 1.5625vw !important;
+        border-left: solid 0.078125vw #ccc;
+        box-sizing: border-box;
+
+        .phone-number {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          font-size: 2.96875vw;
+          font-weight: bold;
+          letter-spacing: -0.1484375vw;
+          color: #000;
+          width: 25.625vw;
+          height: 5.11718750vw;
+          box-sizing: border-box;
+          padding-bottom: 0.7421875vw !important;
+          border-bottom: 0.078125vw solid #000;
+        }
+
+        .wrap-input-phone-number {
+          margin-top: 1.484375vw !important;
+          display: flex;
+          justify-content: center;
+
+          .input-phone-number {
+            color: #000;
+            border-collapse: collapse;
+            box-sizing: border-box;
+            margin-top: 0.78125vw !important;
+
+            tr {
+              box-sizing: border-box;
+              border-top: solid 0.078125vw #ccc;
+
+              td {
+                width: 8.4375vw;
+                height: 5vw;
+                font-size: 2.5vw;
+                letter-spacing: -0.0546875vw;
+                background-color: unset;
+                box-sizing: border-box;
+                text-align: center;
+                padding: 0;
+                border-left: solid 0.078125vw #ccc;
+              }
+
+              .reset {
+                font-size: 1.875vw;
+              }
+
+              td:first-child {
+                border-left: none;
+              }
+            }
+
+            tr:first-child {
+              border-top: none;
+            }
+          }
         }
       }
     }
@@ -193,23 +241,26 @@ export default {
       justify-content: center;
       align-items: center;
       gap: 1.5vw;
-      margin-top: 1.25vw !important;
+      padding: 1.5625vw 0 !important;
 
       > button {
-        width: 8vw;
-        height: 2.96875vw;
-        font-size: 1.25vw;
+        width: 14.0625vw;
+        height: 4.53125vw;
+        font-size: 2.03125vw;
         font-weight: bold;
-        color: #fff;
-        letter-spacing: -0.7px;
-        cursor: pointer;
-        background-color: #2f2f39;
+        letter-spacing: -0.1015625vw;
         border: none;
-        border-radius: 5px;
+        border-radius: 1.015625vw;
+      }
+
+      .cancel {
+        background-color: #e5e5e5;;
+        color: #666;
       }
 
       .submit {
-        background-color: #aaa;
+        background-color: #000;
+        color: #fff;
       }
     }
   }

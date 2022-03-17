@@ -4,10 +4,10 @@
       @touchstart="popupTouchStart"
       @touchend="popupTouchEnd"
     )
-      p.notice-popup-list-title 공지
       .wrap-notice-popup-title
         .notice-popup-title
-          p.notice-no(v-if="getNoticePopupTopFix") 공지
+          .wrap-notice-no(v-if="getNoticePopupTopFix")
+            p.notice-no 공지
           p.notice-type [{{getNoticePopupCategory}}]
           p.notice-title {{getNoticePopupTitle}}
           p.is-notice-new(v-if="getNoticePopupNewStatus")
@@ -16,17 +16,17 @@
           p.notice-write-date {{getNoticePopupCreateDate}}
       .wrap-notice-popup-info
         .notice-popup-info(v-html="getNoticePopupDesc")
-        .wrap-notice-popup-page(v-if="!noticeEmergency")
-          p(
-            v-for="page in getNoticePopupQuantity"
-            :key="`popup-page-key-${page}`"
-            :class="getNoticePopupPageStyle(page)"
-          )
+      .wrap-notice-popup-page(v-if="!noticeEmergency")
+        p(
+          v-for="page in getNoticePopupQuantity"
+          :key="`popup-page-key-${page}`"
+          :class="getNoticePopupPageStyle(page)"
+        )
       .wrap-notice-popup-button-list
         button.one-day-no-button(
           @click="oneDayNoPopup"
           v-if="!noticeEmergency"
-        ) 하루 동안 보지 않기
+        ) 오늘 하루 보지 않기
         button.close-button(@click="closePopup") 닫기
 </template>
 
@@ -138,24 +138,12 @@ export default {
     display: flex;
     flex-direction: column;
 
-    .notice-popup-list-title {
-      display: flex;
-      align-items: center;
-      padding: 1.25vw 1.5625vw !important;
-      font-family: "Spoqa Han Sans Neo", "sans-serif";
-      font-size: 1.953125vw;
-      font-weight: bold;
-      background-color: #aaa;
-      border-radius: 1.5625vw 1.5625vw 0 0;
-    }
-
     .wrap-notice-popup-title {
-      padding: 1.25vw 1.5625vw !important;
+      padding: 2.34375vw 2.34375vw 1.5625vw !important;
       display: flex;
       flex-direction: column;
-      gap: 0.390625vw;
-      border-bottom: solid 0.078125vw #ddd;
-      overflow-y: auto;
+      gap: 0.78125vw;
+      border-bottom: solid 0.078125vw #fc0000;
 
       .notice-popup-title {
         display: flex;
@@ -164,21 +152,27 @@ export default {
 
         > p {
           font-family: 'Spoqa Han Sans Neo', 'sans-serif';
-          font-size: 1.953125vw;
+          font-size: 1.875vw;
           font-weight: bold;
         }
 
-        .notice-no {
-          font-size: 1.5625vw;
-          background-color: #fc0000;
-          border-radius: 0.234375vw;
-          color: #fff;
-          padding: 0.390625vw 0.9375vw !important;
-          box-sizing: border-box;
-        }
-
-        .notice-type {
-          color: #666;
+        .wrap-notice-no {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          .notice-no {
+            width: 3.75vw;
+            height: 1.875vw;
+            font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+            background-color: #fc0000;
+            border-radius: 0.9375vw;
+            font-size: 1.09375vw;
+            letter-spacing: -0.02734375vw;
+            color: #fff !important;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          }
         }
       }
 
@@ -186,8 +180,10 @@ export default {
         display: flex;
         align-items: center;
         gap: 0.78125vw;
-        font-size: 1.5625vw;
-        color: #999;
+        font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+        font-size: 1.25vw;
+        color: #666;
+        box-sizing: border-box;
       }
     }
 
@@ -204,60 +200,56 @@ export default {
         box-sizing: border-box;
         flex: 1;
       }
+    }
 
-      .wrap-notice-popup-page {
-        padding: 1.25vw 1.5625vw !important;
-        border-bottom: solid 0.078125vw #ddd;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 0.390625vw;
+    .wrap-notice-popup-page {
+      padding: 1.171875vw 0 !important;
+      border-bottom: solid 0.078125vw #ddd;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.390625vw;
 
-        .notice-popup-page {
-          width: 0.78125vw;
-          height: 0.78125vw;
-          border-radius: 0.78125vw;
-          background-color: #ccc;
-        }
+      .notice-popup-page {
+        width: 0.78125vw;
+        height: 0.78125vw;
+        border-radius: 0.78125vw;
+        background-color: #ccc;
+      }
 
-        .notice-popup-current-page {
-          background-color: #000;
-        }
+      .notice-popup-current-page {
+        background-color: #000;
       }
     }
 
     .wrap-notice-popup-button-list {
-      padding: 1.25vw 1.5625vw !important;
+      padding: 1.5625vw !important;
       box-sizing: border-box;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 4vw;
+      gap: 1.5625vw;
 
       > button {
+        font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+        width: 18.4375vw;
         height: 4.53125vw;
-        border: none;
         padding: 0 1.5625vw !important;
+        font-size: 2.03125vw;
+        letter-spacing: -0.1015625vw;
+        border-radius: 1.015625vw;
+        border: none;
+        box-sizing: border-box;
       }
 
       .one-day-no-button {
-        background-color: #ccc;
-        font-family: 'Spoqa Han Sans Neo', 'sans-serif';
-        font-weight: bold;
-        font-size: 2.03125vw;
-        color: #fff;
-        letter-spacing: -0.05078125vw;
-        border: none;
-        border-radius: 1.015625vw;
+        color: #666;
+        background-color: #e5e5e5;
       }
 
       .close-button {
-        border-radius: 1.015625vw;
-        background-color: #404144;
-        font-family: 'Spoqa Han Sans Neo', 'sans-serif';
-        font-size: 2.03125vw;
-        font-weight: bold;
         color: #fff;
+        background-color: #12151d;
       }
     }
   }

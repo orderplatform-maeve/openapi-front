@@ -222,7 +222,6 @@ export default {
     watchPayment() {
       window.addEventListener('message', async (event) => {
         try {
-          console.log(event, 'ㅁㄴㅇㅁㄴㅇ');
           const msg = event?.data;
           const methodName = msg?.methodName;
           if (methodName === 'callBackPayment') {
