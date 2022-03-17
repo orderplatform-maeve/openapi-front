@@ -8,6 +8,7 @@ const ROBOT_TEXT = 'http://52.78.117.91:8888/v2/order';
 // const NOTICE_URL = 'http://dev-apigw.torder.co.kr/v2';
 
 // const SERVER_URL = isDemo ? DEMO_URL : REST_URL;
+const TORDER_V2 = STOP_REDIRECT ? 'https://dev-apigw.torder.co.kr/v2' : 'https://apigw.torder.co.kr/v2';
 const TABLE_GAME_URL = STOP_REDIRECT ? 'http://dev-apigw.torder.co.kr' : 'http://apigw.torder.co.kr';
 
 const endpoints = {
@@ -19,6 +20,7 @@ const endpoints = {
     commitOrderViewData: `${REST_URL}/logs/commit_orderView_data`,
     order: `${REST_URL}/shop/order`,
     controlLastOrder: `${REST_URL}/message/_Post_message`,
+    orderReceive: `${TORDER_V2}/receive/order/confirm`,
   },
   device: {
     shopOpen: `${REST_URL}/store/shop_open`,
