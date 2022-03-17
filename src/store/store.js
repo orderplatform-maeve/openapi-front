@@ -540,7 +540,7 @@ const order = {
         const orders = response.data.reduce((list, item) => {
           const data = JSON.parse(item.json_data);
 
-          if (!state.orderKeys.has(data.order_view_key)) {
+          if (!keys.has(data.order_view_key)) {
             keys.set(data.order_view_key, true);
             list.push(data);
           }

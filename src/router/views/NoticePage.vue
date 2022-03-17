@@ -322,7 +322,6 @@ export default {
       return data?.noticeId;
     },
     getNoticeStyle(data) {
-      console.log(data.noticeCheckStatus, 'ㅁㄴㅇㅁㄴㅇㅁㄴㅇ');
       return {
         'notice-info': true,
         'read-notice': data?.noticeCheckStatus === 0,
