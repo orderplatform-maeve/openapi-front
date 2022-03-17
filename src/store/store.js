@@ -11,6 +11,9 @@ import {
 } from './store.helper';
 import { isEmpty } from '@utils/CheckedType';
 import endpoints from '@apis/endpoints';
+import {
+  postOrderConfirm
+} from '@apis/orders';
 
 import {
   robot,
@@ -37,13 +40,15 @@ const socket = {
     SOCKET_orderlog(state, order) {
       if (validShopCode(state, order)) {
         if (router.currentRoute.name !== 'paymentManagement') {
-          if (window?.UUID?.playOrderBell) {
-            if (order.creditType !== "cash") {
-              window.UUID.playOrderBell();
+          if (!state.orderKeys.has(order.order_view_key)) {
+            if (window?.UUID?.playOrderBell) {
+              if (order.creditType !== "cash") {
+                window.UUID.playOrderBell();
+              }
             }
+            state.orderKeys.set(order.order_view_key, true);
+            Vue.set(state, 'order', order);
           }
-
-          Vue.set(state, 'order', order);
         }
       }
     },
@@ -52,21 +57,34 @@ const socket = {
     SOCKET_orderlog({ commit , state }, order) {
       //console.log('SOCKET_orderlog', order);
       if (validShopCode(state, order)) {
-        console.log('주문 커먼-order', order);
-        console.log('주문 커먼-state', state);
-        console.log('주문커먼-commit', commit);
+        // console.log('주문 커먼-order', order);
+        // console.log('주문 커먼-state', state);
+        // console.log('주문커먼-commit', commit);
         console.log(order, '확인 오더로그');
-        if (window?.UUID?.playOrderBell) {
-          window.UUID.playOrderBell();
+        const receiptHandle = order?.receipt_handle;
+
+        if (receiptHandle) {
+          const config = {
+            'storeCode': order?.shop_code,
+            'tabletId': order?.T_order_order_tablet_number,
+            'orderKey': order?.order_view_key,
+            receiptHandle,
+          };
+          postOrderConfirm(config);
         }
-        if (order.viewType == 5) {
-          state.auction = true;
+
+        if (!state.orderKeys.has(order.order_view_key)) {
+          if (window?.UUID?.playOrderBell) {
+            window.UUID.playOrderBell();
+          }
+          if (order.viewType == 5) {
+            state.auction = true;
+          }
+          commit('PUSH_ORDER', order);
         }
-        commit('PUSH_ORDER', order);
       }
     },
     async SOCKET_orderview({ commit, state, dispatch }, payload) {
-      console.log(payload, '확인 오더뷰');
       //console.log('out SOCKET_orderview', payload);
 
       if (payload?.type_msg === 'commit') {
@@ -450,7 +468,6 @@ const order = {
 
     },
     UPDATE_ORDERS: (state, order) => {
-      console.log(order, '업데이트 오더즈');
       const { orders } = state;
       const idx = orders.findIndex((item) => item.order_view_key === order.order_view_key);
 
@@ -481,7 +498,13 @@ const order = {
     },
     auctionFlag(state, payload) {
       state.auction = payload;
-    }
+    },
+    pushOrderKey(state, payload) {
+      state.orderKeys.set(payload, true);
+    },
+    updateOrderKeys(state, payload) {
+      state.orderKeys = payload;
+    },
   },
   actions: {
     async commitOrder(context, payload) {
@@ -508,18 +531,24 @@ const order = {
       if (response.status === 200) {
         // const orders = [];
 
-        console.log(response.data, 'res. data', '김동주 - 여기서 검증하는 key, value 데이터 다시 만들면 됨');
-
         // for (let item of response.data) {
         //   // api 서버에서 가공해서 주는 요청으로 변경 할 필요 있음
         //   orders.push(JSON.parse(item.json_data));
         //   console.log(item, '아이템 확인');
         // }
+        const keys = new Map();
+        const orders = response.data.reduce((list, item) => {
+          const data = JSON.parse(item.json_data);
 
-        const orders = response.data.map((item) => {
-          return JSON.parse(item.json_data);
-        });
+          if (!state.orderKeys.has(data.order_view_key)) {
+            keys.set(data.order_view_key, true);
+            list.push(data);
+          }
 
+          return list;
+        }, []);
+
+        commit('updateOrderKeys', keys);
         commit('SET_ORDERS', orders);
       }
 
@@ -816,7 +845,9 @@ const menu = {
     SET_GOODS: (state, goods) => Vue.set(state, 'goods', goods),
     SET_ALL_CATEGORIES: (state, categories) => Vue.set(state, 'allCategories', categories),
     SET_MENU_USE: (state, targetCategory) => {
-      state.allCategories[targetCategory.index].T_order_store_menu_use = targetCategory?.T_order_store_menu_use;
+      if (state.allCategories[targetCategory.index]) {
+        state.allCategories[targetCategory.index].T_order_store_menu_use = targetCategory?.T_order_store_menu_use;
+      }
     },
     SET_MENU_CONFIG: (state, config) => Vue.set(state, 'menuConfig', config),
   },
@@ -1327,6 +1358,7 @@ const state = {
   },
   alertModalMessage: '에레 메세지 입력하세요 기본값 입니다.',
   isAlertModal: false,
+  orderKeys: new Map(),
 };
 
 const mutations = {
