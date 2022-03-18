@@ -5,7 +5,7 @@ import { STOP_REDIRECT } from '@utils/constants';
 // const DEV_SOCKET_URL = 'localhost:3003';
 // const DEV_SOCKET_URL = 'http://dev-socket-v2.torder.co.kr';
 const PROD_SOCKET_URL = 'http://1.socketio.torder.co.kr';
-const DEV_SOCKET_URL = 'prd-alb-master-socketio-1928731950.ap-northeast-2.elb.amazonaws.com';
+const DEV_SOCKET_URL = 'http://master.socketio.torder.co.kr/';
 
 // const SOCKET_URL = 'http://1.socketio.orderview.torder.co.kr';
 // export const SOCKET_URL = isDemo ? DEV_SOCKET_URL : PROD_SOCKET_URL;
