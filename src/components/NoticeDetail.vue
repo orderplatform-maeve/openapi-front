@@ -24,7 +24,7 @@
               p.file-info {{getFileName(file)}} ({{getFileSize(file)}}MB)
         .wrap-file-send-button(v-if="getFileQuantity")
           button.select-send(
-            @click="sendCheckFileModal"
+            @click="realSendFilePart"
           ) 선택 전송
           button.all-send(
             @click="sendAllFileModal"
@@ -87,7 +87,7 @@ export default {
       type: Function,
       required: true,
     },
-    sendCheckFileModal: {
+    realSendFilePart: {
       type: Function,
       required: true,
     },

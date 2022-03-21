@@ -13,7 +13,7 @@
       :phoneNumber="phoneNumber"
       :updatePhoneNumber="updatePhoneNumber"
       :cancelSendFile="cancelSendFile"
-      :sendFile="sendFile"
+      :openSendFileCheckModal="openSendFileCheckModal"
     )
     send-file-result-modal(
       v-if="fileResultModalVisible"
@@ -21,6 +21,13 @@
       :fileResultModalCountClose="fileResultModalCountClose"
       :phoneNumber="phoneNumber"
       :startSendFileResultInterval="startSendFileResultInterval"
+    )
+    send-file-check-modal(
+      v-if="sendFileCheckModalVisible"
+      :fileList="sendFileList"
+      :phoneNumber="phoneNumber"
+      :cancelSendFile="closeSendFileCheckModal"
+      :sendFile="sendFile"
     )
     .orders-container
       p.store-name {{storeName}}{{version}}
@@ -93,7 +100,7 @@
         :goNoticeList="goNoticeList"
         :fileCheckboxList="fileCheckboxList"
         :updateFileCheckbox="updateFileCheckbox"
-        :sendCheckFileModal="sendCheckFileModal"
+        :realSendFilePart="realSendFilePart"
         :sendAllFileModal="sendAllFileModal"
       )
 </template>
@@ -109,7 +116,8 @@ import {
   NoticeDetail,
   NoticeSearchTypeModal,
   SendFileModal,
-  SendFileResultModal
+  SendFileResultModal,
+  SendFileCheckModal,
 } from '@components';
 
 import {
@@ -131,6 +139,7 @@ export default {
     NewIcon,
     SendFileModal,
     SendFileResultModal,
+    SendFileCheckModal,
   },
   data () {
     return {
@@ -172,6 +181,7 @@ export default {
       fileResultModalVisible: false,
       fileResultModalCount: 5,
       fileResultModalInterval: -1,
+      sendFileCheckModalVisible: false,
     };
   },
   computed: {
@@ -312,7 +322,6 @@ export default {
       return data?.noticeId;
     },
     getNoticeStyle(data) {
-      console.log(data.noticeCheckStatus, 'ㅁㄴㅇㅁㄴㅇㅁㄴㅇ');
       return {
         'notice-info': true,
         'read-notice': data?.noticeCheckStatus === 0,
@@ -492,14 +501,9 @@ export default {
     updateFileCheckbox(data) {
       this.fileCheckboxList = data;
     },
-    sendCheckFileModal() {
+    realSendFilePart() {
       if (this.fileCheckboxList.length > 0) {
-        const fileList = [];
-        this.fileCheckboxList.forEach((index) => {
-          fileList.push(this.noticeDetailData.noticeFileList[index]);
-        });
-
-        this.sendFileList = fileList;
+        this.sendFileList = this.fileCheckboxList.map((index) => this.noticeDetailData.noticeFileList[index]);
         this.sendFileModalVisible = true;
       } else {
         this.$store.commit('pushFlashMessage', '선택한 파일이 없습니다.');
@@ -554,6 +558,7 @@ export default {
         const res = await postNoticeMessage(data);
         if (res.status === 200) {
           this.cancelSendFile();
+          this.closeSendFileCheckModal();
           this.openSendFileResultModal();
         }
       } catch(error) {
@@ -562,6 +567,14 @@ export default {
     },
     cancelSendFile() {
       this.sendFileModalVisible = false;
+    },
+    openSendFileCheckModal() {
+      this.cancelSendFile();
+      this.sendFileCheckModalVisible = true;
+    },
+    closeSendFileCheckModal() {
+      this.cancelSendFile();
+      this.sendFileCheckModalVisible = false;
     },
     openNoticeTypeModal() {
       this.isNoticeTypeModalVisible = true;
