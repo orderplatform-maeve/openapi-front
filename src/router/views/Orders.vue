@@ -1,7 +1,8 @@
 <template lang="pug">
   .wrap-orders-container
     auction-modal(v-if="order && auction")
-    modal-order(v-if="order && !auction")
+    //- 게임 결과도 order-modal에 포함
+    modal-order(v-else-if="order && !auction")
     .orders-container
       order-cash-out-standing-modal(
         v-if="getCashOutPopVisble()"
@@ -82,7 +83,9 @@ import utils from '@utils/orders.utils';
 import { won } from '@utils/regularExpressions';
 import { payments } from '@apis';
 import { version } from '@utils/constants';
-import AuctionModal from '@components/AuctionModal.vue';
+import {
+  AuctionModal,
+} from '@components';
 import { checkBoxActive, checkBoxDisable  } from '@svg';
 
 const {
@@ -101,7 +104,7 @@ export default {
   components: {
     AuctionModal,
     checkBoxActive,
-    checkBoxDisable
+    checkBoxDisable,
   },
   computed: {
     order() {
@@ -299,6 +302,9 @@ export default {
       if (viewType === 5) {
         return '경매';
       }
+      if (viewType === 6) {
+        return '게임';
+      }
     },
     orderStyleCheck(order) {
       const orderType = this.orderTypeCheck(order);
@@ -312,14 +318,14 @@ export default {
       }
 
       if (orderType === '세팅완료') {
-        return 'orderColorGreen';
+        return 'orderColorOrange';
       }
 
       if (orderType === '평가') {
         return 'orderColorYellow';
       }
-      if (orderType === '경매') {
-        return 'orderColorOrange';
+      if (orderType === '경매' || orderType === '게임') {
+        return 'orderColorGreen';
       }
     },
     paidTypeCheck(order) {

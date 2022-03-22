@@ -3,7 +3,7 @@
   .wrap-order-modal
     .order-modal-header
       .wrap-order-history-text
-        p.order-history-text 주문내역
+        p.order-history-text {{ getByTypeText('title') }}
         p.order-table-name {{checkedTabletNum(order)}}
       .wrap-order-time
         .order-confirm-check
@@ -14,7 +14,7 @@
         p.order-time {{order.order_time}}
     .wrap-order-history-all
       .wrap-current-order-history
-        p.current-order-history-text 현재 주문내역
+        p.current-order-history-text {{ getByTypeText('sub') }}
         .current-order-history-list
           .current-order-history(v-for="product in order.order_info")
             .current-product-info
@@ -28,7 +28,7 @@
                 .wrap-product-option-price
                   p.option-price {{getOptionPrice(option)}}원
                   p.option-quantity {{getOptionGoodQty(option)}}개
-      .wrap-last-order-history(v-if="!order.paidOrder")
+      .wrap-last-order-history(v-if="!order.paidOrder && order.viewType !== 6")
         p.last-order-history-text 이전 주문내역
         .last-order-history-list(v-if="order.paidOrder==false")
           .last-order-history(v-for="c_product in order.total_orders")
@@ -39,14 +39,14 @@
               .last-order-product-option(v-for="option in c_product.option")
                 p.last-option-name {{getBeforeProductOptionDisplayName(option)}}
                 p.last-option-quantity {{getBeforeProductOptionOrderQty(option)}}개
-      .wrap-last-order-history(v-else-if="order.paidOrder")
+      .wrap-last-order-history(v-else-if="order.paidOrder && order.viewType !== 6")
         p.last-order-history-text.credit-history 결제내역
         .last-order-history-list
           .last-order-history(v-for="c_product in order.creditArray")
             .last-product-info
               .last-order-product-name {{ getProductAmount(c_product) }}원
               .last-order-product-quantity.credit-type {{ getProductOrderType(c_product) }}
-      .wrap-last-order-history(v-else-if="getVisibleCancelListArea(order)")
+      .wrap-last-order-history(v-else-if="getVisibleCancelListArea(order) && order.viewType !== 6")
         p.last-order-history-text.credit-history 결제 취소 내역
         .last-order-history-list
           .last-order-history(v-for="c_product in order.cancelArray")
@@ -108,6 +108,23 @@ export default {
     },
   },
   methods: {
+    getByTypeText(type) {
+      if (type === 'title') {
+        if (this.order.viewType === 6) {
+          return '게임내역';
+        } else {
+          return '주문내역';
+        }
+      }
+      if (type === 'sub') {
+        if (this.order.viewType === 6) {
+          return '게임 결과';
+        } else {
+          return '현재주문내역';
+        }
+      }
+
+    },
     getClassType(obj) {
       return Object.prototype.toString.call(obj).slice(8,-1);
     },

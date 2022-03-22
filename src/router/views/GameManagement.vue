@@ -519,12 +519,12 @@ export default {
             display: block;
             background-size: 1.875vw 1.875vw;
             padding-left: 2.734375vw !important;
-            background: url('https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/check_off_icon.svg') no-repeat 0 1px / contain;
+            background: url('https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/check_off_icon.svg') no-repeat 0 0 / contain;
           }
           input[type='checkbox']:checked+label {
             background-size: 1.875vw 1.875vw;
             padding-left: 2.734375vw !important;
-            background: url('https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/check_on_icon.svg') no-repeat 0 1px / contain;
+            background: url('https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/check_on_icon.svg') no-repeat 0 0 / contain;
           }
           .notice-file-check {
             display: none;
