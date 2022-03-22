@@ -388,7 +388,8 @@ export default {
     filterEventActive() {
       this.onlyEvent = true;
       const { orders } = this.$store.state;
-      let eventList = orders.filter( order => order.viewType === 5);
+      // viewType 5: 경매, 6: 게임
+      let eventList = orders.filter( order => order.viewType >= 5);
       this.$store.commit('filterEvent', eventList);
     },
   }
