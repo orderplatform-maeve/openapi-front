@@ -43,7 +43,6 @@ const noticePopup = {
       state.isNoticeEmergency = payload;
     },
     updateNoticeQuantity(state, payload) {
-      console.log(payload,'asdasdasda');
       state.noticeQuantity = payload;
     }
   },
