@@ -116,7 +116,7 @@ export default {
       }
 
       if (this.picker.selected == 'endHour') {
-        if (tmp > 30 || tmp === 24) {
+        if (tmp > 30) {
           tmp = 0;
         }
       } else {
@@ -161,10 +161,6 @@ export default {
       }
 
       if (this.picker.selected == 'endHour') {
-        if (tmp === 24) {
-          tmp = 25;
-        }
-
         if (tmp > 30) {
           tmp = 0;
         }
@@ -212,10 +208,6 @@ export default {
       console.log(tmp);
 
       if (this.picker.selected == 'endHour') {
-        if (tmp === 24) {
-          tmp = 23;
-        }
-
         if (tmp > 30) {
           tmp = 0;
         }

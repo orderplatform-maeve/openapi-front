@@ -142,7 +142,6 @@ export default {
   },
   computed: {
     data() {
-      console.log('카테고리 데이터', this.$store.getters.getAllCategories);
       return this.$store.getters.getAllCategories;
     },
     subCategoryItem() {
@@ -322,8 +321,6 @@ export default {
         target,
       };
 
-      console.log('payload', payload);
-
       return this.$socket.emit('orderview', payload);
     },
     getAbleButtonColor(isOk) {
@@ -358,7 +355,6 @@ export default {
 
     // 노출 상태 요일 '특정 요일' 눌렀을때
     async clickDayOfWeek(day) {
-      console.log('뭔요일', day);
       // 이미 요일로 지정 되어 있으면 삭제
       if (this.data[this.selectMainCategoryNumber].weekArray.includes(day)) {
         const deleteIndex1 = this.data[this.selectMainCategoryNumber].weekArray.findIndex((dayArrayItem) => dayArrayItem === day);
@@ -372,7 +368,6 @@ export default {
           }
         };
 
-        console.log('body에 날릴 데이터', config.body);
         const res = await postCategoryUpdateCategoryScheduleDateArray(config);
         if (res.data.result === true) {
           console.log('노출 요일 선택(삭제)' , res);
@@ -394,7 +389,6 @@ export default {
         }
       };
 
-      console.log('body에 날릴 데이터(추가)', config.body);
       const res = await postCategoryUpdateCategoryScheduleDateArray(config);
       if (res.data.result === true) {
         console.log('노출 요일 선택(추가)' , res);
@@ -409,6 +403,7 @@ export default {
     async clickAllDayOfWeek() {
       let dateArray2 = [0, 1, 2, 3, 4, 5, 6];
 
+      // 모두 선택 되어 있을 경우 배열을 비운다.
       if (this.dayOfWeekAllStyle()) {
         dateArray2 = [];
       }
@@ -421,7 +416,6 @@ export default {
         }
       };
 
-      console.log('body에 날릴 데이터(매일)', config.body);
       const res = await postCategoryUpdateCategoryScheduleDateArray(config);
 
       if (res.data.result === true) {
@@ -471,9 +465,7 @@ export default {
     },
 
     // 모달 창 안에서 시간 설정 하기
-    selectDateModalSubmit(time) {
-      console.log('213123', time);
-
+    selectDateModalSubmit() {
       // 시작 시간과 종료시간이 같을때
       if (this.cloneDate.startHour === this.cloneDate.endHour) {
         if (this.cloneDate.startMinute === this.cloneDate.endMinute) {
@@ -537,8 +529,6 @@ export default {
           good_categroty_code : this.data[this.selectMainCategoryNumber]?.code,
         }
       };
-      console.log(config);
-
 
       const res = await postCategoryUpdateCategoryScheduleOn(config);
       if (res.data.result === true) {
@@ -551,19 +541,15 @@ export default {
 
     // 노출 상태 -> 제한 노출로 변경
     async postCategoryUpdateCategoryScheduleOffApi() {
-      // 밑에 변수는 API 고친 뒤 삭제 해야함@@
-
       const config = {
         body : {
           store_code : this.$store.state.auth.store.store_code,
           good_categroty_code : this.data[this.selectMainCategoryNumber]?.code,
         }
       };
-      console.log(config);
 
       const res = await postCategoryUpdateCategoryScheduleOff(config);
 
-      console.log('결과', res);
       if (res.data.result === true) {
         console.log(res);
         this.data[this.selectMainCategoryNumber].scheduleOn = false;
@@ -597,12 +583,11 @@ export default {
           good_categroty_code : this.data[this.selectMainCategoryNumber]?.code,
         }
       };
-      console.log('body에 날릴 데이터', config.body);
+
       const res = await postCategoryUpdateCategoryHide(config);
 
       if (res.data.result === true) {
         this.$store.commit('pushFlashMessage', '노출시간 이후 표시 여부가 분류 숨김으로 변경 되었습니다.');
-        console.log('분류 숨김으로 변경' , res);
         console.log('isHide', this.data[this.selectMainCategoryNumber].isHide);
         this.initialize();
       }
@@ -620,7 +605,6 @@ export default {
       const res = await postCategoryUpdateCategoryShow(config);
       if (res.data.result === true) {
         this.$store.commit('pushFlashMessage', '노출시간 이후 표시 여부가 분류 표시로 변경 되었습니다.');
-        console.log('분류 표시로 변경' , res);
         console.log('isHide', this.data[this.selectMainCategoryNumber].isHide);
         this.initialize();
       }
