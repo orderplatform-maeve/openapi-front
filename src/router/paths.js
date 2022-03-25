@@ -21,4 +21,7 @@ export default {
   auctionManager: '/auctionManager',
   notice: '/notice',
   gameManagement: '/gameManagement',
+  valetTableList: '/valetTableList',
+  valetPage: '/valetPage',
+  valetParkingConfirm: '/valetParkingConfirm',
 };

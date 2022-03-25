@@ -19,3 +19,6 @@ export { default as ServingRobotManagement } from './ServingRobotManagement';
 export { default as AuctionManager } from './AuctionManager';
 export { default as NoticePage } from './NoticePage';
 export { default as GameManagement } from './GameManagement';
+export { default as ValetTableList } from './ValetTableList';
+export { default as ValetPage } from './ValetPage';
+export { default as ValetParkingConfirm } from './ValetParkingConfirm';

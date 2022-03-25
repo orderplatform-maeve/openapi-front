@@ -14,3 +14,7 @@ export { default as NumberDeleteButton } from './NumberDeleteButton';
 export { default as checkBoxActive } from './checkBoxActive';
 export { default as checkBoxDisable } from './checkBoxDisable';
 export { default as NewIcon } from './NewIcon';
+export { default as ValetCloseButton } from './valetCloseButton';
+export { default as CloseText } from './closeText';
+export { default as TorderLogoV2 } from './torderLogoV2';
+
