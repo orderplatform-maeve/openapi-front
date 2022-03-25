@@ -1,8 +1,7 @@
 <template lang="pug">
   .wrap-orders-container
-    auction-modal(v-if="order && auction")
-    //- 게임 결과도 order-modal에 포함
-    modal-order(v-else-if="order && !auction")
+    //- auction-modal(v-if="order && auction")
+    //- modal-order(v-if="order && !auction")
     .orders-container
       order-cash-out-standing-modal(
         v-if="getCashOutPopVisble()"
