@@ -82,7 +82,9 @@ import utils from '@utils/orders.utils';
 import { won } from '@utils/regularExpressions';
 import { payments } from '@apis';
 import { version } from '@utils/constants';
-import AuctionModal from '@components/AuctionModal.vue';
+import {
+  AuctionModal,
+} from '@components';
 import { checkBoxActive, checkBoxDisable  } from '@svg';
 
 const {
@@ -101,7 +103,7 @@ export default {
   components: {
     AuctionModal,
     checkBoxActive,
-    checkBoxDisable
+    checkBoxDisable,
   },
   computed: {
     order() {
@@ -299,6 +301,9 @@ export default {
       if (viewType === 5) {
         return '경매';
       }
+      if (viewType === 6) {
+        return '게임';
+      }
     },
     orderStyleCheck(order) {
       const orderType = this.orderTypeCheck(order);
@@ -312,14 +317,14 @@ export default {
       }
 
       if (orderType === '세팅완료') {
-        return 'orderColorGreen';
+        return 'orderColorOrange';
       }
 
       if (orderType === '평가') {
         return 'orderColorYellow';
       }
-      if (orderType === '경매') {
-        return 'orderColorOrange';
+      if (orderType === '경매' || orderType === '게임') {
+        return 'orderColorGreen';
       }
     },
     paidTypeCheck(order) {
@@ -382,7 +387,8 @@ export default {
     filterEventActive() {
       this.onlyEvent = true;
       const { orders } = this.$store.state;
-      let eventList = orders.filter( order => order.viewType === 5);
+      // viewType 5: 경매, 6: 게임
+      let eventList = orders.filter( order => order.viewType >= 5);
       this.$store.commit('filterEvent', eventList);
     },
   }
