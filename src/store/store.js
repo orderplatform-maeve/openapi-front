@@ -18,6 +18,7 @@ import {
 import {
   robot,
   noticePopup,
+  valet,
 } from './modules';
 
 Vue.use(Vuex);
@@ -55,12 +56,11 @@ const socket = {
   },
   actions: {
     SOCKET_orderlog({ commit , state }, order) {
-      //console.log('SOCKET_orderlog', order);
+      // console.log('SOCKET_orderlog', order);
       if (validShopCode(state, order)) {
         // console.log('주문 커먼-order', order);
         // console.log('주문 커먼-state', state);
         // console.log('주문커먼-commit', commit);
-        console.log(order, '확인 오더로그');
         const receiptHandle = order?.receipt_handle;
 
         if (receiptHandle) {
@@ -77,8 +77,10 @@ const socket = {
           if (window?.UUID?.playOrderBell) {
             window.UUID.playOrderBell();
           }
-          if (order.viewType == 5) {
+          if (order.viewType === 5) {
             state.auction = true;
+          } else {
+            state.auction = false;
           }
           commit('PUSH_ORDER', order);
         }
@@ -326,6 +328,23 @@ const socket = {
           this.commit('robot/updateRobotStatus', config);
         } catch(error) {
           console.log(error);
+        }
+      }
+
+      if (
+        state.auth.store.store_code === payload?.store?.code &&
+        payload?.type === "valetParking"
+      ) {
+        if (window?.UUID?.playOrderBell) {
+          window.UUID.playOrderBell();
+        }
+
+        commit('valet/updateCarNumber', payload?.info?.carNumber);
+
+        if (router?.history?.current?.path !== "/valetParkingConfirm") {
+          router.push({
+            name: 'valetParkingConfirm',
+          });
         }
       }
     },
@@ -1309,7 +1328,6 @@ const payment = {
 
       const url = endpoints.payment.creditList;
       const res = await axios.get(url, {params});
-      console.log(res.data ,'dasdasdasd');
 
       context.commit('updatePaymentList', res.data);
     }
@@ -1395,6 +1413,7 @@ const getters = {
 const modules ={
   robot,
   noticePopup,
+  valet,
 };
 
 const plugins = [];

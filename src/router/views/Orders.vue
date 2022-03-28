@@ -1,8 +1,8 @@
 <template lang="pug">
   .wrap-orders-container
-    auction-modal(v-if="order && auction")
-    //- 게임 결과도 order-modal에 포함
-    modal-order(v-else-if="order && !auction")
+    //- 주문보기 내에서만 보여야하는게 아닌, 발레파킹 페이지에서도 보여져야해서 수정되었음. (Layout.vue)
+    //- auction-modal(v-if="order && auction")
+    //- modal-order(v-if="order && !auction")
     .orders-container
       order-cash-out-standing-modal(
         v-if="getCashOutPopVisble()"
@@ -83,9 +83,6 @@ import utils from '@utils/orders.utils';
 import { won } from '@utils/regularExpressions';
 import { payments } from '@apis';
 import { version } from '@utils/constants';
-import {
-  AuctionModal,
-} from '@components';
 import { checkBoxActive, checkBoxDisable  } from '@svg';
 
 const {
@@ -102,7 +99,6 @@ export default {
     };
   },
   components: {
-    AuctionModal,
     checkBoxActive,
     checkBoxDisable,
   },
