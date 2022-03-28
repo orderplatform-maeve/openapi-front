@@ -15,6 +15,7 @@ import { socketConfig } from '@config';
 import {
   ConfirmModal,
   OrderModal,
+  AuctionModal,
   TableOrdersModal,
   MenuModal,
   ProductOptionModal,
@@ -76,6 +77,7 @@ Vue.filter('moment', function (value, format) {
 });
 
 Vue.component('modal-order', OrderModal);
+Vue.component('auction-modal', AuctionModal);
 Vue.component('modal-confirm', ConfirmModal);
 Vue.component('modal-table-orders', TableOrdersModal);
 Vue.component('modal-menu', MenuModal);
