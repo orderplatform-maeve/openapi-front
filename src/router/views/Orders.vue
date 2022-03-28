@@ -1,7 +1,7 @@
 <template lang="pug">
   .wrap-orders-container
-    //- auction-modal(v-if="order && auction")
-    //- modal-order(v-if="order && !auction")
+    auction-modal(v-if="order && auction")
+    modal-order(v-if="order && !auction")
     .orders-container
       order-cash-out-standing-modal(
         v-if="getCashOutPopVisble()"
@@ -82,9 +82,6 @@ import utils from '@utils/orders.utils';
 import { won } from '@utils/regularExpressions';
 import { payments } from '@apis';
 import { version } from '@utils/constants';
-import {
-  AuctionModal,
-} from '@components';
 import { checkBoxActive, checkBoxDisable  } from '@svg';
 
 const {
@@ -101,7 +98,6 @@ export default {
     };
   },
   components: {
-    AuctionModal,
     checkBoxActive,
     checkBoxDisable,
   },
