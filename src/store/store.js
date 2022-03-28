@@ -56,7 +56,7 @@ const socket = {
   },
   actions: {
     SOCKET_orderlog({ commit , state }, order) {
-      //console.log('SOCKET_orderlog', order);
+      // console.log('SOCKET_orderlog', order);
       if (validShopCode(state, order)) {
         // console.log('주문 커먼-order', order);
         // console.log('주문 커먼-state', state);
@@ -77,8 +77,10 @@ const socket = {
           if (window?.UUID?.playOrderBell) {
             window.UUID.playOrderBell();
           }
-          if (order.viewType == 5) {
+          if (order.viewType === 5) {
             state.auction = true;
+          } else {
+            state.auction = false;
           }
           commit('PUSH_ORDER', order);
         }
