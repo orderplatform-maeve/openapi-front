@@ -37,7 +37,7 @@ export default {
   top: 0;
   width: 100vw;
   height: 100vh;
-  font-family: 'Spoqa Han Sans Neo', 'sans-serif'; 
+  font-family: 'Spoqa Han Sans Neo', 'sans-serif';
   display: flex;
   justify-content: center;
   align-items: center;

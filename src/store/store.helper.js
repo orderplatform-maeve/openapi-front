@@ -35,7 +35,13 @@ export const getCategories = (categories) => {
       startTime: item.T_order_store_menu_starttime,
       endTime: item.T_order_store_menu_endtime,
       serviceUse: item.T_order_store_menu_serviceUse,
-      useCategory: item?.T_order_store_menu_use === 'Y',
+      useCategory: item.T_order_store_menu_use === 'Y',
+      // 노출 상태
+      categoryVisibleStartTime : item.startTime,
+      categoryVisibleEndTime : item.endTime,
+      isHide : item.isHide,
+      scheduleOn : item.scheduleOn,
+      weekArray : item.weekArray
     }));
 
     const firstCategories = processCategories.filter((category) => {

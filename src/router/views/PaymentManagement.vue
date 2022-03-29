@@ -294,6 +294,9 @@ export default {
       items: [],
       selectStartDate: undefined,
       selectEndDate: undefined,
+      // 이중 클릭 방지
+      reRequest : false,
+      timer : 0,
     };
   },
   computed: {
@@ -485,6 +488,23 @@ export default {
     },
     async cardCancelCommit(item) {
       try {
+        // 이중 클릭 방지
+        if (this.reRequest) {
+          console.log('이중 클릭 방지');
+          return;
+        }
+
+        if (this.timer) {
+          clearTimeout(this.timer);
+        }
+
+        this.timer = setTimeout(() => {
+          this.reRequest = false;
+          return;
+        }, 5000);
+
+        this.reRequest = true;
+
         console.log('cardCancelCommit', item);
 
         const paymentPayload = {
