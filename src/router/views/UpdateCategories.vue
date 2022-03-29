@@ -83,9 +83,9 @@
           @click="postCategoryUpdateCategoryHideApi()"
           :style="getAbleButtonColor(!getHide())"
         ) 분류숨김
-    pre.description *분류표시: 설정된 시간 이후 대분류가 제일 하단으로 이동하며 메뉴 선택시 주문 불가 팝업이 뜸
-      br
-      | *분류숨김: 설정된 시간 이후 분류가 숨겨짐
+      pre.description *분류표시: 설정된 시간 이후 대분류가 제일 하단으로 이동하며 메뉴 선택시 주문 불가 팝업이 뜸
+        br
+        | *분류숨김: 설정된 시간 이후 분류가 숨겨짐
     // 중분류 노출여부
     .wrap-sub-category-status(v-if="getSubCategoryStatus")
       p.sub-category-status-title 중분류 노출여부
@@ -806,7 +806,6 @@ a {
     }
 
     .description {
-      padding-left: 2.34375vw !important;
       box-sizing: border-box;
       font-size: 0.9028vw;
       line-height: 1.0417vw;
