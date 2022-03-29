@@ -21,6 +21,9 @@ import {
   AuctionManager,
   NoticePage,
   GameManagement,
+  ValetTableList,
+  ValetPage,
+  ValetParkingConfirm,
 } from '@views';
 
 import paths from './paths';
@@ -161,6 +164,24 @@ const routes = [{
       component: NoticePage,
       meta: { requiresAuth: true },
     },
+    {
+      path: paths.valetTableList,
+      name: paths.valetTableList.replace('/', ''),
+      component: ValetTableList,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: paths.valetPage,
+      name: paths.valetPage.replace('/', ''),
+      component: ValetPage,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: paths.valetParkingConfirm,
+      name: paths.valetParkingConfirm.replace('/', ''),
+      component: ValetParkingConfirm,
+      meta: { requiresAuth: true },
+    }
   ],
 }];
 

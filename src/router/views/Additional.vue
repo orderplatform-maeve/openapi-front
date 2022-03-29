@@ -28,6 +28,8 @@
       span (테스트)
     router-link.button-added(v-if="useGame" :to="paths.gameManagement") 게임 관리<br>
       span (테스트)
+    router-link.button-added(v-if="visibleOrderButton" :to="paths.valetTableList") 발렛 파킹<br>
+      span (테스트)
 </template>
 
 <script>
@@ -83,6 +85,8 @@ export default {
   font-size: 1.71875vw;
   background-color: #fff;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
 
   .additional-title {
     font-family: "notosans";
@@ -93,9 +97,12 @@ export default {
   }
 
   .wrap-button-added {
+    flex: 1;
     display: grid;
     grid-template-columns: repeat(auto-fill, 19.53125vw);
     gap: 1.09375vw;
+    overflow: auto;
+    padding-bottom: 1.5625vw !important;
 
     .button-added {
         width: 100%;

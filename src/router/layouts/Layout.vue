@@ -1,6 +1,8 @@
 <template lang="pug">
 #orderview
   alert-modal(v-if="isAlertModal")
+  auction-modal(v-if="order && auction")
+  modal-order(v-if="order && !auction")
   modal-all-refresh(
     :show="visibleAllRefreshModal"
     :close="onCloseAllRefreshModal"
@@ -65,6 +67,17 @@ export default {
     };
   },
   computed: {
+    order() {
+      const path = this.$route.path;
+      if (path === '/order' || path === '/valetPage' || path === '/valetParkingConfirm') {
+        return !!this.$store.state.order;
+      }
+
+      return false;
+    },
+    auction() {
+      return this.$store.state.auction;
+    },
     isAlertModal() {
       return this.$store.state.isAlertModal;
     },
@@ -85,9 +98,6 @@ export default {
     },
     uCode() {
       return this.$store.state.uCode;
-    },
-    order() {
-      return !!this.$store.state.order;
     },
     stores() {
       const { stores } = this.$store.state;
