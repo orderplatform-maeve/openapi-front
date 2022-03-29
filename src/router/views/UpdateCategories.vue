@@ -75,13 +75,13 @@
     .wrap-main-category-status(v-if="getScheduleOn() && getUseCategory()")
       p.main-category-status-title 노출시간 이후 표시여부
       .main-category-status-button
-        button.main-category-status-visible(
-          @click="postCategoryUpdateCategoryShowApi()"
-          :style="getAbleButtonColor(getHide())"
-        ) 분류표시
         button.main-category-status-unvisible(
           @click="postCategoryUpdateCategoryHideApi()"
           :style="getAbleButtonColor(!getHide())"
+        ) 분류표시
+        button.main-category-status-visible(
+          @click="postCategoryUpdateCategoryShowApi()"
+          :style="getAbleButtonColor(getHide())"
         ) 분류숨김
       pre.description *분류표시: 설정된 시간 이후 대분류가 제일 하단으로 이동하며 메뉴 선택시 주문 불가 팝업이 뜸
         br
@@ -202,7 +202,7 @@ export default {
       fd.append('store_code', this.$store.state.auth.store.store_code);
       await this.$store.dispatch('setAllCategories', fd);
     },
-    // isHide - 분류 표시(1) / 분류 숨김(0)
+    // isHide - 분류표시(1) / 분류숨김(0)
     getHide() {
       return this.data[this.selectMainCategoryNumber]?.isHide;
     },
@@ -210,7 +210,7 @@ export default {
     getUseCategory() {
       return this.data[this.selectMainCategoryNumber]?.useCategory;
     },
-    // scheduleOn - 항상 노출(1)(0) / 제한 노출(0)(1)
+    // scheduleOn - 항상 노출(0) / 제한 노출(1)
     getScheduleOn() {
       return this.data[this.selectMainCategoryNumber]?.scheduleOn;
     },
@@ -565,7 +565,7 @@ export default {
 
     },
 
-    // 노출시간 이후 표시여부 ->  '분류숨김' 으로 변경
+    // 노출시간 이후 표시여부 ->  '분류표시' 로 변경
     async postCategoryUpdateCategoryHideApi() {
       const config = {
         body : {
@@ -577,13 +577,13 @@ export default {
       const res = await postCategoryUpdateCategoryHide(config);
 
       if (res.data.result === true) {
-        this.$store.commit('pushFlashMessage', '노출시간 이후 표시 여부가 분류 숨김으로 변경 되었습니다.');
+        this.$store.commit('pushFlashMessage', '노출시간 이후 표시 여부가 분류표시로 변경 되었습니다.');
         console.log('isHide', this.data[this.selectMainCategoryNumber].isHide);
         this.initialize();
       }
     },
 
-    // 노출시간 이후 표시여부 ->  '분류표시' 로 변경
+    // 노출시간 이후 표시여부 ->  '분류숨김' 으로 변경
     async postCategoryUpdateCategoryShowApi() {
       const config = {
         body : {
@@ -594,7 +594,7 @@ export default {
 
       const res = await postCategoryUpdateCategoryShow(config);
       if (res.data.result === true) {
-        this.$store.commit('pushFlashMessage', '노출시간 이후 표시 여부가 분류 표시로 변경 되었습니다.');
+        this.$store.commit('pushFlashMessage', '노출시간 이후 표시 여부가 분류숨김으로 변경 되었습니다.');
         console.log('isHide', this.data[this.selectMainCategoryNumber].isHide);
         this.initialize();
       }
