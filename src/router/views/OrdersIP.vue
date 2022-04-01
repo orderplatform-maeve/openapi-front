@@ -15,21 +15,20 @@
       .wrap-order-list
         .electronic-access-list-version
           p.order-title 테이블번호
-          p.order-title 주문시간
+          p.order-title 인원수
           p.order-title 주문내역
           p.order-title 주문IP
           p.order-title 에러메세지
+          p.order-title 주문시간
         .wrap-order-information-lists-electronic
           div(v-for="(order, index) in sortedOrders" :key="`order-index-`+index" :class="getOrderListStyle(order, index)")
             .order-information-list(v-if="visibleOrderItem(order)")
               p.order-information-table-number(:class="orderStyleCheck(order)") {{checkedTabletNum(order)}}
-              p.order-information {{getOrderTime(order).substr(11)}}
+              p.order-information {{visitGroups(order)}}명
               p.order-information {{getGoodsName(order)}}
-              p.order-ip-information
-                span {{orderIp(order)}}
-              p.order-error-message-information
-                span {{errorMessage(order)}}
-
+              p.order-information {{orderIp(order)}}
+              p.order-information.error-message {{errorMessage(order)}}
+              p.order-information {{getOrderTime(order).substr(11)}}
 </template>
 
 <script>
@@ -419,7 +418,7 @@ export default {
     // 결제미포함 버전
     .electronic-access-list-version {
       display: grid;
-      grid-template-columns: 15.625vw 7vw 15vw 12vw 1fr;
+      grid-template-columns: 15.625vw 5vw 20vw 12vw 1fr 7vw;
       gap: 2vw;
       padding: 3.75vh 1.5625vw 1.25vh !important;
       border-bottom: solid 0.078125vw #333333;
@@ -440,7 +439,7 @@ export default {
           min-height: 4.375vw;
           padding: 0 1.5625vw !important;
           display: grid;
-          grid-template-columns: 15.625vw 7vw 15vw 12vw 1fr;
+          grid-template-columns: 15.625vw 5vw 20vw 12vw 1fr 7vw;
           align-items: center;
           gap: 2vw;
           box-sizing: border-box;
@@ -535,10 +534,18 @@ export default {
       .error-order {
         background-color: #fc0000;
         color: #fff;
+        border-bottom: solid 0.078125vw #999;
+
 
         .order-information-list {
           > p {
             color: #fff !important;
+          }
+
+          .error-message {
+            width: 100%;
+            font-size: 0.9375vw;
+            overflow: hidden;
           }
         }
       }
