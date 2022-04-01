@@ -64,7 +64,6 @@ export default {
     },
     sortedOrders() {
       const { orders } = this.$store.state;
-      console.log(orders, 'orders 확인');
       return orders.sort((a, b) => b.timestamp - a.timestamp);
     },
     lengthOrders() {
