@@ -1,8 +1,5 @@
 <template lang="pug">
   .wrap-orders-container
-    //- 주문보기 내에서만 보여야하는게 아닌, 발레파킹 페이지에서도 보여져야해서 수정되었음. (Layout.vue)
-    //- auction-modal(v-if="order && auction")
-    //- modal-order(v-if="order && !auction")
     .orders-container
       order-cash-out-standing-modal(
         v-if="getCashOutPopVisble()"
@@ -19,13 +16,15 @@
         .electronic-access-list-version
           p.order-title 테이블번호
           p.order-title 주문시간
+          p.order-title 주문내역
           p.order-title 주문IP
           p.order-title 에러메세지
         .wrap-order-information-lists-electronic
-          div(v-for="(order, index) in sortedOrders" :key="`order-index-`+index" :class="getOrderListStyle(index)")
+          div(v-for="(order, index) in sortedOrders" :key="`order-index-`+index" :class="getOrderListStyle(order, index)")
             .order-information-list(v-if="visibleOrderItem(order)")
               p.order-information-table-number(:class="orderStyleCheck(order)") {{checkedTabletNum(order)}}
-              p.order-information-order-time {{getOrderTime(order).substr(11)}}
+              p.order-information {{getOrderTime(order).substr(11)}}
+              p.order-information {{getGoodsName(order)}}
               p.order-ip-information
                 span {{orderIp(order)}}
               p.order-error-message-information
@@ -125,9 +124,10 @@ export default {
     }
   },
   methods: {
-    getOrderListStyle(index) {
+    getOrderListStyle(order, index) {
       return {
         'order-information-lists': true,
+        'error-order': order.errorMsg,
         'bg-gray': index % 2 === 0,
       };
     },
@@ -279,28 +279,6 @@ export default {
         return 'orderColorGreen';
       }
     },
-    paidTypeCheck(order) {
-      if (order.paidOrder) {
-        return '선불';
-      }
-
-      return '후불';
-    },
-    creditTypeCheck(order) {
-      const creditType = order.creditType;
-
-      if (creditType === 'cash') {
-        return '현금';
-      }
-
-      if (creditType === 'cart') {
-        return '카드';
-      }
-
-      if (creditType === 'complex') {
-        return '카드+현금';
-      }
-    },
     visitGroups(order) {
       return order?.visitGroups?.total ? order.visitGroups.total : 0;
     },
@@ -349,6 +327,15 @@ export default {
       let eventList = orders.filter( order => order.viewType >= 5);
       this.$store.commit('filterEvent', eventList);
     },
+    getGoodsName(order) {
+      const goodsList = order.order_info;
+
+      if (goodsList.length > 1) {
+        return `${goodsList[0].good_name} 외 ${goodsList.length - 1}개`;
+      }
+
+      return goodsList[0].good_name;
+    }
   }
 };
 </script>
@@ -432,8 +419,8 @@ export default {
     // 결제미포함 버전
     .electronic-access-list-version {
       display: grid;
-      grid-template-columns: 15.625vw 7vw 9.375vw 1fr;
-      gap: 3.90625vw;
+      grid-template-columns: 15.625vw 7vw 15vw 12vw 1fr;
+      gap: 2vw;
       padding: 3.75vh 1.5625vw 1.25vh !important;
       border-bottom: solid 0.078125vw #333333;
       box-sizing: border-box;
@@ -450,12 +437,12 @@ export default {
       overflow: auto;
       .order-information-lists {
         .order-information-list {
-          height: 4.375vw;
+          min-height: 4.375vw;
           padding: 0 1.5625vw !important;
           display: grid;
-          grid-template-columns: 15.625vw 7vw 9.375vw 1fr;
+          grid-template-columns: 15.625vw 7vw 15vw 12vw 1fr;
           align-items: center;
-          gap: 3.90625vw;
+          gap: 2vw;
           box-sizing: border-box;
 
           > p {
@@ -494,7 +481,6 @@ export default {
           }
 
           .order-ip-information {
-            height: 2.65625vw;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -508,7 +494,6 @@ export default {
             align-items: center;
 
             > span {
-              height: 2.65625vw;
               font-weight: bold;
               border-radius: 0.390625vw;
               display: flex;
@@ -543,6 +528,17 @@ export default {
           > span {
             background-color: #fff !important;
             color: #000 !important;
+          }
+        }
+      }
+
+      .error-order {
+        background-color: #fc0000;
+        color: #fff;
+
+        .order-information-list {
+          > p {
+            color: #fff !important;
           }
         }
       }
