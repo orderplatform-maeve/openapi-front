@@ -26,8 +26,8 @@
               p.order-information-table-number(:class="orderStyleCheck(order)") {{checkedTabletNum(order)}}
               p.order-information {{visitGroups(order)}}명
               p.order-information {{getGoodsName(order)}}
-              p.order-information {{orderIp(order)}}
-              p.order-information.error-message {{errorMessage(order)}}
+              p.order-information.small-message {{orderIp(order)}}
+              p.order-information.small-message {{errorMessage(order)}}
               p.order-information {{getOrderTime(order).substr(11)}}
 </template>
 
@@ -418,7 +418,7 @@ export default {
     // 결제미포함 버전
     .electronic-access-list-version {
       display: grid;
-      grid-template-columns: 15.625vw 4vw 22vw 12vw 1fr 6vw;
+      grid-template-columns: 15.625vw 4vw 1fr 8vw 8vw 6vw;
       gap: 2vw;
       padding: 3.75vh 1.5625vw 1.25vh !important;
       border-bottom: solid 0.078125vw #333333;
@@ -439,7 +439,7 @@ export default {
           min-height: 4.375vw;
           padding: 0 1.5625vw !important;
           display: grid;
-          grid-template-columns: 15.625vw 4vw 22vw 12vw 1fr 6vw;
+          grid-template-columns: 15.625vw 4vw 1fr 8vw 8vw 6vw;
           align-items: center;
           gap: 2vw;
           box-sizing: border-box;
@@ -542,7 +542,7 @@ export default {
             color: #fff !important;
           }
 
-          .error-message {
+          .small-message {
             width: 100%;
             font-size: 0.9375vw;
             overflow: hidden;
