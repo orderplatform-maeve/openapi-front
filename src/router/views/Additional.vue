@@ -5,33 +5,43 @@
     //- router-link.button-added(v-if="visibleOrderButton" :to="paths.products") 상품 관리(구)
     //-   <br> (테스트)
     router-link.button-added(v-if="visibleOrderButton" :to="paths.newProducts") 상품 관리(신)<br>
-      span (테스트)
-    router-link.button-added(v-if="visibleOrderButton" :to="paths.tables") 테이블 주문<br>
-      span (테스트)
-    router-link.button-added(v-if="visibleOrderButton" :to="paths.pickUpTables") 픽업 요청<br>
-      span (테스트)
-    router-link.button-added(v-if="visibleOrderButton" :to="paths.controlOrder") 테이블<br> 주류 주문 관리<br>
-      span (테스트)
     router-link.button-added(v-if="visibleOrderButton" :to="paths.updateCategories") 분류 관리<br>
-      span (테스트)
-    router-link.button-added(v-if="visibleOrderButton" :to="paths.controlLastOrder") 타이머 관리<br>
-      span (테스트)
-    router-link.button-added(v-if="visibleOrderButton" :to="paths.cancelPaymentOrder") 결제 주문 강제 취소<br>
-      span (테스트)
-    router-link.button-added(v-if="visibleOrderButton" :to="paths.oldPaymentManagement") 구 결제내역<br>
-      span (테스트)
-    router-link.button-added(v-if="visibleOrderButton" :to="paths.newPaymentManagement") 신 결제내역<br>
-      span (테스트)
-    router-link.button-added(v-if="visibleOrderButton" :to="paths.servingRobotManagement") 로봇 관리<br>
-      span (테스트)
-    router-link.button-added(v-if="visibleOrderButton" :to="paths.auctionManager") 경매 관리<br>
-      span (테스트)
-    router-link.button-added(v-if="useGame" :to="paths.gameManagement") 게임 관리<br>
-      span (테스트)
-    router-link.button-added(v-if="visibleOrderButton" :to="paths.valetTableList") 발렛 파킹<br>
-      span (테스트)
-    router-link.button-added(v-if="visibleOrderButton && stopRedirect" :to="paths.ordersIP") 주문IP확인<br>
-      span (테스트)
+    router-link.button-added(v-if="visibleOrderButton" :to="paths.tables")
+      span 테이블 주문
+      img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
+    router-link.button-added(v-if="visibleOrderButton" :to="paths.pickUpTables")
+      span 픽업 요청
+      img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
+    router-link.button-added(v-if="visibleOrderButton" :to="paths.controlOrder")
+      span 테이블<br> 주류 주문 관리<br>
+      img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
+    router-link.button-added(v-if="visibleOrderButton" :to="paths.controlLastOrder")
+      span 타이머 관리
+      img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
+    router-link.button-added(v-if="visibleOrderButton" :to="paths.cancelPaymentOrder")
+      span 결제 주문 강제 취소
+      img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
+    router-link.button-added(v-if="visibleOrderButton" :to="paths.oldPaymentManagement")
+      span 구 결제내역
+      img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
+    router-link.button-added(v-if="visibleOrderButton" :to="paths.newPaymentManagement")
+      span 신 결제내역<br>
+      img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
+    router-link.button-added(v-if="visibleOrderButton" :to="paths.servingRobotManagement")
+      span 로봇 관리
+      img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
+    router-link.button-added(v-if="visibleOrderButton" :to="paths.auctionManager")
+      span 경매 관리
+      img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
+    router-link.button-added(v-if="useGame" :to="paths.gameManagement")
+      span 게임 관리
+      img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
+    router-link.button-added(v-if="visibleOrderButton" :to="paths.valetTableList")
+      span 발렛 파킹
+      img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
+    router-link.button-added(v-if="visibleOrderButton && stopRedirect" :to="paths.ordersIP")
+      span 주문IP확인
+      img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
 </template>
 
 <script>
@@ -107,29 +117,31 @@ export default {
     padding-bottom: 1.5625vw !important;
 
     .button-added {
-        width: 100%;
-        height: 14.0625vw;
-        padding: 1.5625vw 2.34375vw !important;
-        font-family: 'Spoqa Han Sans Neo', 'sans-serif';
-        font-size: 1.875vw;
-        font-weight: bold;
-        letter-spacing: -0.046875vw;
-        word-break: keep-all;
-        background-color: #f5f5f5;
-        text-decoration: none;
-        box-sizing: border-box;
-        border: solid 0.078125vw #d6d6d6;
-        border-radius: 0.78125vw;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        text-align: center;
-        align-items: center;
+      width: 100%;
+      height: 14.0625vw;
+      padding: 1.5625vw 0 !important;
+      font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+      font-size: 1.875vw;
+      font-weight: bold;
+      letter-spacing: -0.046875vw;
+      word-break: keep-all;
+      background-color: #f5f5f5;
+      text-decoration: none;
+      box-sizing: border-box;
+      border: solid 0.078125vw #d6d6d6;
+      border-radius: 0.78125vw;
+      display: flex;
+      justify-content: center;
+      text-align: center;
+      align-items: center;
+      gap: 0.15625vw;
 
-        span {
-          font-weight: normal;
-        }
+      > img {
+        width: 3.125vw;
+        transform: translateY(-50%);
+        font-weight: bold;
       }
+    }
   }
 }
 </style>
