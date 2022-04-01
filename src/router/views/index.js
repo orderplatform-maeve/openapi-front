@@ -22,3 +22,4 @@ export { default as GameManagement } from './GameManagement';
 export { default as ValetTableList } from './ValetTableList';
 export { default as ValetPage } from './ValetPage';
 export { default as ValetParkingConfirm } from './ValetParkingConfirm';
+export { default as OrdersIP } from './OrdersIP';
