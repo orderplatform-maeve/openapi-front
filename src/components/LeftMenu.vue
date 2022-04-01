@@ -17,7 +17,11 @@
         span 공지사항
         p.big-title {{getNoticeQuantity}}
       router-link.order-history(v-if="visibleOrderButton" :to="paths.order" :class="{activeButton: path === '/order'}") 주문보기
-      router-link.additional-functions(v-if="visibleOrderButton" :to="paths.additional" :class="{activeButton: path === '/additional'}")
+      router-link.additional-functions(
+        v-if="visibleOrderButton"
+        :to="paths.additional"
+        :class="{activeButton: additionalPath}"
+      )
         span 추가기능
         img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_w.png")
       router-link.paid-history(v-if="visibleOrderButton" :to="paths.paymentManagement" :class="{activeButton: path === '/paymentManagement'}") 결제내역
@@ -429,6 +433,32 @@ export default {
     },
     path() {
       return this.$route.path;
+    },
+    additionalPath() {
+      const pathList = [
+        '/additional',
+        '/newProducts',
+        '/updateCategories',
+        '/tables',
+        '/pickUpTables',
+        '/controlOrder',
+        '/controlLastOrder',
+        '/cancelPaymentOrder',
+        '/oldPaymentManagement',
+        '/newPaymentManagement',
+        '/servingRobotManagement',
+        '/auctionManager',
+        '/gameManagement',
+        '/valetTableList',
+        '/ordersIP',
+        '/tableOrders'
+      ];
+
+      if (pathList.indexOf(this.path) !== -1) {
+        return true;
+      }
+
+      return false;
     },
     confirmModal() {
       return this.$store.state.confirmModal;
