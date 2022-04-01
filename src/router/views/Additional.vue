@@ -30,7 +30,7 @@
       span (테스트)
     router-link.button-added(v-if="visibleOrderButton" :to="paths.valetTableList") 발렛 파킹<br>
       span (테스트)
-    router-link.button-added(v-if="visibleOrderButton && STOP_REDIRECT" :to="paths.ordersIP") 주문IP확인<br>
+    router-link.button-added(v-if="visibleOrderButton && stopRedirect" :to="paths.ordersIP") 주문IP확인<br>
       span (테스트)
 </template>
 

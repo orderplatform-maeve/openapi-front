@@ -418,7 +418,7 @@ export default {
     // 결제미포함 버전
     .electronic-access-list-version {
       display: grid;
-      grid-template-columns: 15.625vw 5vw 20vw 12vw 1fr 7vw;
+      grid-template-columns: 15.625vw 4vw 22vw 12vw 1fr 6vw;
       gap: 2vw;
       padding: 3.75vh 1.5625vw 1.25vh !important;
       border-bottom: solid 0.078125vw #333333;
@@ -439,7 +439,7 @@ export default {
           min-height: 4.375vw;
           padding: 0 1.5625vw !important;
           display: grid;
-          grid-template-columns: 15.625vw 5vw 20vw 12vw 1fr 7vw;
+          grid-template-columns: 15.625vw 4vw 22vw 12vw 1fr 6vw;
           align-items: center;
           gap: 2vw;
           box-sizing: border-box;
