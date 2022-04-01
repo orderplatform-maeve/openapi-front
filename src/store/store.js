@@ -558,6 +558,8 @@ const order = {
         const keys = new Map();
         const orders = response.data.reduce((list, item) => {
           const data = JSON.parse(item.json_data);
+          data.requestIP = item.requestIP;
+          data.errorMsg = item.errorMsg;
 
           if (!keys.has(data.order_view_key)) {
             keys.set(data.order_view_key, true);
