@@ -89,6 +89,11 @@ export default {
       params.append('store_code', this.auth.store.store_code);
       const res = await this.$store.dispatch('setStoreInit', params);
 
+      // 안드로이드로 init data 전송
+      if (res.status === 200) {
+        window.UUID.writeFile(JSON.stringify(res.data.data), '/torder/json/config.json');
+      }
+
       try {
         if (res.data.data.T_order_store_orderView_version) {
 
