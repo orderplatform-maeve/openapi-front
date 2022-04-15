@@ -24,4 +24,5 @@ export default {
   valetTableList: '/valetTableList',
   valetPage: '/valetPage',
   valetParkingConfirm: '/valetParkingConfirm',
+  ordersIP: '/ordersIP',
 };

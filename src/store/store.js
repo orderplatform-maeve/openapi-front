@@ -558,6 +558,8 @@ const order = {
         const keys = new Map();
         const orders = response.data.reduce((list, item) => {
           const data = JSON.parse(item.json_data);
+          data.requestIP = item.requestIP;
+          data.errorMsg = item.errorMsg;
 
           if (!keys.has(data.order_view_key)) {
             keys.set(data.order_view_key, true);
@@ -611,7 +613,7 @@ const shop = {
         // // console.log(response);
 
         const target = response.data.data;
-        // // console.log('target', target);
+        // console.log('target', target);
 
         const device = {
           serviceStatus: !!target.T_order_store_close,

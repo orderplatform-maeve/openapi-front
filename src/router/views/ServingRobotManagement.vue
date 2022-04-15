@@ -131,6 +131,14 @@ export default {
         if (robotType === 'KTSR') {
           return 'https://s3.ap-northeast-2.amazonaws.com/images.good.orderhae.com/logo/kt-ci.png';
         }
+
+        if (robotType === 'LGSR2') {
+          return 'https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/logo/lgcloi.png';
+        }
+
+        if (robotType === 'VDCS') {
+          return 'https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/logo/pudubot-logo.png';
+        }
       }
 
       return "https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/logo/torderNoImage.PNG";

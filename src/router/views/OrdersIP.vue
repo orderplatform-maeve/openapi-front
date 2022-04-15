@@ -1,8 +1,5 @@
 <template lang="pug">
   .wrap-orders-container
-    //- 주문보기 내에서만 보여야하는게 아닌, 발레파킹 페이지에서도 보여져야해서 수정되었음. (Layout.vue)
-    //- auction-modal(v-if="order && auction")
-    //- modal-order(v-if="order && !auction")
     .orders-container
       order-cash-out-standing-modal(
         v-if="getCashOutPopVisble()"
@@ -15,67 +12,23 @@
         .orders-status(@click="setViewMode('all')" :class="{activeButton: viewMode === 'all'}")
           p 모든 주문
           span {{lengthOrders}}
-        .orders-status(@click="setViewMode('notConfirm')" :class="{activeButton: viewMode === 'notConfirm'}")
-          p 미확인 주문
-          span {{unidentifiedOrders}}
-        .orders-status(@click="setViewMode('confirm')" :class="{activeButton: viewMode === 'confirm'}")
-          p 확인 주문
-          span {{lengthCommitedOrders}}
-      .wrap-payload-info-status-select
-        .payload-wrap
-          p.payload-info(:class="{'payload-active': payloadStatus === 0}" @click="payloadInfoChange(0)") 결제포함
-          p.payload-info(:class="{'payload-active': payloadStatus === 1}" @click="payloadInfoChange(1)") 결제미포함
-        .event-filter
-          div(v-if="onlyEvent" @click="filterEventDisable()")
-            check-box-active
-          div(v-if="!onlyEvent" @click="filterEventActive()")
-            check-box-disable
-          p.event-text 이벤트 주문 내역만 보기
-      .wrap-order-list(v-if="payloadStatus === 0")
-        .order-title-list
-          p.order-title 테이블번호
-          p.order-title 주문유형
-          p.order-title 주문금액
-          p.order-title 결제금액
-          p.order-title 미수금
-          p.order-title 선/후불
-          p.order-title 결제수단
-          p.order-title 주문시간
-          p.order-title 총 인원수
-        .wrap-order-information-lists
-          div(v-for="(order, index) in sortedOrders" :key="`order-index-`+index" :class="getOrderListStyle(order, index)")
-            .order-information-list(v-if="visibleOrderItem(order)" @click="openView(order)")
-              p.order-information-table-number(:class="orderStyleCheck(order)") {{checkedTabletNum(order)}}
-              p.order-information-order-type(:class="orderStyleCheck(order)") {{orderTypeCheck(order)}}
-              p.order-information-price {{getOrderPrice(order)}}원
-              p.order-information-paid-price {{getTotalAmount(order)}}원
-              p.order-information-unpaid-money(@click.stop="() => openMisuModal(order)")
-                span(:class="{unpaid: getMisu(order) !== '미수금없음'}") {{ getMisu(order) }}
-                span.unpaid(v-if="getVisibleWon(order)") 원
-              p.order-information-paid-type {{paidTypeCheck(order)}}
-              p.order-information-credit-type {{creditTypeCheck(order)}}
-              p.order-information-order-time {{getOrderTime(order).substr(11)}}
-              p.order-information-total-people {{visitGroups(order)}}명
-      .wrap-order-list(v-if="payloadStatus === 1")
+      .wrap-order-list
         .electronic-access-list-version
           p.order-title 테이블번호
-          p.order-title 주문유형
+          p.order-title 인원수
+          p.order-title 주문내역
+          p.order-title 주문IP
+          p.order-title 에러메세지
           p.order-title 주문시간
-          p.order-title 총 인원수
-          p.order-title 전자출입명부 인증수
         .wrap-order-information-lists-electronic
           div(v-for="(order, index) in sortedOrders" :key="`order-index-`+index" :class="getOrderListStyle(order, index)")
-            .order-information-list(v-if="visibleOrderItem(order)" @click="openView(order)")
+            .order-information-list(v-if="visibleOrderItem(order)")
               p.order-information-table-number(:class="orderStyleCheck(order)") {{checkedTabletNum(order)}}
-              p.order-information-order-type(:class="orderStyleCheck(order)") {{orderTypeCheck(order)}}
-              p.order-information-order-time {{getOrderTime(order).substr(11)}}
-              p.order-information-people-group
-                span {{totalVisitPeopleDeepDepth(order)}}
-                span(v-if="totalVisitPeopleDeepDepth(order)") =
-                span.red-box {{visitGroups(order)}}명
-              p.order-information-total-people
-                span {{electronicAccessPeople(order)}}명
-
+              p.order-information {{visitGroups(order)}}명
+              p.order-information {{getGoodsName(order)}}
+              p.order-information.small-message {{orderIp(order)}}
+              p.order-information.small-message {{errorMessage(order)}}
+              p.order-information {{getOrderTime(order).substr(11)}}
 </template>
 
 <script>
@@ -167,16 +120,12 @@ export default {
     if (payloadStatus) {
       this.$store.commit('setPayloadStatus', parseInt(payloadStatus));
     }
-
-    this.AndroidPostData();
-
-
   },
   methods: {
     getOrderListStyle(order, index) {
       return {
         'order-information-lists': true,
-        'confirm-status': order.commit,
+        'error-order': order.errorMsg,
         'bg-gray': index % 2 === 0,
       };
     },
@@ -328,30 +277,14 @@ export default {
         return 'orderColorGreen';
       }
     },
-    paidTypeCheck(order) {
-      if (order.paidOrder) {
-        return '선불';
-      }
-
-      return '후불';
-    },
-    creditTypeCheck(order) {
-      const creditType = order.creditType;
-
-      if (creditType === 'cash') {
-        return '현금';
-      }
-
-      if (creditType === 'cart') {
-        return '카드';
-      }
-
-      if (creditType === 'complex') {
-        return '카드+현금';
-      }
-    },
     visitGroups(order) {
       return order?.visitGroups?.total ? order.visitGroups.total : 0;
+    },
+    orderIp(order) {
+      return order?.requestIP || '';
+    },
+    errorMessage(order) {
+      return order?.errorMsg || '';
     },
     ...utils,
 
@@ -392,19 +325,14 @@ export default {
       let eventList = orders.filter( order => order.viewType >= 5);
       this.$store.commit('filterEvent', eventList);
     },
-    // 안드로이드로 init data 전송
-    async AndroidPostData() {
-      try {
+    getGoodsName(order) {
+      const goodsList = order.order_info;
 
-        const params = new FormData();
-        params.append('store_code', this.auth.store.store_code);
-
-        const res = await this.$store.dispatch('setStoreInit', params);
-        window.UUID.writeFile(JSON.stringify(res.data.data), '/torder/json/config.json');
-
-      } catch (error) {
-        console.log('안드로이드에서 실행하지 않아서 발생', error);
+      if (goodsList.length > 1) {
+        return `${goodsList[0].good_name} 외 ${goodsList.length - 1}개`;
       }
+
+      return goodsList[0].good_name;
     }
   }
 };
@@ -435,7 +363,7 @@ export default {
     color: #ddd;
 
     .orders-status {
-      flex: 1;
+      flex: 0.33;
       min-height: 4.6875vw;
       display: flex;
       justify-content: center;
@@ -463,51 +391,6 @@ export default {
     }
   }
 
-  .wrap-payload-info-status-select {
-    height: 3.90625vw;
-    display: flex;
-    justify-content : space-between;
-    align-items: center;
-    background-color: #fff;
-    padding: 1.5625vw 1.5625vw 0 !important;
-
-    .payload-wrap {
-      display: flex;
-      gap: 0.78125vw;
-
-      .payload-info {
-        width: 17.1875vw;
-        height: 3.90625vw;
-        background-color: #e5e5e5;
-        border-radius: 0.78125vw;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-family: 'Spoqa Han Sans Neo', 'sans-serif';
-        font-size: 1.5625vw;
-        letter-spacing: -0.0390625vw;
-        color: #666;
-      }
-
-      .payload-active {
-        background-color: #12151d;
-        font-weight: bold;
-        color: #fff;
-      }
-    }
-
-    .event-filter {
-      display: flex;
-      align-items: center;
-      gap: 0.3906vw;
-
-      .event-text {
-        font-family: "Spoqa Han Sans Neo", "sans-serif";
-        font-size: 1.5625vw;
-      }
-    }
-  }
-
   .wrap-order-list {
     flex:1;
     width: 84.53125vw;
@@ -531,92 +414,11 @@ export default {
       }
     }
 
-    // 결제 포함 버전
-    .wrap-order-information-lists {
-      height: calc(92.5vh - 12.65125vw);
-      overflow: auto;
-      .order-information-lists {
-        .order-information-list {
-          height: 4.375vw;
-          padding: 0 1.5625vw !important;
-          display: grid;
-          grid-template-columns: 1fr 5.46875vw 7.8125vw 7.8125vw 7.8125vw 3.90625vw 6.25vw 5.859375vw 4.53125vw;
-          align-items: center;
-          gap: 2.34375vw;
-          box-sizing: border-box;
-
-          > p {
-            font-size: 1.406250vw;
-            letter-spacing: -0.02109375vw;
-            text-align: center;
-          }
-
-          .orderColorRed {
-            color: #fc0000;
-          }
-          .orderColorBlue {
-            color: #184fe1;
-          }
-          .orderColorGreen {
-            color: #1e9d2f;
-          }
-          .orderColorYellow {
-            color: #e5a11a;
-          }
-          .orderColorOrange {
-            color: #FF7A00;
-          }
-
-          .order-information-table-number {
-            font-weight: bold;
-          }
-
-          .order-information-unpaid-money {
-            color: #999;
-            .unpaid {
-              color: #fc0000;
-              text-decoration: underline;
-            }
-          }
-
-          .order-information-total-people {
-            height: 2.65625vw;
-            background-color: #fc0000;
-            color: #fff;
-            font-weight: bold;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 0.390625vw;
-          }
-        }
-      }
-
-      .bg-gray {
-        background-color: #f5f5f5;
-      }
-
-      .confirm-status {
-        background-color: #343434 !important;
-
-        .order-information-list {
-          > p {
-            color: #fff !important;
-          }
-
-          .order-information-total-people {
-            background-color: #fff;
-            color: #000 !important;
-          }
-        }
-      }
-    }
-
     // 결제미포함 버전
     .electronic-access-list-version {
       display: grid;
-      grid-template-columns: 15.625vw 5.46875vw 4.53125vw 1fr 9.375vw;
-      gap: 3.90625vw;
+      grid-template-columns: 15.625vw 4vw 1fr 8vw 8vw 6vw;
+      gap: 2vw;
       padding: 3.75vh 1.5625vw 1.25vh !important;
       border-bottom: solid 0.078125vw #333333;
       box-sizing: border-box;
@@ -629,16 +431,16 @@ export default {
     }
 
     .wrap-order-information-lists-electronic {
-      height: calc(92.5vh - 12.65125vw);
+      height: 92.5vh;
       overflow: auto;
       .order-information-lists {
         .order-information-list {
-          height: 4.375vw;
+          min-height: 4.375vw;
           padding: 0 1.5625vw !important;
           display: grid;
-          grid-template-columns: 15.625vw 5.46875vw 4.53125vw 1fr 9.375vw;
+          grid-template-columns: 15.625vw 4vw 1fr 8vw 8vw 6vw;
           align-items: center;
-          gap: 3.90625vw;
+          gap: 2vw;
           box-sizing: border-box;
 
           > p {
@@ -676,37 +478,20 @@ export default {
             }
           }
 
-          .order-information-people-group {
-            height: 2.65625vw;
+          .order-ip-information {
             display: flex;
             justify-content: center;
             align-items: center;
             gap: 0.78125vw;
             border-radius: 0.390625vw;
-
-            .red-box {
-              min-width: 4.375vw;
-              height: 2.65625vw;
-              background-color: #fc0000;
-              color: #fff;
-              font-weight: bold;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              border-radius: 0.390625vw;
-            }
           }
 
-          .order-information-total-people {
+          .order-error-message-information {
             display: flex;
             justify-content: center;
             align-items: center;
 
             > span {
-              min-width: 4.375vw;
-              height: 2.65625vw;
-              background-color: #fc0000;
-              color: #fff;
               font-weight: bold;
               border-radius: 0.390625vw;
               display: flex;
@@ -724,7 +509,7 @@ export default {
       .confirm-status {
         background-color: #343434 !important;
 
-        .order-information-people-group {
+        .order-ip-information {
           .red-box {
             background-color: #fff !important;
             color: #000 !important;
@@ -737,10 +522,29 @@ export default {
           }
         }
 
-        .order-information-total-people {
+        .order-error-message-information {
           > span {
             background-color: #fff !important;
             color: #000 !important;
+          }
+        }
+      }
+
+      .error-order {
+        background-color: #fc0000;
+        color: #fff;
+        border-bottom: solid 0.078125vw #999;
+
+
+        .order-information-list {
+          > p {
+            color: #fff !important;
+          }
+
+          .small-message {
+            width: 100%;
+            font-size: 0.9375vw;
+            overflow: hidden;
           }
         }
       }
