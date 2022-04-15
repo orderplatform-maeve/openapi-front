@@ -167,6 +167,10 @@ export default {
     if (payloadStatus) {
       this.$store.commit('setPayloadStatus', parseInt(payloadStatus));
     }
+
+    this.AndroidPostData();
+
+
   },
   methods: {
     getOrderListStyle(order, index) {
@@ -388,6 +392,20 @@ export default {
       let eventList = orders.filter( order => order.viewType >= 5);
       this.$store.commit('filterEvent', eventList);
     },
+    // 안드로이드로 init data 전송
+    async AndroidPostData() {
+      try {
+
+        const params = new FormData();
+        params.append('store_code', this.auth.store.store_code);
+
+        const res = await this.$store.dispatch('setStoreInit', params);
+        window.UUID.writeFile(JSON.stringify(res.data.data), '/torder/json/config.json');
+
+      } catch (error) {
+        console.log('안드로이드에서 실행하지 않아서 발생', error);
+      }
+    }
   }
 };
 </script>
