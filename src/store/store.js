@@ -613,7 +613,7 @@ const shop = {
         // // console.log(response);
 
         const target = response.data.data;
-        // // console.log('target', target);
+        // console.log('target', target);
 
         const device = {
           serviceStatus: !!target.T_order_store_close,
