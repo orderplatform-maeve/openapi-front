@@ -579,36 +579,42 @@ export default {
     },
     getTotalCartList() {
       try {
-        let total = 0;
+        const totalPrice = this.cartList.reduce((price, curGoods) => {
+          price += curGoods.good_price;
 
-        this.cartList.forEach((order) => {
-          total += Number(order.good_price);
-          if (order?.option) {
-            order.option.forEach((option) => {
-              total += Number(option.pos_price);
-            });
+          if (curGoods?.option) {
+            price += curGoods.option.reduce((optionPrice, curOption) => {
+              optionPrice += (curOption.pos_price * curOption.order_qty);
+
+              return optionPrice;
+            }, 0);
           }
-        });
 
-        return won(total);
+          return price;
+        }, 0);
+
+        return won(totalPrice);
       } catch (error) {
         return 0;
       }
     },
     getTotalPreviousOrder() {
       try {
-        let total = 0;
+        const totalPrice = this.previousOrders.reduce((price, curGoods) => {
+          price += (curGoods.good_price * curGoods.order_qty);
 
-        this.previousOrders.forEach((order) => {
-          total += Number(order.good_price);
-          if (order?.option) {
-            order.option.forEach((option) => {
-              total += Number(option.pos_price);
-            });
+          if (curGoods?.option) {
+            price += curGoods.option.reduce((optionPrice, curOption) => {
+              optionPrice += (curOption.pos_price * curOption.order_qty);
+
+              return optionPrice;
+            }, 0);
           }
-        });
 
-        return won(total);
+          return price;
+        }, 0);
+
+        return won(totalPrice);
       } catch (error) {
         return 0;
       }
