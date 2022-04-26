@@ -5,6 +5,8 @@ const ADMIN_URL = 'http://admin.torder.co.kr';
 const API_URL = 'http://api.torder.co.kr';
 const DEMO_URL = 'http://demo.api.torder.co.kr';
 const ROBOT_TEXT = 'http://52.78.117.91:8888/v2/order';
+// const ENTERTAINMENT_URL = 'https://dev-apigw.torder.co.kr';
+const HAPPY_TALK = 'https://happytalk.torder.co.kr';
 // const NOTICE_URL = 'http://dev-apigw.torder.co.kr/v2';
 
 // const SERVER_URL = isDemo ? DEMO_URL : REST_URL;
@@ -93,6 +95,9 @@ const endpoints = {
     updateCategoryScheduleDateArray  : `${ADMIN_URL}/category/updateCategoryScheduleDateArray`,
     updateCategoryHide : `${ADMIN_URL}/category/updateCategoryHide`,
     updateCategoryShow : `${ADMIN_URL}/category/updateCategoryShow`
+  },
+  happyTalk: {
+    postMessage: `${HAPPY_TALK}/happytalk/happy-talk/message`,
   }
 };
 
