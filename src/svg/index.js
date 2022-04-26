@@ -17,4 +17,6 @@ export { default as NewIcon } from './NewIcon';
 export { default as ValetCloseButton } from './valetCloseButton';
 export { default as CloseText } from './closeText';
 export { default as TorderLogoV2 } from './torderLogoV2';
-
+export { default as HappyTalk } from './HappyTalk';
+export { default as NumberOne } from './NumberOne';
+export { default as NumberTwo } from './NumberTwo';
