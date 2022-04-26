@@ -206,16 +206,20 @@ export default {
       return this.$store.state.noticePopup.isNoticeEmergency;
     },
     getHappyTalkStyle() {
-      return {
+      const happyTalkStyle = {
         'wrap-happy-talk': true,
         'close-wrap-happy-talk': !this.isOpenHappyTalk,
       };
+
+      return happyTalkStyle;
     },
     getHappyTalkArrowStyle() {
-      return {
+      const happyTalkArrowStyle = {
         'triangle-right': this.isOpenHappyTalk,
         'triangle-left': !this.isOpenHappyTalk,
       };
+
+      return happyTalkArrowStyle;
     },
   },
   watch: {
@@ -832,24 +836,29 @@ export default {
       this.closeHappyTalk();
     },
     autoHypenPhone(str){
-      str = str.replace(/[^0-9]/g, '');
-      var tmp = '';
+      const regExp = str.replace(/[^0-9]/g, '');
 
-      if( str.length < 4){
-        return str;
-      } else if(str.length < 8){
-        tmp += str.substr(0, 3);
-        tmp += '-';
-        tmp += str.substr(3);
-        return tmp;
-      } else{
-        tmp += str.substr(0, 3);
-        tmp += '-';
-        tmp += str.substr(3, 4);
-        tmp += '-';
-        tmp += str.substr(7);
-        return tmp;
+      if( regExp.length < 4){
+        return regExp;
       }
+
+      let phoneNumberPlusHypen = '';
+
+      if(regExp.length < 8){
+        phoneNumberPlusHypen += regExp.substr(0, 3);
+        phoneNumberPlusHypen += '-';
+        phoneNumberPlusHypen += regExp.substr(3);
+
+        return phoneNumberPlusHypen;
+      }
+
+      phoneNumberPlusHypen += regExp.substr(0, 3);
+      phoneNumberPlusHypen += '-';
+      phoneNumberPlusHypen += regExp.substr(3, 4);
+      phoneNumberPlusHypen += '-';
+      phoneNumberPlusHypen += regExp.substr(7);
+
+      return phoneNumberPlusHypen;
     },
     updatePhoneNumber(key) {
       if (/^\d+$/g.test(key)) {
@@ -950,9 +959,9 @@ export default {
     .triangle-arrow {
       width: 0;
       height: 0;
-      border-top: 7.5px solid transparent;
-      border-bottom: 7.5px solid transparent;
-      border-left: 7.5px solid  #000;
+      border-top: 0.5859375vw solid transparent;
+      border-bottom: 0.5859375vw solid transparent;
+      border-left: 0.5859375vw solid  #000;
       border-right: none;
     }
   }
@@ -963,14 +972,14 @@ export default {
 }
 
 .close-wrap-happy-talk {
-  transform: translateX(91px);
+  transform: translateX(7.109375vw);
   .wrap-happy-talk-arrow {
     .triangle-arrow {
       width: 0;
       height: 0;
-      border-top: 7.5px solid transparent;
-      border-right: 7.5px solid #000;
-      border-bottom: 7.5px solid transparent;
+      border-top: 0.5859375vw solid transparent;
+      border-right: 0.5859375vw solid #000;
+      border-bottom: 0.5859375vw solid transparent;
       border-left: none;
     }
   }

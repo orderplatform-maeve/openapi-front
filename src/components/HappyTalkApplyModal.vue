@@ -15,7 +15,7 @@
       .wrap-happy-talk-apply-message
         .happy-talk-message-header
           p.message 카카오톡 상담을 원하는
-          p.message 행드폰 번호를 입력해주세요.
+          p.message 핸드폰 번호를 입력해주세요.
         .wrap-happy-talk-notice-all
           .wrap-happy-talk-notice
             .happy-talk-icon
@@ -28,10 +28,10 @@
               number-two
             .happy-talk-message
               p.small-message
-                span 전달 받으신 메세지에서
+                | 전달 받으신 메세지에서
                 strong  [상담사 연결하기]
-                span  버튼을
-              p.small-message 누르시면 상담원과 상담이 진행됩니다.
+                |  버튼을
+                | 누르시면 상담원과 상담이 진행됩니다.
         .wrap-red-notice
           .notice
           .red-notice
@@ -42,11 +42,23 @@
         .wrap-input-phone-number
           table.input-phone-number
             tr
-              td.number(v-for="number in [1, 2, 3]" :key="number" @click.stop="updatePhoneNumber(number)") {{number}}
+              td.number(
+                v-for="number in [1, 2, 3]"
+                :key="number"
+                @click.stop="updatePhoneNumber(number)"
+              ) {{number}}
             tr
-              td.number(v-for="number in [4, 5, 6]" :key="number" @click.stop="updatePhoneNumber(number)") {{number}}
+              td.number(
+                v-for="number in [4, 5, 6]"
+                :key="number"
+                @click.stop="updatePhoneNumber(number)"
+              ) {{number}}
             tr
-              td.number(v-for="number in [7, 8, 9]" :key="number" @click.stop="updatePhoneNumber(number)") {{number}}
+              td.number(
+                v-for="number in [7, 8, 9]"
+                :key="number"
+                @click.stop="updatePhoneNumber(number)"
+              ) {{number}}
             tr
               td.reset(@click.stop="updatePhoneNumber('r')") Reset
               td.number(@click.stop="updatePhoneNumber(0)") 0
@@ -169,7 +181,7 @@ export default {
 
     .wrap-happy-talk-apply-modal-title {
       border-radius: 1.5625vw 1.5625vw 0 0;
-      padding: 30px 19px 20px 30px !important;
+      padding: 2.34375vw 1.484375vw 1.5625vw 2.34375vw !important;
       display: flex;
       align-items: center;
       justify-content: space-between;
