@@ -26,6 +26,29 @@
     :stores="stores"
     :time="time"
   )
+  div(:class="getHappyTalkStyle")
+    .wrap-happy-talk-arrow(@click="toggleHappyTalkButton")
+      .triangle-arrow
+    .wrap-happy-talk-icon(@click="openHappyTalkApplyModal")
+      happy-talk
+  happy-talk-apply-modal(
+    v-if="isVisibleHappyTalkApplyModal"
+    :phoneNumber="phoneNumber"
+    :updatePhoneNumber="updatePhoneNumber"
+    :closeHappyTalkApplyModal="closeHappyTalkApplyModal"
+    :applyHappyTalk="applyHappyTalk"
+    :isVisibleConfirmModal="isVisibleHappyTalkConfirmModal"
+    :openConfirmModal="openHappyTalkConfirmModal"
+    :closeConfirmModal="closeHappyTalkConfirmModal"
+    :checkPhoneNumber="checkPhoneNumber"
+  )
+  phone-number-error-modal(
+    :isVisible="isVisiblePhoneNumberErrorModal"
+  )
+  happy-talk-success-modal(
+    :isVisible="isVisibleHappyTalkSuccessModal"
+    :phoneNumber="phoneNumber"
+  )
 </template>
 
 <script>
@@ -37,17 +60,35 @@ import { Torder } from '@svg';
 import {
   AlertModal,
   NoticePopupListModal,
+  HappyTalkApplyModal,
+  PhoneNumberErrorModal,
+  HappyTalkSuccessModal,
 } from '@components';
-import { payments } from '@apis';
+import {
+  payments,
+  happyTalk as happyTalkAction
+} from '@apis';
+import {
+  HappyTalk
+} from '@svg';
 
 const {
   requestCardCancelCommit,
 } = payments;
+
+const {
+  postMessage
+} = happyTalkAction;
+
 export default {
   components: {
     Torder,
     'alert-modal': AlertModal,
     NoticePopupListModal,
+    HappyTalk,
+    HappyTalkApplyModal,
+    PhoneNumberErrorModal,
+    HappyTalkSuccessModal,
   },
   // https://vuex.vuejs.org/kr/guide/state.html#vuex-%EC%83%81%ED%83%9C%EB%A5%BC-vue-%EC%BB%B4%ED%8F%AC%EB%84%8C%ED%8A%B8%EC%97%90%EC%84%9C-%EA%B0%80%EC%A0%B8%EC%98%A4%EA%B8%B0
   store,
@@ -64,6 +105,12 @@ export default {
       version,
       popupTouchStartPosition: 0,
       popupTouchEndPosition: 0,
+      isOpenHappyTalk: true,
+      phoneNumber: '010-',
+      isVisibleHappyTalkApplyModal: false,
+      isVisiblePhoneNumberErrorModal: false,
+      isVisibleHappyTalkConfirmModal: false,
+      isVisibleHappyTalkSuccessModal: false,
     };
   },
   computed: {
@@ -157,6 +204,22 @@ export default {
     },
     getNoticeEmergency() {
       return this.$store.state.noticePopup.isNoticeEmergency;
+    },
+    getHappyTalkStyle() {
+      const happyTalkStyle = {
+        'wrap-happy-talk': true,
+        'close-wrap-happy-talk': !this.isOpenHappyTalk,
+      };
+
+      return happyTalkStyle;
+    },
+    getHappyTalkArrowStyle() {
+      const happyTalkArrowStyle = {
+        'triangle-right': this.isOpenHappyTalk,
+        'triangle-left': !this.isOpenHappyTalk,
+      };
+
+      return happyTalkArrowStyle;
     },
   },
   watch: {
@@ -759,12 +822,168 @@ export default {
       this.$cookies.set('NoVisiblePopup', true);
       this.closePopup();
     },
+    openHappyTalk() {
+      this.isOpenHappyTalk = true;
+    },
+    closeHappyTalk() {
+      this.isOpenHappyTalk = false;
+    },
+    toggleHappyTalkButton() {
+      if (!this.isOpenHappyTalk) {
+        this.openHappyTalk();
+        return;
+      }
+      this.closeHappyTalk();
+    },
+    autoHypenPhone(str){
+      const regExp = str.replace(/[^0-9]/g, '');
+
+      if( regExp.length < 4){
+        return regExp;
+      }
+
+      let phoneNumberPlusHypen = '';
+
+      if(regExp.length < 8){
+        phoneNumberPlusHypen += regExp.substr(0, 3);
+        phoneNumberPlusHypen += '-';
+        phoneNumberPlusHypen += regExp.substr(3);
+
+        return phoneNumberPlusHypen;
+      }
+
+      phoneNumberPlusHypen += regExp.substr(0, 3);
+      phoneNumberPlusHypen += '-';
+      phoneNumberPlusHypen += regExp.substr(3, 4);
+      phoneNumberPlusHypen += '-';
+      phoneNumberPlusHypen += regExp.substr(7);
+
+      return phoneNumberPlusHypen;
+    },
+    updatePhoneNumber(key) {
+      if (/^\d+$/g.test(key)) {
+        //this.phoneNumber += String(key.code);
+
+        if (this.phoneNumber.length < 13) {
+          this.phoneNumber = this.autoHypenPhone(this.phoneNumber + String(key));
+        }
+      } else if(key=='d') {
+        this.phoneNumber = this.autoHypenPhone(this.phoneNumber.slice(0,-1));
+        //this.phoneNumber = this.phoneNumber.slice(0,-1);
+      } else if(key=='r') {
+        this.phoneNumber = '010-';
+      }
+    },
+    openHappyTalkApplyModal() {
+      this.isVisibleHappyTalkApplyModal = true;
+    },
+    closeHappyTalkApplyModal() {
+      this.isVisibleHappyTalkApplyModal = false;
+    },
+    openPhoneNumberErrorModal() {
+      this.isVisiblePhoneNumberErrorModal = true;
+    },
+    closePhoneNumberErrorModal() {
+      this.isVisiblePhoneNumberErrorModal = false;
+    },
+    checkPhoneNumber() {
+      if (this.phoneNumber.length !== 13) {
+        this.openPhoneNumberErrorModal();
+        setTimeout(() => {
+          this.closePhoneNumberErrorModal();
+        }, 1500);
+        return;
+      }
+
+      this.openHappyTalkConfirmModal();
+
+    },
+    openHappyTalkConfirmModal() {
+      this.isVisibleHappyTalkConfirmModal = true;
+    },
+    closeHappyTalkConfirmModal() {
+      this.isVisibleHappyTalkConfirmModal = false;
+    },
+    openHappyTalkSuccessModal() {
+      this.isVisibleHappyTalkSuccessModal = true;
+    },
+    closeHappyTalkSuccessModal() {
+      this.isVisibleHappyTalkSuccessModal = false;
+    },
+    async applyHappyTalk() {
+      try {
+        const res = await postMessage(this.getStoreCode, this.phoneNumber);
+
+        if (res.data?.resultCode !== 200) {
+          const errorMessage = res.data?.resultMessage || '상담 신청에 실패하였습니다.';
+          this.$store.commit('pushFlashMessage', errorMessage);
+          return;
+        }
+
+        this.openHappyTalkSuccessModal();
+        setTimeout(() => {
+          this.closeHappyTalkSuccessModal();
+        }, 1500);
+
+        this.closeHappyTalkConfirmModal();
+        this.closeHappyTalkApplyModal();
+        this.updatePhoneNumber('r');
+      } catch(error) {
+        console.log(error, '에러');
+      }
+    },
   },
 };
 </script>
-<style lang="scss">
-@import "../../scss/common.css";
-@import "../../scss/style.scss";
-@import "../../scss/global.scss";
+<style lang="scss" scoped>
+.wrap-happy-talk {
+  position: fixed;
+  right: 0;
+  bottom: 0.78125vw;
+  width: 9.140625vw;
+  height: 7.03125vw;
+  display: flex;
+  align-items: center;
+  transition: transform 0.5s linear;
+
+  .wrap-happy-talk-arrow {
+    padding: 1.6vw 0.78125vw 1.6vw 1.171875vw !important;
+    width: 2.1875vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+    box-sizing: border-box;
+    border-right: solid 0.15625vw #C3A908;
+
+    .triangle-arrow {
+      width: 0;
+      height: 0;
+      border-top: 0.5859375vw solid transparent;
+      border-bottom: 0.5859375vw solid transparent;
+      border-left: 0.5859375vw solid  #000;
+      border-right: none;
+    }
+  }
+
+  .wrap-happy-talk-icon {
+    position: absolute;
+  }
+}
+
+.close-wrap-happy-talk {
+  transform: translateX(7.109375vw);
+  .wrap-happy-talk-arrow {
+    .triangle-arrow {
+      width: 0;
+      height: 0;
+      border-top: 0.5859375vw solid transparent;
+      border-right: 0.5859375vw solid #000;
+      border-bottom: 0.5859375vw solid transparent;
+      border-left: none;
+    }
+  }
+}
+
 
 </style>

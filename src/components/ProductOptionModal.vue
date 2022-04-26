@@ -1,60 +1,60 @@
 <template lang="pug">
-  .product-option-modal-container(v-if="show")
-    .wrap-product-option-modal
-      .product-option-modal-title {{ product.displayNameOneLine }} 선택 옵션
-      .wrap-product-option
-        .product-option-category-list
+.product-option-modal-container(v-if="show")
+  .wrap-product-option-modal
+    .product-option-modal-title {{ product.displayNameOneLine }} 선택 옵션
+    .wrap-product-option
+      .product-option-category-list
+        div(
+          v-for="(group, index) in product.options"
+          :key="group.index"
+          :class="getCategoryStyle(index)"
+          @click="selectIndex(index)"
+        )
+          p.product-option-category-number {{index+1}}
+          p.product-option-category-name {{group.name}}
+          p.product-option-require {{getRequireFlag(group.require_flag)}}
+      .product-option-list
+        p.option-max-select {{currentOption.limit_select}}개 까지 선택할 수 있어요.
+        .product-option-information
           div(
-            v-for="(group, index) in product.options"
-            :key="group.index"
-            :class="getCategoryStyle(index)"
-            @click="selectIndex(index)"
+            v-if="!currentOption.require_flag"
+            :class="getOptionStyle(currentOption, true)"
+            @click="selectNone(currentOption)"
+          ) 선택안함
+          div(
+            v-for="(option, index) in currentOption.option_items"
+            :key="`${currentIndex}-${index}`"
+            :class="getOptionStyle(option, false)"
+            @click="select(option)"
           )
-            p.product-option-category-number {{index+1}}
-            p.product-option-category-name {{group.name}}
-            p.product-option-require {{getRequireFlag(group.require_flag)}}
-        .product-option-list
-          p.option-max-select {{currentOption.limit_select}}개 까지 선택할 수 있어요.
-          .product-option-information
-            div(
-              v-if="!currentOption.require_flag"
-              :class="getOptionStyle(currentOption, true)"
-              @click="selectNone(currentOption)"
-            ) 선택안함
-            div(
-              v-for="(option, index) in currentOption.option_items"
-              :key="`${currentIndex}-${index}`"
-              :class="getOptionStyle(option, false)"
-              @click="select(option)"
-            )
-              p.product-option-name {{option.name}}
-              p.product-option-price + {{option.price.toLocaleString()}}원
-        .product-option-cart
-          .wrap-option-cart-list
-            .option-cart-header
-              p.product-option-cart-title {{product.displayNameOneLine}}
-              button.cart-reset-button(@click="empty()") 초기화
-            .option-cart-list
-              .wrap-product-default-price
-                p.text 기본가격
-                p.product-default-price {{product.price.toLocaleString()}}원
-              .wrap-cart-product-information(
-                  v-for="option in reversedSelectedOptions"
-                  v-bind:key="option.code + ':' + option.group.index"
-                )
-                .wrap-cart-product-option-name
-                  p.cart-product-option-name {{option.displayname}}
-                  p.cart-product-option-price {{option.price.toLocaleString()}}원
-                .wrap-set-cart-product-option-qty(v-if="option.limit_qty!=1")
-                  .cart-product-option-set-qty-button
-                    icon-plus-button(:clickEvent="() => plusQty(option)")
-                    p.cart-option-qty {{option.qty}}개
-                    icon-minus-button(:clickEvent="() => minusQty(option)")
-                  .cart-option-category {{option.group.name}}
-            .wrap-confirm-button
-              button.close(@click="close()") 닫기
-              button.confirm(@click="submit") 주문 목록에 담기
-              
+            p.product-option-name {{option.name}}
+            p.product-option-price + {{option.price.toLocaleString()}}원
+      .product-option-cart
+        .wrap-option-cart-list
+          .option-cart-header
+            p.product-option-cart-title {{product.displayNameOneLine}}
+            button.cart-reset-button(@click="empty()") 초기화
+          .option-cart-list
+            .wrap-product-default-price
+              p.text 기본가격
+              p.product-default-price {{product.price.toLocaleString()}}원
+            .wrap-cart-product-information(
+                v-for="option in reversedSelectedOptions"
+                v-bind:key="option.code + ':' + option.group.index"
+              )
+              .wrap-cart-product-option-name
+                p.cart-product-option-name {{option.displayname}}
+                p.cart-product-option-price {{option.price.toLocaleString()}}원
+              .wrap-set-cart-product-option-qty(v-if="option.limit_qty!=1")
+                .cart-product-option-set-qty-button
+                  icon-plus-button(:clickEvent="() => plusQty(option)")
+                  p.cart-option-qty {{option.qty}}개
+                  icon-minus-button(:clickEvent="() => minusQty(option)")
+                .cart-option-category {{option.group.name}}
+          .wrap-confirm-button
+            button.close(@click="close()") 닫기
+            button.confirm(@click="submit") 주문 목록에 담기
+
 </template>
 
 <script>
@@ -180,7 +180,7 @@ export default {
           qty: 1,
           option: currentOption,
         };
-        
+
         const code = [this.product.code].concat(Array.from(sortedOptions, o => o.code +':' + o.qty)).join('-');
 
         const newOrder = {
@@ -363,7 +363,7 @@ export default {
           }
         }
       }
-      
+
       .product-option-list {
         width: 31.25vw;
         height: calc(76vh - 6.59375vw);

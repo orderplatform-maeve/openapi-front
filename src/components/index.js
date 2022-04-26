@@ -27,4 +27,7 @@ export { default as AuctionModal } from './AuctionModal';
 export { default as NoticeSearchTypeModal } from './NoticeSearchTypeModal';
 export { default as SendFileResultModal } from './SendFileResultModal';
 export { default as SendFileCheckModal } from './SendFileCheckModal';
-
+export { default as HappyTalkApplyModal } from './HappyTalkApplyModal';
+export { default as PhoneNumberErrorModal } from './PhoneNumberErrorModal';
+export { default as HappyTalkConfirmModal } from './HappyTalkConfirmModal';
+export { default as HappyTalkSuccessModal } from './HappyTalkSuccessModal';
