@@ -908,6 +908,7 @@ export default {
       this.isVisibleHappyTalkSuccessModal = true;
     },
     closeHappyTalkSuccessModal() {
+      this.updatePhoneNumber('r');
       this.isVisibleHappyTalkSuccessModal = false;
     },
     async applyHappyTalk() {
@@ -927,7 +928,6 @@ export default {
 
         this.closeHappyTalkConfirmModal();
         this.closeHappyTalkApplyModal();
-        this.updatePhoneNumber('r');
       } catch(error) {
         console.log(error, '에러');
       }
