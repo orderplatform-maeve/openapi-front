@@ -1,42 +1,52 @@
 <template lang="pug">
-  .serving-robot-management-container
+.serving-robot-management-container
+  .wrap-header
     p.control-order-page-title 로봇제어(테스트)
-    .robot-list
-      .wrap-robot-status(
-        v-for="(robotStatus, index) in allRobotStatus"
-        :key="`robot-status-${index}`"
-      )
-        .wrap-robot-name
-          p.robot-brand-name
-            img(:src="getRobotImage(robotStatus)")
-          p.robot-nickname {{getRobotName(robotStatus)}}
-        p.robot-status
-          span.default(v-if="getRobotStatus(robotStatus)") {{getRobotStatus(robotStatus)}}
-          span.red(v-else) 확인필요
-        p.table-number
-          span.default(v-if="getRobotPosition(robotStatus)") {{getRobotPosition(robotStatus)}}
-          span.red(v-else) -
-        .wrap-serving-status
-          .wrap-battery-status
-            p.battery-stats-text {{getBatteryText(robotStatus)}}
-            img.battery-status(:src="getBatteryImage(robotStatus)")
-          p.serving-status(@click="visibleModal(robotStatus)") {{getRobotCommandText(robotStatus)}}
-    serving-robot-start-modal(
-      v-if="selectStartRobotModalStatus"
-      :sortedTables="startTableList"
-      :selectedTable="startRobotSelectedTable"
-      :selectTable="startRobotSelectTable"
-      :startServingRobot="robotMoving"
-      :unVisibleModal="unVisibleModal"
+    button.refresh-robot
+      refresh-black-new-icon
+      | 새로고침
+  .robot-list
+    .wrap-robot-status(
+      v-for="(robotStatus, index) in allRobotStatus"
+      :key="`robot-status-${index}`"
     )
-    serving-robot-error-modal(
-      v-if="errorModalStatus"
-      :unVisibleModal="unVisibleModal"
-      :errorRobotStatus="errorRobotStatus"
-    )
+      .wrap-robot-name
+        img.robot-brand-image(
+          :src="getRobotImage(robotStatus)"
+        )
+        p.robot-nickname {{getRobotName(robotStatus)}}
+      p.robot-status
+        span(
+          :class="getRobotStatusStyle(robotStatus)"
+        ) {{getRobotStatus(robotStatus)}}
+      p.table-number
+        span.default(v-if="getRobotPosition(robotStatus)") {{getRobotPosition(robotStatus)}}
+        span.red(v-else) -
+      .wrap-battery-info
+        p.battery-info {{getBatteryText(robotStatus)}}
+        img.battery-img(:src="getBatteryImage(robotStatus)")
+      .wrap-serving-status
+        button.serving-status(@click="visibleModal(robotStatus)") {{getRobotCommandText(robotStatus)}}
+  serving-robot-start-modal(
+    v-if="selectStartRobotModalStatus"
+    :sortedTables="startTableList"
+    :selectedTable="startRobotSelectedTable"
+    :selectTable="startRobotSelectTable"
+    :startServingRobot="robotMoving"
+    :unVisibleModal="unVisibleModal"
+  )
+  serving-robot-error-modal(
+    v-if="errorModalStatus"
+    :unVisibleModal="unVisibleModal"
+    :errorRobotStatus="errorRobotStatus"
+  )
 </template>
 
 <script>
+import {
+  RefreshBlackNewIcon
+} from '@svg';
+
 import {
   servingRobot
 } from '@apis';
@@ -59,6 +69,7 @@ export default {
     ServingRobotCancelModal,
     ServingRobotBackModal,
     ServingRobotErrorModal,
+    RefreshBlackNewIcon,
   },
   data() {
     return {
@@ -144,10 +155,22 @@ export default {
       return "https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/logo/torderNoImage.PNG";
     },
     getRobotStatus(robot) {
-      const robotInfo = robot.rinfo;
-      const robotStatus = robotInfo.reveseStatus;
+      const robotStatus = robot?.rinfo?.reveseStatus;
 
       return robotStatus;
+    },
+    isKnowRobotStatus(robot) {
+      const robotStatus = this.getRobotStatus(robot);
+      const isKnowRobotStatus = robotStatus && robotStatus !== '확인필요';
+
+      return isKnowRobotStatus;
+    },
+    getRobotStatusStyle(robot) {
+      const robotStatusStyle = {
+        'red': !this.isKnowRobotStatus(robot)
+      };
+
+      return robotStatusStyle;
     },
     getRobotPosition(robot) {
       const robotPosition = robot.ReverseDestination;
@@ -164,30 +187,22 @@ export default {
     },
     getRobotCommandText(robot) {
       const robotInfo = robot.rinfo;
-      let robotStatus = robotInfo.reveseStatus;
+      const robotStatus = robotInfo.reveseStatus;
 
       if (robotStatus === '대기중') {
         return '서빙';
       }
 
-      if (robotStatus === '도착') {
+      if (robotStatus === '도착' || robotStatus === '충전중') {
         return '복귀';
       }
 
-      if (robotStatus === '복귀중') {
+      if (robotStatus === '복귀중' || robotStatus === '가는중') {
         return '이동중';
-      }
-
-      if (robotStatus === '충전중') {
-        return '복귀';
       }
 
       if (robotStatus === '확인필요') {
         return '확인';
-      }
-
-      if (robotStatus === '가는중') {
-        return '이동중';
       }
 
       return robotStatus;
@@ -196,21 +211,21 @@ export default {
       const robotInfo = robot.rinfo;
 
       if (robotInfo.status === 'Charge') {
-        return 'https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/logo/tabler-icon-battery-charging.svg';
+        return 'https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/logo/charge-battery.svg';
       }
       if(robotInfo.battery > 75) {
-        return 'https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/logo/tabler-icon-battery-4.svg';
+        return 'https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/logo/green-battery.svg';
       }
 
       if(robotInfo.battery > 50) {
-        return 'https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/logo/tabler-icon-battery-3.svg';
+        return 'https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/logo/orange-battery.svg';
       }
 
       if(robotInfo.battery > 25) {
-        return 'https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/logo/tabler-icon-battery-2.svg';
+        return 'https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/logo/red-battery.svg';
       }
 
-      return 'https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/logo/tabler-icon-battery-1.svg';
+      return 'https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/logo/red-battery.svg';
     },
     getBatteryText(robot) {
       const robotInfo = robot.rinfo;
@@ -339,12 +354,30 @@ export default {
   box-sizing: border-box;
   overflow: auto;
 
-  .control-order-page-title {
-    font-family: "notosans";
-    font-weight: bold;
-    font-size: 1.71875vw;
-    padding: 2.5vh 0 !important;
-    box-sizing: border-box;
+  .wrap-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .control-order-page-title {
+      font-family: "notosans";
+      font-weight: bold;
+      font-size: 1.71875vw;
+      padding: 1.5625vw 0 !important;
+      box-sizing: border-box;
+    }
+
+    .refresh-robot {
+      width: 8.515625vw;
+      height: 2.65625vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.546875vw;
+      border-radius: 0.390625vw;
+      border: solid 0.078125vw #000;
+      background-color: #fff;
+    }
   }
 
   .robot-list {
@@ -355,48 +388,74 @@ export default {
 
     .wrap-robot-status {
       width: 100%;
-      min-height: 12.5vw;
-      border: solid 0.125vw #000;
-      border-radius: 1.953125vw;
+      height: 10.9375vw;
+      border-radius: 0.234375vw;
+      border: solid 0.1171875vw #d4d4d4;
       display: flex;
       align-items: center;
-      gap: 3.90625vw;
       padding: 1.5625vw !important;
       box-sizing: border-box;
       text-align: center;
+      gap: 2.109375vw;
 
       .wrap-robot-name {
-        width: 20%;
+        width: 13.28125vw;
         display: flex;
         flex-direction: column;
+        justify-content: center;
         align-items: center;
         gap: 0.78125vw;
-        font-family: "notosans";
-        font-size: 1.4vw;
-        text-align: center;
 
-        .robot-brand-name {
+        .robot-brand-image {
+          height: 2.0703125vw;
+          object-fit: contain;
+        }
+        .robot-nickname {
           width: 100%;
-
-          img {
-            width: 50%;
-            max-height: 40px;
-            object-fit: contain;
-          }
+          font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+          font-size: 1.25vw;
+          font-weight: bold;
+          letter-spacing: -0.025em;
+          word-break: break-all;
+          text-align: center;
         }
       }
 
       .robot-status {
-        width: 11.71875vw;
-        font-family: "notosans";
-        font-size: 2.5vw;
+        width: 7.421875vw;
+        font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+        font-weight: bold;
+        font-size: 1.875vw;
+        letter-spacing: -0.025em;
+        text-align: center;
+
+        .red {
+          color: #fc0000;
+        }
       }
 
       .table-number {
         flex: 1;
-        font-family: "notosans";
-        font-size: 2.5vw;
-        text-align: center;
+        font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+        font-size: 1.875vw;
+        font-weight: bold;
+        letter-spacing: -0.025em;
+      }
+
+      .wrap-battery-info {
+        width: 9.375vw;
+        height: 2.781250vw;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.46875vw;
+
+        .battery-info {
+          font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+          font-size: 1.875vw;
+          font-weight: bold;
+          letter-spacing: -0.025em;
+        }
       }
 
       .wrap-serving-status {
@@ -429,11 +488,6 @@ export default {
           box-sizing: border-box;
         }
       }
-    }
-
-    .red {
-      font-weight: bold;
-      color: #fc0000;
     }
   }
 }
