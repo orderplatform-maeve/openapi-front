@@ -28,7 +28,8 @@
   )
   div(:class="getHappyTalkStyle")
     .wrap-happy-talk-arrow(@click="toggleHappyTalkButton")
-      .triangle-arrow
+      .wrap-triangle-arrow
+        .triangle-arrow
     .wrap-happy-talk-icon(@click="openHappyTalkApplyModal")
       happy-talk
   happy-talk-apply-modal(
@@ -947,22 +948,25 @@ export default {
   transition: transform 0.5s linear;
 
   .wrap-happy-talk-arrow {
-    padding: 1.6vw 0.78125vw 1.6vw 1.171875vw !important;
     width: 2.1875vw;
+    height: 90px;
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 1;
-    box-sizing: border-box;
-    border-right: solid 0.15625vw #C3A908;
 
-    .triangle-arrow {
-      width: 0;
-      height: 0;
-      border-top: 0.5859375vw solid transparent;
-      border-bottom: 0.5859375vw solid transparent;
-      border-left: 0.5859375vw solid  #000;
-      border-right: none;
+    .wrap-triangle-arrow {
+      padding: 1.6vw 0.78125vw 1.6vw 1.171875vw !important;
+      box-sizing: border-box;
+      border-right: solid 0.15625vw #C3A908;
+      .triangle-arrow {
+        width: 0;
+        height: 0;
+        border-top: 0.5859375vw solid transparent;
+        border-bottom: 0.5859375vw solid transparent;
+        border-left: 0.5859375vw solid  #000;
+        border-right: none;
+      }
     }
   }
 
@@ -974,13 +978,15 @@ export default {
 .close-wrap-happy-talk {
   transform: translateX(7.109375vw);
   .wrap-happy-talk-arrow {
-    .triangle-arrow {
-      width: 0;
-      height: 0;
-      border-top: 0.5859375vw solid transparent;
-      border-right: 0.5859375vw solid #000;
-      border-bottom: 0.5859375vw solid transparent;
-      border-left: none;
+    .wrap-triangle-arrow {
+      .triangle-arrow {
+        width: 0;
+        height: 0;
+        border-top: 0.5859375vw solid transparent;
+        border-right: 0.5859375vw solid #000;
+        border-bottom: 0.5859375vw solid transparent;
+        border-left: none;
+      }
     }
   }
 }
