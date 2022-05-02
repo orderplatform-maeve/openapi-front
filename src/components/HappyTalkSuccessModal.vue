@@ -31,7 +31,7 @@ export default {
   animation: opacityAnimation 0.5s linear;
   animation-delay: 1s;
   animation-fill-mode: forwards;
-  background-color: rgba(0, 0, 0, 0.8);
+  background-color: #000;
   color: #fff;
   width: 65.3125vw;
   height: 15.546875vw;
