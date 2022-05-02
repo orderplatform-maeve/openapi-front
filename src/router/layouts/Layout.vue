@@ -47,6 +47,7 @@
     :isVisible="isVisiblePhoneNumberErrorModal"
   )
   happy-talk-success-modal(
+    v-if="getStopRedirect"
     :isVisible="isVisibleHappyTalkSuccessModal"
     :phoneNumber="phoneNumber"
   )
@@ -222,6 +223,9 @@ export default {
 
       return happyTalkArrowStyle;
     },
+    getStopRedirect() {
+      return process.env.STOP_REDIRECT;
+    }
   },
   watch: {
     '$route'(to, from) {
@@ -493,7 +497,7 @@ export default {
             } = location;
             const nowPath = `${protocol}//${hostname}${pathname}#/`;
             // console.log('location', nowPath, nextUrl);
-            if (!process.env.STOP_REDIRECT) {
+            if (!this.getStopRedirect) {
               if (nowPath !== nextUrl) {
                 return location.replace(nextUrl);
               }
