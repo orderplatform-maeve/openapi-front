@@ -1340,7 +1340,7 @@ const state = {
   order: undefined,
   auction : false,
   orders: [],
-  payloadStatus: 0,
+  payloadStatus: 1,
   device: {
     serviceStatus: false,
     orderStatus: false,
