@@ -1,80 +1,77 @@
 <template lang="pug">
-  .wrap-orders-container
-    //- 주문보기 내에서만 보여야하는게 아닌, 발레파킹 페이지에서도 보여져야해서 수정되었음. (Layout.vue)
-    //- auction-modal(v-if="order && auction")
-    //- modal-order(v-if="order && !auction")
-    .orders-container
-      order-cash-out-standing-modal(
-        v-if="getCashOutPopVisble()"
-        :item="chooseOrder"
-        :closeItemModal="closeMisuModal"
-        :cashCommit="() => reqConfirmMisu(chooseOrder)"
-      )
-      p.store-name {{storeName}}{{version}}
-      .header-orders-status-list
-        .orders-status(@click="setViewMode('all')" :class="{activeButton: viewMode === 'all'}")
-          p 모든 주문
-          span {{lengthOrders}}
-        .orders-status(@click="setViewMode('notConfirm')" :class="{activeButton: viewMode === 'notConfirm'}")
-          p 미확인 주문
-          span {{unidentifiedOrders}}
-        .orders-status(@click="setViewMode('confirm')" :class="{activeButton: viewMode === 'confirm'}")
-          p 확인 주문
-          span {{lengthCommitedOrders}}
-      .wrap-payload-info-status-select
-        .payload-wrap
-          p.payload-info(:class="{'payload-active': payloadStatus === 0}" @click="payloadInfoChange(0)") 결제포함
-          p.payload-info(:class="{'payload-active': payloadStatus === 1}" @click="payloadInfoChange(1)") 결제미포함
-        .event-filter
-          div(v-if="onlyEvent" @click="filterEventDisable()")
-            check-box-active
-          div(v-if="!onlyEvent" @click="filterEventActive()")
-            check-box-disable
-          p.event-text 이벤트 주문 내역만 보기
-      .wrap-order-list(v-if="payloadStatus === 0")
-        .order-title-list
-          p.order-title 테이블번호
-          p.order-title 주문유형
-          p.order-title 주문금액
-          p.order-title 결제금액
-          p.order-title 미수금
-          p.order-title 선/후불
-          p.order-title 결제수단
-          p.order-title 주문시간
-          p.order-title 총 인원수
-        .wrap-order-information-lists
-          div(v-for="(order, index) in sortedOrders" :key="`order-index-`+index" :class="getOrderListStyle(order, index)")
-            .order-information-list(v-if="visibleOrderItem(order)" @click="openView(order)")
-              p.order-information-table-number(:class="orderStyleCheck(order)") {{checkedTabletNum(order)}}
-              p.order-information-order-type(:class="orderStyleCheck(order)") {{orderTypeCheck(order)}}
-              p.order-information-price {{getOrderPrice(order)}}원
-              p.order-information-paid-price {{getTotalAmount(order)}}원
-              p.order-information-unpaid-money(@click.stop="() => openMisuModal(order)")
-                span(:class="{unpaid: getMisu(order) !== '미수금없음'}") {{ getMisu(order) }}
-                span.unpaid(v-if="getVisibleWon(order)") 원
-              p.order-information-paid-type {{paidTypeCheck(order)}}
-              p.order-information-credit-type {{creditTypeCheck(order)}}
-              p.order-information-order-time {{getOrderTime(order).substr(11)}}
-              p.order-information-total-people {{visitGroups(order)}}명
-      .wrap-order-list(v-if="payloadStatus === 1")
-        .electronic-access-list-version
-          p.order-title 테이블번호
-          p.order-title 주문유형
-          p.order-title 주문시간
-          p.order-title 총 인원수
-          p.order-title 전자출입명부 인증수
-        .wrap-order-information-lists-electronic
-          div(v-for="(order, index) in sortedOrders" :key="`order-index-`+index" :class="getOrderListStyle(order, index)")
-            .order-information-list(v-if="visibleOrderItem(order)" @click="openView(order)")
-              p.order-information-table-number(:class="orderStyleCheck(order)") {{checkedTabletNum(order)}}
-              p.order-information-order-type(:class="orderStyleCheck(order)") {{orderTypeCheck(order)}}
-              p.order-information-order-time {{getOrderTime(order).substr(11)}}
-              p.order-information-people-group
-                span {{totalVisitPeopleDeepDepth(order)}}
-                span(v-if="totalVisitPeopleDeepDepth(order)") =
-                span.red-box {{visitGroups(order)}}명
-              p.order-information-total-people
-                span {{electronicAccessPeople(order)}}명
+.wrap-orders-container
+  //- 주문보기 내에서만 보여야하는게 아닌, 발레파킹 페이지에서도 보여져야해서 수정되었음. (Layout.vue)
+  //- auction-modal(v-if="order && auction")
+  //- modal-order(v-if="order && !auction")
+  .orders-container
+    order-cash-out-standing-modal(
+      v-if="getCashOutPopVisble()"
+      :item="chooseOrder"
+      :closeItemModal="closeMisuModal"
+      :cashCommit="() => reqConfirmMisu(chooseOrder)"
+    )
+    p.store-name {{storeName}}{{version}}
+    .header-orders-status-list
+      .orders-status(@click="setViewMode('all')" :class="{activeButton: viewMode === 'all'}")
+        p 모든 주문
+        span {{lengthOrders}}
+      .orders-status(@click="setViewMode('notConfirm')" :class="{activeButton: viewMode === 'notConfirm'}")
+        p 미확인 주문
+        span {{unidentifiedOrders}}
+      .orders-status(@click="setViewMode('confirm')" :class="{activeButton: viewMode === 'confirm'}")
+        p 확인 주문
+        span {{lengthCommitedOrders}}
+    .wrap-payload-info-status-select
+      .payload-wrap
+        p.payload-info(:class="{'payload-active': payloadStatus === 1}" @click="payloadInfoChange(1)") 결제미포함
+        p.payload-info(:class="{'payload-active': payloadStatus === 0}" @click="payloadInfoChange(0)") 결제포함
+      .event-filter
+        div(v-if="onlyEvent" @click="filterEventDisable()")
+          check-box-active
+        div(v-if="!onlyEvent" @click="filterEventActive()")
+          check-box-disable
+        p.event-text 이벤트 주문 내역만 보기
+    .wrap-order-list(v-if="payloadStatus === 0")
+      .order-title-list
+        p.order-title 테이블번호
+        p.order-title 주문유형
+        p.order-title 주문금액
+        p.order-title 결제금액
+        p.order-title 미수금
+        p.order-title 선/후불
+        p.order-title 결제수단
+        p.order-title 주문시간
+        p.order-title 총 인원수
+      .wrap-order-information-lists
+        div(v-for="(order, index) in sortedOrders" :key="`order-index-`+index" :class="getOrderListStyle(order, index)")
+          .order-information-list(v-if="visibleOrderItem(order)" @click="openView(order)")
+            p.order-information-table-number(:class="orderStyleCheck(order)") {{checkedTabletNum(order)}}
+            p.order-information-order-type(:class="orderStyleCheck(order)") {{orderTypeCheck(order)}}
+            p.order-information-price {{getOrderPrice(order)}}원
+            p.order-information-paid-price {{getTotalAmount(order)}}원
+            p.order-information-unpaid-money(@click.stop="() => openMisuModal(order)")
+              span(:class="{unpaid: getMisu(order) !== '미수금없음'}") {{ getMisu(order) }}
+              span.unpaid(v-if="getVisibleWon(order)") 원
+            p.order-information-paid-type {{paidTypeCheck(order)}}
+            p.order-information-credit-type {{creditTypeCheck(order)}}
+            p.order-information-order-time {{getOrderTime(order).substr(11)}}
+            p.order-information-total-people {{visitGroups(order)}}명
+    .wrap-order-list(v-if="payloadStatus === 1")
+      .electronic-access-list-version
+        p.order-title 테이블번호
+        p.order-title 주문유형
+        p.order-title 주문시간
+        p.order-title 총 인원수
+      .wrap-order-information-lists-electronic
+        div(v-for="(order, index) in sortedOrders" :key="`order-index-`+index" :class="getOrderListStyle(order, index)")
+          .order-information-list(v-if="visibleOrderItem(order)" @click="openView(order)")
+            p.order-information-table-number(:class="orderStyleCheck(order)") {{checkedTabletNum(order)}}
+            p.order-information-order-type(:class="orderStyleCheck(order)") {{orderTypeCheck(order)}}
+            p.order-information-order-time {{getOrderTime(order).substr(11)}}
+            p.order-information-people-group
+              span {{totalVisitPeopleDeepDepth(order)}}
+              span(v-if="totalVisitPeopleDeepDepth(order)") =
+              span.red-box {{visitGroups(order)}}명
 
 </template>
 
@@ -615,7 +612,7 @@ export default {
     // 결제미포함 버전
     .electronic-access-list-version {
       display: grid;
-      grid-template-columns: 15.625vw 5.46875vw 4.53125vw 1fr 9.375vw;
+      grid-template-columns: 15.625vw 5.46875vw 4.53125vw 1fr;
       gap: 3.90625vw;
       padding: 3.75vh 1.5625vw 1.25vh !important;
       border-bottom: solid 0.078125vw #333333;
@@ -636,7 +633,7 @@ export default {
           height: 4.375vw;
           padding: 0 1.5625vw !important;
           display: grid;
-          grid-template-columns: 15.625vw 5.46875vw 4.53125vw 1fr 9.375vw;
+          grid-template-columns: 15.625vw 5.46875vw 4.53125vw 1fr;
           align-items: center;
           gap: 3.90625vw;
           box-sizing: border-box;
