@@ -58,19 +58,21 @@
             p.order-information-total-people {{visitGroups(order)}}명
     .wrap-order-list(v-if="payloadStatus === 1")
       .electronic-access-list-version
-        p.order-title 테이블번호
         p.order-title 주문유형
+        p.order-title 테이블번호
+        p.order-title 주문내역
         p.order-title 주문시간
         p.order-title 총 인원수
       .wrap-order-information-lists-electronic
         div(v-for="(order, index) in sortedOrders" :key="`order-index-`+index" :class="getOrderListStyle(order, index)")
           .order-information-list(v-if="visibleOrderItem(order)" @click="openView(order)")
-            p.order-information-table-number(:class="orderStyleCheck(order)") {{checkedTabletNum(order)}}
             p.order-information-order-type(:class="getOrderTypeStyle(order)") {{orderTypeCheck(order)}}
+            p.order-information-table-number(:class="orderStyleCheck(order)") {{checkedTabletNum(order)}}
+            p.order-information-goods-name {{getGoodsName(order)}}
             p.order-information-order-time {{getOrderTime(order).substr(11)}}
             p.order-information-people-group
-              span {{totalVisitPeopleDeepDepth(order)}}
-              span(v-if="totalVisitPeopleDeepDepth(order)") =
+              span.small-text {{totalVisitPeopleDeepDepth(order)}}
+              span.small-text(v-if="totalVisitPeopleDeepDepth(order)") =
               span.red-box {{visitGroups(order)}}명
 
 </template>
@@ -420,6 +422,20 @@ export default {
       } catch (error) {
         console.log('안드로이드에서 실행하지 않아서 발생', error);
       }
+    },
+    getGoodsName(order) {
+      const goodsList = order.order_info;
+      const isOverOneGoodsList = goodsList.length > 1;
+      const firstGoodsName = goodsList[0].good_name;
+
+      if (isOverOneGoodsList) {
+        const minusOneGoodsQuantity = goodsList.length - 1;
+        const goodsListName = `${firstGoodsName} 외 ${minusOneGoodsQuantity}개`;
+
+        return goodsListName;
+      }
+
+      return firstGoodsName;
     }
   }
 };
@@ -677,9 +693,9 @@ export default {
     // 결제미포함 버전
     .electronic-access-list-version {
       display: grid;
-      grid-template-columns: 15.625vw 7.18125vw 15.625vw 1fr;
-      gap: 3.90625vw;
-      padding: 3.75vh 1.5625vw 1.25vh !important;
+      grid-template-columns: 7.18125vw 15.625vw 1fr 9.375vw 15.625vw;
+      gap: 1.953125vw;
+      padding: 3.75vh 0.78125vw 1.25vh !important;
       border-bottom: solid 0.078125vw #333333;
       box-sizing: border-box;
 
@@ -698,9 +714,9 @@ export default {
           height: 4.375vw;
           padding: 0 0.78125vw !important;
           display: grid;
-          grid-template-columns: 15.625vw 7.18125vw 15.625vw 1fr;
+          grid-template-columns: 7.18125vw 15.625vw 1fr 9.375vw 15.625vw;
           align-items: center;
-          gap: 3.90625vw;
+          gap: 1.953125vw;
           box-sizing: border-box;
 
           > p {
@@ -746,6 +762,10 @@ export default {
             align-items: center;
             gap: 0.78125vw;
             border-radius: 0.390625vw;
+
+            .small-text {
+              font-size: 1.25vw;
+            }
 
             .red-box {
               min-width: 4.375vw;

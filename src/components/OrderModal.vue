@@ -4,7 +4,7 @@
     .order-modal-header
       .wrap-order-history-text
         p.order-history-text {{ getByTypeText('title') }}
-        p.order-table-name {{checkedTabletNum(order)}}
+        p.order-table-name {{checkedTabletNum(order)}} 테이블
       .wrap-order-time
         .order-confirm-check
           .check-svg(:class="{checkOn: order.commit == true}")
@@ -20,14 +20,14 @@
             .current-product-info
               p.product-name {{getProjectGoodName(product)}}
               .wrap-product-price
-                p.product-price {{ getItemPrice(product) }}원
                 p.product-quantity {{getProductQty(product)}}개
+                p.product-price {{ getItemPrice(product) }}원
             .product-option-list(v-if="isProductOpt(product)")
               .product-option(v-for="option in product.option")
                 p.option-name {{getOptionDisplayName(option)}}
                 .wrap-product-option-price
-                  p.option-price {{getOptionPrice(option)}}원
                   p.option-quantity {{getOptionGoodQty(option)}}개
+                  p.option-price {{getOptionPrice(option)}}원
       .wrap-last-order-history(v-if="!order.paidOrder && order.viewType !== 6")
         p.last-order-history-text 이전 주문내역
         .last-order-history-list(v-if="order.paidOrder==false")
@@ -85,7 +85,6 @@ export default {
   },
   mounted() {
     clearInterval(this.interval);
-    this.seconds = 10;
 
     this.interval = setInterval(() => {
       this.seconds -= 1;
@@ -244,12 +243,277 @@ export default {
   align-items: center;
   gap: 0.9375vw;
   z-index: 101;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, 0.85);
+
+  // 매장별 white - black 설정할 때를 대비해 백업
+  // .wrap-order-modal {
+  //   width: 83.75vw;
+  //   height: 76vh;
+  //   background-color: #fff;
+  //   border-radius: 1.5625vw;
+  //   padding: 1.5625vw 0 !important;
+  //   box-sizing: border-box;
+
+  //   .order-modal-header {
+  //     padding: 0.234375000vw 3.125vw 0.9375vw !important;
+  //     display: flex;
+  //     justify-content: space-between;
+  //     border-bottom: solid 0.15625vw #fc0000;
+
+  //     .wrap-order-history-text {
+  //       display: flex;
+  //       align-items: center;
+  //       gap: 1.5625vw;
+
+  //       .order-history-text {
+  //         font-family: "notosans";
+  //         font-size: 2.1875vw;
+  //       }
+
+  //       .order-table-name {
+  //         font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+  //         font-size: 2.65625vw;
+  //         font-weight: bold;
+  //         letter-spacing: -0.03984375vw;
+  //         color: #fc0000;
+  //       }
+  //     }
+
+  //     .wrap-order-time {
+  //       display: flex;
+  //       align-items: center;
+  //       gap: 2.34375vw;
+
+  //       .order-confirm-check {
+  //         font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+  //         font-size: 1.71875vw;
+  //         display: flex;
+  //         align-items: center;
+  //         gap: 0.59375vw;
+
+  //         .check-svg {
+  //           width: 2.1vw;
+  //           height: 2.109375vw;
+  //           background-image: url('https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/orderview/uncheck.svg');
+  //           background-size: contain;
+  //           background-position: center center;
+  //           background-repeat: no-repeat;
+  //         }
+  //         .checkOn{
+  //           background-image: url("https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/orderview/check.svg");
+  //         }
+  //       }
+
+  //       .bar {
+  //         height: 1.875vw;
+  //         border-left: solid 0.078125vw #707070;
+  //       }
+
+  //       .order-time {
+  //         font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+  //         font-size: 2.03125vw;
+  //         font-weight: bold;
+  //       }
+  //     }
+  //   }
+  //   .wrap-order-history-all {
+  //     padding: 1.5625vw 3.90625vw !important;
+  //     box-sizing: border-box;
+  //     display: flex;
+  //     gap: 4.0625vw;
+
+  //     .wrap-current-order-history {
+  //       width: 44.0625vw;
+
+  //       .current-order-history-text {
+  //         font-family: "notosans";
+  //         font-weight: bold;
+  //         font-size: 1.25vw;
+  //         letter-spacing: -0.0625vw;
+  //       }
+
+  //       .current-order-history-list {
+  //         height: calc(76vh - 17.96875vw);
+  //         margin-top: 0.78125vw !important;
+  //         display: flex;
+  //         flex-direction: column;
+  //         gap: 0.390625vw;
+  //         overflow: scroll;
+
+  //         .current-order-history {
+  //           font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+  //           background-color: #f5f5f5;
+  //           border: solid 0.078125vw #d6d6d6;
+  //           border-radius: 0.78125vw;
+  //           display: flex;
+  //           flex-direction: column;
+  //           padding: 1.5625vw !important;
+  //           box-sizing: border-box;
+  //           gap: 0.625vw;
+
+  //           .current-product-info {
+  //             display: flex;
+  //             justify-content: space-between;
+  //             align-items: center;
+
+  //             .product-name {
+  //               flex: 1;
+  //               font-size: 1.71875vw;
+  //               font-weight: bold;
+  //               letter-spacing: -0.04296875vw;
+  //             }
+
+  //             .wrap-product-price {
+  //               font-size: 1.5625vw;
+  //               display: flex;
+  //               gap: 3.125vw;
+
+  //               .product-quantity {
+  //                 width: 3.90625vw;
+  //                 text-align: right;
+  //               }
+  //             }
+  //           }
+
+  //           .product-option-list {
+  //             font-size: 1.40625vw;
+  //             color: #666;
+  //             letter-spacing: -0.02734375vw;
+
+  //             .product-option {
+  //               display: flex;
+  //               justify-content: space-between;
+  //               align-items: center;
+
+  //               .option-name {
+  //                 flex: 1;
+  //               }
+
+  //               .wrap-product-option-price {
+  //                 display: flex;
+  //                 gap: 3.125vw;
+
+  //                 .option-quantity {
+  //                   width: 3.90625vw;
+  //                   text-align: right;
+  //                 }
+  //               }
+  //             }
+  //           }
+  //         }
+  //       }
+  //     }
+
+  //     .wrap-last-order-history {
+  //       flex: 1;
+
+  //       .last-order-history-text {
+  //         font-family: "notosans";
+  //         font-size: 1.25vw;
+  //         letter-spacing: -0.03125vw;
+  //         border-bottom: solid 0.078125vw #666;
+  //         padding-bottom: 0.78125vw !important;
+  //         box-sizing: border-box;
+  //       }
+
+  //       .credit-history {
+  //         color: #666;
+  //       }
+
+  //       .last-order-history-list {
+  //         margin-top: 1.5625vw !important;
+  //         height: calc(76vh - 19.53125vw);
+  //         display: flex;
+  //         flex-direction: column;
+  //         gap: 1.171875vw;
+  //         overflow: scroll;
+
+  //         .last-order-history {
+  //           display: flex;
+  //           flex-direction: column;
+  //           gap: 0.390625vw;
+
+  //           .last-product-info {
+  //             font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+  //             display: flex;
+  //             justify-content: space-between;
+  //             align-items: center;
+
+  //             .last-order-product-name {
+  //               font-size: 1.25vw;
+  //               letter-spacing: -0.03125vw;
+  //             }
+
+  //             .last-order-product-quantity {
+  //               font-size: 1.09375vw;
+  //               letter-spacing: -0.02734375vw;
+  //               color: #666;
+  //             }
+  //           }
+
+  //           .last-order-product-option {
+  //             font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+  //             font-size: 1.015625vw;
+  //             color: #999;
+  //             display: flex;
+  //             justify-content: space-between;
+  //             align-items: center;
+  //           }
+  //         }
+  //       }
+  //     }
+  //   }
+
+  //   .wrap-confirm-button {
+  //     width: 100%;
+  //     font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+  //     display: flex;
+  //     align-items: center;
+  //     gap: 3.515625vw;
+
+  //     .close-button {
+  //       flex: 1;
+  //       height: 4.53125vw;
+  //       margin-left: 3.90625vw !important;
+  //       border: none;
+  //       border-radius: 1.015625vw;
+  //       background-color: #404144;
+  //       font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+  //       font-size: 2.03125vw;
+  //       font-weight: bold;
+  //       color: #fff;
+  //     }
+
+  //     .confirm-button {
+  //       display: block;
+  //       width: 37.5vw;
+  //       height: 4.53125vw;
+  //       background-color: #fc0000;
+  //       font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+  //       font-weight: bold;
+  //       font-size: 2.03125vw;
+  //       color: #fff;
+  //       letter-spacing: -0.05078125vw;
+  //       border: none;
+  //       border-radius: 1.015625vw;
+  //     }
+
+  //     .confirm-time-message {
+  //       width: 13.28125vw;
+  //       margin-right: 3.125vw !important;
+  //       text-align: right;
+  //       font-weight: bold;
+  //       font-size: 2.109375vw;
+  //       letter-spacing: -0.05078125vw;
+  //     }
+  //   }
+  // }
 
   .wrap-order-modal {
     width: 83.75vw;
     height: 76vh;
-    background-color: #fff;
+    background-color: #111;
+    border: solid 0.15625vw #666;
     border-radius: 1.5625vw;
     padding: 1.5625vw 0 !important;
     box-sizing: border-box;
@@ -264,18 +528,23 @@ export default {
         display: flex;
         align-items: center;
         gap: 1.5625vw;
+        font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+        color: #fff;
 
         .order-history-text {
-          font-family: "notosans";
           font-size: 2.1875vw;
         }
 
         .order-table-name {
-          font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+          min-width: 11.71875vw;
+          border-radius: 0.390625vw;
+          text-align: center;
           font-size: 2.65625vw;
           font-weight: bold;
           letter-spacing: -0.03984375vw;
           color: #fc0000;
+          background-color: #fff;
+          padding: 0 0.78125vw !important;
         }
       }
 
@@ -290,6 +559,7 @@ export default {
           display: flex;
           align-items: center;
           gap: 0.59375vw;
+          color: #fff;
 
           .check-svg {
             width: 2.1vw;
@@ -306,12 +576,13 @@ export default {
 
         .bar {
           height: 1.875vw;
-          border-left: solid 0.078125vw #707070;
+          border-left: solid 0.078125vw #aaa;
         }
 
         .order-time {
           font-family: 'Spoqa Han Sans Neo', 'sans-serif';
           font-size: 2.03125vw;
+          color: #fff;
           font-weight: bold;
         }
       }
@@ -328,6 +599,7 @@ export default {
         .current-order-history-text {
           font-family: "notosans";
           font-weight: bold;
+          color: #fff;
           font-size: 1.25vw;
           letter-spacing: -0.0625vw;
         }
@@ -342,8 +614,8 @@ export default {
 
           .current-order-history {
             font-family: 'Spoqa Han Sans Neo', 'sans-serif';
-            background-color: #f5f5f5;
-            border: solid 0.078125vw #d6d6d6;
+            color: #fff;
+            background-color: #292929;
             border-radius: 0.78125vw;
             display: flex;
             flex-direction: column;
@@ -358,27 +630,33 @@ export default {
 
               .product-name {
                 flex: 1;
-                font-size: 1.71875vw;
+                font-size: 2.1875vw;
                 font-weight: bold;
-                letter-spacing: -0.04296875vw;
+                letter-spacing: -0.025em;
               }
 
               .wrap-product-price {
                 font-size: 1.5625vw;
                 display: flex;
-                gap: 3.125vw;
+                align-items: center;
+                gap: 1.5625vw;
 
                 .product-quantity {
-                  width: 3.90625vw;
+                  font-size: 2.1875vw;
+                }
+
+                .product-price {
+                  width: 8.984375vw;
                   text-align: right;
                 }
               }
             }
 
             .product-option-list {
-              font-size: 1.40625vw;
-              color: #666;
-              letter-spacing: -0.02734375vw;
+              font-size: 1.5625vw;
+              color: #fff;
+              letter-spacing: -0.025em;
+              text-indent: 1em;
 
               .product-option {
                 display: flex;
@@ -391,10 +669,16 @@ export default {
 
                 .wrap-product-option-price {
                   display: flex;
-                  gap: 3.125vw;
+                  align-items: center;
+                  gap: 1.5625vw;
 
                   .option-quantity {
-                    width: 3.90625vw;
+                    text-align: right;
+                  }
+
+                  .option-price {
+                    width: 8.984375vw;
+                    font-size: 1.40625vw;
                     text-align: right;
                   }
                 }
@@ -410,6 +694,7 @@ export default {
         .last-order-history-text {
           font-family: "notosans";
           font-size: 1.25vw;
+          color: #fff;
           letter-spacing: -0.03125vw;
           border-bottom: solid 0.078125vw #666;
           padding-bottom: 0.78125vw !important;
@@ -417,7 +702,7 @@ export default {
         }
 
         .credit-history {
-          color: #666;
+          color: #fff;
         }
 
         .last-order-history-list {
@@ -441,23 +726,25 @@ export default {
 
               .last-order-product-name {
                 font-size: 1.25vw;
+                color: #fff;
                 letter-spacing: -0.03125vw;
               }
 
               .last-order-product-quantity {
                 font-size: 1.09375vw;
                 letter-spacing: -0.02734375vw;
-                color: #666;
+                color: #fff;
               }
             }
 
             .last-order-product-option {
               font-family: 'Spoqa Han Sans Neo', 'sans-serif';
               font-size: 1.015625vw;
-              color: #999;
+              color: #aaa;
               display: flex;
               justify-content: space-between;
               align-items: center;
+              text-indent: 1em;
             }
           }
         }
@@ -505,6 +792,7 @@ export default {
         font-weight: bold;
         font-size: 2.109375vw;
         letter-spacing: -0.05078125vw;
+        color: #fff;
       }
     }
   }
