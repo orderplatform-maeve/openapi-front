@@ -26,7 +26,10 @@
     :stores="stores"
     :time="time"
   )
-  div(:class="getHappyTalkStyle")
+  div(
+    :class="getHappyTalkStyle"
+    v-if="getStopRedirect"
+  )
     .wrap-happy-talk-arrow(@click="toggleHappyTalkButton")
       .wrap-triangle-arrow
         .triangle-arrow
@@ -47,7 +50,6 @@
     :isVisible="isVisiblePhoneNumberErrorModal"
   )
   happy-talk-success-modal(
-    v-if="getStopRedirect"
     :isVisible="isVisibleHappyTalkSuccessModal"
     :phoneNumber="phoneNumber"
   )
