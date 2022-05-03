@@ -425,12 +425,16 @@ export default {
     },
     getGoodsName(order) {
       const goodsList = order.order_info;
+      const isOverOneGoodsList = goodsList.length > 1;
+      const firstGoodsName = goodsList[0].good_name;
 
-      if (goodsList.length > 1) {
-        return `${goodsList[0].good_name} 외 ${goodsList.length - 1}개`;
+      if (isOverOneGoodsList) {
+        const minusOneGoodsQuantity = goodsList.length - 1;
+
+        return `${firstGoodsName} 외 ${minusOneGoodsQuantity}개`;
       }
 
-      return goodsList[0].good_name;
+      return firstGoodsName;
     }
   }
 };
