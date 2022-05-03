@@ -430,8 +430,9 @@ export default {
 
       if (isOverOneGoodsList) {
         const minusOneGoodsQuantity = goodsList.length - 1;
+        const goodsListName = `${firstGoodsName} 외 ${minusOneGoodsQuantity}개`;
 
-        return `${firstGoodsName} 외 ${minusOneGoodsQuantity}개`;
+        return goodsListName;
       }
 
       return firstGoodsName;
