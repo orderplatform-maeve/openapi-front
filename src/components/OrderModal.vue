@@ -511,7 +511,7 @@ export default {
 
   .wrap-order-modal {
     width: 83.75vw;
-    height: 76vh;
+    min-height: 80vh;
     background-color: #111;
     border: solid 0.15625vw #666;
     border-radius: 1.5625vw;
@@ -523,8 +523,10 @@ export default {
       display: flex;
       justify-content: space-between;
       border-bottom: solid 0.15625vw #fc0000;
+      gap: 0.78125vw;
 
       .wrap-order-history-text {
+        flex: 1;
         display: flex;
         align-items: center;
         gap: 1.5625vw;
@@ -532,14 +534,16 @@ export default {
         color: #fff;
 
         .order-history-text {
+          width: 8.59375vw;
           font-size: 2.1875vw;
         }
 
         .order-table-name {
+          flex: 1;
           min-width: 11.71875vw;
           border-radius: 0.390625vw;
           text-align: center;
-          font-size: 2.65625vw;
+          font-size: 3.75vw;
           font-weight: bold;
           letter-spacing: -0.03984375vw;
           color: #fc0000;
@@ -549,9 +553,12 @@ export default {
       }
 
       .wrap-order-time {
+        width: 31.25vw;
         display: flex;
+        justify-content: flex-end;
         align-items: center;
-        gap: 2.34375vw;
+        text-align: right;
+        gap: 1.5vw;
 
         .order-confirm-check {
           font-family: 'Spoqa Han Sans Neo', 'sans-serif';
@@ -591,10 +598,10 @@ export default {
       padding: 1.5625vw 3.90625vw !important;
       box-sizing: border-box;
       display: flex;
-      gap: 4.0625vw;
+      gap: 2.34375vw;
 
       .wrap-current-order-history {
-        width: 44.0625vw;
+        width: 54.6875vw;
 
         .current-order-history-text {
           font-family: "notosans";
@@ -627,36 +634,41 @@ export default {
               display: flex;
               justify-content: space-between;
               align-items: center;
+              gap: 0.390625vw;
 
               .product-name {
                 flex: 1;
-                font-size: 2.1875vw;
+                font-size: 3.75vw;
                 font-weight: bold;
                 letter-spacing: -0.025em;
               }
 
               .wrap-product-price {
-                font-size: 1.5625vw;
+                width: 21.25vw;
                 display: flex;
+                justify-content: space-between;
                 align-items: center;
-                gap: 1.5625vw;
+                gap: 1.171875vw;
 
                 .product-quantity {
-                  font-size: 2.1875vw;
+                  width: 7.96875vw;
+                  text-align: right;
+                  font-size: 3.75vw;
+                  letter-spacing: -0.025em;
                 }
 
                 .product-price {
-                  width: 8.984375vw;
+                  font-size: 1.953125vw;
+                  width: 12.109375vw;
                   text-align: right;
                 }
               }
             }
 
             .product-option-list {
-              font-size: 1.5625vw;
+              font-size: 2.96875vw;
               color: #fff;
               letter-spacing: -0.025em;
-              text-indent: 1em;
 
               .product-option {
                 display: flex;
@@ -664,21 +676,25 @@ export default {
                 align-items: center;
 
                 .option-name {
+                  text-indent: 1em;
                   flex: 1;
                 }
 
                 .wrap-product-option-price {
+                  width: 21.25vw;
                   display: flex;
+                  justify-content: space-between;
                   align-items: center;
-                  gap: 1.5625vw;
+                  gap: 1.171875vw;
 
                   .option-quantity {
+                    width: 7.96875vw;
                     text-align: right;
                   }
 
                   .option-price {
-                    width: 8.984375vw;
-                    font-size: 1.40625vw;
+                    width: 12.109375vw;
+                    font-size: 1.5625vw;
                     text-align: right;
                   }
                 }
@@ -723,14 +739,18 @@ export default {
               display: flex;
               justify-content: space-between;
               align-items: center;
+              gap: 0.390625vw;
 
               .last-order-product-name {
+                flex: 1;
                 font-size: 1.25vw;
                 color: #fff;
                 letter-spacing: -0.03125vw;
               }
 
               .last-order-product-quantity {
+                text-align: right;
+                width: 3.125vw;
                 font-size: 1.09375vw;
                 letter-spacing: -0.02734375vw;
                 color: #fff;
@@ -745,6 +765,15 @@ export default {
               justify-content: space-between;
               align-items: center;
               text-indent: 1em;
+
+              .last-option-name {
+                flex: 1;
+              }
+
+              .last-option-quantity {
+                width: 3.125vw;
+                text-align: right;
+              }
             }
           }
         }
