@@ -549,8 +549,8 @@ export default {
 
     .order-title-list {
       display: grid;
-      grid-template-columns: 11.71875vw 5.46875vw 9.375vw 9.375vw 9.375vw 3.75vw 4.0625vw 8.90625vw 4.375vw;
-      gap: 1.5625vw;
+      grid-template-columns: 11.71875vw 5.46875vw 9.375vw 9.375vw 9.375vw 3.75vw 10.3125vw 8.90625vw 4.375vw;
+      gap: 0.78125vw;
       padding: 3.75vh 0.78125vw 1.25vh !important;
       border-bottom: solid 0.078125vw #333333;
       box-sizing: border-box;
@@ -572,9 +572,9 @@ export default {
           height: 4.375vw;
           padding: 0 0.78125vw !important;
           display: grid;
-          grid-template-columns: 11.71875vw 5.46875vw 9.375vw 9.375vw 9.375vw 3.75vw 4.0625vw 8.90625vw 4.375vw;
+          grid-template-columns: 11.71875vw 5.46875vw 9.375vw 9.375vw 9.375vw 3.75vw 10.3125vw 8.90625vw 4.375vw;
           align-items: center;
-          gap: 1.5625vw;
+          gap: 0.78125vw;
           box-sizing: border-box;
 
           > p {
@@ -693,8 +693,8 @@ export default {
     // 결제미포함 버전
     .electronic-access-list-version {
       display: grid;
-      grid-template-columns: 7.18125vw 15.625vw 1fr 9.375vw 15.625vw;
-      gap: 1.953125vw;
+      grid-template-columns: 7.18125vw 19.53125vw 1fr 9.375vw 6.375vw;
+      gap: 0.78125vw;
       padding: 3.75vh 0.78125vw 1.25vh !important;
       border-bottom: solid 0.078125vw #333333;
       box-sizing: border-box;
@@ -711,12 +711,12 @@ export default {
       overflow: auto;
       .order-information-lists {
         .order-information-list {
-          height: 4.375vw;
+          min-height: 6.375vw;
           padding: 0 0.78125vw !important;
           display: grid;
-          grid-template-columns: 7.18125vw 15.625vw 1fr 9.375vw 15.625vw;
+          grid-template-columns: 7.18125vw 19.53125vw 1fr 9.375vw 6.375vw;
           align-items: center;
-          gap: 1.953125vw;
+          gap: 0.78125vw;
           box-sizing: border-box;
 
           > p {
@@ -744,7 +744,12 @@ export default {
           }
 
           .order-information-table-number {
+            font-size: 3.75vw;
             font-weight: bold;
+          }
+
+          .order-information-goods-name {
+            font-size: 2.734375vw;
           }
 
           .order-information-unpaid-money {
@@ -768,9 +773,10 @@ export default {
             }
 
             .red-box {
-              min-width: 4.375vw;
+              min-width: 6.375vw;
               height: 2.65625vw;
               background-color: #fc0000;
+              font-size: 2.5vw;
               color: #fff;
               font-weight: bold;
               display: flex;
