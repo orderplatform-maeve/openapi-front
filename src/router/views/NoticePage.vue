@@ -1,108 +1,120 @@
 <template lang="pug">
-  .wrap-notice-page
-    notice-search-type-modal(
-      v-if="isNoticeTypeModalVisible"
-      :data="noticeTypeList"
-      :currentType="getSearchType"
-      :selectType="selectNoticeType"
-      :closeSearchModal="closeNoticeTypeModal"
-    )
-    send-file-modal(
-      v-if="sendFileModalVisible"
-      :fileList="sendFileList"
-      :phoneNumber="phoneNumber"
-      :updatePhoneNumber="updatePhoneNumber"
-      :cancelSendFile="cancelSendFile"
-      :openSendFileCheckModal="openSendFileCheckModal"
-    )
-    send-file-result-modal(
-      v-if="fileResultModalVisible"
-      :fileResultModalCount="fileResultModalCount"
-      :fileResultModalCountClose="fileResultModalCountClose"
-      :phoneNumber="phoneNumber"
-      :startSendFileResultInterval="startSendFileResultInterval"
-    )
-    send-file-check-modal(
-      v-if="sendFileCheckModalVisible"
-      :fileList="sendFileList"
-      :phoneNumber="phoneNumber"
-      :cancelSendFile="closeSendFileCheckModal"
-      :sendFile="sendFile"
-    )
-    .orders-container
-      p.store-name {{storeName}}{{version}}
-      .header-orders-status-list
-        .orders-status(@click="setViewMode('EVENT, UPDATE, NOTICE')" :class="{activeButton: viewMode === 'EVENT, UPDATE, NOTICE'}")
-          p 전체
-        .orders-status(@click="setViewMode('NOTICE')" :class="{activeButton: viewMode === 'NOTICE'}")
-          p 공지사항
-        .orders-status(@click="setViewMode('UPDATE')" :class="{activeButton: viewMode === 'UPDATE'}")
-          p 업데이트
-        .orders-status(@click="setViewMode('EVENT')" :class="{activeButton: viewMode === 'EVENT'}")
-          p 이벤트
-      .wrap-order-list(v-if="!isDetailInfo")
-        .wrap-search-notice
-          .search-notice
-            //- select.search-notice-select(v-model="searchType")
-            //-   option(value="TITLE") 제목
-            //-   option(value="DESC") 내용
-            button.search-notice-select(@click="openNoticeTypeModal")
-              p.select-button {{getSearchType}}
-              icon-under-arrow
-            input.search-notice-input(type="text" v-model="searchText")
-            button.search-notice-submit(@click="searchNoticeList") 검색
-        .wrap-search-notice-list
-          .wrap-notice-list-title
-            p.notice-list-title No
-            p.notice-list-title 구분
-            p.notice-list-title 제목
-            p.notice-list-title 작성자
-            p.notice-list-title 작성일
-          .notice-list
-            div(
-              :class="getNoticeStyle(notice)"
-              v-for="(notice, index) in noticeList"
-              :key="`notice-list-key-${index}`"
-              @click="goDetailNotice(notice)"
-            )
-              .wrap-notice-no
-                p.notice-no {{getNoticeNumber(notice)}}
-              p(:class="getNoticeTypeStyle(notice)") {{getNoticeType(notice)}}
-              .wrap-notice-title
-                p.notice-title {{getNoticeTitle(notice)}}
-                paper-clip(
-                  v-if="isNoticeFile(notice)"
-                  :width="'1.103515625vw'"
-                  :height="'1.154921875vw'"
-                )
-                new-icon(v-if="isNoticeNew(notice)")
-              p.notice-writer {{getNoticeAuthor(notice)}}
-              p.notice-write-date {{getNoticeDate(notice)}}
-        .wrap-pagination
-          button.previous-button(@click="getNoticePreviousPageData") &lt;
-          button(
-            v-for="(page, index) in getNoticePageList"
-            :key="index"
-            :class="getPageStyle(page)"
-            @click="getNoticeSelectPageData(page)"
-          ) {{page}}
-          button.next-button(@click="getNoticeNextPageData") &gt;
-      notice-detail(
-        v-else
-        :isMainNotice="isDetailMainNotice"
-        :noticeType="getDetailNoticeType"
-        :noticeTitle="getDetailNoticeTitle"
-        :isNoticeNew="isDetailNoticeNew"
-        :noticeAuthor="getDetailNoticeAuth"
-        :noticeWriteDate="getDetailNoticeDate"
-        :noticeContents="getDetailNoticeContents"
-        :noticeFileList="getDetailNoticeFileList"
-        :goNoticeList="goNoticeList"
-        :fileCheckboxList="fileCheckboxList"
-        :updateFileCheckbox="updateFileCheckbox"
-        :realSendFilePart="realSendFilePart"
-        :sendAllFileModal="sendAllFileModal"
+.wrap-notice-page
+  notice-search-type-modal(
+    v-if="isNoticeTypeModalVisible"
+    :data="noticeTypeList"
+    :currentType="getSearchType"
+    :selectType="selectNoticeType"
+    :closeSearchModal="closeNoticeTypeModal"
+  )
+  send-file-modal(
+    v-if="sendFileModalVisible"
+    :fileList="sendFileList"
+    :phoneNumber="phoneNumber"
+    :updatePhoneNumber="updatePhoneNumber"
+    :cancelSendFile="cancelSendFile"
+    :openSendFileCheckModal="openSendFileCheckModal"
+  )
+  send-file-result-modal(
+    v-if="fileResultModalVisible"
+    :fileResultModalCount="fileResultModalCount"
+    :fileResultModalCountClose="fileResultModalCountClose"
+    :phoneNumber="phoneNumber"
+    :startSendFileResultInterval="startSendFileResultInterval"
+  )
+  send-file-check-modal(
+    v-if="sendFileCheckModalVisible"
+    :fileList="sendFileList"
+    :phoneNumber="phoneNumber"
+    :cancelSendFile="closeSendFileCheckModal"
+    :sendFile="sendFile"
+  )
+  .orders-container
+    p.store-name {{storeName}}{{version}}
+    .header-orders-status-list
+      div(
+        :class="getOrderStatusAllStyle"
+        @click="setViewMode('EVENT, UPDATE, NOTICE')"
       )
+        p 전체
+      div(
+        :class="getOrderStatusNoticeStyle"
+        @click="setViewMode('NOTICE')"
+      )
+        p 공지사항
+      div(
+        :class="getOrderStatusUpdateStyle"
+        @click="setViewMode('UPDATE')"
+      )
+        p 업데이트
+      div(
+        :class="getOrderStatusEventStyle"
+        @click="setViewMode('EVENT')"
+      )
+        p 이벤트
+    .wrap-order-list(v-if="!isDetailInfo")
+      .wrap-search-notice
+        .search-notice
+          button.search-notice-select(@click="openNoticeTypeModal")
+            p.select-button {{getSearchType}}
+            icon-under-arrow
+          input.search-notice-input(
+            type="text"
+            v-model="searchText"
+          )
+          button.search-notice-submit(@click="searchNoticeList") 검색
+      .wrap-search-notice-list
+        .wrap-notice-list-title
+          p.notice-list-title No
+          p.notice-list-title 구분
+          p.notice-list-title 제목
+          p.notice-list-title 작성자
+          p.notice-list-title 작성일
+        .notice-list
+          div(
+            :class="getNoticeStyle(notice)"
+            v-for="(notice, index) in noticeList"
+            :key="`notice-list-key-${index}`"
+            @click="goDetailNotice(notice)"
+          )
+            .wrap-notice-no
+              p.notice-no {{getNoticeNumber(notice)}}
+            p(:class="getNoticeTypeStyle(notice)") {{getNoticeType(notice)}}
+            .wrap-notice-title
+              p.notice-title {{getNoticeTitle(notice)}}
+              paper-clip(
+                v-if="isNoticeFile(notice)"
+                :width="'1.103515625vw'"
+                :height="'1.154921875vw'"
+              )
+              new-icon(v-if="isNoticeNew(notice)")
+            p.notice-writer {{getNoticeAuthor(notice)}}
+            p.notice-write-date {{getNoticeDate(notice)}}
+      .wrap-pagination
+        button.previous-button(@click="getNoticePreviousPageData") &lt;
+        button(
+          v-for="(page, index) in getNoticePageList"
+          :key="index"
+          :class="getPageStyle(page)"
+          @click="getNoticeSelectPageData(page)"
+        ) {{page}}
+        button.next-button(@click="getNoticeNextPageData") &gt;
+    notice-detail(
+      v-else
+      :isMainNotice="isDetailMainNotice"
+      :noticeType="getDetailNoticeType"
+      :noticeTitle="getDetailNoticeTitle"
+      :isNoticeNew="isDetailNoticeNew"
+      :noticeAuthor="getDetailNoticeAuth"
+      :noticeWriteDate="getDetailNoticeDate"
+      :noticeContents="getDetailNoticeContents"
+      :noticeFileList="getDetailNoticeFileList"
+      :goNoticeList="goNoticeList"
+      :fileCheckboxList="fileCheckboxList"
+      :updateFileCheckbox="updateFileCheckbox"
+      :realSendFilePart="realSendFilePart"
+      :sendAllFileModal="sendAllFileModal"
+    )
 </template>
 
 <script>
@@ -284,6 +296,42 @@ export default {
 
       return data;
     },
+    getOrderStatusAllStyle() {
+      const isViewModeAll = this.viewMode === 'EVENT, UPDATE, NOTICE';
+      const orderStatusAllStyle = {
+        'orders-status': true,
+        'active-button': isViewModeAll,
+      };
+
+      return orderStatusAllStyle;
+    },
+    getOrderStatusNoticeStyle() {
+      const isViewModeNotice = this.viewMode === 'NOTICE';
+      const orderStatusNoticeStyle = {
+        'orders-status': true,
+        'active-button': isViewModeNotice,
+      };
+
+      return orderStatusNoticeStyle;
+    },
+    getOrderStatusUpdateStyle() {
+      const isViewModeUpdate = this.viewMode === 'UPDATE';
+      const orderStatusUpdateStyle = {
+        'orders-status': true,
+        'active-button': isViewModeUpdate,
+      };
+
+      return orderStatusUpdateStyle;
+    },
+    getOrderStatusEventStyle() {
+      const isViewModeEvent = this.viewMode === 'EVENT';
+      const orderStatusEventStyle = {
+        'orders-status': true,
+        'active-button': isViewModeEvent,
+      };
+
+      return orderStatusEventStyle;
+    },
   },
   methods: {
     async setViewMode(value) {
@@ -343,12 +391,16 @@ export default {
     },
     getNoticeTypeStyle(data) {
       const type = data?.noticeCategory;
+      const isUpdateType = type === 'UPDATE';
+      const isEventType = type === 'EVENT';
 
-      return {
-        'type-update': type === 'UPDATE',
-        'type-event': type === 'EVENT',
-        'type-notice': type === 'NOTICE',
+      const noticeTypeStyle = {
+        'type-notice': true,
+        'type-update': isUpdateType,
+        'type-event': isEventType,
       };
+
+      return noticeTypeStyle;
     },
     getNoticeTitle(data) {
       return data?.noticeTitle;
@@ -713,7 +765,7 @@ input {
       }
     }
 
-    .activeButton {
+    .active-button {
       background-color: #fff !important;
       color: #000;
 
@@ -816,7 +868,6 @@ input {
           background-color: #f5f5f5;
         }
         .notice-info {
-          height: 3.90625vw;
           display: grid;
           align-items: center;
           grid-template-columns: 7.677543186fr 11.516314779fr 55.854126679fr 12.476007678fr 12.476007678fr;
@@ -826,20 +877,25 @@ input {
           > p {
             font-family: 'Spoqa Han Sans Neo', 'sans-serif';
             text-align: center;
-            font-size: 1.25vw;
+            font-size: 1.5625vw;
             color: #999;
           }
 
           .wrap-notice-title {
+            position: relative;
             display: flex;
             align-items: center;
             gap: 0.78125vw;
 
             .notice-title {
+              max-width: 45.46875vw;
               text-align: left;
-              font-size: 1.25vw;
+              font-size: 2.1875vw;
               font-family: 'Spoqa Han Sans Neo', 'sans-serif';
               color: #999;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
             }
           }
 
@@ -849,7 +905,7 @@ input {
             align-items: center;
             .notice-no {
               font-family: 'Spoqa Han Sans Neo', 'sans-serif';
-              font-size: 1.25vw;
+              font-size: 2.1875vw;
               display: flex;
               justify-content: center;
               align-items: center;
@@ -878,12 +934,12 @@ input {
             justify-content: center;
             align-items: center;
             .notice-no {
-              width: 3.75vw;
-              height: 1.875vw;
+              width: 4.6875vw;
+              height: 2.34375vw;
               font-family: 'Spoqa Han Sans Neo', 'sans-serif';
               background-color: #fc0000;
               border-radius: 0.9375vw;
-              font-size: 1.09375vw;
+              font-size: 1.3vw;
               letter-spacing: -0.02734375vw;
               color: #fff !important;
               display: flex;
@@ -892,6 +948,9 @@ input {
             }
           }
 
+          .type-notice {
+            font-size: 23px;
+          }
           .type-update {
             color: #0071d4;
           }
