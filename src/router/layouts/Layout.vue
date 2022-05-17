@@ -26,10 +26,7 @@
     :stores="stores"
     :time="time"
   )
-  div(
-    :class="getHappyTalkStyle"
-    v-if="getStopRedirect"
-  )
+  div(:class="getHappyTalkStyle")
     .wrap-happy-talk-arrow(@click="toggleHappyTalkButton")
       .wrap-triangle-arrow
         .triangle-arrow
