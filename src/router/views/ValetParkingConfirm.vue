@@ -37,7 +37,7 @@ export default {
       const data = this.$store.state.valet.carNumber;
 
       if (data[0]) {
-        return data[0].split('');
+        return data[0]?.split('');
       }
       return [];
     }

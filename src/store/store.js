@@ -1038,6 +1038,9 @@ const menu = {
       try {
         return state.goods.map( p => {
           let categories = p.T_order_store_good_category;
+          if (!p.T_order_store_good_display_name) {
+            console.log(p, '확인');
+          }
 
           try {
             if (typeof categories === "string") {
