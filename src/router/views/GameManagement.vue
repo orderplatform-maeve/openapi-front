@@ -298,7 +298,7 @@ export default {
       return formatDate;
     },
     formatGameBetType(gameBetType) {
-      const format = gameBetType.replace('GOODS', '상품 내기').replace('CUSTOM', '자유 내기').replace('BILL', '계산 내기');
+      const format = gameBetType?.replace('GOODS', '상품 내기')?.replace('CUSTOM', '자유 내기')?.replace('BILL', '계산 내기');
       return format;
     },
     formatTable(list) {
