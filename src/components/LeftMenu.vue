@@ -1,55 +1,55 @@
 <template lang="pug">
-  .left-menu-container
-    modal-confirm(
-      :show="confirmModal.show"
-      :close="confirmModal.close"
-      :title="confirmModal.title"
-      :message="confirmModal.message"
-      :confirm="confirmModal.confirm"
+.left-menu-container
+  modal-confirm(
+    :show="confirmModal.show"
+    :close="confirmModal.close"
+    :title="confirmModal.title"
+    :message="confirmModal.message"
+    :confirm="confirmModal.confirm"
+  )
+  .torder-logo
+    icon-torder-logo
+  .wrap-current-date(@click="onTouchSecretFunction")
+    p.current-date {{getNowDate()}}
+    p.current-time {{getNowTime()}}
+  .wrap-page-button-list
+    router-link.order-history.wrap-notice(v-if="visibleOrderButton" :to="paths.notice" :class="{activeButton: path === '/notice'}")
+      span 공지사항
+      p.big-title {{getNoticeQuantity}}
+    router-link.order-history(v-if="visibleOrderButton" :to="paths.order" :class="{activeButton: path === '/order'}") 주문보기
+    router-link.additional-functions(
+      v-if="visibleOrderButton"
+      :to="paths.additional"
+      :class="{activeButton: additionalPath}"
     )
-    .torder-logo
-      icon-torder-logo
-    .wrap-current-date
-      p.current-date {{getNowDate()}}
-      p.current-time {{getNowTime()}}
-    .wrap-page-button-list
-      router-link.order-history.wrap-notice(v-if="visibleOrderButton" :to="paths.notice" :class="{activeButton: path === '/notice'}")
-        span 공지사항
-        p.big-title {{getNoticeQuantity}}
-      router-link.order-history(v-if="visibleOrderButton" :to="paths.order" :class="{activeButton: path === '/order'}") 주문보기
-      router-link.additional-functions(
-        v-if="visibleOrderButton"
-        :to="paths.additional"
-        :class="{activeButton: additionalPath}"
-      )
-        span 추가기능
-        img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_w.png")
-      router-link.paid-history(v-if="visibleOrderButton" :to="paths.paymentManagement" :class="{activeButton: path === '/paymentManagement'}") 결제내역
-    .wrap-bottom-button-area
-      .on-off-button-list
-        .wrap-on-off-button
-          p 테블릿 화면
-          .wrap-on-off-switch
-            .on-off-switch(v-on:click.stop="closeTabletScreen" :class="{activeSwitch: !statusTabletScreen}") OFF
-            .on-off-switch(v-on:click.stop="openTabletScreen" :class="{activeSwitch: statusTabletScreen}") ON
-        .wrap-on-off-button
-          p 테블릿 주문
-          .wrap-on-off-switch
-            .on-off-switch(v-on:click.stop="rejectOrder" :class="{activeSwitch: !statusOrder}") OFF
-            .on-off-switch(v-on:click.stop="agreeOrder" :class="{activeSwitch: statusOrder}") ON
-        .wrap-on-off-button
-          p 주문 내역
-          .wrap-on-off-switch
-            //- label.on-off-switch(v-on:click.stop="toggleRecentOrder" :class="{switchOff: !statusRecentOrder, switchOn: statusRecentOrder}")
-            //-   input(type='checkbox' :checked="statusRecentOrder" disabled="disabled")
-            .on-off-switch(v-on:click.stop="hideRecentOrder" :class="{activeSwitch: !statusRecentOrder}") OFF
-            .on-off-switch(v-on:click.stop="showRecentOrder" :class="{activeSwitch: statusRecentOrder}") ON
-      button.wrap-refresh-button(@click="restart")
-        p 새로고침
-        icon-refresh-icon
-      button.wrap-logout-button(v-if="visibleLogoutButton" @click="logout")
-        p 로그아웃
-        icon-logout-icon
+      span 추가기능
+      img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_w.png")
+    router-link.paid-history(v-if="visibleOrderButton" :to="paths.paymentManagement" :class="{activeButton: path === '/paymentManagement'}") 결제내역
+  .wrap-bottom-button-area
+    .on-off-button-list
+      .wrap-on-off-button
+        p 테블릿 화면
+        .wrap-on-off-switch
+          .on-off-switch(v-on:click.stop="closeTabletScreen" :class="{activeSwitch: !statusTabletScreen}") OFF
+          .on-off-switch(v-on:click.stop="openTabletScreen" :class="{activeSwitch: statusTabletScreen}") ON
+      .wrap-on-off-button
+        p 테블릿 주문
+        .wrap-on-off-switch
+          .on-off-switch(v-on:click.stop="rejectOrder" :class="{activeSwitch: !statusOrder}") OFF
+          .on-off-switch(v-on:click.stop="agreeOrder" :class="{activeSwitch: statusOrder}") ON
+      .wrap-on-off-button
+        p 주문 내역
+        .wrap-on-off-switch
+          //- label.on-off-switch(v-on:click.stop="toggleRecentOrder" :class="{switchOff: !statusRecentOrder, switchOn: statusRecentOrder}")
+          //-   input(type='checkbox' :checked="statusRecentOrder" disabled="disabled")
+          .on-off-switch(v-on:click.stop="hideRecentOrder" :class="{activeSwitch: !statusRecentOrder}") OFF
+          .on-off-switch(v-on:click.stop="showRecentOrder" :class="{activeSwitch: statusRecentOrder}") ON
+    button.wrap-refresh-button(@click="restart")
+      p 새로고침
+      icon-refresh-icon
+    //- button.wrap-logout-button(v-if="visibleLogoutButton" @click="logout")
+    //-   p 로그아웃
+    //-   icon-logout-icon
 </template>
 
 <script>
@@ -64,6 +64,12 @@ const {
 } = notice;
 
 export default {
+  props: {
+    onTouchSecretFunction: {
+      type: Function,
+      required: true,
+    }
+  },
   data() {
     return {
       time: {

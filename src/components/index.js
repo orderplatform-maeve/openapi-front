@@ -31,3 +31,5 @@ export { default as HappyTalkApplyModal } from './HappyTalkApplyModal';
 export { default as PhoneNumberErrorModal } from './PhoneNumberErrorModal';
 export { default as HappyTalkConfirmModal } from './HappyTalkConfirmModal';
 export { default as HappyTalkSuccessModal } from './HappyTalkSuccessModal';
+export { default as LogoutSecret } from './LogoutSecret';
+export { default as LogoutConfirmModal } from './LogoutConfirmModal';

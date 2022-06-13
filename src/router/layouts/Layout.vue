@@ -9,7 +9,9 @@
     :data="allRefreshList"
   )
   flash-message
-  left-menu
+  left-menu(
+    :onTouchSecretFunction="onTouchSecretFunction"
+  )
   notice-popup-list-modal(
     v-if="isPopupVisible"
     :noticePopupData="getNoticePopupData"
@@ -50,6 +52,15 @@
     :isVisible="isVisibleHappyTalkSuccessModal"
     :phoneNumber="phoneNumber"
   )
+  LogoutSecret(
+    v-if="isVisibleLogoutSecretModal"
+    :logout="logout"
+    :goSelectStore="onMoveSelectStorePage"
+    :close="closeLogoutSecretModal"
+    :isVisibleLogoutConfirmModal="isVisibleLogoutConfirmModal"
+    :openVisibleLogoutConfirmModal="openVisibleLogoutConfirmModal"
+    :closeVisibleLogoutConfirmModal="closeVisibleLogoutConfirmModal"
+  )
 </template>
 
 <script>
@@ -64,6 +75,7 @@ import {
   HappyTalkApplyModal,
   PhoneNumberErrorModal,
   HappyTalkSuccessModal,
+  LogoutSecret,
 } from '@components';
 import {
   payments,
@@ -90,6 +102,7 @@ export default {
     HappyTalkApplyModal,
     PhoneNumberErrorModal,
     HappyTalkSuccessModal,
+    LogoutSecret,
   },
   // https://vuex.vuejs.org/kr/guide/state.html#vuex-%EC%83%81%ED%83%9C%EB%A5%BC-vue-%EC%BB%B4%ED%8F%AC%EB%84%8C%ED%8A%B8%EC%97%90%EC%84%9C-%EA%B0%80%EC%A0%B8%EC%98%A4%EA%B8%B0
   store,
@@ -112,6 +125,10 @@ export default {
       isVisiblePhoneNumberErrorModal: false,
       isVisibleHappyTalkConfirmModal: false,
       isVisibleHappyTalkSuccessModal: false,
+      isVisibleLogoutSecretModal: false,
+      secretFunctionTouchCount: 0,
+      secretFunctionTouchTimer: 0,
+      isVisibleLogoutConfirmModal: false,
     };
   },
   computed: {
@@ -520,6 +537,7 @@ export default {
       this.$store.dispatch('logout');
       localStorage.removeItem('auth');
       this.$router.replace(paths.login);
+      this.closeLogoutSecretModal();
     },
     restart() {
       // location.href = '/'; // cache 파일을 먼저 로드한다.
@@ -935,6 +953,52 @@ export default {
       } catch(error) {
         console.log(error, '에러');
       }
+    },
+    openLogoutSecretModal() {
+      this.isVisibleLogoutSecretModal = true;
+    },
+    closeLogoutSecretModal() {
+      this.isVisibleLogoutSecretModal = false;
+      this.closeVisibleLogoutConfirmModal();
+    },
+    plusSecretFunctionTouchCount() {
+      this.secretFunctionTouchCount += 1;
+    },
+    resetSecretFunctionTouchCount() {
+      this.secretFunctionTouchCount = 0;
+    },
+    onTouchSecretFunction() {
+      const isDev = process.env.STOP_REDIRECT;
+
+      if (isDev) {
+        this.openLogoutSecretModal();
+        return;
+      }
+
+      this.plusSecretFunctionTouchCount();
+      const isOpenCount = this.logoutSecretModalOpenTouchCount > 4;
+      if (isOpenCount) {
+        this.openLogoutSecretModal();
+        this.resetSecretFunctionTouchCount();
+        return;
+      }
+
+      if (this.secretFunctionTouchTimer)  {
+        clearTimeout(this.secretFunctionTouchTimer);
+      }
+      this.secretFunctionTouchTimer = setTimeout(function() {
+        this.resetSecretFunctionTouchCount();
+      }.bind(this), 1000);
+    },
+    onMoveSelectStorePage() {
+      this.closeLogoutSecretModal();
+      this.$router.push('/store');
+    },
+    openVisibleLogoutConfirmModal() {
+      this.isVisibleLogoutConfirmModal = true;
+    },
+    closeVisibleLogoutConfirmModal() {
+      this.isVisibleLogoutConfirmModal = false;
     },
   },
 };
