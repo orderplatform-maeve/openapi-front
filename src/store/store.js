@@ -960,8 +960,8 @@ const menu = {
           code: p.T_order_store_good_code,
           price: p.T_order_store_good_defualt_price,
           displayName: p.T_order_store_good_display_name,
-          displayNameOneLine: p.T_order_store_good_display_name.replace(/\/\//gi, " "),
-          displayNameNewLine: p.T_order_store_good_display_name.replace(/\/\//gi, "<br/>"),
+          displayNameOneLine: p.T_order_store_good_display_name?.replace(/\/\//gi, " "),
+          displayNameNewLine: p.T_order_store_good_display_name?.replace(/\/\//gi, "<br/>"),
           image: p.T_order_store_good_image,
           name: p.T_order_store_good_name,
           names: p.T_order_store_good_name_array,
@@ -1038,6 +1038,9 @@ const menu = {
       try {
         return state.goods.map( p => {
           let categories = p.T_order_store_good_category;
+          if (!p.T_order_store_good_display_name) {
+            console.log(p, '확인');
+          }
 
           try {
             if (typeof categories === "string") {
@@ -1056,8 +1059,8 @@ const menu = {
             code: p.T_order_store_good_code,
             price: p.T_order_store_good_defualt_price,
             displayName: p.T_order_store_good_display_name,
-            displayNameOneLine: p.T_order_store_good_display_name.replace(/\/\//gi, " "),
-            displayNameNewLine: p.T_order_store_good_display_name.replace(/\/\//gi, "<br/>"),
+            displayNameOneLine: p.T_order_store_good_display_name?.replace(/\/\//gi, " "),
+            displayNameNewLine: p.T_order_store_good_display_name?.replace(/\/\//gi, "<br/>"),
             image: p.T_order_store_good_image,
             name: p.T_order_store_good_name,
             names: p.T_order_store_good_name_array,

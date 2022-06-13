@@ -1,6 +1,6 @@
 const wonComma = (num) => {
   const re = /\B(?=(\d{3})+(?!\d))/g;
-  const newNum = num.replace(re, ',');
+  const newNum = num?.replace(re, ',');
   const result = `${newNum}`;
 
   return result;
