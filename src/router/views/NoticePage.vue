@@ -584,7 +584,7 @@ export default {
       this.sendFileModalVisible = true;
     },
     autoHypenPhone(str){
-      str = str.replace(/[^0-9]/g, '');
+      str = str?.replace(/[^0-9]/g, '');
       var tmp = '';
 
       if( str.length < 4){
@@ -621,7 +621,7 @@ export default {
       const data = {
         noticeId: Number(this.isDetailInfo),
         noticeFiles: fileList.map((file) => file.filePath),
-        phoneNumber: phoneNumber.replace(/-/gi, ''),
+        phoneNumber: phoneNumber?.replace(/-/gi, ''),
       };
 
       try {

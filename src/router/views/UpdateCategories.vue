@@ -153,10 +153,11 @@ export default {
   },
   async mounted() {
     await this.initialize();
-    this.cloneDate.startHour = this.data[this.selectMainCategoryNumber].categoryVisibleStartTime.split(':')[0];
-    this.cloneDate.startMinute = this.data[this.selectMainCategoryNumber].categoryVisibleStartTime.split(':')[1];
-    this.cloneDate.endHour = this.data[this.selectMainCategoryNumber].categoryVisibleEndTime.split(':')[0];
-    this.cloneDate.endMinute = this.data[this.selectMainCategoryNumber].categoryVisibleEndTime.split(':')[1];
+    console.log(this.cloneDate.startMinute = this.data[this.selectMainCategoryNumber].categoryVisibleStartTime?.split(':')[1], 'asasdasdasd');
+    this.cloneDate.startHour = this.data[this.selectMainCategoryNumber].categoryVisibleStartTime?.split(':')[0];
+    this.cloneDate.startMinute = this.data[this.selectMainCategoryNumber].categoryVisibleStartTime?.split(':')[1];
+    this.cloneDate.endHour = this.data[this.selectMainCategoryNumber].categoryVisibleEndTime?.split(':')[0];
+    this.cloneDate.endMinute = this.data[this.selectMainCategoryNumber].categoryVisibleEndTime?.split(':')[1];
   },
   methods: {
     select(id) {
@@ -216,16 +217,16 @@ export default {
     },
     //
     getCategoryVisibleStartHour() {
-      return this.data[this.selectMainCategoryNumber].categoryVisibleStartTime.split(':')[0];
+      return this.data[this.selectMainCategoryNumber].categoryVisibleStartTime?.split(':')[0];
     },
     getCategoryVisibleStartMinute() {
-      return this.data[this.selectMainCategoryNumber].categoryVisibleStartTime.split(':')[1];
+      return this.data[this.selectMainCategoryNumber].categoryVisibleStartTime?.split(':')[1];
     },
     getCategoryVisibleEndHour() {
-      return this.data[this.selectMainCategoryNumber].categoryVisibleEndTime.split(':')[0];
+      return this.data[this.selectMainCategoryNumber].categoryVisibleEndTime?.split(':')[0];
     },
     getCategoryVisibleEndMinute() {
-      return this.data[this.selectMainCategoryNumber].categoryVisibleEndTime.split(':')[1];
+      return this.data[this.selectMainCategoryNumber].categoryVisibleEndTime?.split(':')[1];
     },
     getSubCategories() {
       try {
@@ -455,10 +456,10 @@ export default {
     // 시간 선택 모달창
     openModal() {
       // time 세팅
-      this.cloneDate.startHour = this.data[this.selectMainCategoryNumber].categoryVisibleStartTime.split(':')[0];
-      this.cloneDate.startMinute = this.data[this.selectMainCategoryNumber].categoryVisibleStartTime.split(':')[1];
-      this.cloneDate.endHour = this.data[this.selectMainCategoryNumber].categoryVisibleEndTime.split(':')[0];
-      this.cloneDate.endMinute = this.data[this.selectMainCategoryNumber].categoryVisibleEndTime.split(':')[1];
+      this.cloneDate.startHour = this.data[this.selectMainCategoryNumber].categoryVisibleStartTime?.split(':')[0];
+      this.cloneDate.startMinute = this.data[this.selectMainCategoryNumber].categoryVisibleStartTime?.split(':')[1];
+      this.cloneDate.endHour = this.data[this.selectMainCategoryNumber].categoryVisibleEndTime?.split(':')[0];
+      this.cloneDate.endMinute = this.data[this.selectMainCategoryNumber].categoryVisibleEndTime?.split(':')[1];
 
       this.isCategoryVisibleSelectDateModal = true;
     },

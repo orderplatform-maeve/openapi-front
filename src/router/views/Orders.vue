@@ -70,9 +70,10 @@
             p.order-information-table-number(:class="orderStyleCheck(order)") {{checkedTabletNum(order)}}
             p.order-information-goods-name {{getGoodsName(order)}}
             p.order-information-order-time {{getOrderTime(order).substr(11)}}
-            p.order-information-people-group
-              span.small-text {{totalVisitPeopleDeepDepth(order)}}
-              span.small-text(v-if="totalVisitPeopleDeepDepth(order)") =
+            .order-information-people-group
+              p.wrap-small-text
+                span.small-text {{totalVisitPeopleDeepDepth(order)}}
+                span.small-text(v-if="totalVisitPeopleDeepDepth(order)")  =
               span.red-box {{visitGroups(order)}}명
 
 </template>
@@ -768,13 +769,17 @@ export default {
           .order-information-people-group {
             height: 2.65625vw;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            gap: 0.78125vw;
             border-radius: 0.390625vw;
 
-            .small-text {
-              font-size: 1.25vw;
+            .wrap-small-text {
+              word-break: keep-all;
+              .small-text {
+                color: #fff;
+                font-size: 1.25vw;
+              }
             }
 
             .red-box {
