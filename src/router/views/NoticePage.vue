@@ -34,7 +34,7 @@
     .header-orders-status-list
       div(
         :class="getOrderStatusAllStyle"
-        @click="setViewMode('EVENT, UPDATE, NOTICE')"
+        @click="setViewMode('EVENT, UPDATE, NOTICE, NEWS')"
       )
         p 전체
       div(
@@ -52,6 +52,11 @@
         @click="setViewMode('EVENT')"
       )
         p 이벤트
+      div(
+        :class="getOrderStatusNewsStyle"
+        @click="setViewMode('NEWS')"
+      )
+        p 뉴스
     .wrap-order-list(v-if="!isDetailInfo")
       .wrap-search-notice
         .search-notice
@@ -155,7 +160,7 @@ export default {
   },
   data () {
     return {
-      viewMode: 'EVENT, UPDATE, NOTICE',
+      viewMode: 'EVENT, UPDATE, NOTICE, NEWS',
       isLoading: false,
       chooseOrder: {},
       version,
@@ -264,6 +269,10 @@ export default {
         return '공지사항';
       }
 
+      if (type === 'NEWS') {
+        return '뉴스';
+      }
+
       return '';
     },
     getDetailNoticeTitle() {
@@ -297,7 +306,7 @@ export default {
       return data;
     },
     getOrderStatusAllStyle() {
-      const isViewModeAll = this.viewMode === 'EVENT, UPDATE, NOTICE';
+      const isViewModeAll = this.viewMode === 'EVENT, UPDATE, NOTICE, NEWS';
       const orderStatusAllStyle = {
         'orders-status': true,
         'active-button': isViewModeAll,
@@ -332,6 +341,15 @@ export default {
 
       return orderStatusEventStyle;
     },
+    getOrderStatusNewsStyle() {
+      const isViewModeEvent = this.viewMode === 'NEWS';
+      const orderStatusEventStyle = {
+        'orders-status': true,
+        'active-button': isViewModeEvent,
+      };
+
+      return orderStatusEventStyle;
+    }
   },
   methods: {
     async setViewMode(value) {
