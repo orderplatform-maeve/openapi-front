@@ -212,8 +212,9 @@ export default {
     },
     getMisu(order) {
       try {
-        if (order.totalMisu === 0) {
-          throw '미수금없음';
+        const isNotTotalMisu = order.totalMisu === 0 || order.totalMisu === undefined;
+        if (isNotTotalMisu) {
+          return '미수금없음';
         }
         return won(order.totalMisu);
       } catch (error) {
@@ -236,6 +237,11 @@ export default {
     },
     getOrderPrice(order) {
       try {
+        const isNotPrice = order.orderPrice === undefined;
+
+        if (isNotPrice) {
+          return 0;
+        }
         return won(order.orderPrice);
       } catch (error) {
         return 0;
@@ -243,6 +249,11 @@ export default {
     },
     getTotalAmount(order) {
       try {
+        const isNotTotalPrice = order.totalAmount === undefined;
+
+        if (isNotTotalPrice) {
+          return 0;
+        }
         return won(order.totalAmount);
       } catch (error) {
         return 0;

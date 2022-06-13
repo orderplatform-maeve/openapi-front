@@ -976,7 +976,7 @@ export default {
       }
 
       this.plusSecretFunctionTouchCount();
-      const isOpenCount = this.logoutSecretModalOpenTouchCount > 4;
+      const isOpenCount = this.secretFunctionTouchCount > 4;
       if (isOpenCount) {
         this.openLogoutSecretModal();
         this.resetSecretFunctionTouchCount();
