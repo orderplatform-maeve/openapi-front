@@ -506,6 +506,7 @@ export default {
     flex-direction: column;
     align-items: center;
     box-sizing: border-box;
+    user-select: none;
 
     .current-date {
       font-size: 1.71875vw;
@@ -526,6 +527,7 @@ export default {
     flex-direction: column;
     gap: 0.78125vw;
     box-sizing: border-box;
+    user-select: none;
 
     > a {
       width: 100%;
