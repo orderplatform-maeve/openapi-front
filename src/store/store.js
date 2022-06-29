@@ -316,6 +316,7 @@ const socket = {
       }
 
       if (isRobot) {
+        console.log(payload, '로봇 소켓 정보');
         try {
           const config = {
             robotId: payload.robotInfo.robot_id,

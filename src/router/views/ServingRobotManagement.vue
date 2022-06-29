@@ -2,7 +2,7 @@
 .serving-robot-management-container
   .wrap-header
     p.control-order-page-title 로봇제어(테스트)
-    button.refresh-robot
+    button.refresh-robot(@click="refreshRobotInfo")
       refresh-black-new-icon
       | 새로고침
   .robot-list
@@ -22,23 +22,41 @@
       p.table-number
         span.default(v-if="getRobotPosition(robotStatus)") {{getRobotPosition(robotStatus)}}
         span.red(v-else) -
-      .wrap-battery-info
-        p.battery-info {{getBatteryText(robotStatus)}}
-        img.battery-img(:src="getBatteryImage(robotStatus)")
-      .wrap-serving-status
-        button.serving-status(@click="visibleModal(robotStatus)") {{getRobotCommandText(robotStatus)}}
+      .wrap-confirm-button
+        .wrap-battery-info
+          img.battery-img(:src="getBatteryImage(robotStatus)")
+          p.battery-info {{getBatteryText(robotStatus)}}
+        .wrap-serving-status
+          button(
+            :class="getRobotActionButtonStyle(robotStatus)"
+            @click="visibleModal(robotStatus)"
+          ) {{getRobotCommandText(robotStatus)}}
   serving-robot-start-modal(
     v-if="selectStartRobotModalStatus"
-    :sortedTables="startTableList"
+    :sortedTables="currentTabTable[currentTab]"
     :selectedTable="startRobotSelectedTable"
     :selectTable="startRobotSelectTable"
-    :startServingRobot="robotMoving"
+    :startServingRobot="onMovingServingRobotConfirmModal"
     :unVisibleModal="unVisibleModal"
+    :setCurrentTab="setCurrentTab"
+    :currentTab="currentTab"
   )
   serving-robot-error-modal(
     v-if="errorModalStatus"
     :unVisibleModal="unVisibleModal"
     :errorRobotStatus="errorRobotStatus"
+  )
+  move-serving-robot-confirm-modal(
+    v-if="isVisibleMovingServingRobotConfirmModal"
+    :confirm="onMovingServingRobot"
+    :cancel="offMovingServingRobotConfirmModal"
+    :destination="startRobotSelectedTable"
+  )
+  back-serving-robot-confirm-modal(
+    v-if="isVisibleBackServingRobotConfirmModal"
+    :confirm="() => onActionRobot(selectedBackServingRobot)"
+    :cancel="offBackServingRobotConfirmModal"
+    :destination="selectedBackServingRobotTableName"
   )
 </template>
 
@@ -61,6 +79,8 @@ import {
   ServingRobotCancelModal,
   ServingRobotBackModal,
   ServingRobotErrorModal,
+  MoveServingRobotConfirmModal,
+  BackServingRobotConfirmModal,
 } from '@components';
 
 export default {
@@ -70,12 +90,19 @@ export default {
     ServingRobotBackModal,
     ServingRobotErrorModal,
     RefreshBlackNewIcon,
+    MoveServingRobotConfirmModal,
+    BackServingRobotConfirmModal,
   },
   data() {
     return {
       interval: 0,
       startTableList: [],
       currentRobot: undefined,
+      currentTab: 'serving',
+      isVisibleMovingServingRobotConfirmModal: false,
+      isVisibleBackServingRobotConfirmModal: false,
+      selectedBackServingRobot: {},
+      selectedBackServingRobotTableName: '',
     };
   },
   computed: {
@@ -103,13 +130,6 @@ export default {
     robotBackModalStatus() {
       return this.$store.state.robot.robotBackModalStatus;
     },
-    sortedTables() {
-      const tables = this.$store.state.tables;
-      const sortedTables = tables.sort((a, b) => {
-        return a.Tablet_name.length - b.Tablet_name.length || a.Tablet_name.localeCompare(b.Tablet_name);
-      });
-      return sortedTables;
-    },
     getDestination() {
       return this.$store.robot.ReverseDestination;
     },
@@ -118,6 +138,30 @@ export default {
     },
     errorRobotStatus() {
       return this.$store.state.robot.errorRobotStatus;
+    },
+    currentTabTable() {
+      const tableList = this.startTableList;
+      const tableListWithTab = {
+        'serving': [],
+        'decay': [],
+        'moving': [],
+      };
+
+      tableList.forEach((table) => {
+        const isUnknownTable = table?.torderTabletId === null;
+
+        if (isUnknownTable) {
+          const isKnownTable = table.robotSpotName !== 'unknown';
+          if (isKnownTable) {
+            tableListWithTab.moving.push(table);
+          }
+        } else {
+          tableListWithTab.serving.push(table);
+          tableListWithTab.decay.push(table);
+        }
+      });
+
+      return tableListWithTab;
     }
   },
   methods: {
@@ -190,11 +234,15 @@ export default {
       const robotStatus = robotInfo.reveseStatus;
 
       if (robotStatus === '대기중') {
-        return '서빙';
+        return '이동';
       }
 
-      if (robotStatus === '도착' || robotStatus === '충전중') {
+      if (robotStatus === '도착') {
         return '복귀';
+      }
+
+      if (robotStatus === '충전중') {
+        return '충전중';
       }
 
       if (robotStatus === '복귀중' || robotStatus === '가는중') {
@@ -229,8 +277,9 @@ export default {
     },
     getBatteryText(robot) {
       const robotInfo = robot.rinfo;
+      const isNotInfo = robotInfo.battery < 0 || robotInfo.battery === undefined;
 
-      if (robotInfo.battery < 0) {
+      if (isNotInfo) {
         return '-';
       }
 
@@ -264,7 +313,9 @@ export default {
         };
         await requestRobotMoving(config);
 
-        this.unVisibleModal();
+        // this.unVisibleModal();
+        this.offMovingServingRobotConfirmModal();
+        this.offMovingServingRobotConfirmModal();
 
       } catch(error) {
         console.log(error);
@@ -278,30 +329,50 @@ export default {
           storeCode: this.selectStartRobot.storeid,
         };
         await requestRobotOrder(config);
-
       } catch(error) {
         console.log(error);
       }
     },
-    async visibleModal(robot) {
-      await this.$store.commit('robot/updateStartRobot', robot);
-      await this.startServingRobot().then(
-        result => {
-          console.log(result, '복귀 확인');
-          if (result?.tableList && Object.prototype.toString.call(result.tableList) !== '[object Object]') {
-            this.startTableList = result?.tableList;
-          } else {
-            this.startTableList = [];
+    async onActionRobot(robot) {
+      try {
+        await this.$store.commit('robot/updateStartRobot', robot);
+        const resData = await this.startServingRobot();
 
-            this.$store.commit('pushFlashMessage', result.message);
-          }
-        },
-        error => console.log(error),
-      );
+        if (resData?.tableList && Object.prototype.toString.call(resData.tableList) !== '[object Object]') {
+          this.startTableList = resData?.tableList;
+        } else {
+          this.startTableList = [];
 
-      if (this.startTableList?.length > 0) {
-        this.$store.commit('robot/updateStartRobotModalStatus', true);
+          this.$store.commit('pushFlashMessage', resData.message);
+        }
+
+        if (this.startTableList?.length > 0) {
+          this.$store.commit('robot/updateStartRobotModalStatus', true);
+        }
+
+        this.offBackServingRobotConfirmModal();
+      } catch(error) {
+        console.log(error, '에러 확인');
       }
+    },
+    visibleModal(robot) {
+      const robotStatus = robot?.rinfo?.reveseStatus;
+      const isCharging = robotStatus === '충전중';
+
+      if (isCharging) {
+        this.$store.commit('pushFlashMessage', '로봇이 충전중입니다. 로봇을 직접 확인해주세요.');
+        return;
+      }
+
+      const isArrivalRobot = robot?.rinfo?.reveseStatus === '도착';
+      if (isArrivalRobot) {
+        this.selectedBackServingRobot = robot;
+        this.selectedBackServingRobotTableName = robot.ReverseDestination;
+        this.onBackServingRobotConfirmModal();
+        return;
+      }
+
+      this.onActionRobot(robot);
     },
     unVisibleModal() {
       this.$store.commit('robot/updateStartRobotModalStatus', false);
@@ -328,12 +399,50 @@ export default {
       }
 
       return '로봇 상태 확인';
+    },
+    refreshRobotInfo() {
+      this.$store.dispatch('robot/updateAllRobotStatus');
+    },
+    getRobotActionButtonStyle(robot) {
+      const robotStatus = robot?.rinfo?.reveseStatus;
+
+      const isCharging = robotStatus === '충전중';
+      const isUnknown = robotStatus === 'Unknown';
+      const isUndefined = robotStatus === undefined;
+      const isMove = robotStatus === '복귀중' || robotStatus === '이동중';
+      const isGray = isCharging || isUnknown || isUndefined || isMove;
+
+      return {
+        'serving-status': true,
+        'serving-status-gray': isGray,
+      };
+    },
+    setCurrentTab(tabName) {
+      this.currentTab = tabName;
+    },
+    onMovingServingRobotConfirmModal() {
+      this.unVisibleModal();
+      this.isVisibleMovingServingRobotConfirmModal = true;
+    },
+    offMovingServingRobotConfirmModal() {
+      this.isVisibleMovingServingRobotConfirmModal = false;
+    },
+    onMovingServingRobot() {
+      this.robotMoving();
+    },
+    onBackServingRobotConfirmModal() {
+      this.isVisibleBackServingRobotConfirmModal = true;
+    },
+    offBackServingRobotConfirmModal() {
+      this.selectedBackServingRobot = {};
+      this.selectedBackServingRobotTableName = '';
+      this.isVisibleBackServingRobotConfirmModal = false;
     }
   },
   mounted() {
-    this.$store.dispatch('robot/updateAllRobotStatus');
+    this.refreshRobotInfo();
     this.interval = setInterval(() => {
-      this.$store.dispatch('robot/updateAllRobotStatus');
+      this.refreshRobotInfo();
     }, 60000);
   },
   beforeDestroy() {
@@ -442,50 +551,63 @@ export default {
         letter-spacing: -0.025em;
       }
 
-      .wrap-battery-info {
-        width: 9.375vw;
-        height: 2.781250vw;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 0.46875vw;
-
-        .battery-info {
-          font-family: 'Spoqa Han Sans Neo', 'sans-serif';
-          font-size: 1.875vw;
-          font-weight: bold;
-          letter-spacing: -0.025em;
-        }
-      }
-
-      .wrap-serving-status {
+      .wrap-confirm-button {
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-
-        .wrap-battery-status {
+        gap: 0.78125vw;
+        .wrap-battery-info {
+          width: 9.375vw;
+          height: 2.781250vw;
           display: flex;
-          gap: 1vw;
+          justify-content: space-between;
+          align-items: center;
+          gap: 0.78125vw;
 
-          .battery-status {
-            width: 3vw;
-            margin-bottom: 1px !important;
+          .battery-info {
+            font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+            font-size: 1.875vw;
+            font-weight: bold;
+            letter-spacing: -0.025em;
           }
         }
 
-        .serving-status {
-          flex: 1;
-          width: 13.28125vw;
-          background-color: #fc0000;
-          padding: 0.78125vw !important;
-          font-family: "notosans";
-          font-size: 1.953125vw;
-          font-weight: bold;
-          color: #fff;
-          text-align: center;
-          border-radius: 0.78125vw;
-          box-sizing: border-box;
+        .wrap-serving-status {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+
+          .wrap-battery-status {
+            display: flex;
+            gap: 1vw;
+
+            .battery-status {
+              width: 3vw;
+              margin-bottom: 1px !important;
+            }
+          }
+
+          .serving-status {
+            flex: 1;
+            width: 13.28125vw;
+            background-color: #fc0000;
+            padding: 0.78125vw !important;
+            font-family: "notosans";
+            font-size: 1.953125vw;
+            font-weight: bold;
+            color: #fff;
+            text-align: center;
+            border-radius: 0.78125vw;
+            box-sizing: border-box;
+            border: none;
+          }
+
+          .serving-status-gray {
+            background-color: #e5e5e5;
+            border: none;
+          }
         }
       }
     }

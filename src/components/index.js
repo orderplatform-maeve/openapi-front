@@ -33,3 +33,5 @@ export { default as HappyTalkConfirmModal } from './HappyTalkConfirmModal';
 export { default as HappyTalkSuccessModal } from './HappyTalkSuccessModal';
 export { default as LogoutSecret } from './LogoutSecret';
 export { default as LogoutConfirmModal } from './LogoutConfirmModal';
+export { default as MoveServingRobotConfirmModal } from './MoveServingRobotConfirmModal';
+export { default as BackServingRobotConfirmModal } from './BackServingRobotConfirmModal';

@@ -89,24 +89,24 @@ export default {
     align-items: center;
 
     .message {
-      white-space:nowrap;
+      white-space: nowrap;
       display:flex;
       align-items: center;
       justify-content: center;
-      border-radius:100vh;
+      border-radius: 100vh;
       flex-shrink:0;
-      padding:12px 32px !important;
+      padding: 0.9375vw 2.5vw !important;
       background-color:#ff0000;
       color:#ffffff;
-      box-shadow: 0 0 16px -4px #000000;
-      font-size:28px;
+      box-shadow: 0 0 1.25vw -0.3125vw #000000;
+      font-size: 2.1875vw;
       font-weight:900;
       white-space: normal;
       text-align:center;
       line-height:1.2em;
       animation: slidein-flash-message 3s;
       box-sizing: border-box;
-      max-width: 800px;
+      max-width: 62.5vw;
     }
   }
 
