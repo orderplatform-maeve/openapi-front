@@ -1,5 +1,6 @@
 export const isDemo = process.env.SERVER_TYPE === 'demo';
-export const isDev = process.env.NODE_ENV === 'development';
+// export const isDev = process.env.NODE_ENV === 'development';
+export const isDev = process.env.STOP_REDIRECT;
 export const STOP_REDIRECT = process.env.STOP_REDIRECT;
 
 const getMatched = () => {

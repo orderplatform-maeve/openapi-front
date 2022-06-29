@@ -1,42 +1,70 @@
 <template lang="pug">
-  .serving-robot-management-container
+.serving-robot-management-container
+  .wrap-header
     p.control-order-page-title 로봇제어(테스트)
-    .robot-list
-      .wrap-robot-status(
-        v-for="(robotStatus, index) in allRobotStatus"
-        :key="`robot-status-${index}`"
-      )
-        .wrap-robot-name
-          p.robot-brand-name
-            img(:src="getRobotImage(robotStatus)")
-          p.robot-nickname {{getRobotName(robotStatus)}}
-        p.robot-status
-          span.default(v-if="getRobotStatus(robotStatus)") {{getRobotStatus(robotStatus)}}
-          span.red(v-else) 확인필요
-        p.table-number
-          span.default(v-if="getRobotPosition(robotStatus)") {{getRobotPosition(robotStatus)}}
-          span.red(v-else) -
+    button.refresh-robot(@click="refreshRobotInfo")
+      refresh-black-new-icon
+      | 새로고침
+  .robot-list
+    .wrap-robot-status(
+      v-for="(robotStatus, index) in allRobotStatus"
+      :key="`robot-status-${index}`"
+    )
+      .wrap-robot-name
+        img.robot-brand-image(
+          :src="getRobotImage(robotStatus)"
+        )
+        p.robot-nickname {{getRobotName(robotStatus)}}
+      p.robot-status
+        span(
+          :class="getRobotStatusStyle(robotStatus)"
+        ) {{getRobotStatus(robotStatus)}}
+      p.table-number
+        span.default(v-if="getRobotPosition(robotStatus)") {{getRobotPosition(robotStatus)}}
+        span.red(v-else) -
+      .wrap-confirm-button
+        .wrap-battery-info
+          img.battery-img(:src="getBatteryImage(robotStatus)")
+          p.battery-info {{getBatteryText(robotStatus)}}
         .wrap-serving-status
-          .wrap-battery-status
-            p.battery-stats-text {{getBatteryText(robotStatus)}}
-            img.battery-status(:src="getBatteryImage(robotStatus)")
-          p.serving-status(@click="visibleModal(robotStatus)") {{getRobotCommandText(robotStatus)}}
-    serving-robot-start-modal(
-      v-if="selectStartRobotModalStatus"
-      :sortedTables="startTableList"
-      :selectedTable="startRobotSelectedTable"
-      :selectTable="startRobotSelectTable"
-      :startServingRobot="robotMoving"
-      :unVisibleModal="unVisibleModal"
-    )
-    serving-robot-error-modal(
-      v-if="errorModalStatus"
-      :unVisibleModal="unVisibleModal"
-      :errorRobotStatus="errorRobotStatus"
-    )
+          button(
+            :class="getRobotActionButtonStyle(robotStatus)"
+            @click="visibleModal(robotStatus)"
+          ) {{getRobotCommandText(robotStatus)}}
+  serving-robot-start-modal(
+    v-if="selectStartRobotModalStatus"
+    :sortedTables="currentTabTable[currentTab]"
+    :selectedTable="startRobotSelectedTable"
+    :selectTable="startRobotSelectTable"
+    :startServingRobot="onMovingServingRobotConfirmModal"
+    :unVisibleModal="unVisibleModal"
+    :setCurrentTab="setCurrentTab"
+    :currentTab="currentTab"
+  )
+  serving-robot-error-modal(
+    v-if="errorModalStatus"
+    :unVisibleModal="unVisibleModal"
+    :errorRobotStatus="errorRobotStatus"
+  )
+  move-serving-robot-confirm-modal(
+    v-if="isVisibleMovingServingRobotConfirmModal"
+    :confirm="onMovingServingRobot"
+    :cancel="offMovingServingRobotConfirmModal"
+    :destination="startRobotSelectedTable"
+  )
+  back-serving-robot-confirm-modal(
+    v-if="isVisibleBackServingRobotConfirmModal"
+    :confirm="() => onActionRobot(selectedBackServingRobot)"
+    :cancel="offBackServingRobotConfirmModal"
+    :destination="selectedBackServingRobotTableName"
+  )
 </template>
 
 <script>
+import {
+  RefreshBlackNewIcon
+} from '@svg';
+
 import {
   servingRobot
 } from '@apis';
@@ -51,6 +79,8 @@ import {
   ServingRobotCancelModal,
   ServingRobotBackModal,
   ServingRobotErrorModal,
+  MoveServingRobotConfirmModal,
+  BackServingRobotConfirmModal,
 } from '@components';
 
 export default {
@@ -59,12 +89,20 @@ export default {
     ServingRobotCancelModal,
     ServingRobotBackModal,
     ServingRobotErrorModal,
+    RefreshBlackNewIcon,
+    MoveServingRobotConfirmModal,
+    BackServingRobotConfirmModal,
   },
   data() {
     return {
       interval: 0,
       startTableList: [],
       currentRobot: undefined,
+      currentTab: 'serving',
+      isVisibleMovingServingRobotConfirmModal: false,
+      isVisibleBackServingRobotConfirmModal: false,
+      selectedBackServingRobot: {},
+      selectedBackServingRobotTableName: '',
     };
   },
   computed: {
@@ -92,13 +130,6 @@ export default {
     robotBackModalStatus() {
       return this.$store.state.robot.robotBackModalStatus;
     },
-    sortedTables() {
-      const tables = this.$store.state.tables;
-      const sortedTables = tables.sort((a, b) => {
-        return a.Tablet_name.length - b.Tablet_name.length || a.Tablet_name.localeCompare(b.Tablet_name);
-      });
-      return sortedTables;
-    },
     getDestination() {
       return this.$store.robot.ReverseDestination;
     },
@@ -107,6 +138,30 @@ export default {
     },
     errorRobotStatus() {
       return this.$store.state.robot.errorRobotStatus;
+    },
+    currentTabTable() {
+      const tableList = this.startTableList;
+      const tableListWithTab = {
+        'serving': [],
+        'decay': [],
+        'moving': [],
+      };
+
+      tableList.forEach((table) => {
+        const isUnknownTable = table?.torderTabletId === null;
+
+        if (isUnknownTable) {
+          const isKnownTable = table.robotSpotName !== 'unknown';
+          if (isKnownTable) {
+            tableListWithTab.moving.push(table);
+          }
+        } else {
+          tableListWithTab.serving.push(table);
+          tableListWithTab.decay.push(table);
+        }
+      });
+
+      return tableListWithTab;
     }
   },
   methods: {
@@ -144,10 +199,22 @@ export default {
       return "https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/logo/torderNoImage.PNG";
     },
     getRobotStatus(robot) {
-      const robotInfo = robot.rinfo;
-      const robotStatus = robotInfo.reveseStatus;
+      const robotStatus = robot?.rinfo?.reveseStatus;
 
       return robotStatus;
+    },
+    isKnowRobotStatus(robot) {
+      const robotStatus = this.getRobotStatus(robot);
+      const isKnowRobotStatus = robotStatus && robotStatus !== '확인필요';
+
+      return isKnowRobotStatus;
+    },
+    getRobotStatusStyle(robot) {
+      const robotStatusStyle = {
+        'red': !this.isKnowRobotStatus(robot)
+      };
+
+      return robotStatusStyle;
     },
     getRobotPosition(robot) {
       const robotPosition = robot.ReverseDestination;
@@ -164,30 +231,26 @@ export default {
     },
     getRobotCommandText(robot) {
       const robotInfo = robot.rinfo;
-      let robotStatus = robotInfo.reveseStatus;
+      const robotStatus = robotInfo.reveseStatus;
 
       if (robotStatus === '대기중') {
-        return '서빙';
+        return '이동';
       }
 
       if (robotStatus === '도착') {
         return '복귀';
       }
 
-      if (robotStatus === '복귀중') {
-        return '이동중';
+      if (robotStatus === '충전중') {
+        return '충전중';
       }
 
-      if (robotStatus === '충전중') {
-        return '복귀';
+      if (robotStatus === '복귀중' || robotStatus === '가는중') {
+        return '이동중';
       }
 
       if (robotStatus === '확인필요') {
         return '확인';
-      }
-
-      if (robotStatus === '가는중') {
-        return '이동중';
       }
 
       return robotStatus;
@@ -196,26 +259,27 @@ export default {
       const robotInfo = robot.rinfo;
 
       if (robotInfo.status === 'Charge') {
-        return 'https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/logo/tabler-icon-battery-charging.svg';
+        return 'https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/logo/charge-battery.svg';
       }
       if(robotInfo.battery > 75) {
-        return 'https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/logo/tabler-icon-battery-4.svg';
+        return 'https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/logo/green-battery.svg';
       }
 
       if(robotInfo.battery > 50) {
-        return 'https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/logo/tabler-icon-battery-3.svg';
+        return 'https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/logo/orange-battery.svg';
       }
 
       if(robotInfo.battery > 25) {
-        return 'https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/logo/tabler-icon-battery-2.svg';
+        return 'https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/logo/red-battery.svg';
       }
 
-      return 'https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/logo/tabler-icon-battery-1.svg';
+      return 'https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/logo/red-battery.svg';
     },
     getBatteryText(robot) {
       const robotInfo = robot.rinfo;
+      const isNotInfo = robotInfo.battery < 0 || robotInfo.battery === undefined;
 
-      if (robotInfo.battery < 0) {
+      if (isNotInfo) {
         return '-';
       }
 
@@ -249,7 +313,9 @@ export default {
         };
         await requestRobotMoving(config);
 
-        this.unVisibleModal();
+        // this.unVisibleModal();
+        this.offMovingServingRobotConfirmModal();
+        this.offMovingServingRobotConfirmModal();
 
       } catch(error) {
         console.log(error);
@@ -263,30 +329,50 @@ export default {
           storeCode: this.selectStartRobot.storeid,
         };
         await requestRobotOrder(config);
-
       } catch(error) {
         console.log(error);
       }
     },
-    async visibleModal(robot) {
-      await this.$store.commit('robot/updateStartRobot', robot);
-      await this.startServingRobot().then(
-        result => {
-          console.log(result, '복귀 확인');
-          if (result?.tableList && Object.prototype.toString.call(result.tableList) !== '[object Object]') {
-            this.startTableList = result?.tableList;
-          } else {
-            this.startTableList = [];
+    async onActionRobot(robot) {
+      try {
+        await this.$store.commit('robot/updateStartRobot', robot);
+        const resData = await this.startServingRobot();
 
-            this.$store.commit('pushFlashMessage', result.message);
-          }
-        },
-        error => console.log(error),
-      );
+        if (resData?.tableList && Object.prototype.toString.call(resData.tableList) !== '[object Object]') {
+          this.startTableList = resData?.tableList;
+        } else {
+          this.startTableList = [];
 
-      if (this.startTableList?.length > 0) {
-        this.$store.commit('robot/updateStartRobotModalStatus', true);
+          this.$store.commit('pushFlashMessage', resData.message);
+        }
+
+        if (this.startTableList?.length > 0) {
+          this.$store.commit('robot/updateStartRobotModalStatus', true);
+        }
+
+        this.offBackServingRobotConfirmModal();
+      } catch(error) {
+        console.log(error, '에러 확인');
       }
+    },
+    visibleModal(robot) {
+      const robotStatus = robot?.rinfo?.reveseStatus;
+      const isCharging = robotStatus === '충전중';
+
+      if (isCharging) {
+        this.$store.commit('pushFlashMessage', '로봇이 충전중입니다. 로봇을 직접 확인해주세요.');
+        return;
+      }
+
+      const isArrivalRobot = robot?.rinfo?.reveseStatus === '도착';
+      if (isArrivalRobot) {
+        this.selectedBackServingRobot = robot;
+        this.selectedBackServingRobotTableName = robot.ReverseDestination;
+        this.onBackServingRobotConfirmModal();
+        return;
+      }
+
+      this.onActionRobot(robot);
     },
     unVisibleModal() {
       this.$store.commit('robot/updateStartRobotModalStatus', false);
@@ -313,12 +399,50 @@ export default {
       }
 
       return '로봇 상태 확인';
+    },
+    refreshRobotInfo() {
+      this.$store.dispatch('robot/updateAllRobotStatus');
+    },
+    getRobotActionButtonStyle(robot) {
+      const robotStatus = robot?.rinfo?.reveseStatus;
+
+      const isCharging = robotStatus === '충전중';
+      const isUnknown = robotStatus === 'Unknown';
+      const isUndefined = robotStatus === undefined;
+      const isMove = robotStatus === '복귀중' || robotStatus === '이동중';
+      const isGray = isCharging || isUnknown || isUndefined || isMove;
+
+      return {
+        'serving-status': true,
+        'serving-status-gray': isGray,
+      };
+    },
+    setCurrentTab(tabName) {
+      this.currentTab = tabName;
+    },
+    onMovingServingRobotConfirmModal() {
+      this.unVisibleModal();
+      this.isVisibleMovingServingRobotConfirmModal = true;
+    },
+    offMovingServingRobotConfirmModal() {
+      this.isVisibleMovingServingRobotConfirmModal = false;
+    },
+    onMovingServingRobot() {
+      this.robotMoving();
+    },
+    onBackServingRobotConfirmModal() {
+      this.isVisibleBackServingRobotConfirmModal = true;
+    },
+    offBackServingRobotConfirmModal() {
+      this.selectedBackServingRobot = {};
+      this.selectedBackServingRobotTableName = '';
+      this.isVisibleBackServingRobotConfirmModal = false;
     }
   },
   mounted() {
-    this.$store.dispatch('robot/updateAllRobotStatus');
+    this.refreshRobotInfo();
     this.interval = setInterval(() => {
-      this.$store.dispatch('robot/updateAllRobotStatus');
+      this.refreshRobotInfo();
     }, 60000);
   },
   beforeDestroy() {
@@ -339,12 +463,30 @@ export default {
   box-sizing: border-box;
   overflow: auto;
 
-  .control-order-page-title {
-    font-family: "notosans";
-    font-weight: bold;
-    font-size: 1.71875vw;
-    padding: 2.5vh 0 !important;
-    box-sizing: border-box;
+  .wrap-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .control-order-page-title {
+      font-family: "notosans";
+      font-weight: bold;
+      font-size: 1.71875vw;
+      padding: 1.5625vw 0 !important;
+      box-sizing: border-box;
+    }
+
+    .refresh-robot {
+      width: 8.515625vw;
+      height: 2.65625vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.546875vw;
+      border-radius: 0.390625vw;
+      border: solid 0.078125vw #000;
+      background-color: #fff;
+    }
   }
 
   .robot-list {
@@ -355,85 +497,119 @@ export default {
 
     .wrap-robot-status {
       width: 100%;
-      min-height: 12.5vw;
-      border: solid 0.125vw #000;
-      border-radius: 1.953125vw;
+      height: 10.9375vw;
+      border-radius: 0.234375vw;
+      border: solid 0.1171875vw #d4d4d4;
       display: flex;
       align-items: center;
-      gap: 3.90625vw;
       padding: 1.5625vw !important;
       box-sizing: border-box;
       text-align: center;
+      gap: 2.109375vw;
 
       .wrap-robot-name {
-        width: 20%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 0.78125vw;
-        font-family: "notosans";
-        font-size: 1.4vw;
-        text-align: center;
-
-        .robot-brand-name {
-          width: 100%;
-
-          img {
-            width: 50%;
-            max-height: 40px;
-            object-fit: contain;
-          }
-        }
-      }
-
-      .robot-status {
-        width: 11.71875vw;
-        font-family: "notosans";
-        font-size: 2.5vw;
-      }
-
-      .table-number {
-        flex: 1;
-        font-family: "notosans";
-        font-size: 2.5vw;
-        text-align: center;
-      }
-
-      .wrap-serving-status {
+        width: 13.28125vw;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
+        gap: 0.78125vw;
 
-        .wrap-battery-status {
+        .robot-brand-image {
+          height: 2.0703125vw;
+          object-fit: contain;
+        }
+        .robot-nickname {
+          width: 100%;
+          font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+          font-size: 1.25vw;
+          font-weight: bold;
+          letter-spacing: -0.025em;
+          word-break: break-all;
+          text-align: center;
+        }
+      }
+
+      .robot-status {
+        width: 7.421875vw;
+        font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+        font-weight: bold;
+        font-size: 1.875vw;
+        letter-spacing: -0.025em;
+        text-align: center;
+
+        .red {
+          color: #fc0000;
+        }
+      }
+
+      .table-number {
+        flex: 1;
+        font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+        font-size: 1.875vw;
+        font-weight: bold;
+        letter-spacing: -0.025em;
+      }
+
+      .wrap-confirm-button {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 0.78125vw;
+        .wrap-battery-info {
+          width: 9.375vw;
+          height: 2.781250vw;
           display: flex;
-          gap: 1vw;
+          justify-content: space-between;
+          align-items: center;
+          gap: 0.78125vw;
 
-          .battery-status {
-            width: 3vw;
-            margin-bottom: 1px !important;
+          .battery-info {
+            font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+            font-size: 1.875vw;
+            font-weight: bold;
+            letter-spacing: -0.025em;
           }
         }
 
-        .serving-status {
-          flex: 1;
-          width: 13.28125vw;
-          background-color: #fc0000;
-          padding: 0.78125vw !important;
-          font-family: "notosans";
-          font-size: 1.953125vw;
-          font-weight: bold;
-          color: #fff;
-          text-align: center;
-          border-radius: 0.78125vw;
-          box-sizing: border-box;
+        .wrap-serving-status {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+
+          .wrap-battery-status {
+            display: flex;
+            gap: 1vw;
+
+            .battery-status {
+              width: 3vw;
+              margin-bottom: 1px !important;
+            }
+          }
+
+          .serving-status {
+            flex: 1;
+            width: 13.28125vw;
+            background-color: #fc0000;
+            padding: 0.78125vw !important;
+            font-family: "notosans";
+            font-size: 1.953125vw;
+            font-weight: bold;
+            color: #fff;
+            text-align: center;
+            border-radius: 0.78125vw;
+            box-sizing: border-box;
+            border: none;
+          }
+
+          .serving-status-gray {
+            background-color: #e5e5e5;
+            border: none;
+          }
         }
       }
-    }
-
-    .red {
-      font-weight: bold;
-      color: #fc0000;
     }
   }
 }

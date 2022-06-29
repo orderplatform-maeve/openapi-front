@@ -21,3 +21,4 @@ export { default as HappyTalk } from './HappyTalk';
 export { default as NumberOne } from './NumberOne';
 export { default as NumberTwo } from './NumberTwo';
 export { default as CloseIcon } from './CloseIcon';
+export { default as RefreshBlackNewIcon } from './RefreshBlackNewIcon';
