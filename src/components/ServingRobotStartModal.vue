@@ -1,20 +1,33 @@
 <template lang="pug">
-  .serving-robot-start-modal-container(@click="unVisibleModal")
-    .serving-robot-start-modal(@click.prevent.stop)
-      .wrap-serving-robot-start-header
-        p.serving-robot-start-header 서빙안내
-        icon-exit-black(@click.native.stop="unVisibleModal")
-      p.serving-robot-start-notion 서빙을 진행하시고자 하는 테이블 번호를 선택해주세요.
-      .table-number-list
-        p.table-number(
-          v-for="(table, index) in sortedTables"
-          :key="`tableIndex-${index}`"
-          :class="{selectedTableStyle: selectedTable === getTableName(table)}"
-          @click="selectTable(table)"
-        ) {{getTableName(table)}}
-      .wrap-confirm-button
-        button.cancel-button(@click="unVisibleModal") 취소
-        button.confirm-button(@click="startServingRobot") 확인
+.serving-robot-start-modal-container(@click="unVisibleModal")
+  .serving-robot-start-modal(@click.prevent.stop)
+    .wrap-serving-robot-start-header
+      p.serving-robot-start-header 서빙로봇 이동
+      icon-exit-black(@click.native.stop="unVisibleModal")
+    //- p.serving-robot-start-notion 서빙을 진행하시고자 하는 테이블 번호를 선택해주세요.
+    .wrap-tab
+      p(
+        @click="setCurrentTab('serving')"
+        :class="getTabStyle('serving')"
+      ) 서빙
+      p(
+        @click="setCurrentTab('decay')"
+        :class="getTabStyle('decay')"
+      ) 퇴식
+      p(
+        @click="setCurrentTab('moving')"
+        :class="getTabStyle('moving')"
+      ) 이동
+    .table-number-list
+      p(
+        v-for="(table, index) in sortedTables"
+        :key="`tableIndex-${index}`"
+        :class="getSelectedTableStyle(table)"
+        @click="selectTable(table)"
+      ) {{getTableName(table)}}
+    .wrap-confirm-button
+      button.cancel-button(@click="unVisibleModal") 취소
+      button.confirm-button(@click="startServingRobot") 확인
 </template>
 
 <script>
@@ -39,11 +52,33 @@ export default {
     unVisibleModal: {
       type: Function,
       required: true,
-    }
+    },
+    setCurrentTab: {
+      type: Function,
+      required: true,
+    },
+    currentTab: {
+      type: String,
+      required: true,
+    },
   },
   methods: {
     getTableName(table) {
       return table?.torderTableName;
+    },
+    getSelectedTableStyle(table) {
+      const isSelectedTable = this.selectedTable === this.getTableName(table);
+
+      return {
+        'table-number': true,
+        'selectedTableStyle': isSelectedTable,
+      };
+    },
+    getTabStyle(tab) {
+      return {
+        'tab-name': true,
+        'select-tab-name': tab === this.currentTab,
+      };
     }
   }
 };
@@ -82,9 +117,27 @@ export default {
       align-items: center;
     }
 
-    .serving-robot-start-notion {
-      font-family: "notosans";
-      font-size: 1.71875vw;
+    .wrap-tab {
+      display: flex;
+      align-items: center;
+      gap: 1.5625vw;
+
+      .tab-name {
+        padding: 0 3.90625vw !important;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 2.34375vw;
+        height: 4.6875vw;
+        background-color:#e5e5e5;
+        border-radius: 1.015625vw;
+        color: #666;
+      }
+
+      .select-tab-name {
+        background-color: #000;
+        color: #fff;
+      }
     }
 
     .table-number-list {
