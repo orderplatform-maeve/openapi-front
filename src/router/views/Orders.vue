@@ -1,8 +1,9 @@
 <template lang="pug">
 .wrap-orders-container
   //- 주문보기 내에서만 보여야하는게 아닌, 발레파킹 페이지에서도 보여져야해서 수정되었음. (Layout.vue)
-  //- auction-modal(v-if="order && auction")
-  //- modal-order(v-if="order && !auction")
+  auction-modal(v-if="order && auction")
+  modal-order(v-if="order && !auction")
+  PosErrorModal(v-if="posResponseMessage")
   .orders-container
     order-cash-out-standing-modal(
       v-if="getCashOutPopVisble()"
@@ -84,6 +85,7 @@ import { won } from '@utils/regularExpressions';
 import { payments } from '@apis';
 import { version } from '@utils/constants';
 import { checkBoxActive, checkBoxDisable  } from '@svg';
+import { PosErrorModal } from '@components';
 
 const {
   requestMisuCommit,
@@ -101,6 +103,7 @@ export default {
   components: {
     checkBoxActive,
     checkBoxDisable,
+    PosErrorModal
   },
   computed: {
     order() {
@@ -108,6 +111,9 @@ export default {
     },
     auction() {
       return this.$store.state.auction;
+    },
+    posResponseMessage() {
+      return this.$store.state.posResponseMessage;
     },
     sortedOrders() {
       const { orders } = this.$store.state;
@@ -269,6 +275,9 @@ export default {
         this.$store.commit('auctionFlag', true);
       } else {
         this.$store.commit('auctionFlag', false);
+      }
+      if (order.type === 'posResponseMessage') {
+        this.$store.commit('posResponseMessageFlag', true);
       }
     },
     visibleOrderItem(order) {
@@ -437,7 +446,7 @@ export default {
     },
     getGoodsName(order) {
       const goodsList = order.order_info;
-      const isOverOneGoodsList = goodsList.length > 1;
+      const isOverOneGoodsList = goodsList?.length > 1;
       const firstGoodsName = goodsList[0]?.good_name;
       const isUndefinedName = firstGoodsName === undefined;
 

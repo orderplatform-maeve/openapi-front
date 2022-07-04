@@ -1,27 +1,28 @@
+<!-- 예전 버전. 사용하지 않음 -->
 <template lang="pug">
-#orderview
-  alert-modal(v-if="isAlertModal")
-  modal-all-refresh(
-    :show="visibleAllRefreshModal"
-    :close="onCloseAllRefreshModal"
-    :data="allRefreshList"
-  )
-  flash-message
-  modal-confirm(
-    :show="confirmModal.show"
-    :close="confirmModal.close"
-    :title="confirmModal.title"
-    :message="confirmModal.message"
-    :confirm="confirmModal.confirm"
-  )
-  .left_wrap.new.left_wrap
-    router-view(
-      :auth="auth"
-      :orders="orders"
-      :stores="stores"
-      :time="time"
-    )
-  right-menu
+//- #orderview
+//-   alert-modal(v-if="isAlertModal")
+//-   modal-all-refresh(
+//-     :show="visibleAllRefreshModal"
+//-     :close="onCloseAllRefreshModal"
+//-     :data="allRefreshList"
+//-   )
+//-   flash-message
+//-   modal-confirm(
+//-     :show="confirmModal.show"
+//-     :close="confirmModal.close"
+//-     :title="confirmModal.title"
+//-     :message="confirmModal.message"
+//-     :confirm="confirmModal.confirm"
+//-   )
+//-   .left_wrap.new.left_wrap
+//-     router-view(
+//-       :auth="auth"
+//-       :orders="orders"
+//-       :stores="stores"
+//-       :time="time"
+//-     )
+//-   right-menu
 </template>
 
 <script>
@@ -207,7 +208,7 @@ export default {
           const methodName = msg?.methodName;
 
           if (methodName === 'callBackPayment') {
-            // console.log(event);
+            console.log('event', event);
 
             if (msg?.result) {
               const vanData = JSON.parse(msg.result);
@@ -244,35 +245,35 @@ export default {
                 const requestCreditItem = this.$store?.state?.requestCreditItem;
 
                 if (!requestCreditItem?.key) {
-                  return this.showAlert(`key 값이 없습니다 아닙니다. 에러메세지: ${requestCreditItem?.key}`);
+                  return this.showAlert(`key 값이 없습니다. 에러메세지: ${requestCreditItem?.key}`);
                 }
 
                 if (!requestCreditItem?.id) {
-                  return this.showAlert(`id 값이 없습니다 아닙니다. 에러메세지: ${requestCreditItem?.id}`);
+                  return this.showAlert(`id 값이 없습니다. 에러메세지: ${requestCreditItem?.id}`);
                 }
 
                 if (!requestCreditItem?.creditStat) {
-                  return this.showAlert(`stat 값이 없습니다 아닙니다. 에러메세지: ${requestCreditItem?.creditStat}`);
+                  return this.showAlert(`stat 값이 없습니다. 에러메세지: ${requestCreditItem?.creditStat}`);
                 }
 
                 if (!requestCreditItem?.creditType) {
-                  return this.showAlert(`type 값이 없습니다 아닙니다. 에러메세지: ${requestCreditItem?.creditType}`);
+                  return this.showAlert(`type 값이 없습니다. 에러메세지: ${requestCreditItem?.creditType}`);
                 }
 
                 if (!requestCreditItem?.storeCode) {
-                  return this.showAlert(`storeCode 값이 없습니다 아닙니다. 에러메세지: ${requestCreditItem?.storeCode}`);
+                  return this.showAlert(`storeCode 값이 없습니다. 에러메세지: ${requestCreditItem?.storeCode}`);
                 }
 
                 if (!requestCreditItem?.tabletnumber) {
-                  return this.showAlert(`tabletnumber 값이 없습니다 아닙니다. 에러메세지: ${requestCreditItem?.tabletnumber}`);
+                  return this.showAlert(`tabletnumber 값이 없습니다. 에러메세지: ${requestCreditItem?.tabletnumber}`);
                 }
 
                 if (!requestCreditItem?.tableName) {
-                  return this.showAlert(`tableName 값이 없습니다 아닙니다. 에러메세지: ${requestCreditItem?.tableName}`);
+                  return this.showAlert(`tableName 값이 없습니다. 에러메세지: ${requestCreditItem?.tableName}`);
                 }
 
                 if (!requestCreditItem?.orderkey) {
-                  return this.showAlert(`orderkey 값이 없습니다 아닙니다. 에러메세지: ${requestCreditItem?.orderkey}`);
+                  return this.showAlert(`orderkey 값이 없습니다. 에러메세지: ${requestCreditItem?.orderkey}`);
                 }
 
                 const res = await requestCardCancelCommit(vanData);
@@ -281,15 +282,15 @@ export default {
                   const newItem = res?.data?.rowData;
 
                   if (!res.data) {
-                    return this.showAlert(`API cardCancelCommit 응답값 data이 없습니다 아닙니다. 응답값: ${newItem}`);
+                    return this.showAlert(`API cardCancelCommit 응답값 data이 없습니다. 응답값: ${newItem}`);
                   }
 
                   if (res?.data?.length === 0) {
-                    return this.showAlert(`API cardCancelCommit 응답값 data크기가 0입니다. 아닙니다. 응답값: ${res.data}`);
+                    return this.showAlert(`API cardCancelCommit 응답값 data크기가 0입니다. 응답값: ${res.data}`);
                   }
 
                   if (!newItem) {
-                    return this.showAlert(`API cardCancelCommit 응답값 rowData이 없습니다 아닙니다. 응답값: ${newItem}`);
+                    return this.showAlert(`API cardCancelCommit 응답값 rowData이 없습니다. 응답값: ${newItem}`);
                   }
 
                   // newItem {id: ''}

@@ -1,34 +1,36 @@
 <template lang="pug">
-  .wrap-orders-container
-    .orders-container
-      order-cash-out-standing-modal(
-        v-if="getCashOutPopVisble()"
-        :item="chooseOrder"
-        :closeItemModal="closeMisuModal"
-        :cashCommit="() => reqConfirmMisu(chooseOrder)"
-      )
-      p.store-name {{storeName}}{{version}}
-      .header-orders-status-list
-        .orders-status(@click="setViewMode('all')" :class="{activeButton: viewMode === 'all'}")
-          p 모든 주문
-          span {{lengthOrders}}
-      .wrap-order-list
-        .electronic-access-list-version
-          p.order-title 테이블번호
-          p.order-title 인원수
-          p.order-title 주문내역
-          p.order-title 주문IP
-          p.order-title 에러메세지
-          p.order-title 주문시간
-        .wrap-order-information-lists-electronic
-          div(v-for="(order, index) in sortedOrders" :key="`order-index-`+index" :class="getOrderListStyle(order, index)")
-            .order-information-list(v-if="visibleOrderItem(order)")
-              p.order-information-table-number(:class="orderStyleCheck(order)") {{checkedTabletNum(order)}}
-              p.order-information {{visitGroups(order)}}명
-              p.order-information {{getGoodsName(order)}}
-              p.order-information.small-message {{orderIp(order)}}
-              p.order-information.small-message {{errorMessage(order)}}
-              p.order-information {{getOrderTime(order).substr(11)}}
+.wrap-orders-container
+  .orders-container
+    order-cash-out-standing-modal(
+      v-if="getCashOutPopVisble()"
+      :item="chooseOrder"
+      :closeItemModal="closeMisuModal"
+      :cashCommit="() => reqConfirmMisu(chooseOrder)"
+    )
+    p.store-name {{storeName}}{{version}}
+    .header-orders-status-list
+      .orders-status(@click="setViewMode('all')" :class="{activeButton: viewMode === 'all'}")
+        p 모든 주문
+        span {{lengthOrders}}
+    .wrap-order-list
+      .electronic-access-list-version
+        //- p.order-title 테이블번호
+        //- p.order-title 인원수
+        p.order-title 주문 키
+        p.order-title 주문내역
+        p.order-title 주문IP
+        p.order-title 에러메세지
+        p.order-title 주문시간
+      .wrap-order-information-lists-electronic
+        div(v-for="(order, index) in sortedOrders" :key="`order-index-`+index" :class="getOrderListStyle(order, index)")
+          .order-information-list(v-if="visibleOrderItem(order)")
+            //- p.order-information-table-number(:class="orderStyleCheck(order)") {{checkedTabletNum(order)}}
+            //- p.order-information {{visitGroups(order)}}명
+            p.order-information {{order.order_view_key}}
+            p.order-information {{getGoodsName(order)}}
+            p.order-information.small-message {{orderIp(order)}}
+            p.order-information.small-message {{errorMessage(order)}}
+            p.order-information {{getOrderTime(order).substr(11)}}
 </template>
 
 <script>
@@ -328,7 +330,7 @@ export default {
     getGoodsName(order) {
       const goodsList = order.order_info;
 
-      if (goodsList.length > 1) {
+      if (goodsList?.length > 1) {
         return `${goodsList[0].good_name} 외 ${goodsList.length - 1}개`;
       }
 

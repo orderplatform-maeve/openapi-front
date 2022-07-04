@@ -58,9 +58,9 @@ const socket = {
     SOCKET_orderlog({ commit , state }, order) {
       // console.log('SOCKET_orderlog', order);
       if (validShopCode(state, order)) {
-        // console.log('주문 커먼-order', order);
-        // console.log('주문 커먼-state', state);
-        // console.log('주문커먼-commit', commit);
+        console.log('주문 커먼-order', order);
+        console.log('주문 커먼-state', state);
+        console.log('주문커먼-commit', commit);
         const receiptHandle = order?.receipt_handle;
 
         if (receiptHandle) {
@@ -81,6 +81,11 @@ const socket = {
             state.auction = true;
           } else {
             state.auction = false;
+          }
+          if (order.type === 'posResponseMessage') {
+            state.posResponseMessage = true;
+          } else {
+            state.posResponseMessage = false;
           }
           commit('PUSH_ORDER', order);
         }
@@ -517,6 +522,9 @@ const order = {
     },
     auctionFlag(state, payload) {
       state.auction = payload;
+    },
+    posResponseMessageFlag(state, payload) {
+      state.posResponseMessage = payload;
     },
     pushOrderKey(state, payload) {
       state.orderKeys.set(payload, true);
@@ -1342,6 +1350,7 @@ const payment = {
 const state = {
   order: undefined,
   auction : false,
+  posResponseMessage: false,
   orders: [],
   payloadStatus: 1,
   device: {

@@ -486,6 +486,7 @@ export default {
       this.$store.commit('replacePaymentListItem', newItem);
       this.closeItemModal();
     },
+    // 승인취소
     async cardCancelCommit(item) {
       try {
         // 이중 클릭 방지
