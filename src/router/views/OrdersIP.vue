@@ -14,23 +14,25 @@
         span {{lengthOrders}}
     .wrap-order-list
       .electronic-access-list-version
-        //- p.order-title 테이블번호
+        p.order-title 테이블번호
         //- p.order-title 인원수
-        p.order-title 주문 키
         p.order-title 주문내역
-        p.order-title 주문IP
-        p.order-title 에러메세지
         p.order-title 주문시간
+        p.order-title 에러 내용
+        p.order-title 주문키
+        p.order-title 주문 IP
       .wrap-order-information-lists-electronic
         div(v-for="(order, index) in sortedOrders" :key="`order-index-`+index" :class="getOrderListStyle(order, index)")
           .order-information-list(v-if="visibleOrderItem(order)")
-            //- p.order-information-table-number(:class="orderStyleCheck(order)") {{checkedTabletNum(order)}}
-            //- p.order-information {{visitGroups(order)}}명
-            p.order-information {{order.order_view_key}}
+            p.order-information-table-number(:class="orderStyleCheck(order)") {{checkedTabletNum(order)}}
             p.order-information {{getGoodsName(order)}}
-            p.order-information.small-message {{orderIp(order)}}
-            p.order-information.small-message {{errorMessage(order)}}
             p.order-information {{getOrderTime(order).substr(11)}}
+            p.order-information.small-message {{errorMessage(order)}}
+            //- p.order-information {{visitGroups(order)}}명
+            p.order-information.small-message {{order.order_view_key}}
+            p.order-information.small-message {{orderIp(order)}}
+
+
 </template>
 
 <script>
@@ -328,14 +330,15 @@ export default {
       this.$store.commit('filterEvent', eventList);
     },
     getGoodsName(order) {
-      const goodsList = order.order_info;
+      if (order.order_info) {
+        const goodsList = order.order_info;
 
-      if (goodsList?.length > 1) {
-        return `${goodsList[0].good_name} 외 ${goodsList.length - 1}개`;
+        if (goodsList?.length > 1) {
+          return `${goodsList[0].good_name} 외 ${goodsList.length - 1}개`;
+        }
+        return goodsList[0].good_name;
       }
-
-      return goodsList[0].good_name;
-    }
+    },
   }
 };
 </script>
@@ -419,7 +422,7 @@ export default {
     // 결제미포함 버전
     .electronic-access-list-version {
       display: grid;
-      grid-template-columns: 15.625vw 4vw 1fr 8vw 8vw 6vw;
+      grid-template-columns: 7.625vw 8vw 8vw 16vw 0.9fr 6vw;
       gap: 2vw;
       padding: 3.75vh 1.5625vw 1.25vh !important;
       border-bottom: solid 0.078125vw #333333;
@@ -440,7 +443,7 @@ export default {
           min-height: 4.375vw;
           padding: 0 1.5625vw !important;
           display: grid;
-          grid-template-columns: 15.625vw 4vw 1fr 8vw 8vw 6vw;
+          grid-template-columns: 7.625vw 8vw 8vw 16vw 0.9fr 6vw;
           align-items: center;
           gap: 2vw;
           box-sizing: border-box;

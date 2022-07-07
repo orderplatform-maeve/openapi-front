@@ -2,7 +2,7 @@
 .wrap-orders-container
   //- 주문보기 내에서만 보여야하는게 아닌, 발레파킹 페이지에서도 보여져야해서 수정되었음. (Layout.vue)
   auction-modal(v-if="order && auction")
-  modal-order(v-if="order && !auction")
+  modal-order(v-if="orderModal")
   PosErrorModal(v-if="posResponseMessage")
   .orders-container
     order-cash-out-standing-modal(
@@ -115,6 +115,9 @@ export default {
     posResponseMessage() {
       return this.$store.state.posResponseMessage;
     },
+    orderModal() {
+      return this.$store.state.orderModal;
+    },
     sortedOrders() {
       const { orders } = this.$store.state;
       return orders.sort((a, b) => b.timestamp - a.timestamp);
@@ -175,8 +178,6 @@ export default {
     }
 
     this.AndroidPostData();
-
-
   },
   methods: {
     getOrderListStyle(order, index) {
@@ -275,9 +276,7 @@ export default {
         this.$store.commit('auctionFlag', true);
       } else {
         this.$store.commit('auctionFlag', false);
-      }
-      if (order.type === 'posResponseMessage') {
-        this.$store.commit('posResponseMessageFlag', true);
+        this.$store.commit('orderModalFlag', true);
       }
     },
     visibleOrderItem(order) {
@@ -445,23 +444,26 @@ export default {
       }
     },
     getGoodsName(order) {
-      const goodsList = order.order_info;
-      const isOverOneGoodsList = goodsList?.length > 1;
-      const firstGoodsName = goodsList[0]?.good_name;
-      const isUndefinedName = firstGoodsName === undefined;
+      if (order.order_info) {
+        const goodsList = order.order_info;
+        const isOverOneGoodsList = goodsList?.length > 1;
+        const firstGoodsName = goodsList[0]?.good_name;
+        const isUndefinedName = firstGoodsName === undefined;
 
-      if (isUndefinedName) {
-        return '';
+        if (isUndefinedName) {
+          return '';
+        }
+
+        if (isOverOneGoodsList) {
+          const minusOneGoodsQuantity = goodsList.length - 1;
+          const goodsListName = `${firstGoodsName} 외 ${minusOneGoodsQuantity}개`;
+
+          return goodsListName;
+        }
+
+        return firstGoodsName;
       }
-
-      if (isOverOneGoodsList) {
-        const minusOneGoodsQuantity = goodsList.length - 1;
-        const goodsListName = `${firstGoodsName} 외 ${minusOneGoodsQuantity}개`;
-
-        return goodsListName;
-      }
-
-      return firstGoodsName;
+      return '';
     }
   }
 };

@@ -41,12 +41,30 @@ const socket = {
     SOCKET_orderlog(state, order) {
       if (validShopCode(state, order)) {
         if (router.currentRoute.name !== 'paymentManagement') {
+
           if (!state.orderKeys.has(order.order_view_key)) {
+
+            if (order.type === 'posResponseMessage') {
+              state.posResponseMessage = true;
+              state.orderModal = false;
+            } else {
+              state.posResponseMessage = false;
+              state.orderModal = true;
+            }
+
+            // 선결제, 경매, 게임 등 아직 type 지정되지 않으므로 임시방법 사용
+            // if (order.type === 'order') {
+            //   state.orderModal = true;
+            // } else {
+            //   state.orderModal = false;
+            // }
+
             if (window?.UUID?.playOrderBell) {
               if (order.creditType !== "cash") {
                 window.UUID.playOrderBell();
               }
             }
+
             state.orderKeys.set(order.order_view_key, true);
             Vue.set(state, 'order', order);
           }
@@ -58,9 +76,9 @@ const socket = {
     SOCKET_orderlog({ commit , state }, order) {
       // console.log('SOCKET_orderlog', order);
       if (validShopCode(state, order)) {
-        console.log('주문 커먼-order', order);
-        console.log('주문 커먼-state', state);
-        console.log('주문커먼-commit', commit);
+        // console.log('주문 커먼-order', order);
+        // console.log('주문 커먼-state', state);
+        // console.log('주문커먼-commit', commit);
         const receiptHandle = order?.receipt_handle;
 
         if (receiptHandle) {
@@ -73,6 +91,18 @@ const socket = {
           postOrderConfirm(config);
         }
 
+        // pos error 메세지는 orders list에 추가되면 안되므로 주문키 if문 외부에 작성
+        if (order.type === 'posResponseMessage') {
+          // mutations에서 pos message에 대한 order가 set 되지 않을 경우 방지
+          commit('SET_ORDER', order);
+          state.posResponseMessage = true;
+          state.orderModal = false;
+          return;
+        } else {
+          state.posResponseMessage = false;
+          state.orderModal = true;
+        }
+
         if (!state.orderKeys.has(order.order_view_key)) {
           if (window?.UUID?.playOrderBell) {
             window.UUID.playOrderBell();
@@ -82,11 +112,13 @@ const socket = {
           } else {
             state.auction = false;
           }
-          if (order.type === 'posResponseMessage') {
-            state.posResponseMessage = true;
-          } else {
-            state.posResponseMessage = false;
-          }
+
+          // 선결제, 경매, 게임 등 아직 type 지정되지 않으므로 임시방법 사용
+          // if (order.type === 'order') {
+          //   state.orderModal = true;
+          // } else {
+          //   state.orderModal = false;
+          // }
           commit('PUSH_ORDER', order);
         }
       }
@@ -116,7 +148,6 @@ const socket = {
             window.UUID.playOrderBell();
           }
           commit('setRequestCashItem', item);
-          commit('pushPaymentList', item);
         }
       }
 
@@ -525,6 +556,9 @@ const order = {
     },
     posResponseMessageFlag(state, payload) {
       state.posResponseMessage = payload;
+    },
+    orderModalFlag(state, payload) {
+      state.orderModal = payload;
     },
     pushOrderKey(state, payload) {
       state.orderKeys.set(payload, true);
@@ -1351,6 +1385,7 @@ const state = {
   order: undefined,
   auction : false,
   posResponseMessage: false,
+  orderModal: false,
   orders: [],
   payloadStatus: 1,
   device: {

@@ -1,53 +1,72 @@
 <template lang="pug">
-.confirm-modal-container
-  .wrap-confirm-modal
-    p.confirm-modal-title 오류 발생
-    .confirm-modal-body
-      p.confirm-modal-body-title {{tableNumber()}} 테이블
-      p.confirm-modal-body-message 주문이 정상적으로 접수되지 못하였습니다.
-      p.confirm-modal-body-message {{orderKey()}}
-    .confirm-modal-footer
-      button.confirm-modal-button-commit 주문 내역 오류 보기
-      button.confirm-modal-button-close 닫기
+.pos-error-modal-container
+  .wrap-pos-error-modal
+    p.pos-error-modal-title 오류 발생
+    .pos-error-modal-body
+      p.pos-error-modal-body-title {{tableNumber(order)}} 테이블
+      p.pos-error-modal-body-message 주문이 정상적으로 접수되지 못하였습니다.
+    .pos-error-modal-footer
+      button.pos-error-modal-button-commit(@click="goErrorOrderList()") 주문 내역 오류 보기
+      button.pos-error-modal-button-close(@click="closeOrder()") 닫기
 </template>
 
 <script>
 export default {
+  data() {
+    return {
+      interval: undefined,
+      seconds: 10,
+    };
+  },
   computed: {
     order() {
       return this.$store.state.order;
     },
-    tableNumber() {
-      return this.order?.tableNumber;
-    },
-    orderKey() {
-      return this.order?.orderKey;
-    }
-  },
-  sockets: {
-    orderview(payload) {
-      if (payload?.type_msg === 'commit') {
-        // console.log('local');
-        clearInterval(this.interval);
-        this.isConfirm = false;
-      }
-    },
   },
   methods: {
+    goErrorOrderList() {
+      this.$router.push('/ordersIP');
+      this.closeOrder();
+    },
+    tableNumber(order) {
+      try {
+        return order.tableNumber;
+      } catch (error) {
+        return '';
+      }
+    },
+    orderKey(order) {
+      try {
+        return order.orderKey;
+      } catch (error) {
+        return '';
+      }
+    },
     closeOrder() {
       clearInterval(this.interval);
-      this.$store.commit('UNSET_ORDER');
+      this.$store.commit('posResponseMessageFlag', false);
+      // this.$store.commit('UNSET_ORDER');
     },
   },
   mounted() {
-    console.log(this.order, 'order pos error');
+    clearInterval(this.interval);
+    this.interval = setInterval(() => {
+      this.seconds -= 1;
+
+      if (this.seconds < 1) {
+        this.closeOrder();
+      }
+    }, 1000);
+  },
+  beforeDestroy() {
+    this.closeOrder();
   },
 };
 
 </script>
 
 <style lang="scss" scoped>
-.confirm-modal-container {
+.pos-error-modal-container {
   position: fixed;
   top: 0;
   left: 0;
@@ -59,7 +78,7 @@ export default {
   justify-content: center;
   align-items: center;
 
-  .wrap-confirm-modal {
+  .wrap-pos-error-modal {
     width: 80%;
     padding: 0 1.875vw !important;
     box-sizing: border-box;
@@ -67,7 +86,7 @@ export default {
     flex-direction: column;
     gap: 3.125vw;
 
-    .confirm-modal-title {
+    .pos-error-modal-title {
       text-align: center;
       font-family: 'Spoqa Han Sans Neo', 'sans-serif';
       font-size: 1.875vw;
@@ -79,7 +98,7 @@ export default {
       border-radius: 1.875vw;
     }
 
-    .confirm-modal-body {
+    .pos-error-modal-body {
       font-family: 'Spoqa Han Sans Neo', 'sans-serif';
       color: #fff;
       display: flex;
@@ -92,20 +111,26 @@ export default {
       border-radius: 1.875vw;
       background-color: rgb(255, 0, 0, 0.8);
 
-      .confirm-modal-body-title {
-        font-size: 6.25vw;
+      .pos-error-modal-body-title {
+        font-size: 5vw;
         font-weight: bold;
         word-break: keep-all;
       }
 
-      .confirm-modal-body-message {
+      .pos-error-modal-body-message {
         font-size: 3.125vw;
+        font-weight: lighter;
+        word-break: keep-all;
+      }
+
+      .pos-error-modal-body-sub-message {
+        font-size: 2.125vw;
         font-weight: lighter;
         word-break: keep-all;
       }
     }
 
-    .confirm-modal-footer {
+    .pos-error-modal-footer {
       display: flex;
       justify-content: center;
       align-items: center;
@@ -125,12 +150,12 @@ export default {
         box-shadow: 0 0 8px -4px #000000;
       }
 
-      .confirm-modal-button-commit {
+      .pos-error-modal-button-commit {
         background-color: #ff0000;
         color: #fff;
       }
 
-      .confirm-modal-button-close {
+      .pos-error-modal-button-close {
         background-color: #ffffff;
         color: #202020;
       }

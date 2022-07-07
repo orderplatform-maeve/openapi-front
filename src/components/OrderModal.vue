@@ -207,6 +207,7 @@ export default {
     },
     closeOrder() {
       clearInterval(this.interval);
+      this.$store.commit('orderModalFlag', false);
       this.$store.commit('UNSET_ORDER');
     },
     ...utils,

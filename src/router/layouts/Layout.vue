@@ -2,7 +2,7 @@
 #orderview
   alert-modal(v-if="isAlertModal")
   auction-modal(v-if="order && auction")
-  modal-order(v-if="order && !auction")
+  modal-order(v-if="orderModal")
   PosErrorModal(v-if="posResponseMessage")
   modal-all-refresh(
     :show="visibleAllRefreshModal"
@@ -148,6 +148,9 @@ export default {
     },
     posResponseMessage() {
       return this.$store.state.posResponseMessage;
+    },
+    orderModal() {
+      return this.$store.state.orderModal;
     },
     isAlertModal() {
       return this.$store.state.isAlertModal;
