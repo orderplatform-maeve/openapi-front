@@ -39,8 +39,8 @@
     router-link.button-added(v-if="visibleOrderButton" :to="paths.valetTableList")
       span 발렛 파킹
       img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
-    router-link.button-added(v-if="visibleOrderButton && stopRedirect" :to="paths.ordersIP")
-      span 주문IP확인
+    router-link.button-added(v-if="visibleOrderButton" :to="paths.ordersIP")
+      span 주문 오류 내역
       img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
 </template>
 

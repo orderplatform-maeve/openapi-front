@@ -22,12 +22,20 @@
         p.order-title 주문키
         p.order-title 주문 IP
       .wrap-order-information-lists-electronic
-        div(v-for="(order, index) in sortedOrders" :key="`order-index-`+index" :class="getOrderListStyle(order, index)")
+        div(
+          v-for="(order, index) in sortedOrders"
+          :key="`order-index-`+index"
+          :class="getOrderListStyle(order, index)"
+          )
           .order-information-list(v-if="visibleOrderItem(order)")
             p.order-information-table-number(:class="orderStyleCheck(order)") {{checkedTabletNum(order)}}
             p.order-information {{getGoodsName(order)}}
             p.order-information {{getOrderTime(order).substr(11)}}
-            p.order-information.small-message {{errorMessage(order)}}
+            //- p.order-information.small-message {{errorMessage(order)}}
+            p.order-information.small-message
+              |1분 후에도 정상적으로 주문 내역이 안 들어 올 경우 POS에 주문 건을 수기로 입력 요청합니다.
+              br
+              |오류 문의는 카카오 상담 신청으로 문의 주세요.
             //- p.order-information {{visitGroups(order)}}명
             p.order-information.small-message {{order.order_view_key}}
             p.order-information.small-message {{orderIp(order)}}
@@ -422,7 +430,7 @@ export default {
     // 결제미포함 버전
     .electronic-access-list-version {
       display: grid;
-      grid-template-columns: 7.625vw 8vw 8vw 16vw 0.9fr 6vw;
+      grid-template-columns: 5.625vw 8vw 8vw 18vw 0.9fr 6vw;
       gap: 2vw;
       padding: 3.75vh 1.5625vw 1.25vh !important;
       border-bottom: solid 0.078125vw #333333;
@@ -443,15 +451,20 @@ export default {
           min-height: 4.375vw;
           padding: 0 1.5625vw !important;
           display: grid;
-          grid-template-columns: 7.625vw 8vw 8vw 16vw 0.9fr 6vw;
+          grid-template-columns: 5.625vw 8vw 8vw 18vw 0.9fr 6vw;
           align-items: center;
           gap: 2vw;
           box-sizing: border-box;
 
           > p {
-            font-size: 1.406250vw;
             letter-spacing: -0.02109375vw;
             text-align: center;
+            font-size: 1.406250vw;
+          }
+          .small-message {
+            width: 100%;
+            font-size: 0.9375vw;
+            overflow: hidden;
           }
 
           .orderColorRed {
