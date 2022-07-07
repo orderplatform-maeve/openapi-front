@@ -93,11 +93,14 @@ const socket = {
 
         // pos error 메세지는 orders list에 추가되면 안되므로 주문키 if문 외부에 작성
         if (order.type === 'posResponseMessage') {
-          // mutations에서 pos message에 대한 order가 set 되지 않을 경우 방지
-          commit('SET_ORDER', order);
-          state.posResponseMessage = true;
-          state.orderModal = false;
-          return;
+          console.log(order);
+          if (order.tableNumber) {
+            // mutations에서 pos message에 대한 order가 set 되지 않을 경우 방지
+            commit('SET_ORDER', order);
+            state.posResponseMessage = true;
+            state.orderModal = false;
+            return;
+          }
         } else {
           state.posResponseMessage = false;
           state.orderModal = true;
