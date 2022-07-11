@@ -208,7 +208,6 @@ export default {
           const methodName = msg?.methodName;
 
           if (methodName === 'callBackPayment') {
-            console.log('event', event);
 
             if (msg?.result) {
               const vanData = JSON.parse(msg.result);
