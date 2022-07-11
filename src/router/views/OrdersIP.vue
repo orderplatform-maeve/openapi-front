@@ -28,17 +28,16 @@
           :class="getOrderListStyle(order, index)"
           )
           .order-information-list(v-if="visibleOrderItem(order)")
-            p.order-information-table-number(:class="orderStyleCheck(order)") {{checkedTabletNum(order)}}
-            p.order-information {{getGoodsName(order)}}
-            p.order-information {{getOrderTime(order).substr(11)}}
-            //- p.order-information.small-message {{errorMessage(order)}}
-            p.order-information.small-message
-              |1분 후에도 정상적으로 주문 내역이 안 들어 올 경우 POS에 주문 건을 수기로 입력 요청합니다.
-              br
-              |오류 문의는 카카오 상담 신청으로 문의 주세요.
-            //- p.order-information {{visitGroups(order)}}명
-            p.order-information.small-message {{order.order_view_key}}
-            p.order-information.small-message {{orderIp(order)}}
+            p.order-bold(:class="orderStyleCheck(order)") {{checkedTabletNum(order)}}
+            p {{getGoodsName(order)}}
+            p {{getOrderTime(order).substr(11)}}
+            //- p.small-message {{errorMessage(order)}}
+            .small-message
+              .order-bold 오류 발생!
+              |주문키와 주문IP 사진을 찍어서 카카오 상담 문의해주세요.
+            //- p {{visitGroups(order)}}명
+            .small-message {{order.order_view_key}}
+            p.small-message {{orderIp(order)}}
 
 
 </template>
@@ -461,6 +460,13 @@ export default {
             text-align: center;
             font-size: 1.406250vw;
           }
+
+          > div {
+            letter-spacing: -0.02109375vw;
+            text-align: left;
+            font-size: 1.406250vw;
+
+          }
           .small-message {
             width: 100%;
             font-size: 0.9375vw;
@@ -484,7 +490,7 @@ export default {
             color: #FF7A00;
           }
 
-          .order-information-table-number {
+          .order-bold {
             font-weight: bold;
           }
 
