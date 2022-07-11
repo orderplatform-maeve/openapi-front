@@ -45,7 +45,7 @@ export default {
     closeOrder() {
       clearInterval(this.interval);
       this.$store.commit('posResponseMessageFlag', false);
-      // this.$store.commit('UNSET_ORDER');
+      this.$store.commit('UNSET_ORDER');
     },
   },
   mounted() {

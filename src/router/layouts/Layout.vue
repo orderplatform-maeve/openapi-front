@@ -2,8 +2,8 @@
 #orderview
   alert-modal(v-if="isAlertModal")
   auction-modal(v-if="order && auction")
-  modal-order(v-if="orderModal")
-  PosErrorModal(v-if="posResponseMessage")
+  modal-order(v-if="order && orderModal")
+  PosErrorModal(v-if="order && posResponseMessage")
   modal-all-refresh(
     :show="visibleAllRefreshModal"
     :close="onCloseAllRefreshModal"
