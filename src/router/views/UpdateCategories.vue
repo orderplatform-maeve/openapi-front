@@ -29,63 +29,63 @@
           :style="getAbleButtonColor(!getUseCategory())"
         ) 숨김
     // 노출 상태
-    .wrap-main-category-status(v-if="getUseCategory()")
-      p.main-category-status-title 노출 상태
-      .main-category-status-button
-        button.main-category-status-unvisible(
-          @click="postCategoryUpdateCategoryScheduleOffApi"
-          :style="getAbleButtonColor(!getScheduleOn())"
-        ) 항상 노출
-        button.main-category-status-unvisible(
-          @click="postCategoryUpdateCategoryScheduleOnApi"
-          :style="getAbleButtonColor(getScheduleOn())"
-        ) 제한 노출
+    //- .wrap-main-category-status(v-if="getUseCategory()")
+    //-   p.main-category-status-title 노출 상태
+    //-   .main-category-status-button
+    //-     button.main-category-status-unvisible(
+    //-       @click="postCategoryUpdateCategoryScheduleOffApi"
+    //-       :style="getAbleButtonColor(!getScheduleOn())"
+    //-     ) 항상 노출
+    //-     button.main-category-status-unvisible(
+    //-       @click="postCategoryUpdateCategoryScheduleOnApi"
+    //-       :style="getAbleButtonColor(getScheduleOn())"
+    //-     ) 제한 노출
     // 노출 요일 선택
-    .wrap-main-category-status(v-if="getScheduleOn() && getUseCategory()")
-      p.main-category-status-title 노출 요일 선택
-      .main-category-day-of-week
-        button(
-          @click="clickAllDayOfWeek()"
-          :style="getAbleButtonColor(dayOfWeekAllStyle())"
-        ) 매일
-        button(
-          v-for="day of dayOfWeek"
-          @click="clickDayOfWeek(day)"
-          :style="getAbleButtonColor(dayOfWeekStyle(day))"
-        ) {{ getDayText(day) }}
+    //- .wrap-main-category-status(v-if="getScheduleOn() && getUseCategory()")
+    //-   p.main-category-status-title 노출 요일 선택
+    //-   .main-category-day-of-week
+    //-     button(
+    //-       @click="clickAllDayOfWeek()"
+    //-       :style="getAbleButtonColor(dayOfWeekAllStyle())"
+    //-     ) 매일
+    //-     button(
+    //-       v-for="day of dayOfWeek"
+    //-       @click="clickDayOfWeek(day)"
+    //-       :style="getAbleButtonColor(dayOfWeekStyle(day))"
+    //-     ) {{ getDayText(day) }}
     // 노출 시간 선택
-    .wrap-main-category-status(v-if="getScheduleOn() && getUseCategory()")
-      p.main-category-status-title 노출 시간 선택
-      .main-category-day-of-week
-        .category-visible-time(@click="openModal()") {{ getCategoryVisibleStartHour() }}시
-        .category-visible-time(@click="openModal()") {{ getCategoryVisibleStartMinute() }}분
-        span.tilde ~
-        .category-visible-time(@click="openModal()") {{ getCategoryVisibleEndHour() }}시
-        .category-visible-time(@click="openModal()") {{ getCategoryVisibleEndMinute() }}분
-        button(
-          @click="postCategoryUpdateCategoryTimeApi()"
-          :style="getAbleButtonColor(true)"
-        ) 적용
-        .time-description
-         p *00:00~30:00시 시간입력(30시=익일 새벽 6시)
-         p 익일 새벽으로 넘어갈 시 노출요일은 시작시간 요일기준으로 판단
-         p 예)월요일과 수요일 오후 10시부터 익일 새벽 2시까지 상품노출을 원할 경우
-         p 월요일과 수요일 선택 후 22:00 ~ 26:00입력
+    //- .wrap-main-category-status(v-if="getScheduleOn() && getUseCategory()")
+    //-   p.main-category-status-title 노출 시간 선택
+    //-   .main-category-day-of-week
+    //-     .category-visible-time(@click="openModal()") {{ getCategoryVisibleStartHour() }}시
+    //-     .category-visible-time(@click="openModal()") {{ getCategoryVisibleStartMinute() }}분
+    //-     span.tilde ~
+    //-     .category-visible-time(@click="openModal()") {{ getCategoryVisibleEndHour() }}시
+    //-     .category-visible-time(@click="openModal()") {{ getCategoryVisibleEndMinute() }}분
+    //-     button(
+    //-       @click="postCategoryUpdateCategoryTimeApi()"
+    //-       :style="getAbleButtonColor(true)"
+    //-     ) 적용
+    //-     .time-description
+    //-      p *00:00~30:00시 시간입력(30시=익일 새벽 6시)
+    //-      p 익일 새벽으로 넘어갈 시 노출요일은 시작시간 요일기준으로 판단
+    //-      p 예)월요일과 수요일 오후 10시부터 익일 새벽 2시까지 상품노출을 원할 경우
+    //-      p 월요일과 수요일 선택 후 22:00 ~ 26:00입력
     // 노출시간 이후 표시여부
-    .wrap-main-category-status(v-if="getScheduleOn() && getUseCategory()")
-      p.main-category-status-title 노출시간 이후 표시여부
-      .main-category-status-button
-        button.main-category-status-unvisible(
-          @click="postCategoryUpdateCategoryHideApi()"
-          :style="getAbleButtonColor(!getHide())"
-        ) 분류표시
-        button.main-category-status-visible(
-          @click="postCategoryUpdateCategoryShowApi()"
-          :style="getAbleButtonColor(getHide())"
-        ) 분류숨김
-      pre.description *분류표시: 설정된 시간 이후 대분류가 제일 하단으로 이동하며 메뉴 선택시 주문 불가 팝업이 뜸
-        br
-        | *분류숨김: 설정된 시간 이후 분류가 숨겨짐
+    //- .wrap-main-category-status(v-if="getScheduleOn() && getUseCategory()")
+    //-   p.main-category-status-title 노출시간 이후 표시여부
+    //-   .main-category-status-button
+    //-     button.main-category-status-unvisible(
+    //-       @click="postCategoryUpdateCategoryHideApi()"
+    //-       :style="getAbleButtonColor(!getHide())"
+    //-     ) 분류표시
+    //-     button.main-category-status-visible(
+    //-       @click="postCategoryUpdateCategoryShowApi()"
+    //-       :style="getAbleButtonColor(getHide())"
+    //-     ) 분류숨김
+    //-   pre.description *분류표시: 설정된 시간 이후 대분류가 제일 하단으로 이동하며 메뉴 선택시 주문 불가 팝업이 뜸
+    //-     br
+    //-     | *분류숨김: 설정된 시간 이후 분류가 숨겨짐
     // 중분류 노출여부
     .wrap-sub-category-status(v-if="getSubCategoryStatus")
       p.sub-category-status-title 중분류 노출여부
@@ -395,8 +395,6 @@ export default {
           dateArray : cloneArray2.sort()
         }
       };
-
-      console.log('추가', config.body.dateArray);
 
       const res = await postCategoryUpdateCategoryScheduleDateArray(config);
       if (res.data.result === true) {
