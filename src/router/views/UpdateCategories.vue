@@ -145,19 +145,18 @@ export default {
       return this.$store.getters.getAllCategories;
     },
     subCategoryItem() {
-      return this.data[this.selectMainCategoryNumber]?.subCategories ? this.data[this.selectMainCategoryNumber].subCategories : [];
+      return this.data[this.selectMainCategoryNumber]?.subCategories ? this.data[this.selectMainCategoryNumber]?.subCategories : [];
     },
     getSubCategoryStatus() {
-      return this.subCategoryItem.length > 0;
+      return this.subCategoryItem?.length > 0;
     },
   },
   async mounted() {
     await this.initialize();
-    console.log(this.cloneDate.startMinute = this.data[this.selectMainCategoryNumber].categoryVisibleStartTime?.split(':')[1], 'asasdasdasd');
-    this.cloneDate.startHour = this.data[this.selectMainCategoryNumber].categoryVisibleStartTime?.split(':')[0];
-    this.cloneDate.startMinute = this.data[this.selectMainCategoryNumber].categoryVisibleStartTime?.split(':')[1];
-    this.cloneDate.endHour = this.data[this.selectMainCategoryNumber].categoryVisibleEndTime?.split(':')[0];
-    this.cloneDate.endMinute = this.data[this.selectMainCategoryNumber].categoryVisibleEndTime?.split(':')[1];
+    this.cloneDate.startHour = this.data[this.selectMainCategoryNumber]?.categoryVisibleStartTime?.split(':')[0];
+    this.cloneDate.startMinute = this.data[this.selectMainCategoryNumber]?.categoryVisibleStartTime?.split(':')[1];
+    this.cloneDate.endHour = this.data[this.selectMainCategoryNumber]?.categoryVisibleEndTime?.split(':')[0];
+    this.cloneDate.endMinute = this.data[this.selectMainCategoryNumber]?.categoryVisibleEndTime?.split(':')[1];
   },
   methods: {
     select(id) {
@@ -217,16 +216,16 @@ export default {
     },
     //
     getCategoryVisibleStartHour() {
-      return this.data[this.selectMainCategoryNumber].categoryVisibleStartTime?.split(':')[0];
+      return this.data[this.selectMainCategoryNumber]?.categoryVisibleStartTime?.split(':')[0];
     },
     getCategoryVisibleStartMinute() {
-      return this.data[this.selectMainCategoryNumber].categoryVisibleStartTime?.split(':')[1];
+      return this.data[this.selectMainCategoryNumber]?.categoryVisibleStartTime?.split(':')[1];
     },
     getCategoryVisibleEndHour() {
-      return this.data[this.selectMainCategoryNumber].categoryVisibleEndTime?.split(':')[0];
+      return this.data[this.selectMainCategoryNumber]?.categoryVisibleEndTime?.split(':')[0];
     },
     getCategoryVisibleEndMinute() {
-      return this.data[this.selectMainCategoryNumber].categoryVisibleEndTime?.split(':')[1];
+      return this.data[this.selectMainCategoryNumber]?.categoryVisibleEndTime?.split(':')[1];
     },
     getSubCategories() {
       try {
@@ -240,7 +239,7 @@ export default {
     onSelectMainCtg(item, index) {
       this.selectMainCategoryItem = item;
       this.selectMainCategoryNumber = index;
-      this.selectSubCategoryItem = item.subCategories[0];
+      this.selectSubCategoryItem = item?.subCategories[0];
       this.select(`mainCategoryId-${index}`);
     },
     getActiveMainCategory(targetCode) {
@@ -248,7 +247,7 @@ export default {
         const { data, selectMainCategoryItem } = this;
 
         if (!selectMainCategoryItem) {
-          const isDefaultActive = targetCode === data[0].code;
+          const isDefaultActive = targetCode === data[0]?.code;
           if (isDefaultActive) {
             return 'active';
           }
@@ -305,7 +304,7 @@ export default {
           index: currentIdx,
           T_order_store_menu_use: visible ? 'Y' : 'N',
           name: target.T_order_store_menu_name,
-          depthStr: JSON.parse(target.T_order_store_menu_depth).includes('1') ? '메인' : '서브',
+          depthStr: JSON.parse(target.T_order_store_menu_depth)?.includes('1') ? '메인' : '서브',
         };
 
         const { disconnected } = this.emmitSocket(results);
@@ -352,7 +351,7 @@ export default {
 
     // 노출 상태 '특정 요일' 스타일
     dayOfWeekStyle(day) {
-      if (this.data[this.selectMainCategoryNumber].weekArray.includes(day)) {
+      if (this.data[this.selectMainCategoryNumber].weekArray?.includes(day)) {
         return true;
       }
       return false;
@@ -361,10 +360,10 @@ export default {
     // 노출 상태 요일 '특정 요일' 눌렀을때
     async clickDayOfWeek(day) {
       // 이미 요일로 지정 되어 있으면 삭제
-      if (this.data[this.selectMainCategoryNumber].weekArray.includes(day)) {
+      if (this.data[this.selectMainCategoryNumber].weekArray?.includes(day)) {
         const deleteIndex1 = this.data[this.selectMainCategoryNumber].weekArray.findIndex((dayArrayItem) => dayArrayItem === day);
         const cloneArray1 = JSON.parse(JSON.stringify(this.data[this.selectMainCategoryNumber].weekArray));
-        cloneArray1.splice(deleteIndex1, 1);
+        cloneArray1?.splice(deleteIndex1, 1);
         const config = {
           body : {
             store_code : this.$store.state.auth.store.store_code,
@@ -373,11 +372,8 @@ export default {
           }
         };
 
-        console.log('제거', config.body.dateArray);
-
         const res = await postCategoryUpdateCategoryScheduleDateArray(config);
         if (res.data.result === true) {
-          console.log('노출 요일 선택(삭제)' , res);
           this.initialize();
           this.$store.commit('pushFlashMessage', '노출 요일이 제거 되었습니다.');
         }
@@ -385,7 +381,7 @@ export default {
       }
 
       // 요일이 지정 되어 있지 않으면, 요일을 추가
-      const cloneArray2 = JSON.parse(JSON.stringify(this.data[this.selectMainCategoryNumber].weekArray));
+      const cloneArray2 = JSON.parse(JSON.stringify(this.data[this.selectMainCategoryNumber]?.weekArray));
       cloneArray2.push(day);
 
       const config = {
@@ -396,12 +392,8 @@ export default {
         }
       };
 
-      console.log('추가', config.body.dateArray);
-
       const res = await postCategoryUpdateCategoryScheduleDateArray(config);
       if (res.data.result === true) {
-        console.log('노출 요일 선택(추가)' , res);
-
         this.initialize();
         this.$store.commit('pushFlashMessage', '노출 요일이 추가 되었습니다.');
       }
@@ -428,7 +420,6 @@ export default {
       const res = await postCategoryUpdateCategoryScheduleDateArray(config);
 
       if (res.data.result === true) {
-        console.log('노출 요일 선택(매일)' , res);
         this.initialize();
         this.$store.commit('pushFlashMessage', '노출 요일이 변경 되었습니다.');
       }
@@ -436,7 +427,7 @@ export default {
 
     // 노출 요일 선택 '매일' 스타일
     dayOfWeekAllStyle() {
-      if (this.data[this.selectMainCategoryNumber].weekArray.length === 7) {
+      if (this.data[this.selectMainCategoryNumber]?.weekArray?.length === 7) {
         return true;
       }
       return false;
@@ -456,10 +447,10 @@ export default {
     // 시간 선택 모달창
     openModal() {
       // time 세팅
-      this.cloneDate.startHour = this.data[this.selectMainCategoryNumber].categoryVisibleStartTime?.split(':')[0];
-      this.cloneDate.startMinute = this.data[this.selectMainCategoryNumber].categoryVisibleStartTime?.split(':')[1];
-      this.cloneDate.endHour = this.data[this.selectMainCategoryNumber].categoryVisibleEndTime?.split(':')[0];
-      this.cloneDate.endMinute = this.data[this.selectMainCategoryNumber].categoryVisibleEndTime?.split(':')[1];
+      this.cloneDate.startHour = this.data[this.selectMainCategoryNumber]?.categoryVisibleStartTime?.split(':')[0];
+      this.cloneDate.startMinute = this.data[this.selectMainCategoryNumber]?.categoryVisibleStartTime?.split(':')[1];
+      this.cloneDate.endHour = this.data[this.selectMainCategoryNumber]?.categoryVisibleEndTime?.split(':')[0];
+      this.cloneDate.endMinute = this.data[this.selectMainCategoryNumber]?.categoryVisibleEndTime?.split(':')[1];
 
       this.isCategoryVisibleSelectDateModal = true;
     },
@@ -558,7 +549,6 @@ export default {
       const res = await postCategoryUpdateCategoryScheduleOff(config);
 
       if (res.data.result === true) {
-        console.log(res);
         this.data[this.selectMainCategoryNumber].scheduleOn = false;
         this.$store.commit('pushFlashMessage', '노출 상태가 항상 노출로 변경 되었습니다.');
         this.initialize();
@@ -579,7 +569,7 @@ export default {
 
       if (res.data.result === true) {
         this.$store.commit('pushFlashMessage', '노출시간 이후 표시 여부가 분류표시로 변경 되었습니다.');
-        console.log('isHide', this.data[this.selectMainCategoryNumber].isHide);
+        console.log('isHide', this.data[this.selectMainCategoryNumber]?.isHide);
         this.initialize();
       }
     },
@@ -596,7 +586,7 @@ export default {
       const res = await postCategoryUpdateCategoryShow(config);
       if (res.data.result === true) {
         this.$store.commit('pushFlashMessage', '노출시간 이후 표시 여부가 분류숨김으로 변경 되었습니다.');
-        console.log('isHide', this.data[this.selectMainCategoryNumber].isHide);
+        console.log('isHide', this.data[this.selectMainCategoryNumber]?.isHide);
         this.initialize();
       }
     },
