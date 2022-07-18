@@ -2,8 +2,8 @@
 .wrap-orders-container
   //- 주문보기 내에서만 보여야하는게 아닌, 발레파킹 페이지에서도 보여져야해서 수정되었음. (Layout.vue)
   auction-modal(v-if="order && auction")
-  modal-order(v-if="orderModal")
-  PosErrorModal(v-if="posResponseMessage")
+  modal-order(v-if="order && orderModal")
+  PosErrorModal(v-if="order && posResponseMessage")
   .orders-container
     order-cash-out-standing-modal(
       v-if="getCashOutPopVisble()"
@@ -176,7 +176,6 @@ export default {
     if (payloadStatus) {
       this.$store.commit('setPayloadStatus', parseInt(payloadStatus));
     }
-
     this.AndroidPostData();
   },
   methods: {
@@ -444,26 +443,23 @@ export default {
       }
     },
     getGoodsName(order) {
-      if (order.order_info) {
-        const goodsList = order.order_info;
-        const isOverOneGoodsList = goodsList?.length > 1;
-        const firstGoodsName = isOverOneGoodsList ? goodsList[0]?.good_name:'';
-        const isUndefinedName = firstGoodsName === undefined;
+      const goodsList = order.order_info;
+      const isOverOneGoodsList = goodsList.length > 1;
+      const firstGoodsName = goodsList[0]?.good_name;
+      const isUndefinedName = firstGoodsName === undefined;
 
-        if (isUndefinedName) {
-          return '';
-        }
-
-        if (isOverOneGoodsList) {
-          const minusOneGoodsQuantity = goodsList.length - 1;
-          const goodsListName = `${firstGoodsName} 외 ${minusOneGoodsQuantity}개`;
-
-          return goodsListName;
-        }
-
-        return firstGoodsName;
+      if (isUndefinedName) {
+        return '';
       }
-      return '';
+
+      if (isOverOneGoodsList) {
+        const minusOneGoodsQuantity = goodsList.length - 1;
+        const goodsListName = `${firstGoodsName} 외 ${minusOneGoodsQuantity}개`;
+
+        return goodsListName;
+      }
+
+      return firstGoodsName;
     }
   }
 };
