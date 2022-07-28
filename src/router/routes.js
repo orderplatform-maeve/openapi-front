@@ -25,6 +25,8 @@ import {
   ValetPage,
   ValetParkingConfirm,
   OrdersIP,
+  OrderStatusCheck,
+  TableCreditInfoList,
 } from '@views';
 
 import paths from './paths';
@@ -188,7 +190,22 @@ const routes = [{
       name: paths.ordersIP.replace('/', ''),
       component: OrdersIP,
       meta: { requiresAuth: true },
-    }
+    },
+    {
+      path: paths.orderStatusCheck,
+      name: paths.orderStatusCheck.replace('/', ''),
+      component: OrderStatusCheck,
+      meth: { requiresAuth: true },
+      children: [
+        {
+          path: paths.tableCreditInfoList,
+          name: paths.tableCreditInfoList.replace('/', ''),
+          component: TableCreditInfoList,
+          meth: { requiresAuth: true },
+          props: true,
+        }
+      ]
+    },
   ],
 }];
 

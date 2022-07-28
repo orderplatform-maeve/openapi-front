@@ -42,6 +42,9 @@
     router-link.button-added(v-if="visibleOrderButton" :to="paths.ordersIP")
       span 주문 오류 내역
       img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
+    router-link.button-added(v-if="visibleOrderButton && stopRedirect" :to="paths.orderStatusCheck")
+      span 주문상태확인
+      img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
 </template>
 
 <script>

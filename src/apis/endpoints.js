@@ -67,6 +67,9 @@ const endpoints = {
     cashCancelCommit: `${REST_URL}/credit/cashCancelCommit`,
     deleteCartList: `${REST_URL}/credit/deleteCartList`,
     misuCommit: `${REST_URL}/credit/misuCommit`,
+    tableCreditStatList: `${DEMO_URL}/credit/getTabletCreditStatList`,
+    tableCreditInfo: `${DEMO_URL}/credit/getTableCreditInfo`,
+    creditOrderKeyList: `${DEMO_URL}/credit/creditOrderKeyList`,
   },
   servingRobot: {
     servingRobotStatus: `${DEMO_URL}/message/_storeRobotList`,
