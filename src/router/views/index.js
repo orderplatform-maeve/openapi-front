@@ -23,3 +23,5 @@ export { default as ValetTableList } from './ValetTableList';
 export { default as ValetPage } from './ValetPage';
 export { default as ValetParkingConfirm } from './ValetParkingConfirm';
 export { default as OrdersIP } from './OrdersIP';
+export { default as OrderStatusCheck } from './OrderStatusCheck';
+export { default as TableCreditInfoList } from './TableCreditInfoList';

@@ -25,4 +25,6 @@ export default {
   valetPage: '/valetPage',
   valetParkingConfirm: '/valetParkingConfirm',
   ordersIP: '/ordersIP',
+  orderStatusCheck: '/orderStatusCheck',
+  tableCreditInfoList: '/tableCreditInfoList',
 };
