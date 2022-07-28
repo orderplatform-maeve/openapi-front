@@ -125,12 +125,12 @@ export function checkedCommit(order) {
 }
 
 export function getOrderTime(order) {
-  if (!order) {
+  if (!order || order.type === 'posResponseMessage') {
     return '';
   }
-
   return order.order_time;
 }
+
 
 const productMethods = {
   getProductQty(product) {

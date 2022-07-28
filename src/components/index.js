@@ -35,3 +35,4 @@ export { default as LogoutSecret } from './LogoutSecret';
 export { default as LogoutConfirmModal } from './LogoutConfirmModal';
 export { default as MoveServingRobotConfirmModal } from './MoveServingRobotConfirmModal';
 export { default as BackServingRobotConfirmModal } from './BackServingRobotConfirmModal';
+export { default as PosErrorModal } from './PosErrorModal';

@@ -109,14 +109,16 @@ export default {
   methods: {
     getByTypeText(type) {
       if (type === 'title') {
-        if (this.order.viewType === 6) {
+        const isViewTypeGame = this.order?.viewType === 6;
+        if (isViewTypeGame) {
           return '게임내역';
         } else {
           return '주문내역';
         }
       }
       if (type === 'sub') {
-        if (this.order.viewType === 6) {
+        const isViewTypeGame = this.order?.viewType === 6;
+        if (isViewTypeGame) {
           return '게임 결과';
         } else {
           return '현재주문내역';
@@ -207,6 +209,7 @@ export default {
     },
     closeOrder() {
       clearInterval(this.interval);
+      this.$store.commit('orderModalFlag', false);
       this.$store.commit('UNSET_ORDER');
     },
     ...utils,
