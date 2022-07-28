@@ -38,6 +38,13 @@ export default {
       required: true,
     }
   },
+  methods: {
+    getCreditInformationKey(index) {
+      const creditInformationKey = `credit-information-key:${index}`;
+
+      return creditInformationKey;
+    }
+  }
 };
 </script>
 
