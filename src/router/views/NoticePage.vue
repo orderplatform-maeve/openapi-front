@@ -357,7 +357,7 @@ export default {
       let data = '';
 
       if (value === 'ALL') {
-        data = 'UPDATE, EVENT, NOTICE';
+        data = 'UPDATE, EVENT, NOTICE, NEWS';
       } else {
         data = value;
       }
@@ -405,6 +405,10 @@ export default {
         return '이벤트';
       }
 
+      if (type === 'NEWS') {
+        return '뉴스';
+      }
+
       return '공지사항';
     },
     getNoticeTypeStyle(data) {
@@ -443,7 +447,7 @@ export default {
     },
     async getDefaultNoticeData() {
       try {
-        const res = await getNoticeInfo(`page=0&size=10&noticeCategoryList=EVENT,UPDATE,NOTICE&noticeStatusList=1&noticeSearchQuery=&noticeCaller=MASTER&storeCode=${this.getStoreCode}`);
+        const res = await getNoticeInfo(`page=0&size=10&noticeCategoryList=EVENT,UPDATE,NOTICE,NEWS&noticeStatusList=1&noticeSearchQuery=&noticeCaller=MASTER&storeCode=${this.getStoreCode}`);
         console.log(res.data);
 
         this.noticeData = res.data;
