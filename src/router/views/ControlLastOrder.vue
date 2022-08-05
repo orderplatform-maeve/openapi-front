@@ -128,16 +128,13 @@ export default {
 
     },
     async removeTimer() {
+      console.log('실행');
       const fd = new FormData();
-
       const { store_code } = this.$store.state.auth.store;
       fd.append('store_code', store_code);
-      fd.append('base_message', ' ');
-      fd.append('end_message', ' ');
-      fd.append('time', 0);
 
-      const response = await this.$store.dispatch('requestLastOrder', fd);
-      // console.log(response);
+      const response = await this.$store.dispatch('requestDeleteLastOrder', fd);
+      console.log(response);
       if (response.result) {
         this.$store.commit('pushFlashMessage', '타이머 설정이 제거 되었습니다.');
       }
