@@ -643,7 +643,7 @@ export default {
           margin-top: 0.78125vw !important;
           display: flex;
           flex-direction: column;
-          gap: 0.390625vw;
+          gap: 1.5625vw;
           overflow: scroll;
 
           .current-order-history {
@@ -698,8 +698,8 @@ export default {
                 }
               }
               .product-option-list {
-                font-size: 2.96875vw;
-                color: #fff;
+                font-size: 2.5vw;
+                color: #eee;
                 letter-spacing: -0.025em;
 
                 .product-option {
@@ -749,7 +749,7 @@ export default {
                 justify-content: space-between;
                 align-items: center;
                 gap: 1.171875vw;
-                font-size: 2.5vw;
+                font-size: 2.96875vw;
                 font-weight: bold;
 
                 .product-unit-total-quantity {
@@ -759,6 +759,7 @@ export default {
 
                 .product-unit-total-price {
                   width: 12.109375vw;
+                  font-size: 1.5625vw;
                   text-align: right;
                 }
               }
