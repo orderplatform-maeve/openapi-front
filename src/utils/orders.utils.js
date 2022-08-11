@@ -150,8 +150,10 @@ const productMethods = {
     return product.memo;
   },
   isProductOpt(product) {
-    if(!product) return false;
-    return product.option;
+    const isProductOption = product.option?.length > 0;
+
+    if(!isProductOption) return false;
+    return isProductOption;
   },
   getOptionGoodQty(option) {
     if (!option) return 0;
