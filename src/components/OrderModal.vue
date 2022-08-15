@@ -759,7 +759,7 @@ export default {
 
                 .product-unit-total-price {
                   width: 12.109375vw;
-                  font-size: 1.5625vw;
+                  font-size: 1.953125vw;
                   text-align: right;
                 }
               }
