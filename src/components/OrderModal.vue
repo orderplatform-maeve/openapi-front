@@ -31,9 +31,7 @@
                     p.option-price {{getOptionPrice(option)}}원
             .wrap-product-all-price
               p.product-all-price-title
-                | 합계
-                span(v-if="isProductOpt(product)") (상품+옵션)
-                span(v-else) (상품)
+                | 상품 수량
               .wrap-product-unit-total-price
                 p.product-unit-total-quantity {{getProductQty(product)}}개
                 p.product-unit-total-price {{getItemUnitTotalPrice(product)}}원
