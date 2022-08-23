@@ -37,3 +37,4 @@ export { default as MoveServingRobotConfirmModal } from './MoveServingRobotConfi
 export { default as BackServingRobotConfirmModal } from './BackServingRobotConfirmModal';
 export { default as PosErrorModal } from './PosErrorModal';
 export { default as OrderCreditHistoryModal } from './OrderCreditHistoryModal';
+export { default as OptionSoldOutModal } from './OptionSoldOutModal';

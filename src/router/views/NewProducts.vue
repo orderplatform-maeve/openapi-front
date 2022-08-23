@@ -1,5 +1,6 @@
 <template lang="pug">
 .new-products-container
+  option-sold-out-modal(v-if="optionSoldOutModalFlag")
   p.new-products-title 상품관리(신)(테스트)
   .main-categories
     .main-category(
@@ -39,15 +40,23 @@
               v-for="good in subCtg.goods"
               :key="good.code"
             )
-              p.new-product-good-name {{ good.displayName }}
-              .good-buttons
-                .button(@click="() => onNoUse(good)" :class="getButtonStatusStyle(good.noUse)") {{ getUseStatusText(good.noUse) }}
-                .button(@click="() => onSoldoutStatus(good)" :class="getButtonStatusStyle(good.soldout)") {{ getSoldoutStatusText(good.soldout) }}
-                .button(@click="() => onBestStatus(good)" :class="getButtonStatusStyle(good.best)") {{ getBestStatusText(good.best) }}
-                .button(@click="() => onHitStatus(good)" :class="getButtonStatusStyle(good.hit)") {{ getHitStatusText(good.hit) }}
-                .button(@click="() => onMdStatus(good)" :class="getButtonStatusStyle(good.md)") {{ getMdStatusText(good.md) }}
-                .button(@click="() => onSaleStatus(good)" :class="getButtonStatusStyle(good.sale)") {{ getSaleStatusText(good.sale) }}
-                .button(@click="() => onNewStatus(good)" :class="getButtonStatusStyle(good.new)") {{ getNewStatusText(good.new) }}
+              div
+                p.new-product-good-name {{ good.displayName }}
+                div.option-setting-button(
+                  v-if="good.options"
+                  :options="good.options"
+                  @click="openOptionSoldOutModal"
+                  ) 옵션 상태 변경
+                  icon-under-white-arrow
+              div
+                .good-buttons
+                  .button(@click="() => onNoUse(good)" :class="getButtonStatusStyle(good.noUse)") {{ getUseStatusText(good.noUse) }}
+                  .button(@click="() => onSoldoutStatus(good)" :class="getButtonStatusStyle(good.soldout)") {{ getSoldoutStatusText(good.soldout) }}
+                  .button(@click="() => onBestStatus(good)" :class="getButtonStatusStyle(good.best)") {{ getBestStatusText(good.best) }}
+                  .button(@click="() => onHitStatus(good)" :class="getButtonStatusStyle(good.hit)") {{ getHitStatusText(good.hit) }}
+                  .button(@click="() => onMdStatus(good)" :class="getButtonStatusStyle(good.md)") {{ getMdStatusText(good.md) }}
+                  .button(@click="() => onSaleStatus(good)" :class="getButtonStatusStyle(good.sale)") {{ getSaleStatusText(good.sale) }}
+                  .button(@click="() => onNewStatus(good)" :class="getButtonStatusStyle(good.new)") {{ getNewStatusText(good.new) }}
 </template>
 
 <script>
@@ -64,6 +73,10 @@ export default {
       const { getNewCategoriesGoods } = this.$store.getters;
       return getNewCategoriesGoods;
     },
+    optionSoldOutModalFlag() {
+      const optionSoldOutModal = this.$store.state.optionSoldOutModal;
+      return optionSoldOutModal;
+    }
   },
   watch: {
     data(newData) {
@@ -716,6 +729,10 @@ export default {
         this.$store.commit('pushFlashMessage', '서버가 불안정하여 판매 중지 하기 실패하였습니다.');
       }
     },
+    // 옵션 품절 설정 모달
+    openOptionSoldOutModal () {
+      this.$store.commit('optionSoldOutModalFlag', true);
+    }
   },
 };
 </script>
@@ -854,6 +871,20 @@ a {
                 color: #000;
                 font-weight: bold;
                 word-break: break-all;
+              }
+
+              .option-setting-button {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 143px;
+                height: 45px;
+                border-radius: 5px;
+                background-color: #292929;
+                font-size: 16px;
+                color: #fff;
+                gap:10px;
+                margin-top: 10px !important;
               }
               .good-buttons {
                 display: flex;

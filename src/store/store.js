@@ -559,6 +559,9 @@ const order = {
     posResponseMessageFlag(state, payload) {
       state.posResponseMessage = payload;
     },
+    optionSoldOutModalFlag(state, payload) {
+      state.optionSoldOutModal = payload;
+    },
     orderModalFlag(state, payload) {
       state.orderModal = payload;
     },
@@ -1387,6 +1390,7 @@ const state = {
   order: undefined,
   auction : false,
   posResponseMessage: false,
+  optionSoldOutModal: false,
   orderModal: false,
   orders: [],
   payloadStatus: 1,
