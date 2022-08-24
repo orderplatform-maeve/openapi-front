@@ -1,3 +1,8 @@
-<template functional>
-  <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 70 70" xml:space="preserve"><path d="M41.4,35L68.7,7.7c1.8-1.8,1.8-4.6,0-6.4c-1.8-1.8-4.6-1.8-6.4,0L35,28.6L7.7,1.3c-1.8-1.8-4.6-1.8-6.4,0c-1.8,1.8-1.8,4.6,0,6.4L28.6,35L1.3,62.3c-1.8,1.8-1.8,4.6,0,6.4c0.9,0.9,2,1.3,3.2,1.3s2.3-0.4,3.2-1.3L35,41.4l27.3,27.3c0.9,0.9,2,1.3,3.2,1.3s2.3-0.4,3.2-1.3c1.8-1.8,1.8-4.6,0-6.4L41.4,35z"></path></svg>
+<template>
+  <svg xmlns="http://www.w3.org/2000/svg" width="25.243" height="25.243" viewBox="0 0 25.243 25.243">
+    <g data-name="그룹 23">
+      <path data-name="선 2" style="fill:none;stroke:#000;stroke-linecap:round;stroke-width:3px" d="M21 0 0 21" transform="translate(2.121 2.121)"/>
+      <path data-name="선 3" style="fill:none;stroke:#000;stroke-linecap:round;stroke-width:3px" d="m0 0 21 21" transform="translate(2.121 2.121)"/>
+    </g>
+  </svg>
 </template>

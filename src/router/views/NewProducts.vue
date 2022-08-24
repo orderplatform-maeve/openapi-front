@@ -1,19 +1,23 @@
 <template lang="pug">
 .new-products-container
-  option-sold-out-modal(v-if="optionSoldOutModalFlag")
+  option-sold-out-modal(
+    v-if="optionSoldOutModalFlag"
+    :options="options"
+    :closeOptionSoldOutModal="closeOptionSoldOutModal"
+    )
   p.new-products-title 상품관리(신)(테스트)
   .main-categories
     .main-category(
-      v-for="ctgItem in data"
-      :key="ctgItem.code"
+      v-for="(ctgItem, index) in data"
+      :key="`ctgItem-${ctgItem.code}-${index}`"
       @click="() => onSelectMainCtg(ctgItem)"
       :class="getActiveMainCategory(ctgItem.code)"
     ) {{ ctgItem.name }}
   .background-white
     .sub-categories
       .sub-category(
-        v-for="subCtgItem in getSubCategories()"
-        :key="subCtgItem.code"
+        v-for="(subCtgItem, index) in getSubCategories()"
+        :key="`subCtgItem-${subCtgItem.code}-${index}`"
         :name="subCtgItem.code"
         @click="() => onSelectSubCtg(subCtgItem)"
         :class="getActiveSubCategory(subCtgItem.code)"
@@ -22,13 +26,14 @@
     .product-list
       .scroll(@scroll="handleScroll" ref="scroll" v-if="!isLoading")
         .new-products(
-          v-for="mainCtg in data"
-          :key="mainCtg.code"
+          v-for="(mainCtg, index) in data"
+          :key="`mainCtg-${mainCtg.code}-${index}`"
           :id="mainCtg.code"
           :ref="mainCtg.code"
         )
           .new-product-goods-list(
-            v-for="subCtg in mainCtg.subCategories"
+            v-for="(subCtg, index) in mainCtg.subCategories"
+            :key="`subCtg-${subCtg.code}-${index}`"
             :id="subCtg.code"
             :ref="subCtg.code"
           )
@@ -37,15 +42,14 @@
               span.bar |
               span.sub-category-name {{subCtg.name}}
             .new-product-goods(
-              v-for="good in subCtg.goods"
-              :key="good.code"
+              v-for="(good, index) in subCtg.goods"
+              :key="`good-${good.code}-${index}`"
             )
               div
                 p.new-product-good-name {{ good.displayName }}
                 div.option-setting-button(
                   v-if="good.options"
-                  :options="good.options"
-                  @click="openOptionSoldOutModal"
+                  @click="openOptionSoldOutModal(good.options)"
                   ) 옵션 상태 변경
                   icon-under-white-arrow
               div
@@ -66,6 +70,8 @@ export default {
       isLoading: false,
       selectMainCategoryItem: null,
       selectSubCategoryItem: null,
+      // 하나의 상품에 대한 옵션 리스트 담을 용도
+      options: null,
     };
   },
   computed: {
@@ -730,8 +736,12 @@ export default {
       }
     },
     // 옵션 품절 설정 모달
-    openOptionSoldOutModal () {
+    openOptionSoldOutModal (options) {
       this.$store.commit('optionSoldOutModalFlag', true);
+      this.options = options;
+    },
+    closeOptionSoldOutModal() {
+      this.$store.commit('optionSoldOutModalFlag', false);
     }
   },
 };
