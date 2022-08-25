@@ -3,6 +3,7 @@
   option-sold-out-modal(
     v-if="optionSoldOutModalFlag"
     :options="options"
+    :goodsName="goodsName"
     :closeOptionSoldOutModal="closeOptionSoldOutModal"
     )
   p.new-products-title 상품관리(신)(테스트)
@@ -49,7 +50,7 @@
                 p.new-product-good-name {{ good.displayName }}
                 div.option-setting-button(
                   v-if="good.options"
-                  @click="openOptionSoldOutModal(good.options)"
+                  @click="openOptionSoldOutModal(good.displayName, good.options)"
                   ) 옵션 상태 변경
                   icon-under-white-arrow
               div
@@ -72,6 +73,7 @@ export default {
       selectSubCategoryItem: null,
       // 하나의 상품에 대한 옵션 리스트 담을 용도
       options: null,
+      goodsName: '',
     };
   },
   computed: {
@@ -736,11 +738,13 @@ export default {
       }
     },
     // 옵션 품절 설정 모달
-    openOptionSoldOutModal (options) {
+    openOptionSoldOutModal (goodsName, options) {
       this.$store.commit('optionSoldOutModalFlag', true);
       this.options = options;
+      this.goodsName = goodsName;
     },
     closeOptionSoldOutModal() {
+      console.log('닫기');
       this.$store.commit('optionSoldOutModalFlag', false);
     }
   },
@@ -887,14 +891,14 @@ a {
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                width: 143px;
-                height: 45px;
-                border-radius: 5px;
+                width: 11.1719vw;
+                height: 3.5156vw;
+                border-radius: 0.3906vw;
                 background-color: #292929;
-                font-size: 16px;
+                font-size: 1.25vw;
                 color: #fff;
-                gap:10px;
-                margin-top: 10px !important;
+                gap: 0.7813vw;
+                margin-top: 0.7813vw !important;
               }
               .good-buttons {
                 display: flex;

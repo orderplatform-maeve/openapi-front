@@ -1,36 +1,54 @@
 <template lang="pug">
 .option-sold-out-modal-container
-  .close-bt
+  option-save-check-modal(
+    v-if="optionSaveCheckModalFlag"
+    :changedOptionSaveConfirm="changedOptionSaveConfirm"
+    :changedOptionSaveCancel="changedOptionSaveCancel"
+    :goodsName="goodsName"
+    )
+  .close-bt(@click="closeOptionSoldOutModal")
     close-icon
-    span.close-text(@click="closeOptionSoldOutModal") 닫기
+    span.close-text 닫기
   .wrap-option-sold-out-modal
     div.modal-title 옵션 상태 변경
     div.option-groups-wrap
-      div.option-group-box(
-        v-for="(option, index) in options"
-        :key="`option-${option.name}-${index}`"
+      div(
+        v-for="(option, optionIndex) in deepCopyOptions"
+        :key="`option-${option.name}-${optionIndex}`"
+        :class="getOptionGroupBoxStyle(option.require_flag)"
         )
-        div(v-if="option.require_flag") 필수선택
+        div.require-wrap(v-if="option.require_flag")
+          div.require-badge 필수옵션
+          div.require-text 최소 {{option.limit_select}}개 이상 판매 해야 주문이 가능합니다!
         div.option-group-name {{option.name}}
         div.option-item-wrap
           div.option-item-box(
-            v-for="(item, index) in option.option_items"
-            :key="`option-item-${item.code}-${index}`"
+            v-for="(item, itemIndex) in option.option_items"
+            :key="`option-item-${item.code}-${itemIndex}`"
             )
-            span.option-item-name 밀떡
+            span.option-item-name {{item.name}}
             div.sales-box
-              button.deactivate-bt.sales-active 판매
-              button.deactivate-bt.sold-out-active 품절
+              button(
+                :class="getSalesBtStyle(item.isSale)"
+                @click="onClickSalesBt(optionIndex, itemIndex)"
+                ) 판매
+              button(
+                :class="getSoldOutBtStyle(item.isSale)"
+                @click="onClickSoldOutBt(optionIndex, itemIndex)"
+                ) 품절
     div.save-bt-wrap
-      button.option-setting-save-bt 저장
+      button.option-setting-save-bt(@click="changedOptionSave") 저장
 </template>
 
 <script>
 import { CloseIcon } from '@svg';
+import _ from 'lodash';
+
 export default {
   data() {
     return {
-
+      deepCopyOptions: [],
+      optionSaveCheckModalFlag: false,
     };
   },
   props: {
@@ -39,23 +57,70 @@ export default {
     },
     closeOptionSoldOutModal: {
       type: Function,
+    },
+    goodsName: {
+      type: String,
     }
   },
   components: {
-    CloseIcon
+    CloseIcon,
   },
   computed: {
-    // optionSoldOutModalFlag() {
-    //   const optionSoldOutModal = this.$store.state.optionSoldOutModal;
-    //   return optionSoldOutModal;
-    // }
+
   },
   methods: {
+    // 필수 값에 따른 그룹 테두리 스타일
+    getOptionGroupBoxStyle(require_flag) {
+      return {
+        'option-group-box': true,
+        'require-option-group-box' : require_flag,
+      };
+    },
+    // 판매 버튼 동적 스타일
+    getSalesBtStyle(isSale) {
+      return {
+        'deactivate-bt': true,
+        'sales-active': isSale,
+      };
+    },
+    // 품절 버튼 동적 스타일
+    getSoldOutBtStyle(isSale) {
+      return {
+        'deactivate-bt': true,
+        'sold-out-active': !isSale,
+      };
+    },
+    // 판매 클릭
+    onClickSalesBt(optionIndex, itemIndex) {
+      const thisIsSale = this.deepCopyOptions[optionIndex].option_items[itemIndex].isSale;
+      if (!thisIsSale) {
+        this.deepCopyOptions[optionIndex].option_items[itemIndex].isSale = 1;
+      }
+    },
+    // 품절 클릭
+    onClickSoldOutBt(optionIndex, itemIndex) {
+      const thisIsSale = this.deepCopyOptions[optionIndex].option_items[itemIndex].isSale;
+      if (thisIsSale) {
+        this.deepCopyOptions[optionIndex].option_items[itemIndex].isSale = 0;
+      }
+    },
+    changedOptionSave() {
+      console.log('저장', '필수그룹 체크 API 호출');
+      this.optionSaveCheckModalFlag = true;
+    },
+    changedOptionSaveConfirm() {
+      console.log('확인', '저장 요청하는 API 호출');
+      this.$store.commit('pushFlashMessage', '옵션 상태를 변경했습니다.');
 
+    },
+    changedOptionSaveCancel() {
+      console.log('취소');
+      this.optionSaveCheckModalFlag = false;
+    }
   },
   mounted() {
-    console.log('options', this.options);
-
+    // 깊은 복사
+    this.deepCopyOptions = _.cloneDeep(this.options);
   },
 };
 
@@ -78,93 +143,95 @@ export default {
 
   .close-bt {
     position: fixed;
-    top: 20px;
-    right: 20px;
-    width: 146px;
-    height: 64px;
-    border-radius: 32px;
+    top: 1.5625vw;
+    right: 1.5625vw;
+    width: 11.4063vw;
+    height: 5vw;
+    border-radius: 2.5vw;
     background-color: #fff;
     color: #000;
-    font-size: 30px;
+    font-size: 2.3438vw;
     display: flex;
     align-items: center;
     justify-content: center;
 
     .close-text {
-      margin-left: 10px !important;
-      letter-spacing: -0.75px;
-      font-size: 30px;
+      margin-left: 0.7813vw !important;
+      letter-spacing: -0.0586vw;
       font-weight: 500;
     }
   }
 
   .wrap-option-sold-out-modal {
-    width: 1054px;
-    height: 664px;
+    width: 82.3438vw;
+    height: 51.8750vw;
     background-color: #111;
     border-radius: 1.5625vw;
     box-sizing: border-box;
-    border: 2px solid #666;
-    padding: 30px 20px !important;
+    border: 0.1563vw solid #666;
+    padding: 2.3438vw 1.5625vw !important;
     box-sizing: border-box;
 
     .modal-title {
-      font-size: 24px;
+      font-size: 1.8750vw;
       font-weight: 500;
-      margin-bottom: 20px !important;
+      margin-bottom: 1.5625vw !important;
     }
 
     .option-groups-wrap {
-      height: 466px;
+      height: 36.4063vw;
       overflow: scroll;
-      margin-bottom: 30px !important;
+      margin-bottom: 2.3438vw !important;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3906vw;
 
       .option-group-box {
-        padding: 20px !important;
-        border-radius: 10px;
-        border: 1px solid #fff;
+        padding: 1.5625vw !important;
+        border-radius: 0.7813vw;
+        border: none;
 
         .option-group-name {
-          font-size: 20px;
-          letter-spacing: -1px;
-          margin-bottom: 10px !important;
+          font-size: 1.5625vw;
+          letter-spacing: -0.0781vw;
+          margin-bottom: 0.7813vw !important;
         }
 
         .option-item-wrap {
           display: flex;
-          gap: 10px;
+          gap: 0.7813vw;
           flex-wrap: wrap;
 
           .option-item-box {
-            width: 234px;
-            min-height: 134px;
+            width: 18.2813vw;
+            min-height: 10.4688vw;
             display: flex;
             flex-direction: column;
-            gap: 26px;
-            padding: 28px 15px 15px 15px !important;
-            border-radius: 10px;
+            gap: 2.0313vw;
+            padding: 2.1875vw 1.1719vw 1.1719vw 1.1719vw !important;
+            border-radius: 0.7813vw;
             background-color: #292929;
             box-sizing: border-box;
             justify-content: center;
             align-items: center;
 
             .option-item-name {
-              font-size: 20px;
+              font-size: 1.5625vw;
               font-weight: 500;
-              letter-spacing: -0.5px;
+              letter-spacing: -0.0391vw;
             }
 
             .sales-box {
               display: flex;
-              gap: 6px;
+              gap: 0.4688vw;
 
               .deactivate-bt {
-                width: 100px;
-                height: 40px;
-                border-radius: 5px;
+                width: 7.8125vw;
+                height: 3.1250vw;
+                border-radius: 0.3906vw;
                 background-color: #404144;
                 color: #aaa;
-                font-size: 20px;
+                font-size: 1.5625vw;
                 border: none;
               }
 
@@ -183,7 +250,38 @@ export default {
           }
         }
 
+        .require-wrap {
+          display: flex;
+          margin: -1.5625vw 0 0.7813vw -1.5625vw !important;
+          align-items: center;
+          gap: 0.7813vw;
 
+          .require-badge {
+            width: 7.8125vw;
+            height: 3.1250vw;
+            background-color: #fc0000;
+            border-top-left-radius: 0.7813vw;
+            border-bottom-right-radius: 0.7813vw;
+            font-size: 1.4063vw;
+            font-weight: 500;
+            letter-spacing: -0.0703vw;
+            line-height: 3.1250vw;
+            text-align: center;
+          }
+
+          .require-text {
+            font-size: 1.4063vw;
+            font-weight: 500;
+            letter-spacing: -0.0703vw;
+            color: #fc0000;
+          }
+        }
+
+
+      }
+
+      .require-option-group-box {
+        border: 0.0781vw solid #fc0000;
       }
     }
 
@@ -191,15 +289,16 @@ export default {
       display: flex;
       align-items: center;
       justify-content: center;
+
       .option-setting-save-bt {
-        width: 480px;
-        height: 58px;
-        border-radius: 13px;
+        width: 37.5vw;
+        height: 4.5313vw;
+        border-radius: 1.0156vw;
         background-color: #fc0000;
         border: none;
         color: #fff;
-        font-size: 26px;
-        font-weight: bold;
+        font-size: 2.0313vw;
+        font-weight: 500;
       }
     }
   }

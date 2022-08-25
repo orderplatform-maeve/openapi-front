@@ -31,6 +31,7 @@ import {
   CashOutStandingModal,
   OrderCashOutStandingModal,
   CancelCashPaymentModal,
+  OptionSaveCheckModal
 } from '@components';
 
 import {
@@ -96,6 +97,8 @@ Vue.component('credit-cancel-modal', CreditCancelModal);
 Vue.component('cash-out-standing-modal', CashOutStandingModal);
 Vue.component('order-cash-out-standing-modal', OrderCashOutStandingModal);
 Vue.component('cancel-cash-payment-modal', CancelCashPaymentModal);
+Vue.component('option-save-check-modal', OptionSaveCheckModal);
+
 
 Vue.component('icon-torder-logo', TorderLogo);
 Vue.component('icon-refresh-icon', RefreshIcon);
