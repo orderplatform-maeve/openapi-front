@@ -2,8 +2,9 @@
 .new-products-container
   option-sold-out-modal(
     v-if="optionSoldOutModalFlag"
-    :options="options"
-    :goodsName="goodsName"
+    :options="goodsInfo.options"
+    :goodsName="goodsInfo.goodsName"
+    :goodsCode="goodsInfo.goodsCode"
     :closeOptionSoldOutModal="closeOptionSoldOutModal"
     )
   p.new-products-title 상품관리(신)(테스트)
@@ -50,7 +51,7 @@
                 p.new-product-good-name {{ good.displayName }}
                 div.option-setting-button(
                   v-if="good.options"
-                  @click="openOptionSoldOutModal(good.displayName, good.options)"
+                  @click="openOptionSoldOutModal(good)"
                   ) 옵션 상태 변경
                   icon-under-white-arrow
               div
@@ -72,8 +73,11 @@ export default {
       selectMainCategoryItem: null,
       selectSubCategoryItem: null,
       // 하나의 상품에 대한 옵션 리스트 담을 용도
-      options: null,
-      goodsName: '',
+      goodsInfo: {
+        goodsName: '',
+        goodsCode: '',
+        options: null,
+      },
     };
   },
   computed: {
@@ -738,10 +742,12 @@ export default {
       }
     },
     // 옵션 품절 설정 모달
-    openOptionSoldOutModal (goodsName, options) {
+    openOptionSoldOutModal (goods) {
+      this.goodsInfo.options = goods.options;
+      this.goodsInfo.goodsName = goods.displayName;
+      this.goodsInfo.goodsCode = goods.code;
+
       this.$store.commit('optionSoldOutModalFlag', true);
-      this.options = options;
-      this.goodsName = goodsName;
     },
     closeOptionSoldOutModal() {
       console.log('닫기');

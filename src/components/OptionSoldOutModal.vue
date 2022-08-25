@@ -43,6 +43,10 @@
 <script>
 import { CloseIcon } from '@svg';
 import _ from 'lodash';
+import { goods } from '@apis';
+
+const { postOptionSaleOffCheck, postOptionSaleOffSubmit } = goods;
+
 
 export default {
   data() {
@@ -60,13 +64,18 @@ export default {
     },
     goodsName: {
       type: String,
+    },
+    goodsCode: {
+      type: String,
     }
   },
   components: {
     CloseIcon,
   },
   computed: {
-
+    getStoreCode() {
+      return this.$store.state.auth.store.store_code;
+    },
   },
   methods: {
     // 필수 값에 따른 그룹 테두리 스타일
@@ -104,15 +113,50 @@ export default {
         this.deepCopyOptions[optionIndex].option_items[itemIndex].isSale = 0;
       }
     },
-    changedOptionSave() {
-      console.log('저장', '필수그룹 체크 API 호출');
-      this.optionSaveCheckModalFlag = true;
-    },
-    changedOptionSaveConfirm() {
-      console.log('확인', '저장 요청하는 API 호출');
-      this.$store.commit('pushFlashMessage', '옵션 상태를 변경했습니다.');
+    // 저장 클릭 시 필수 옵션 limit 체크
+    async changedOptionSave() {
+      try {
+        console.log('저장', '필수그룹 체크 API 호출');
+        // 체크 ok 이면 바로 실제 저장하는 changedOptionSaveConfirm() 호출하기
+        //
+        // 체크 fail이면 이래도 진짜 저장할건지 묻는 모달 열기
+        this.optionSaveCheckModalFlag = true;
 
+        const config = {
+          storeCode: this.getStoreCode,
+          goodCode: this.goodsCode,
+          options: this.deepCopyOptions,
+        };
+        const res = await postOptionSaleOffCheck(config);
+        console.log('res', res);
+
+
+      } catch (error) {
+        console.log(error);
+      }
     },
+    // 체크 후 진짜 저장하기
+    async changedOptionSaveConfirm() {
+      try {
+        console.log('확인', '저장 요청하는 API 호출');
+
+        const config = {
+          storeCode: this.getStoreCode,
+          goodCode: this.goodsCode,
+          options: this.deepCopyOptions,
+        };
+        const res = await postOptionSaleOffSubmit(config);
+        console.log(res);
+
+        // 성공적으로 저장하면 플래쉬메세지 노출 및 모달 닫기
+        this.$store.commit('pushFlashMessage', '옵션 상태를 변경했습니다.');
+        this.optionSaveCheckModalFlag = false;
+
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    // 실제로 저장할건지 묻는 모달 닫기
     changedOptionSaveCancel() {
       console.log('취소');
       this.optionSaveCheckModalFlag = false;
