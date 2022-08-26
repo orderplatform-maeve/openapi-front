@@ -113,58 +113,62 @@ export default {
         this.deepCopyOptions[optionIndex].option_items[itemIndex].isSale = 0;
       }
     },
+
+    // 체크 후 진짜 저장하기
+    async changedOptionSaveConfirm() {
+      try {
+        const config = {
+          storeCode: this.getStoreCode,
+          goodCode: this.goodsCode,
+          options: this.deepCopyOptions,
+        };
+
+        const res = await postOptionSaleOffSubmit(config);
+
+        if (res.data.result) {
+          // 성공적으로 저장하면 플래쉬메세지 노출 및 모달 닫기
+          this.$store.commit('pushFlashMessage', '옵션 상태를 변경했습니다.');
+          this.optionSaveCheckModalFlag = false;
+          this.closeOptionSoldOutModal();
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+
     // 저장 클릭 시 필수 옵션 limit 체크
     async changedOptionSave() {
       try {
-        console.log('저장', '필수그룹 체크 API 호출');
-        // 체크 ok 이면 바로 실제 저장하는 changedOptionSaveConfirm() 호출하기
-        //
-        // 체크 fail이면 이래도 진짜 저장할건지 묻는 모달 열기
-        this.optionSaveCheckModalFlag = true;
-
         const config = {
           storeCode: this.getStoreCode,
           goodCode: this.goodsCode,
           options: this.deepCopyOptions,
         };
         const res = await postOptionSaleOffCheck(config);
-        console.log('res', res);
+        console.log(res, 'check');
 
-
-      } catch (error) {
-        console.log(error);
-      }
-    },
-    // 체크 후 진짜 저장하기
-    async changedOptionSaveConfirm() {
-      try {
-        console.log('확인', '저장 요청하는 API 호출');
-
-        const config = {
-          storeCode: this.getStoreCode,
-          goodCode: this.goodsCode,
-          options: this.deepCopyOptions,
-        };
-        const res = await postOptionSaleOffSubmit(config);
-        console.log(res);
-
-        // 성공적으로 저장하면 플래쉬메세지 노출 및 모달 닫기
-        this.$store.commit('pushFlashMessage', '옵션 상태를 변경했습니다.');
-        this.optionSaveCheckModalFlag = false;
-
+        if (res.data.result) {
+          // 서버 응답 중 하나라도 result: false면 경고 모달 띄우기
+          const result = res.data.data.find((data) => { return data.result === false; });
+          if (result === undefined) {
+            await this.changedOptionSaveConfirm();
+          } else {
+            this.optionSaveCheckModalFlag = true;
+          }
+        }
       } catch (error) {
         console.log(error);
       }
     },
     // 실제로 저장할건지 묻는 모달 닫기
     changedOptionSaveCancel() {
-      console.log('취소');
       this.optionSaveCheckModalFlag = false;
     }
   },
   mounted() {
     // 깊은 복사
     this.deepCopyOptions = _.cloneDeep(this.options);
+    console.log('mounted');
   },
 };
 
