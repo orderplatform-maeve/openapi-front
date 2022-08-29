@@ -104,7 +104,7 @@ export default {
 
       const time = Date.now();
       const getMinutes = (m) => (m * 60 * 1000);
-      const timestamp = this.$moment(time + getMinutes(this.minute)).valueOf();
+      const timestamp = this.$moment(this.$moment(time + getMinutes(this.minute)).valueOf()).unix();
 
       console.log('time', new Date(timestamp), timestamp);
       fd.append('time', timestamp);
