@@ -112,7 +112,7 @@ export default {
       const response = await this.$store.dispatch('requestLastOrder', fd);
       // console.log(response);
       if (response.result) {
-        this.$store.commit('pushFlashMessage', `${new Date(timestamp).toLocaleString('ko-KR')} 시간 설정이 완료 되었습니다.`);
+        this.$store.commit('pushFlashMessage', `${new Date(timestamp*1000).toLocaleString('ko-KR')} 시간 설정이 완료 되었습니다.`);
       }
 
       this.reRequest = true;
