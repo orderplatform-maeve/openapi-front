@@ -32,10 +32,11 @@
             p {{getGoodsName(order)}}
             p {{getOrderTime(order).substr(11)}}
             //- p.small-message {{errorMessage(order)}}
-            .small-message
+            .small-message(v-if="order.errorMsg")
               .order-bold 오류 발생!
               |주문키와 주문IP 사진을 찍어서 카카오 상담 문의해주세요.
             //- p {{visitGroups(order)}}명
+            .small-message(v-else)
             .small-message {{order.order_view_key}}
             p.small-message {{orderIp(order)}}
 
