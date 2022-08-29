@@ -6,18 +6,14 @@
       p.option-save-check-modal-body-message 필수 옵션에서 선택할 수 있는 옵션이 없으면
       p.option-save-check-modal-body-message {{goodsName}} 주문을 받을 수 없습니다.
     .option-save-check-modal-footer
-      button.option-save-check-modal-button-commit(@click="changedOptionSaveConfirm") 확인
+      button.option-save-check-modal-button-commit(@click="changedOptionSaveConfirmAndSubmit") 확인
       button.option-save-check-modal-button-close(@click="changedOptionSaveCancel") 취소
 </template>
 
 <script>
 export default {
-  data() {
-    return {
-    };
-  },
   props: {
-    changedOptionSaveConfirm: {
+    changedOptionSaveConfirmAndSubmit: {
       type: Function
     },
     changedOptionSaveCancel: {
@@ -25,15 +21,7 @@ export default {
     },
     goodsName: {
       type: String
-    }
-  },
-  computed: {
-  },
-  methods: {
-  },
-  mounted() {
-  },
-  beforeDestroy() {
+    },
   },
 };
 

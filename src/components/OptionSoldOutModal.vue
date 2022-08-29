@@ -2,7 +2,7 @@
 .option-sold-out-modal-container
   option-save-check-modal(
     v-if="optionSaveCheckModalFlag"
-    :changedOptionSaveConfirm="changedOptionSaveConfirm"
+    :changedOptionSaveConfirmAndSubmit="changedOptionSaveConfirmAndSubmit"
     :changedOptionSaveCancel="changedOptionSaveCancel"
     :goodsName="goodsName"
     )
@@ -37,7 +37,7 @@
                 @click="onClickSoldOutBt(optionIndex, itemIndex)"
                 ) 품절
     div.save-bt-wrap
-      button.option-setting-save-bt(@click="changedOptionSave") 저장
+      button.option-setting-save-bt(@click="changedOptionSaveAndCheck") 저장
 </template>
 
 <script>
@@ -67,6 +67,9 @@ export default {
     },
     goodsCode: {
       type: String,
+    },
+    initialize: {
+      type: Function,
     }
   },
   components: {
@@ -115,7 +118,7 @@ export default {
     },
 
     // 체크 후 진짜 저장하기
-    async changedOptionSaveConfirm() {
+    async changedOptionSaveConfirmAndSubmit() {
       try {
         const config = {
           storeCode: this.getStoreCode,
@@ -130,6 +133,7 @@ export default {
           this.$store.commit('pushFlashMessage', '옵션 상태를 변경했습니다.');
           this.optionSaveCheckModalFlag = false;
           this.closeOptionSoldOutModal();
+          this.initialize();
         }
       } catch (error) {
         console.log(error);
@@ -137,7 +141,7 @@ export default {
     },
 
     // 저장 클릭 시 필수 옵션 limit 체크
-    async changedOptionSave() {
+    async changedOptionSaveAndCheck() {
       try {
         const config = {
           storeCode: this.getStoreCode,
@@ -145,13 +149,12 @@ export default {
           options: this.deepCopyOptions,
         };
         const res = await postOptionSaleOffCheck(config);
-        console.log(res, 'check');
 
         if (res.data.result) {
           // 서버 응답 중 하나라도 result: false면 경고 모달 띄우기
           const result = res.data.data.find((data) => { return data.result === false; });
           if (result === undefined) {
-            await this.changedOptionSaveConfirm();
+            await this.changedOptionSaveConfirmAndSubmit();
           } else {
             this.optionSaveCheckModalFlag = true;
           }
@@ -163,12 +166,11 @@ export default {
     // 실제로 저장할건지 묻는 모달 닫기
     changedOptionSaveCancel() {
       this.optionSaveCheckModalFlag = false;
-    }
+    },
   },
   mounted() {
     // 깊은 복사
     this.deepCopyOptions = _.cloneDeep(this.options);
-    console.log('mounted');
   },
 };
 

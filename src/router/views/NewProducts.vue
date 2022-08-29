@@ -6,6 +6,7 @@
     :goodsName="goodsInfo.goodsName"
     :goodsCode="goodsInfo.goodsCode"
     :closeOptionSoldOutModal="closeOptionSoldOutModal"
+    :initialize="initialize"
     )
   p.new-products-title 상품관리(신)(테스트)
   .main-categories
@@ -750,7 +751,6 @@ export default {
       this.$store.commit('optionSoldOutModalFlag', true);
     },
     closeOptionSoldOutModal() {
-      console.log('닫기');
       this.$store.commit('optionSoldOutModalFlag', false);
     }
   },
