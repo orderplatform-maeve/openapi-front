@@ -2,7 +2,8 @@
 #orderview
   alert-modal(v-if="isAlertModal")
   auction-modal(v-if="order && auction")
-  modal-order(v-if="order && !auction")
+  modal-order(v-if="order && orderModal")
+  PosErrorModal(v-if="order && posResponseMessage")
   modal-all-refresh(
     :show="visibleAllRefreshModal"
     :close="onCloseAllRefreshModal"
@@ -76,6 +77,7 @@ import {
   PhoneNumberErrorModal,
   HappyTalkSuccessModal,
   LogoutSecret,
+  PosErrorModal
 } from '@components';
 import {
   payments,
@@ -103,6 +105,7 @@ export default {
     PhoneNumberErrorModal,
     HappyTalkSuccessModal,
     LogoutSecret,
+    PosErrorModal
   },
   // https://vuex.vuejs.org/kr/guide/state.html#vuex-%EC%83%81%ED%83%9C%EB%A5%BC-vue-%EC%BB%B4%ED%8F%AC%EB%84%8C%ED%8A%B8%EC%97%90%EC%84%9C-%EA%B0%80%EC%A0%B8%EC%98%A4%EA%B8%B0
   store,
@@ -142,6 +145,12 @@ export default {
     },
     auction() {
       return this.$store.state.auction;
+    },
+    posResponseMessage() {
+      return this.$store.state.posResponseMessage;
+    },
+    orderModal() {
+      return this.$store.state.orderModal;
     },
     isAlertModal() {
       return this.$store.state.isAlertModal;
@@ -241,7 +250,7 @@ export default {
     },
     getStopRedirect() {
       return process.env.STOP_REDIRECT;
-    }
+    },
   },
   watch: {
     '$route'(to, from) {

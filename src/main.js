@@ -16,6 +16,7 @@ import {
   ConfirmModal,
   OrderModal,
   AuctionModal,
+  OptionSoldOutModal,
   TableOrdersModal,
   MenuModal,
   ProductOptionModal,
@@ -30,6 +31,7 @@ import {
   CashOutStandingModal,
   OrderCashOutStandingModal,
   CancelCashPaymentModal,
+  OptionSaveCheckModal
 } from '@components';
 
 import {
@@ -37,6 +39,7 @@ import {
   RefreshIcon,
   LogoutIcon,
   UnderArrow,
+  UnderWhiteArrow,
   RefreshBlackIcon,
   DeleteIcon,
   PlusButton,
@@ -78,6 +81,7 @@ Vue.filter('moment', function (value, format) {
 
 Vue.component('modal-order', OrderModal);
 Vue.component('auction-modal', AuctionModal);
+Vue.component('option-sold-out-modal', OptionSoldOutModal) ;
 Vue.component('modal-confirm', ConfirmModal);
 Vue.component('modal-table-orders', TableOrdersModal);
 Vue.component('modal-menu', MenuModal);
@@ -93,11 +97,14 @@ Vue.component('credit-cancel-modal', CreditCancelModal);
 Vue.component('cash-out-standing-modal', CashOutStandingModal);
 Vue.component('order-cash-out-standing-modal', OrderCashOutStandingModal);
 Vue.component('cancel-cash-payment-modal', CancelCashPaymentModal);
+Vue.component('option-save-check-modal', OptionSaveCheckModal);
+
 
 Vue.component('icon-torder-logo', TorderLogo);
 Vue.component('icon-refresh-icon', RefreshIcon);
 Vue.component('icon-logout-icon', LogoutIcon);
 Vue.component('icon-under-arrow', UnderArrow);
+Vue.component('icon-under-white-arrow', UnderWhiteArrow);
 Vue.component('icon-refresh-black-icon', RefreshBlackIcon);
 Vue.component('icon-delete-icon', DeleteIcon);
 Vue.component('icon-plus-button', PlusButton);

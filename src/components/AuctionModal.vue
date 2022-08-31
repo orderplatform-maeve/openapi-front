@@ -1,7 +1,7 @@
 <template lang="pug">
 .order-modal-container
   .wrap-order-modal
-    .order-modal-header
+    .order-modal-header(v-once)
       .wrap-order-history-text
         p.order-history-text 경매내역
         p.order-table-name {{checkedTabletNum(order)}}
@@ -12,7 +12,7 @@
           p.order-confirm-status(v-else) 미확인
         p.bar
         p.order-time {{order.order_time}}
-    .wrap-order-history-all
+    .wrap-order-history-all(v-once)
       .wrap-current-order-history
         p.current-order-history-text 경매 결과
         .current-order-history-list

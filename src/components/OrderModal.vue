@@ -1,7 +1,7 @@
 <template lang="pug">
 .order-modal-container
   .wrap-order-modal
-    .order-modal-header
+    .order-modal-header(v-once)
       .wrap-order-history-text
         p.order-history-text {{ getByTypeText('title') }}
         p.order-table-name {{checkedTabletNum(order)}} 테이블
@@ -12,23 +12,34 @@
           p.order-confirm-status(v-else) 미확인
         p.bar
         p.order-time {{order.order_time}}
-    .wrap-order-history-all
+    .wrap-order-history-all(v-once)
       .wrap-current-order-history
         p.current-order-history-text {{ getByTypeText('sub') }}
         .current-order-history-list
           .current-order-history(v-for="product in order.order_info")
-            .current-product-info
-              p.product-name {{getProjectGoodName(product)}}
-              .wrap-product-price
-                p.product-quantity {{getProductQty(product)}}개
-                p.product-price {{ getItemPrice(product) }}원
-            .product-option-list(v-if="isProductOpt(product)")
-              .product-option(v-for="option in product.option")
-                p.option-name {{getOptionDisplayName(option)}}
-                .wrap-product-option-price
-                  p.option-quantity {{getOptionGoodQty(option)}}개
-                  p.option-price {{getOptionPrice(option)}}원
-      .wrap-last-order-history(v-if="!order.paidOrder && order.viewType !== 6")
+            .wrap-product-info
+              .current-product-info
+                p.product-name {{getProjectGoodName(product)}}
+                .wrap-product-price
+                  //- p.product-quantity {{getProductQty(product)}}개
+                  p.product-price {{ getItemPrice(product) }}원
+              .product-option-list(v-if="isProductOpt(product)")
+                .product-option(v-for="option in product.option")
+                  p.option-name {{getOptionDisplayName(option)}}
+                  .wrap-product-option-price
+                    p.option-quantity {{getOptionGoodQty(option)}}개
+                    p.option-price {{getOptionPrice(option)}}원
+            .wrap-product-all-price
+              p.product-all-price-title
+                | 상품 수량
+              .wrap-product-unit-total-price
+                p.product-unit-total-quantity {{getProductQty(product)}}개
+                p.product-unit-total-price {{getItemUnitTotalPrice(product)}}원
+      .wrap-last-order-history(v-if="getUserPhoneNumber")
+        p.last-order-history-text 휴대폰 번호
+        .last-order-history-list
+          p.phone-number {{getUserPhoneNumber}}
+      .wrap-last-order-history(v-else-if="!order.paidOrder && order.viewType !== 6")
         p.last-order-history-text 이전 주문내역
         .last-order-history-list(v-if="order.paidOrder==false")
           .last-order-history(v-for="c_product in order.total_orders")
@@ -79,9 +90,15 @@ export default {
   },
   computed: {
     order() {
+      console.log(this.$store.state.order, '확인');
       // console.log(this.$store.state.order.rating_type);
       return this.$store.state.order;
     },
+    getUserPhoneNumber() {
+      const userPhoneNumber = this.$store.state.order?.userHP || false;
+
+      return userPhoneNumber;
+    }
   },
   mounted() {
     clearInterval(this.interval);
@@ -109,14 +126,16 @@ export default {
   methods: {
     getByTypeText(type) {
       if (type === 'title') {
-        if (this.order.viewType === 6) {
+        const isViewTypeGame = this.order?.viewType === 6;
+        if (isViewTypeGame) {
           return '게임내역';
         } else {
           return '주문내역';
         }
       }
       if (type === 'sub') {
-        if (this.order.viewType === 6) {
+        const isViewTypeGame = this.order?.viewType === 6;
+        if (isViewTypeGame) {
           return '게임 결과';
         } else {
           return '현재주문내역';
@@ -158,6 +177,21 @@ export default {
     getOptionPrice(option) {
       if (!option) return 0;
       return won(option.good_price);
+    },
+    getItemUnitTotalPrice(order) {
+      const {
+        good_price,
+        good_qty,
+        option = [],
+      } = order;
+
+      let totalPrice = 0;
+      totalPrice += (Number(good_price) * Number(good_qty));
+      option.forEach((item) => {
+        totalPrice += (Number(item.good_price) * Number(item.good_qty) *  Number(good_qty));
+      });
+
+      return won(totalPrice);
     },
     async commitOrder(order) {
       const auth = this.$store.state.auth;
@@ -207,6 +241,7 @@ export default {
     },
     closeOrder() {
       clearInterval(this.interval);
+      this.$store.commit('orderModalFlag', false);
       this.$store.commit('UNSET_ORDER');
     },
     ...utils,
@@ -616,7 +651,7 @@ export default {
           margin-top: 0.78125vw !important;
           display: flex;
           flex-direction: column;
-          gap: 0.390625vw;
+          gap: 1.5625vw;
           overflow: scroll;
 
           .current-order-history {
@@ -629,74 +664,111 @@ export default {
             padding: 1.5625vw !important;
             box-sizing: border-box;
             gap: 0.625vw;
+            .wrap-product-info {
+              padding-bottom: 1.5625vw !important;
+              display: flex;
+              flex-direction: column;
+              gap: 0.625vw;
+              box-sizing: border-box;
+              border-bottom: solid 0.078125vw #ccc;
+              .current-product-info {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 0.390625vw;
 
-            .current-product-info {
+                .product-name {
+                  flex: 1;
+                  font-size: 3.75vw;
+                  font-weight: bold;
+                  letter-spacing: -0.025em;
+                }
+
+                .wrap-product-price {
+                  width: 21.25vw;
+                  display: flex;
+                  justify-content: flex-end;
+                  align-items: center;
+                  gap: 1.171875vw;
+
+                  .product-quantity {
+                    width: 7.96875vw;
+                    text-align: right;
+                    font-size: 3.75vw;
+                    letter-spacing: -0.025em;
+                  }
+
+                  .product-price {
+                    font-size: 1.953125vw;
+                    width: 12.109375vw;
+                    text-align: right;
+                  }
+                }
+              }
+              .product-option-list {
+                font-size: 2.5vw;
+                color: #eee;
+                letter-spacing: -0.025em;
+
+                .product-option {
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+
+                  .option-name {
+                    text-indent: 1em;
+                    flex: 1;
+                  }
+
+                  .wrap-product-option-price {
+                    width: 21.25vw;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    gap: 1.171875vw;
+
+                    .option-quantity {
+                      width: 7.96875vw;
+                      text-align: right;
+                    }
+
+                    .option-price {
+                      width: 12.109375vw;
+                      font-size: 1.5625vw;
+                      text-align: right;
+                    }
+                  }
+                }
+              }
+            }
+
+            .wrap-product-all-price {
               display: flex;
               justify-content: space-between;
               align-items: center;
-              gap: 0.390625vw;
 
-              .product-name {
-                flex: 1;
-                font-size: 3.75vw;
-                font-weight: bold;
-                letter-spacing: -0.025em;
+              .product-all-price-title {
+                font-size: 2.5vw;
               }
 
-              .wrap-product-price {
+              .wrap-product-unit-total-price {
                 width: 21.25vw;
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
                 gap: 1.171875vw;
+                font-size: 2.96875vw;
+                font-weight: bold;
 
-                .product-quantity {
+                .product-unit-total-quantity {
                   width: 7.96875vw;
                   text-align: right;
-                  font-size: 3.75vw;
-                  letter-spacing: -0.025em;
                 }
 
-                .product-price {
-                  font-size: 1.953125vw;
+                .product-unit-total-price {
                   width: 12.109375vw;
+                  font-size: 1.953125vw;
                   text-align: right;
-                }
-              }
-            }
-
-            .product-option-list {
-              font-size: 2.96875vw;
-              color: #fff;
-              letter-spacing: -0.025em;
-
-              .product-option {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-
-                .option-name {
-                  text-indent: 1em;
-                  flex: 1;
-                }
-
-                .wrap-product-option-price {
-                  width: 21.25vw;
-                  display: flex;
-                  justify-content: space-between;
-                  align-items: center;
-                  gap: 1.171875vw;
-
-                  .option-quantity {
-                    width: 7.96875vw;
-                    text-align: right;
-                  }
-
-                  .option-price {
-                    width: 12.109375vw;
-                    font-size: 1.5625vw;
-                    text-align: right;
-                  }
                 }
               }
             }
@@ -728,6 +800,12 @@ export default {
           flex-direction: column;
           gap: 1.171875vw;
           overflow: scroll;
+
+          .phone-number {
+            color: #fff;
+            font-size: 3vw;
+            font-weight: bold;
+          }
 
           .last-order-history {
             display: flex;

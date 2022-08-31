@@ -1,34 +1,46 @@
 <template lang="pug">
-  .wrap-orders-container
-    .orders-container
-      order-cash-out-standing-modal(
-        v-if="getCashOutPopVisble()"
-        :item="chooseOrder"
-        :closeItemModal="closeMisuModal"
-        :cashCommit="() => reqConfirmMisu(chooseOrder)"
-      )
-      p.store-name {{storeName}}{{version}}
-      .header-orders-status-list
-        .orders-status(@click="setViewMode('all')" :class="{activeButton: viewMode === 'all'}")
-          p 모든 주문
-          span {{lengthOrders}}
-      .wrap-order-list
-        .electronic-access-list-version
-          p.order-title 테이블번호
-          p.order-title 인원수
-          p.order-title 주문내역
-          p.order-title 주문IP
-          p.order-title 에러메세지
-          p.order-title 주문시간
-        .wrap-order-information-lists-electronic
-          div(v-for="(order, index) in sortedOrders" :key="`order-index-`+index" :class="getOrderListStyle(order, index)")
-            .order-information-list(v-if="visibleOrderItem(order)")
-              p.order-information-table-number(:class="orderStyleCheck(order)") {{checkedTabletNum(order)}}
-              p.order-information {{visitGroups(order)}}명
-              p.order-information {{getGoodsName(order)}}
-              p.order-information.small-message {{orderIp(order)}}
-              p.order-information.small-message {{errorMessage(order)}}
-              p.order-information {{getOrderTime(order).substr(11)}}
+.wrap-orders-container
+  .orders-container
+    order-cash-out-standing-modal(
+      v-if="getCashOutPopVisble()"
+      :item="chooseOrder"
+      :closeItemModal="closeMisuModal"
+      :cashCommit="() => reqConfirmMisu(chooseOrder)"
+    )
+    p.store-name {{storeName}}{{version}}
+    .header-orders-status-list
+      .orders-status(@click="setViewMode('all')" :class="{activeButton: viewMode === 'all'}")
+        p 모든 주문
+        span {{lengthOrders}}
+    .wrap-order-list
+      .electronic-access-list-version
+        p.order-title 테이블번호
+        //- p.order-title 인원수
+        p.order-title 주문내역
+        p.order-title 주문시간
+        p.order-title 에러 내용
+        p.order-title 주문키
+        p.order-title 주문 IP
+      .wrap-order-information-lists-electronic
+        div(
+          v-for="(order, index) in sortedOrders"
+          :key="`order-index-`+index"
+          :class="getOrderListStyle(order, index)"
+          )
+          .order-information-list(v-if="visibleOrderItem(order)")
+            p.order-bold(:class="orderStyleCheck(order)") {{checkedTabletNum(order)}}
+            p {{getGoodsName(order)}}
+            p {{getOrderTime(order).substr(11)}}
+            //- p.small-message {{errorMessage(order)}}
+            .small-message(v-if="order.errorMsg")
+              .order-bold 오류 발생!
+              |주문키와 주문IP 사진을 찍어서 카카오 상담 문의해주세요.
+            //- p {{visitGroups(order)}}명
+            .small-message(v-else)
+            .small-message {{order.order_view_key}}
+            p.small-message {{orderIp(order)}}
+
+
 </template>
 
 <script>
@@ -326,14 +338,15 @@ export default {
       this.$store.commit('filterEvent', eventList);
     },
     getGoodsName(order) {
-      const goodsList = order.order_info;
+      if (order.order_info) {
+        const goodsList = order.order_info;
 
-      if (goodsList.length > 1) {
-        return `${goodsList[0].good_name} 외 ${goodsList.length - 1}개`;
+        if (goodsList?.length > 1) {
+          return `${goodsList[0].good_name} 외 ${goodsList.length - 1}개`;
+        }
+        return goodsList[0].good_name;
       }
-
-      return goodsList[0].good_name;
-    }
+    },
   }
 };
 </script>
@@ -417,7 +430,7 @@ export default {
     // 결제미포함 버전
     .electronic-access-list-version {
       display: grid;
-      grid-template-columns: 15.625vw 4vw 1fr 8vw 8vw 6vw;
+      grid-template-columns: 5.625vw 8vw 8vw 18vw 0.9fr 6vw;
       gap: 2vw;
       padding: 3.75vh 1.5625vw 1.25vh !important;
       border-bottom: solid 0.078125vw #333333;
@@ -438,15 +451,27 @@ export default {
           min-height: 4.375vw;
           padding: 0 1.5625vw !important;
           display: grid;
-          grid-template-columns: 15.625vw 4vw 1fr 8vw 8vw 6vw;
+          grid-template-columns: 5.625vw 8vw 8vw 18vw 0.9fr 6vw;
           align-items: center;
           gap: 2vw;
           box-sizing: border-box;
 
           > p {
-            font-size: 1.406250vw;
             letter-spacing: -0.02109375vw;
             text-align: center;
+            font-size: 1.406250vw;
+          }
+
+          > div {
+            letter-spacing: -0.02109375vw;
+            text-align: left;
+            font-size: 1.406250vw;
+
+          }
+          .small-message {
+            width: 100%;
+            font-size: 0.9375vw;
+            overflow: hidden;
           }
 
           .orderColorRed {
@@ -466,7 +491,7 @@ export default {
             color: #FF7A00;
           }
 
-          .order-information-table-number {
+          .order-bold {
             font-weight: bold;
           }
 
