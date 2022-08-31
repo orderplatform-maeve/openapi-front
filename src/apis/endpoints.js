@@ -8,7 +8,7 @@ const ROBOT_TEXT = 'http://52.78.117.91:8888/v2/order';
 // const ENTERTAINMENT_URL = 'https://dev-apigw.torder.co.kr';
 const HAPPY_TALK = 'https://happytalk.torder.co.kr';
 // const NOTICE_URL = 'http://dev-apigw.torder.co.kr/v2';
-const DEV_ADMIN_URL = 'http://dev.admin.torder.co.kr';
+// const DEV_ADMIN_URL = 'http://dev.admin.torder.co.kr';
 
 // const SERVER_URL = isDemo ? DEMO_URL : REST_URL;
 const TORDER_V2 = STOP_REDIRECT ? 'https://dev-apigw.torder.co.kr/v2' : 'https://apigw.torder.co.kr/v2';
@@ -54,8 +54,8 @@ const endpoints = {
   },
   goods: {
     updateGoodStatus: `${REST_URL}/goods/update_goods`,
-    optionSaleOffCheck: `${DEV_ADMIN_URL}/goods/optionSaleOffCheck`,
-    optionSaleOffSubmit: `${DEV_ADMIN_URL}/goods/optionSaleOffSubmit`,
+    optionSaleOffCheck: `${REST_URL}/goods/optionSaleOffCheck`,
+    optionSaleOffSubmit: `${REST_URL}/goods/optionSaleOffSubmit`,
   },
   tablet: {
     allRefresh: `${ADMIN_URL}/tablet/tablet_all_update`,
