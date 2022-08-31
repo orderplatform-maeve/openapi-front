@@ -35,7 +35,11 @@
               .wrap-product-unit-total-price
                 p.product-unit-total-quantity {{getProductQty(product)}}개
                 p.product-unit-total-price {{getItemUnitTotalPrice(product)}}원
-      .wrap-last-order-history(v-if="!order.paidOrder && order.viewType !== 6")
+      .wrap-last-order-history(v-if="getUserPhoneNumber")
+        p.last-order-history-text 휴대폰 번호
+        .last-order-history-list
+          p.phone-number {{getUserPhoneNumber}}
+      .wrap-last-order-history(v-else-if="!order.paidOrder && order.viewType !== 6")
         p.last-order-history-text 이전 주문내역
         .last-order-history-list(v-if="order.paidOrder==false")
           .last-order-history(v-for="c_product in order.total_orders")
@@ -86,9 +90,15 @@ export default {
   },
   computed: {
     order() {
+      console.log(this.$store.state.order, '확인');
       // console.log(this.$store.state.order.rating_type);
       return this.$store.state.order;
     },
+    getUserPhoneNumber() {
+      const userPhoneNumber = this.$store.state.order?.userHP || false;
+
+      return userPhoneNumber;
+    }
   },
   mounted() {
     clearInterval(this.interval);
@@ -790,6 +800,12 @@ export default {
           flex-direction: column;
           gap: 1.171875vw;
           overflow: scroll;
+
+          .phone-number {
+            color: #fff;
+            font-size: 3vw;
+            font-weight: bold;
+          }
 
           .last-order-history {
             display: flex;
