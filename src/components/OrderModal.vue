@@ -84,7 +84,7 @@ export default {
   data() {
     return {
       interval: undefined,
-      seconds: 1000,
+      seconds: 10,
       isConfirm: false,
     };
   },
