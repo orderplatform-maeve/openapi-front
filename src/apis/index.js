@@ -5,3 +5,4 @@ export { default as tableGame } from './tableGame';
 export { default as category } from './category';
 export { default as orders } from './orders';
 export { default as happyTalk } from './happyTalk';
+export { default as goods } from './goods';

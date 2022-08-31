@@ -1,18 +1,26 @@
 <template lang="pug">
 .new-products-container
+  option-sold-out-modal(
+    v-if="optionSoldOutModalFlag"
+    :options="goodsInfo.options"
+    :goodsName="goodsInfo.goodsName"
+    :goodsCode="goodsInfo.goodsCode"
+    :closeOptionSoldOutModal="closeOptionSoldOutModal"
+    :initialize="initialize"
+    )
   p.new-products-title 상품관리(신)(테스트)
   .main-categories
     .main-category(
-      v-for="ctgItem in data"
-      :key="ctgItem.code"
+      v-for="(ctgItem, index) in data"
+      :key="`ctgItem-${ctgItem.code}-${index}`"
       @click="() => onSelectMainCtg(ctgItem)"
       :class="getActiveMainCategory(ctgItem.code)"
     ) {{ ctgItem.name }}
   .background-white
     .sub-categories
       .sub-category(
-        v-for="subCtgItem in getSubCategories()"
-        :key="subCtgItem.code"
+        v-for="(subCtgItem, index) in getSubCategories()"
+        :key="`subCtgItem-${subCtgItem.code}-${index}`"
         :name="subCtgItem.code"
         @click="() => onSelectSubCtg(subCtgItem)"
         :class="getActiveSubCategory(subCtgItem.code)"
@@ -21,13 +29,14 @@
     .product-list
       .scroll(@scroll="handleScroll" ref="scroll" v-if="!isLoading")
         .new-products(
-          v-for="mainCtg in data"
-          :key="mainCtg.code"
+          v-for="(mainCtg, index) in data"
+          :key="`mainCtg-${mainCtg.code}-${index}`"
           :id="mainCtg.code"
           :ref="mainCtg.code"
         )
           .new-product-goods-list(
-            v-for="subCtg in mainCtg.subCategories"
+            v-for="(subCtg, index) in mainCtg.subCategories"
+            :key="`subCtg-${subCtg.code}-${index}`"
             :id="subCtg.code"
             :ref="subCtg.code"
           )
@@ -36,18 +45,25 @@
               span.bar |
               span.sub-category-name {{subCtg.name}}
             .new-product-goods(
-              v-for="good in subCtg.goods"
-              :key="good.code"
+              v-for="(good, index) in subCtg.goods"
+              :key="`good-${good.code}-${index}`"
             )
-              p.new-product-good-name {{ good.displayName }}
-              .good-buttons
-                .button(@click="() => onNoUse(good)" :class="getButtonStatusStyle(good.noUse)") {{ getUseStatusText(good.noUse) }}
-                .button(@click="() => onSoldoutStatus(good)" :class="getButtonStatusStyle(good.soldout)") {{ getSoldoutStatusText(good.soldout) }}
-                .button(@click="() => onBestStatus(good)" :class="getButtonStatusStyle(good.best)") {{ getBestStatusText(good.best) }}
-                .button(@click="() => onHitStatus(good)" :class="getButtonStatusStyle(good.hit)") {{ getHitStatusText(good.hit) }}
-                .button(@click="() => onMdStatus(good)" :class="getButtonStatusStyle(good.md)") {{ getMdStatusText(good.md) }}
-                .button(@click="() => onSaleStatus(good)" :class="getButtonStatusStyle(good.sale)") {{ getSaleStatusText(good.sale) }}
-                .button(@click="() => onNewStatus(good)" :class="getButtonStatusStyle(good.new)") {{ getNewStatusText(good.new) }}
+              div
+                p.new-product-good-name {{ good.displayName }}
+                div.option-setting-button(
+                  v-if="good.options"
+                  @click="openOptionSoldOutModal(good)"
+                  ) 옵션 상태 변경
+                  icon-under-white-arrow
+              div
+                .good-buttons
+                  .button(@click="() => onNoUse(good)" :class="getButtonStatusStyle(good.noUse)") {{ getUseStatusText(good.noUse) }}
+                  .button(@click="() => onSoldoutStatus(good)" :class="getButtonStatusStyle(good.soldout)") {{ getSoldoutStatusText(good.soldout) }}
+                  .button(@click="() => onBestStatus(good)" :class="getButtonStatusStyle(good.best)") {{ getBestStatusText(good.best) }}
+                  .button(@click="() => onHitStatus(good)" :class="getButtonStatusStyle(good.hit)") {{ getHitStatusText(good.hit) }}
+                  .button(@click="() => onMdStatus(good)" :class="getButtonStatusStyle(good.md)") {{ getMdStatusText(good.md) }}
+                  .button(@click="() => onSaleStatus(good)" :class="getButtonStatusStyle(good.sale)") {{ getSaleStatusText(good.sale) }}
+                  .button(@click="() => onNewStatus(good)" :class="getButtonStatusStyle(good.new)") {{ getNewStatusText(good.new) }}
 </template>
 
 <script>
@@ -57,6 +73,12 @@ export default {
       isLoading: false,
       selectMainCategoryItem: null,
       selectSubCategoryItem: null,
+      // 하나의 상품에 대한 옵션 리스트 담을 용도
+      goodsInfo: {
+        goodsName: '',
+        goodsCode: '',
+        options: null,
+      },
     };
   },
   computed: {
@@ -64,6 +86,10 @@ export default {
       const { getNewCategoriesGoods } = this.$store.getters;
       return getNewCategoriesGoods;
     },
+    optionSoldOutModalFlag() {
+      const optionSoldOutModal = this.$store.state.optionSoldOutModal;
+      return optionSoldOutModal;
+    }
   },
   watch: {
     data(newData) {
@@ -716,6 +742,17 @@ export default {
         this.$store.commit('pushFlashMessage', '서버가 불안정하여 판매 중지 하기 실패하였습니다.');
       }
     },
+    // 옵션 품절 설정 모달
+    openOptionSoldOutModal (goods) {
+      this.goodsInfo.options = goods.options;
+      this.goodsInfo.goodsName = goods.displayName;
+      this.goodsInfo.goodsCode = goods.code;
+
+      this.$store.commit('optionSoldOutModalFlag', true);
+    },
+    closeOptionSoldOutModal() {
+      this.$store.commit('optionSoldOutModalFlag', false);
+    }
   },
 };
 </script>
@@ -854,6 +891,20 @@ a {
                 color: #000;
                 font-weight: bold;
                 word-break: break-all;
+              }
+
+              .option-setting-button {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 11.1719vw;
+                height: 3.5156vw;
+                border-radius: 0.3906vw;
+                background-color: #292929;
+                font-size: 1.25vw;
+                color: #fff;
+                gap: 0.7813vw;
+                margin-top: 0.7813vw !important;
               }
               .good-buttons {
                 display: flex;
