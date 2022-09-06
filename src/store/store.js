@@ -52,13 +52,6 @@ const socket = {
               state.orderModal = true;
             }
 
-            // 선결제, 경매, 게임 등 아직 type 지정되지 않으므로 임시방법 사용
-            // if (order.type === 'order') {
-            //   state.orderModal = true;
-            // } else {
-            //   state.orderModal = false;
-            // }
-
             if (window?.UUID?.playOrderBell) {
               if (order.creditType !== "cash") {
                 window.UUID.playOrderBell();
@@ -114,13 +107,6 @@ const socket = {
           } else {
             state.auction = false;
           }
-
-          // 선결제, 경매, 게임 등 아직 type 지정되지 않으므로 임시방법 사용
-          // if (order.type === 'order') {
-          //   state.orderModal = true;
-          // } else {
-          //   state.orderModal = false;
-          // }
           commit('PUSH_ORDER', order);
         }
       }

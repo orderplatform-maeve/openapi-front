@@ -1,7 +1,7 @@
 <template lang="pug">
 .order-modal-container
   .wrap-order-modal
-    .order-modal-header(v-once)
+    .order-modal-header
       .wrap-order-history-text
         p.order-history-text {{ getByTypeText('title') }}
         p.order-table-name {{checkedTabletNum(order)}} 테이블
@@ -12,7 +12,7 @@
           p.order-confirm-status(v-else) 미확인
         p.bar
         p.order-time {{order.order_time}}
-    .wrap-order-history-all(v-once)
+    .wrap-order-history-all
       .wrap-current-order-history
         p.current-order-history-text {{ getByTypeText('sub') }}
         .current-order-history-list
