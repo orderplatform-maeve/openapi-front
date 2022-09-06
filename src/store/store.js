@@ -626,6 +626,15 @@ const order = {
       }
       return false;
     },
+    async requestDeleteLastOrder(context, params) {
+      const url = endpoints.orders.deleteLastOrder;
+      const response = await axios.post(url,params);
+
+      if (response.data) {
+        return response.data;
+      }
+      return false;
+    },
   },
 };
 

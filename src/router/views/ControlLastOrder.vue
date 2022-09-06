@@ -104,7 +104,7 @@ export default {
 
       const time = Date.now();
       const getMinutes = (m) => (m * 60 * 1000);
-      const timestamp = this.$moment(time + getMinutes(this.minute)).valueOf();
+      const timestamp = this.$moment(this.$moment(time + getMinutes(this.minute)).valueOf()).unix();
 
       console.log('time', new Date(timestamp), timestamp);
       fd.append('time', timestamp);
@@ -112,7 +112,7 @@ export default {
       const response = await this.$store.dispatch('requestLastOrder', fd);
       // console.log(response);
       if (response.result) {
-        this.$store.commit('pushFlashMessage', `${new Date(timestamp).toLocaleString('ko-KR')} 시간 설정이 완료 되었습니다.`);
+        this.$store.commit('pushFlashMessage', `${new Date(timestamp*1000).toLocaleString('ko-KR')} 시간 설정이 완료 되었습니다.`);
       }
 
       this.reRequest = true;
@@ -129,14 +129,10 @@ export default {
     },
     async removeTimer() {
       const fd = new FormData();
-
       const { store_code } = this.$store.state.auth.store;
       fd.append('store_code', store_code);
-      fd.append('base_message', ' ');
-      fd.append('end_message', ' ');
-      fd.append('time', 0);
 
-      const response = await this.$store.dispatch('requestLastOrder', fd);
+      const response = await this.$store.dispatch('requestDeleteLastOrder', fd);
       // console.log(response);
       if (response.result) {
         this.$store.commit('pushFlashMessage', '타이머 설정이 제거 되었습니다.');
