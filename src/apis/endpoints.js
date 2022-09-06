@@ -23,6 +23,7 @@ const endpoints = {
     commitOrderViewData: `${REST_URL}/logs/commit_orderView_data`,
     order: `${REST_URL}/shop/order`,
     controlLastOrder: `${REST_URL}/message/_Post_message`,
+    deleteLastOrder: `${REST_URL}/message/_deleteMessage`,
     orderReceive: `${TORDER_V2}/receive/order/confirm`,
   },
   device: {
