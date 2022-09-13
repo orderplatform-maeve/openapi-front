@@ -6,6 +6,8 @@
       :item="chooseOrder"
       :closeItemModal="closeMisuModal"
       :cashCommit="() => reqConfirmMisu(chooseOrder)"
+      :standardPriceUnit="standardPriceUnit"
+      :standardPriceFrontPosition="standardPriceFrontPosition"
     )
     p.store-name {{storeName}}{{version}}
     .header-orders-status-list
@@ -114,6 +116,14 @@ export default {
     payloadStatus() {
       return this.$store.state.payloadStatus;
     },
+    standardPriceUnit() {
+      const standardPriceUnit = this.$store.state.standardPriceUnit;
+      return standardPriceUnit;
+    },
+    standardPriceFrontPosition() {
+      const standardPriceFrontPosition = this.$store.state.standardPriceFrontPosition;
+      return standardPriceFrontPosition;
+    }
   },
   async mounted() {
     this.isLoading = true;

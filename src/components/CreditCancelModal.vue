@@ -5,7 +5,10 @@
       .credit-cancel-modal
         p.card-number 카드번호: {{item.cardNumber}}
         p.card-name 카드사명: {{item.issuer}}
-        p.credit-amount 결제금액: {{item.amount.toLocaleString()}}원
+        p.credit-amount 결제금액:
+          span(v-if="standardPriceFrontPosition") {{standardPriceUnit}}
+          span {{item.amount.toLocaleString()}}
+          span(v-if="!standardPriceFrontPosition") {{standardPriceUnit}}
         p.approval-month 할부개월: {{item.ApprovalMonth}}
         p.approval-number 승인번호: {{item.paymentId}}
         p.approval-date 승인일시: {{item.creditDateTime}}
@@ -25,6 +28,12 @@ export default {
     },
     cardCancelCommit: {
       type: Function
+    },
+    standardPriceUnit: {
+      type: String
+    },
+    standardPriceFrontPosition: {
+      type: Boolean
     }
   }
 
@@ -38,7 +47,7 @@ export default {
   top: 0;
   width: 100vw;
   height: 100vh;
-  font-family: 'Spoqa Han Sans Neo', 'sans-serif'; 
+  font-family: 'Spoqa Han Sans Neo', 'sans-serif';
   display: flex;
   justify-content: center;
   align-items: center;

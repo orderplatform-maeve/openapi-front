@@ -5,7 +5,10 @@
     .cash-out-standing
       .credit-information
         p.wrap-order-price 주문금액:
-          span.order-price  {{item.orderPrice.toLocaleString()}}원
+          span.order-price
+            span(v-if="standardPriceFrontPosition") {{standardPriceUnit}}
+            span {{item.orderPrice.toLocaleString()}}
+            span(v-if="!standardPriceFrontPosition") {{standardPriceUnit}}
         p.approval-number 주문번호: {{item.order_id}}
         p.order-date 주문일시: {{item.order_time}}
       .order-information-list
@@ -40,6 +43,12 @@ export default {
     },
     cashCommit: {
       type: Function
+    },
+    standardPriceUnit: {
+      type: String
+    },
+    standardPriceFrontPosition: {
+      type: Boolean
     }
   },
   methods: {

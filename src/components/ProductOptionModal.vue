@@ -28,7 +28,10 @@
             @click="select(option)"
           )
             p.product-option-name {{option.name}}
-            p.product-option-price + {{option.price.toLocaleString()}}원
+            p.product-option-price +
+              span(v-if="standardPriceFrontPosition") {{standardPriceUnit}}
+              span {{option.price.toLocaleString()}}
+              span(v-if="!standardPriceFrontPosition") {{standardPriceUnit}}
       .product-option-cart
         .wrap-option-cart-list
           .option-cart-header
@@ -37,14 +40,20 @@
           .option-cart-list
             .wrap-product-default-price
               p.text 기본가격
-              p.product-default-price {{product.price.toLocaleString()}}원
+              p.product-default-price
+                span(v-if="standardPriceFrontPosition") {{standardPriceUnit}}
+                span {{product.price.toLocaleString()}}
+                span(v-if="!standardPriceFrontPosition") {{standardPriceUnit}}
             .wrap-cart-product-information(
                 v-for="option in reversedSelectedOptions"
                 v-bind:key="option.code + ':' + option.group.index"
               )
               .wrap-cart-product-option-name
                 p.cart-product-option-name {{option.displayname}}
-                p.cart-product-option-price {{option.price.toLocaleString()}}원
+                p.cart-product-option-price
+                  span(v-if="standardPriceFrontPosition") {{standardPriceUnit}}
+                  span {{option.price.toLocaleString()}}
+                  span(v-if="!standardPriceFrontPosition") {{standardPriceUnit}}
               .wrap-set-cart-product-option-qty(v-if="option.limit_qty!=1")
                 .cart-product-option-set-qty-button
                   icon-plus-button(:clickEvent="() => plusQty(option)")
@@ -94,6 +103,14 @@ export default {
     },
     currentOption() {
       return this.product.options[this.currentIndex];
+    },
+    standardPriceUnit() {
+      const standardPriceUnit = this.$store.state.standardPriceUnit;
+      return standardPriceUnit;
+    },
+    standardPriceFrontPosition() {
+      const standardPriceFrontPosition = this.$store.state.standardPriceFrontPosition;
+      return standardPriceFrontPosition;
     }
   },
   methods: {
