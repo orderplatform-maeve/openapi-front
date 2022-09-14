@@ -4,8 +4,11 @@
       p.cash-out-standing-title 현금미결제
       .cash-out-standing
         .credit-information
-          p.wrap-order-price 주문금액: 
-            span.order-price {{item.amount.toLocaleString()}}원
+          p.wrap-order-price 주문금액:
+            span.order-price
+              span(v-if="standardPriceFrontPosition") {{standardPriceUnit}}
+              span {{item.amount.toLocaleString()}}
+              span(v-if="!standardPriceFrontPosition") {{standardPriceUnit}}
           p.approval-number 승인번호: {{item.paymentId}}
           p.order-date 주문일시: {{item.orderdateTime}}
         .order-information-list
@@ -40,6 +43,12 @@ export default {
     },
     cashCommit: {
       type: Function
+    },
+    standardPriceUnit: {
+      type: String
+    },
+    standardPriceFrontPosition: {
+      type: Boolean
     }
   },
   methods: {
@@ -60,7 +69,7 @@ export default {
   top: 0;
   width: 100vw;
   height: 100vh;
-  font-family: 'Spoqa Han Sans Neo', 'sans-serif'; 
+  font-family: 'Spoqa Han Sans Neo', 'sans-serif';
   display: flex;
   justify-content: center;
   align-items: center;

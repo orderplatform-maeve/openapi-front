@@ -22,19 +22,28 @@
                 p.product-name {{getProjectGoodName(product)}}
                 .wrap-product-price
                   //- p.product-quantity {{getProductQty(product)}}개
-                  p.product-price {{ getItemPrice(product) }}원
+                  p.product-price
+                    span(v-if="standardPriceFrontPosition") {{standardPriceUnit}}
+                    span {{ getItemPrice(product) }}
+                    span(v-if="!standardPriceFrontPosition") {{standardPriceUnit}}
               .product-option-list(v-if="isProductOpt(product)")
                 .product-option(v-for="option in product.option")
                   p.option-name {{getOptionDisplayName(option)}}
                   .wrap-product-option-price
                     p.option-quantity {{getOptionGoodQty(option)}}개
-                    p.option-price {{getOptionPrice(option)}}원
+                    p.option-price
+                      span(v-if="standardPriceFrontPosition") {{standardPriceUnit}}
+                      span {{getOptionPrice(option)}}
+                      span(v-if="!standardPriceFrontPosition") {{standardPriceUnit}}
             .wrap-product-all-price
               p.product-all-price-title
                 | 상품 수량
               .wrap-product-unit-total-price
                 p.product-unit-total-quantity {{getProductQty(product)}}개
-                p.product-unit-total-price {{getItemUnitTotalPrice(product)}}원
+                p.product-unit-total-price
+                  span(v-if="standardPriceFrontPosition") {{standardPriceUnit}}
+                  span {{getItemUnitTotalPrice(product)}}
+                  span(v-if="!standardPriceFrontPosition") {{standardPriceUnit}}
       .wrap-last-order-history(v-if="getUserPhoneNumber")
         p.last-order-history-text 휴대폰 번호
         .last-order-history-list
@@ -55,7 +64,10 @@
         .last-order-history-list
           .last-order-history(v-for="c_product in order.creditArray")
             .last-product-info
-              .last-order-product-name {{ getProductAmount(c_product) }}원
+              .last-order-product-name
+                span(v-if="standardPriceFrontPosition") {{standardPriceUnit}}
+                span {{ getProductAmount(c_product) }}
+                span(v-if="!standardPriceFrontPosition") {{standardPriceUnit}}
               .last-order-product-quantity.credit-type {{ getProductOrderType(c_product) }}
       .wrap-last-order-history(v-else-if="getVisibleCancelListArea(order) && order.viewType !== 6")
         p.last-order-history-text.credit-history 결제 취소 내역
@@ -98,6 +110,14 @@ export default {
       const userPhoneNumber = this.$store.state.order?.userHP || false;
 
       return userPhoneNumber;
+    },
+    standardPriceUnit() {
+      const standardPriceUnit = this.$store.state.standardPriceUnit;
+      return standardPriceUnit;
+    },
+    standardPriceFrontPosition() {
+      const standardPriceFrontPosition = this.$store.state.standardPriceFrontPosition;
+      return standardPriceFrontPosition;
     }
   },
   mounted() {

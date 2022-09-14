@@ -57,7 +57,10 @@
                   @click="() => selectGood(good)"
                 )
                   p.new-product-good-name {{ good.displayName }}
-                  p.new-product-good-price {{good.price.toLocaleString()}}원
+                  p.new-product-good-price
+                    span(v-if="standardPriceFrontPosition") {{standardPriceUnit}}
+                    span {{good.price.toLocaleString()}}
+                    span(v-if="!standardPriceFrontPosition") {{standardPriceUnit}}
           //- 이전주문내역
           .wrap-cart(v-if="cartStatus === 'previous'")
             .cart-header
@@ -74,17 +77,26 @@
                   p.cart-product-name {{ order.display_name }}
                   .wrap-cart-product-price
                     .cart-product-quantity {{ order.order_qty }}개
-                    .cart-product-price {{ getPrice(order.good_price) }}원
+                    .cart-product-price
+                      span(v-if="standardPriceFrontPosition") {{standardPriceUnit}}
+                      span {{ getPrice(order.good_price) }}
+                      span(v-if="!standardPriceFrontPosition") {{standardPriceUnit}}
                 .wrap-cart-product-option(v-for="(option, index) in order.option" :key="`option-index:${index}`")
                   p.cart-product-option-name +{{option.display_name}}
                   .wrap-cart-product-option-price
                     .cart-product-option-quantity {{option.order_qty}}개
-                    .cart-product-option-price {{option.pos_price.toLocaleString()}}원
+                    .cart-product-option-price
+                      span(v-if="standardPriceFrontPosition") {{standardPriceUnit}}
+                      span {{option.pos_price.toLocaleString()}}
+                      span(v-if="!standardPriceFrontPosition") {{standardPriceUnit}}
             .cart-total-information
               p.cart-total-quantity {{ getPreviousOrderCount() }}건
               p.cart-total-price
                 span.text 합계:
-                span.price {{ getTotalPreviousOrder() }}원
+                span.price
+                  span(v-if="standardPriceFrontPosition") {{standardPriceUnit}}
+                  span {{ getTotalPreviousOrder() }}
+                  span(v-if="!standardPriceFrontPosition") {{standardPriceUnit}}
             .wrap-confirm-button
               button.close-button(@click="close") 닫기
           //- 장바구니
@@ -103,17 +115,26 @@
                   p.cart-product-name {{ order.display_name }}
                   .wrap-cart-product-price
                     .cart-product-quantity {{ order.order_qty }}개
-                    .cart-product-price {{ getPrice(order.good_price) }}원
+                    .cart-product-price
+                      span(v-if="standardPriceFrontPosition") {{standardPriceUnit}}
+                      span {{ getPrice(order.good_price) }}
+                      span(v-if="!standardPriceFrontPosition") {{standardPriceUnit}}
                 .wrap-cart-product-option(v-for="(option, index) in order.option" :key="`option-index:${index}`")
                   p.cart-product-option-name +{{option.display_name}}
                   .wrap-cart-product-option-price
                     .cart-product-option-quantity {{option.order_qty}}개
-                    .cart-product-option-price {{option.pos_price.toLocaleString()}}원
+                    .cart-product-option-price
+                      span(v-if="standardPriceFrontPosition") {{standardPriceUnit}}
+                      span {{option.pos_price.toLocaleString()}}
+                      span(v-if="!standardPriceFrontPosition") {{standardPriceUnit}}
             .cart-total-information
               p.cart-total-quantity {{ getCartListOrderCount() }}건
               p.cart-total-price
                 span.text 합계:
-                span.price {{ getTotalCartList() }}원
+                span.price
+                  span(v-if="standardPriceFrontPosition") {{standardPriceUnit}}
+                  span {{ getTotalCartList() }}
+                  span(v-if="!standardPriceFrontPosition") {{standardPriceUnit}}
             .wrap-confirm-button
               button.close-button(@click="close") 닫기
               button.submit-button(@click="yesOrder()") 주문하기
@@ -148,6 +169,14 @@ export default {
       const { getNewCategoriesGoods } = this.$store.getters;
       return getNewCategoriesGoods;
     },
+    standardPriceUnit() {
+      const standardPriceUnit = this.$store.state.standardPriceUnit;
+      return standardPriceUnit;
+    },
+    standardPriceFrontPosition() {
+      const standardPriceFrontPosition = this.$store.state.standardPriceFrontPosition;
+      return standardPriceFrontPosition;
+    }
   },
   watch: {
     menu(newData) {

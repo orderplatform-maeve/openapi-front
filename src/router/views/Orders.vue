@@ -10,6 +10,8 @@
       :item="chooseOrder"
       :closeItemModal="closeMisuModal"
       :cashCommit="() => reqConfirmMisu(chooseOrder)"
+      :standardPriceUnit="standardPriceUnit"
+      :standardPriceFrontPosition="standardPriceFrontPosition"
     )
     p.store-name {{storeName}}{{version}}
     .header-orders-status-list
@@ -48,11 +50,19 @@
           .order-information-list(v-if="visibleOrderItem(order)" @click="openView(order)")
             p.order-information-table-number(:class="orderStyleCheck(order)") {{checkedTabletNum(order)}}
             p.order-information-order-type(:class="getOrderTypeStyle(order)") {{orderTypeCheck(order)}}
-            p.order-information-price {{getOrderPrice(order)}}원
-            p.order-information-paid-price {{getTotalAmount(order)}}원
+            p.order-information-price
+              span(v-if="standardPriceFrontPosition") {{standardPriceUnit}}
+              span {{getOrderPrice(order)}}
+              span(v-if="!standardPriceFrontPosition") {{standardPriceUnit}}
+            p.order-information-paid-price
+              span(v-if="standardPriceFrontPosition") {{standardPriceUnit}}
+              span {{getTotalAmount(order)}}
+              span(v-if="!standardPriceFrontPosition") {{standardPriceUnit}}
             p.order-information-unpaid-money(@click.stop="() => openMisuModal(order)")
-              span(:class="{unpaid: getMisu(order) !== '미수금없음'}") {{ getMisu(order) }}
-              span.unpaid(v-if="getVisibleWon(order)") 원
+              span(:class="{unpaid: getMisu(order) !== '미수금없음'}")
+                span(v-if="getVisibleWon(order) && standardPriceFrontPosition") {{standardPriceUnit}}
+                span {{ getMisu(order) }}
+                span(v-if="getVisibleWon(order) && !standardPriceFrontPosition") {{standardPriceUnit}}
             p.order-information-paid-type {{paidTypeCheck(order)}}
             p.order-information-credit-type {{creditTypeCheck(order)}}
             p.order-information-order-time {{getOrderTime(order).substr(11)}}
@@ -158,6 +168,14 @@ export default {
     payloadStatus() {
       return this.$store.state.payloadStatus;
     },
+    standardPriceUnit() {
+      const standardPriceUnit = this.$store.state.standardPriceUnit;
+      return standardPriceUnit;
+    },
+    standardPriceFrontPosition() {
+      const standardPriceFrontPosition = this.$store.state.standardPriceFrontPosition;
+      return standardPriceFrontPosition;
+    }
   },
   async mounted() {
     this.isLoading = true;
@@ -460,7 +478,7 @@ export default {
       }
 
       return firstGoodsName;
-    }
+    },
   }
 };
 </script>
