@@ -652,7 +652,6 @@ const shop = {
         // 화폐단위가 '$', '¥'이면 가격 앞에 표시
         state.standardPriceFrontPosition = true;
       }
-      console.log(state.standardPriceUnit, state.standardPriceFrontPosition);
     }
   },
   actions: {
