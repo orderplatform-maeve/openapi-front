@@ -50,7 +50,7 @@ const endpoints = {
     getMenuConfig: `${API_URL}/tablet_data/init`,
   },
   shop: {
-    init: `${REST_URL}/shop/init`,
+    config: `${REST_URL}/shop/config`,
     getList: `${REST_URL}/store/store_list`,
   },
   goods: {

@@ -25,7 +25,10 @@
           .last-order-history(v-for="c_product in order.auctionInfo")
             .last-product-info
               .last-order-product-name {{getBeforeProductDisplayName(c_product)}}
-              .last-order-product-quantity {{getBeforeAuctionPrice(c_product)}}원
+              .last-order-product-quantity
+                span(v-if="standardPriceFrontPosition") {{standardPriceUnit}}
+                span {{getBeforeAuctionPrice(c_product)}}
+                span(v-if="!standardPriceFrontPosition") {{standardPriceUnit}}
     p.auction-info-text 낙찰 내용을 확인하시고 포스에 정보를 입력해주세요.
     .wrap-confirm-button
       button.close-button(@click="closeOrder") 닫기
@@ -56,6 +59,14 @@ export default {
       // console.log(this.$store.state.order.rating_type);
       return this.$store.state.order;
     },
+    standardPriceUnit() {
+      const standardPriceUnit = this.$store.state.standardPriceUnit;
+      return standardPriceUnit;
+    },
+    standardPriceFrontPosition() {
+      const standardPriceFrontPosition = this.$store.state.standardPriceFrontPosition;
+      return standardPriceFrontPosition;
+    }
   },
   mounted() {
     clearInterval(this.interval);

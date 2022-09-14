@@ -31,7 +31,10 @@
             @click="selectProduct(product)"
           )
             .name {{getGoodDisplayName(product)}}
-            .price {{getGoodDefualtPrice(product)}}원
+            .price
+              span(v-if="standardPriceFrontPosition") {{standardPriceUnit}}
+              span {{getGoodDefualtPrice(product)}}
+              span(v-if="!standardPriceFrontPosition") {{standardPriceUnit}}
       .right
         ul.select-product-list(v-if="show_select_products" ref="selectProductList")
           li.select-product-item(v-for="select_product in select_products_sorted")
@@ -41,14 +44,23 @@
                 .name {{getSelectedGoodDisplayName(select_product)}}
                 .qty {{getSelectedGoodQty(select_product)}}개
               .info-bottom
-                .price {{getSelectedGoodDefualtPrice(select_product)}}원
-                .qty-price {{getSelectedGoodQtyPrice(select_product)}}원
+                .price
+                  span(v-if="standardPriceFrontPosition") {{standardPriceUnit}}
+                  span {{getSelectedGoodDefualtPrice(select_product)}}
+                  span(v-if="!standardPriceFrontPosition") {{standardPriceUnit}}
+                .qty-price
+                  span(v-if="standardPriceFrontPosition") {{standardPriceUnit}}
+                  span {{getSelectedGoodQtyPrice(select_product)}}
+                  span(v-if="!standardPriceFrontPosition") {{standardPriceUnit}}
             .button.button-minus(@click="minusQtyProduct(select_product)") -
     .foot
       .buttons
         .button(@click="close") 닫기
         .button.button-red(@click="submit")
-          .info {{select_products_length}}가지 {{select_products_qty}}개 {{select_products_price}}원
+          .info {{select_products_length}}가지 {{select_products_qty}}개
+            span(v-if="standardPriceFrontPosition") {{standardPriceUnit}}
+            span {{select_products_price}}
+            span(v-if="!standardPriceFrontPosition") {{standardPriceUnit}}
           .text 주문하기
 </template>
 
@@ -102,6 +114,14 @@ export default {
     products() {
       return this.$store.state.goods;
     },
+    standardPriceUnit() {
+      const standardPriceUnit = this.$store.state.standardPriceUnit;
+      return standardPriceUnit;
+    },
+    standardPriceFrontPosition() {
+      const standardPriceFrontPosition = this.$store.state.standardPriceFrontPosition;
+      return standardPriceFrontPosition;
+    }
   },
   methods: {
     getTopCategoriseClass(category) {
@@ -135,9 +155,6 @@ export default {
       const defaultPrice = this.getSelectedGoodDefualtPrice(select_product);
       const sum = qty * defaultPrice;
       return sum;
-    },
-    getInfoText() {
-      return `${this.select_products_length}가지 ${this.select_products_qty}개 ${this.select_products_price}원`;
     },
     async submit() {
       const { auth } = this.$store.state;

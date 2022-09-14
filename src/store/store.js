@@ -643,6 +643,16 @@ const shop = {
     SET_STORES: (state, stores) => {
       Vue.set(state, 'stores', stores);
     },
+    updateStandardPriceUnit(state, payload) {
+      state.standardPriceUnit = payload;
+      if (payload === '원') {
+        // 화폐단위가 '원'이면 가격 뒤에 표시
+        state.standardPriceFrontPosition = false;
+      } else {
+        // 화폐단위가 '$', '¥'이면 가격 앞에 표시
+        state.standardPriceFrontPosition = true;
+      }
+    }
   },
   actions: {
     setStores: ({ commit }, stores) => {
@@ -650,7 +660,7 @@ const shop = {
     },
     async setStoreInit({ commit }, params) {
       try {
-        const url = endpoints.shop.init;
+        const url = endpoints.shop.config;
         const response = await axios.post(url, params);
         // // console.log(response);
 
@@ -664,6 +674,7 @@ const shop = {
         };
 
         commit('setDeviceStatus', device);
+        commit('updateStandardPriceUnit', response.data.data.standardPriceUnit);
 
         return response;
       } catch (error) {
@@ -1427,6 +1438,9 @@ const state = {
   alertModalMessage: '에레 메세지 입력하세요 기본값 입니다.',
   isAlertModal: false,
   orderKeys: new Map(),
+  standardPriceUnit: '원',
+  // 시작 위치: true, 종료 위치: false
+  standardPriceFrontPosition: false,
 };
 
 const mutations = {

@@ -32,12 +32,16 @@
     :item="item"
     :closeItemModal="closeItemModal"
     :cardCancelCommit="cardCancelCommit"
+    :standardPriceUnit="standardPriceUnit"
+    :standardPriceFrontPosition="standardPriceFrontPosition"
   )
   cash-out-standing-modal(
     v-if="cashOutstandingModalVisibie"
     :item="item"
     :closeItemModal="closeItemModal"
     :cashCommit="cashCommit"
+    :standardPriceUnit="standardPriceUnit"
+    :standardPriceFrontPosition="standardPriceFrontPosition"
   )
   cancel-cash-payment-modal(
     v-if="cancelCashPaymentModalVisibie"
@@ -358,6 +362,14 @@ export default {
     },
     getSortedType() {
       return this.searchOptions.sort.list[this.searchOptions.sort.selected].name;
+    },
+    standardPriceUnit() {
+      const standardPriceUnit = this.$store.state.standardPriceUnit;
+      return standardPriceUnit;
+    },
+    standardPriceFrontPosition() {
+      const standardPriceFrontPosition = this.$store.state.standardPriceFrontPosition;
+      return standardPriceFrontPosition;
     }
   },
   watch: {

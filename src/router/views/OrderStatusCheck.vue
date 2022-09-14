@@ -61,6 +61,14 @@ export default {
       const storeCode = this.$store.state.auth.store.store_code;
       return storeCode;
     },
+    standardPriceUnit() {
+      const standardPriceUnit = this.$store.state.standardPriceUnit;
+      return standardPriceUnit;
+    },
+    standardPriceFrontPosition() {
+      const standardPriceFrontPosition = this.$store.state.standardPriceFrontPosition;
+      return standardPriceFrontPosition;
+    }
   },
   methods: {
     getTableName(table) {
@@ -152,19 +160,30 @@ export default {
       const tabletOrderPrice = tableInfo.TabletOrderPrice || 0;
       const tabletOrderPriceToLocaleString = tabletOrderPrice.toLocaleString();
 
-      return `${tabletOrderPriceToLocaleString}원`;
+      if(this.standardPriceFrontPosition) {
+        return `${this.standardPriceUnit}${tabletOrderPriceToLocaleString}`;
+      } else {
+        return `${tabletOrderPriceToLocaleString}${this.standardPriceUnit}`;
+      }
     },
     getTabletCreditPrice(tableInfo) {
       const tabletCreditPrice = tableInfo.TabletCreditPrice || 0;
       const tabletCreditPriceToLocaleString = tabletCreditPrice.toLocaleString();
-
-      return `${tabletCreditPriceToLocaleString}원`;
+      if(this.standardPriceFrontPosition) {
+        return `${this.standardPriceUnit}${tabletCreditPriceToLocaleString}`;
+      } else {
+        return `${tabletCreditPriceToLocaleString}${this.standardPriceUnit}`;
+      }
     },
     getTabletMisu(tableInfo) {
       const tabletMisu = tableInfo.TabletMisu || 0;
       const tabletMisuToLocaleString = tabletMisu.toLocaleString();
 
-      return `${tabletMisuToLocaleString}원`;
+      if(this.standardPriceFrontPosition) {
+        return `${this.standardPriceUnit}${tabletMisuToLocaleString}`;
+      } else {
+        return `${tabletMisuToLocaleString}${this.standardPriceUnit}`;
+      }
     }
   },
   mounted() {

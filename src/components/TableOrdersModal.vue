@@ -15,14 +15,23 @@
           tbody
             tr.order-item(v-for="order in orders")
               td.name {{order.display_name}}
-              td.price {{order.good_price}}원
+              td.price
+                span(v-if="standardPriceFrontPosition") {{standardPriceUnit}}
+                span {{order.good_price}}
+                span(v-if="!standardPriceFrontPosition") {{standardPriceUnit}}
               td.qty {{order.order_qty}}개
-              td.price.price-amt {{order.good_price * order.order_qty}}원
+              td.price.price-amt
+                span(v-if="standardPriceFrontPosition") {{standardPriceUnit}}
+                span {{order.good_price * order.order_qty}}
+                span(v-if="!standardPriceFrontPosition") {{standardPriceUnit}}
           tfoot
             tr
               td(colspan=2) 합계
               td {{table.qty_amt}}개
-              td {{table.price_amt}}원
+              td
+                span(v-if="standardPriceFrontPosition") {{standardPriceUnit}}
+                span {{table.price_amt}}
+                span(v-if="!standardPriceFrontPosition") {{standardPriceUnit}}
     .foot
       .buttons
         .button(@click="onClose") 닫기
@@ -63,6 +72,14 @@ export default {
   computed: {
     orders() {
       return [];
+    },
+    standardPriceUnit() {
+      const standardPriceUnit = this.$store.state.standardPriceUnit;
+      return standardPriceUnit;
+    },
+    standardPriceFrontPosition() {
+      const standardPriceFrontPosition = this.$store.state.standardPriceFrontPosition;
+      return standardPriceFrontPosition;
     }
   },
   created() {
