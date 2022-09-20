@@ -17,6 +17,7 @@
     "deploy:paycanceltest": "node ./script/s3Uploader.paycanceltest.js",
     "deploy:tmp": "node ./script/deployTmp.js",
     "deploy:dev": "cross-env NODE_ENV=development SERVER_TYPE=rest STOP_REDIRECT=true vue-cli-service build && node ./script/s3Uploader.dev.js",
+    "deploy:dev-team": "cross-env NODE_ENV=development SERVER_TYPE=rest STOP_REDIRECT=true vue-cli-service build && node ./script/s3Uploader.dev.team.js",
     "deploy:dev:demo": "cross-env NODE_ENV=development SERVER_TYPE=demo STOP_REDIRECT=true vue-cli-service build && node ./script/s3Uploader.dev.js",
     "deploy:action:dev": "node ./script/deploy.action.dev.js",
     "deploy:action:prod": "node ./script/deploy.action.prod.js"
