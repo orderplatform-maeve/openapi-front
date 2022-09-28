@@ -169,7 +169,7 @@ export default {
       searchText: '',
       noticeData: {
         totalContentCount: 10,
-        pageSize: 10,
+        pageSize: 8,
         currentPage: 0,
         maxPageNo: 1,
         noticeMasterList: [],
@@ -447,7 +447,7 @@ export default {
     },
     async getDefaultNoticeData() {
       try {
-        const res = await getNoticeInfo(`page=0&size=10&noticeCategoryList=EVENT,UPDATE,NOTICE,NEWS&noticeStatusList=1&noticeSearchQuery=&noticeCaller=MASTER&storeCode=${this.getStoreCode}`);
+        const res = await getNoticeInfo(`page=0&size=8&noticeCategoryList=EVENT,UPDATE,NOTICE,NEWS&noticeStatusList=1&noticeSearchQuery=&noticeCaller=MASTER&storeCode=${this.getStoreCode}`);
         console.log(res.data);
 
         this.noticeData = res.data;
@@ -461,7 +461,7 @@ export default {
       const viewMode = this.viewMode;
       if (page !== this.getCurrentPage || this.noticeList.length === 0) {
         try {
-          const res = await getNoticeInfo(`page=${page - 1}&size=10&noticeCategoryList=${viewMode}&noticeStatusList=1&noticeSearchType=${type}&noticeSearchQuery=${contents}&noticeCaller=MASTER&storeCode=${this.getStoreCode}`);
+          const res = await getNoticeInfo(`page=${page - 1}&size=8&noticeCategoryList=${viewMode}&noticeStatusList=1&noticeSearchType=${type}&noticeSearchQuery=${contents}&noticeCaller=MASTER&storeCode=${this.getStoreCode}`);
 
           this.noticeData = res.data;
         } catch {
@@ -474,7 +474,7 @@ export default {
       const contents = this.searchText;
       const viewMode = this.viewMode;
       try {
-        const res = await getNoticeInfo(`page=${page - 1}&size=10&noticeCategoryList=${viewMode}&noticeStatusList=1&noticeSearchType=${type}&noticeSearchQuery=${contents}&noticeCaller=MASTER&storeCode=${this.getStoreCode}`);
+        const res = await getNoticeInfo(`page=${page - 1}&size=8&noticeCategoryList=${viewMode}&noticeStatusList=1&noticeSearchType=${type}&noticeSearchQuery=${contents}&noticeCaller=MASTER&storeCode=${this.getStoreCode}`);
 
         this.noticeData = res.data;
       } catch {
@@ -489,7 +489,7 @@ export default {
 
       if (this.isNotLastPage) {
         try {
-          const res = await getNoticeInfo(`page=${page}&size=10&noticeCategoryList=${viewMode}&noticeStatusList=1&noticeSearchType=${type}&noticeSearchQuery=${contents}&noticeCaller=MASTER&storeCode=${this.getStoreCode}`);
+          const res = await getNoticeInfo(`page=${page}&size=8&noticeCategoryList=${viewMode}&noticeStatusList=1&noticeSearchType=${type}&noticeSearchQuery=${contents}&noticeCaller=MASTER&storeCode=${this.getStoreCode}`);
 
           this.noticeData = res.data;
         } catch {
@@ -505,7 +505,7 @@ export default {
 
       if (this.isNotFirstPage) {
         try {
-          const res = await getNoticeInfo(`page=${page - 2}&size=10&noticeCategoryList=${viewMode}&noticeStatusList=1&noticeSearchType=${type}&noticeSearchQuery=${contents}&noticeCaller=MASTER&storeCode=${this.getStoreCode}`);
+          const res = await getNoticeInfo(`page=${page - 2}&size=8&noticeCategoryList=${viewMode}&noticeStatusList=1&noticeSearchType=${type}&noticeSearchQuery=${contents}&noticeCaller=MASTER&storeCode=${this.getStoreCode}`);
 
           this.noticeData = res.data;
         } catch {
@@ -516,7 +516,7 @@ export default {
     async getNoticeSelectCategory(category) {
       if (this.viewMode !== category) {
         try {
-          const res = await getNoticeInfo(`page=$0&size=10&noticeCategoryList=${category}&noticeStatusList=1&noticeSearchQuery=&noticeCaller=MASTER&storeCode=${this.getStoreCode}`);
+          const res = await getNoticeInfo(`page=$0&size=8&noticeCategoryList=${category}&noticeStatusList=1&noticeSearchQuery=&noticeCaller=MASTER&storeCode=${this.getStoreCode}`);
 
           this.noticeData = res.data;
         } catch {
@@ -531,7 +531,7 @@ export default {
 
       if (contents !== '') {
         try {
-          const res = await getNoticeInfo(`page=$0&size=10&noticeCategoryList=${viewMode}&noticeStatusList=1&noticeSearchType=${type}&noticeSearchQuery=${contents}&noticeCaller=MASTER&storeCode=${this.getStoreCode}`);
+          const res = await getNoticeInfo(`page=$0&size=8&noticeCategoryList=${viewMode}&noticeStatusList=1&noticeSearchType=${type}&noticeSearchQuery=${contents}&noticeCaller=MASTER&storeCode=${this.getStoreCode}`);
 
           this.noticeData = res.data;
         } catch {
