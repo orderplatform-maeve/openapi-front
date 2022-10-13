@@ -565,7 +565,6 @@ export default {
 
         if (STOP_REDIRECT) {
           console.log('postMessage');
-          this.search();
           return window.postMessage({
             methodName: 'callBackPayment',
             result: JSON.stringify({
@@ -601,7 +600,6 @@ export default {
 
         if (window?.UUID) {
           console.log('call torderRefund', window.UUID.torderRefund);
-          this.search();
           return window.UUID.torderRefund(
             paymentPayload.installment,
             paymentPayload.amount,
