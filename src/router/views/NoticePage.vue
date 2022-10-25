@@ -886,6 +886,7 @@ input {
 
       .notice-list {
         height: 39.53125vw;
+        overflow-y: auto;
         .notice-info:nth-child(2n - 1) {
           background-color: #f5f5f5;
         }
