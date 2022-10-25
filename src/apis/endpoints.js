@@ -9,7 +9,6 @@ const ROBOT_TEXT = 'http://52.78.117.91:8888/v2/order';
 const HAPPY_TALK = 'https://happytalk.torder.co.kr';
 const NOTICE_URL = STOP_REDIRECT ? 'http://dev-apigw.torder.co.kr/v2' : 'http://apigw.torder.co.kr/v2';
 // const DEV_ADMIN_URL = 'http://dev.admin.torder.co.kr';
-const NOTICE_URL = 'https://apigw.torder.co.kr/v2';
 
 // const SERVER_URL = isDemo ? DEMO_URL : REST_URL;
 const TORDER_V2 = STOP_REDIRECT ? 'https://dev-apigw.torder.co.kr/v2' : 'https://apigw.torder.co.kr/v2';
