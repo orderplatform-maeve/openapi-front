@@ -384,25 +384,26 @@ export default {
                   return this.showAlert(`orderkey 값이 없습니다 아닙니다. 에러메세지: ${requestCreditItem?.orderkey}`);
                 }
 
-                await requestCardCancelCommit(vanData);
-                // if (res.status === 200) {
-                //   const newItem = res?.data?.rowData;
-                //   if (!res.data) {
-                //     return this.showAlert(`API cardCancelCommit 응답값 data이 없습니다 아닙니다. 응답값: ${newItem}`);
-                //   }
-                //   if (res?.data?.length === 0) {
-                //     return this.showAlert(`API cardCancelCommit 응답값 data크기가 0입니다. 아닙니다. 응답값: ${res.data}`);
-                //   }
-                //   if (!newItem) {
-                //     return this.showAlert(`API cardCancelCommit 응답값 rowData이 없습니다 아닙니다. 응답값: ${newItem}`);
-                //   }
-                //   // newItem {id: ''}
-                //   this.$store.commit('replacePaymentListItem', newItem);
-                //   return this.$store.commit('updateItemModal', {
-                //     currName: null,
-                //     index: null,
-                //   });
-                // }
+                const res = await requestCardCancelCommit(vanData);
+                if (res.status === 200) {
+                  const newItem = res?.data?.rowData;
+                  this.$store.commit('replacePaymentListItem', newItem);
+                  // if (!res.data) {
+                  //   return this.showAlert(`API cardCancelCommit 응답값 data이 없습니다 아닙니다. 응답값: ${newItem}`);
+                  // }
+                  // if (res?.data?.length === 0) {
+                  //   return this.showAlert(`API cardCancelCommit 응답값 data크기가 0입니다. 아닙니다. 응답값: ${res.data}`);
+                  // }
+                  // if (!newItem) {
+                  //   return this.showAlert(`API cardCancelCommit 응답값 rowData이 없습니다 아닙니다. 응답값: ${newItem}`);
+                  // }
+                  // // newItem {id: ''}
+                  // this.$store.commit('replacePaymentListItem', newItem);
+                  // return this.$store.commit('updateItemModal', {
+                  //   currName: null,
+                  //   index: null,
+                  // });
+                }
                 // return this.showAlert(`잘못된 response status 200이 아닙니다. status: ${res?.status}`);
 
                 this.$store.commit('updateItemModal', {
