@@ -461,8 +461,8 @@ export default {
       }
     },
     getGoodsName(order) {
-      const goodsList = order?.order_info ? order.order_info : [];
-      const isOverOneGoodsList = goodsList?.length > 1;
+      const goodsList = order.order_info ?? [];
+      const isOverOneGoodsList = goodsList.length > 1;
       const firstGoodsName = goodsList[0]?.good_name;
       const isUndefinedName = firstGoodsName === undefined;
 
@@ -471,7 +471,7 @@ export default {
       }
 
       if (isOverOneGoodsList) {
-        const minusOneGoodsQuantity = goodsList?.length - 1;
+        const minusOneGoodsQuantity = goodsList?.length - 1 ?? 0;
         const goodsListName = `${firstGoodsName} 외 ${minusOneGoodsQuantity}개`;
 
         return goodsListName;
