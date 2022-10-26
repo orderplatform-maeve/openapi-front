@@ -134,11 +134,11 @@ export default {
     },
     lengthOrders() {
       const { orders } = this.$store.state;
-      return orders.length;
+      return orders?.length;
     },
     lengthCommitedOrders() {
       const { orders } = this.$store.state;
-      return orders.filter((order) => order.commit).length;
+      return orders.filter((order) => order.commit)?.length;
     },
     unidentifiedOrders() {
       return this.lengthOrders - this.lengthCommitedOrders;
@@ -461,8 +461,8 @@ export default {
       }
     },
     getGoodsName(order) {
-      const goodsList = order.order_info;
-      const isOverOneGoodsList = goodsList.length > 1;
+      const goodsList = order?.order_info ? order.order_info : [];
+      const isOverOneGoodsList = goodsList?.length > 1;
       const firstGoodsName = goodsList[0]?.good_name;
       const isUndefinedName = firstGoodsName === undefined;
 
@@ -471,15 +471,15 @@ export default {
       }
 
       if (isOverOneGoodsList) {
-        const minusOneGoodsQuantity = goodsList.length - 1;
+        const minusOneGoodsQuantity = goodsList?.length - 1;
         const goodsListName = `${firstGoodsName} 외 ${minusOneGoodsQuantity}개`;
 
         return goodsListName;
       }
 
       return firstGoodsName;
-    },
-  }
+    }
+  },
 };
 </script>
 <style lang="scss" scoped>
