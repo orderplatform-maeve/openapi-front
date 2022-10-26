@@ -47,9 +47,6 @@ const socket = {
             if (order.type === 'posResponseMessage' && order.errorMsg?.length > 0) {
               state.posResponseMessage = true;
               state.orderModal = false;
-            } else {
-              state.posResponseMessage = false;
-              state.orderModal = true;
             }
 
             if (window?.UUID?.playOrderBell) {
