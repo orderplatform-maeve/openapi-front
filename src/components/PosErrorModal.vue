@@ -16,6 +16,7 @@ export default {
     return {
       interval: undefined,
       seconds: 10,
+      tableList: [],
     };
   },
   computed: {
@@ -30,7 +31,15 @@ export default {
     },
     tableNumber(order) {
       try {
-        return order.tableNumber;
+        const matchingTableId = (table) => {
+          if (table.Ta_id === order.tableNumber) {
+            return true;
+          }
+        };
+
+        const tableName = this.tableList.find(matchingTableId);
+        return tableName.Tablet_name;
+
       } catch (error) {
         return '';
       }
@@ -47,6 +56,10 @@ export default {
       this.$store.commit('posResponseMessageFlag', false);
       this.$store.commit('UNSET_ORDER');
     },
+    async getTableList() {
+      const params = { shop_code: this.$store.state.auth.store.store_code };
+      this.tableList = await this.$store.dispatch('setTables', params);
+    }
   },
   mounted() {
     clearInterval(this.interval);
@@ -57,6 +70,8 @@ export default {
         this.closeOrder();
       }
     }, 1000);
+
+    this.getTableList();
   },
   beforeDestroy() {
     this.closeOrder();
