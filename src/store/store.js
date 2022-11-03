@@ -95,6 +95,7 @@ const socket = {
             state.orderModal = false;
           }
         } else {
+          commit('SET_ORDER', order);
           state.posResponseMessage = false;
           state.orderModal = true;
         }
