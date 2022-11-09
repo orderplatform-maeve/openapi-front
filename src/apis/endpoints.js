@@ -1,10 +1,8 @@
-import { STOP_REDIRECT } from '@utils/constants';
+import { STOP_REDIRECT, IS_DEV_TEAM } from '@utils/constants';
 
-// const REST_URL = 'http://rest.torder.co.kr';
-const REST_URL = 'http://development.rest.torder.co.kr:8000';
+const REST_URL = IS_DEV_TEAM ? 'http://development.rest.torder.co.kr:8000' : 'http://rest.torder.co.kr';
 const ADMIN_URL = 'http://admin.torder.co.kr';
-// const API_URL = 'http://api.torder.co.kr';
-const API_URL = 'http://development.rest.torder.co.kr:8000';
+const API_URL = IS_DEV_TEAM ? 'http://development.cache.torder.co.kr' : 'http://api.torder.co.kr';
 
 const DEMO_URL = 'http://demo.api.torder.co.kr';
 const ROBOT_TEXT = 'http://52.78.117.91:8888/v2/order';
