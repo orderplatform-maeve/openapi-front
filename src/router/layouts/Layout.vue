@@ -29,7 +29,7 @@
     :stores="stores"
     :time="time"
   )
-  div(:class="getHappyTalkStyle")
+  div(:class="getHappyTalkStyle" v-if="!isDevTeam")
     .wrap-happy-talk-arrow(@click="toggleHappyTalkButton")
       .wrap-triangle-arrow
         .triangle-arrow
@@ -68,7 +68,10 @@
 import axios from 'axios';
 import store from '@store/store';
 import paths from '@router/paths';
-import { version } from '@utils/constants';
+import {
+  version,
+  IS_DEV_TEAM,
+} from '@utils/constants';
 import { Torder } from '@svg';
 import {
   AlertModal,
@@ -132,6 +135,7 @@ export default {
       secretFunctionTouchCount: 0,
       secretFunctionTouchTimer: 0,
       isVisibleLogoutConfirmModal: false,
+      isDevTeam: IS_DEV_TEAM,
     };
   },
   computed: {

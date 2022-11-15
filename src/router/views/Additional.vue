@@ -30,7 +30,7 @@
     router-link.button-added(v-if="visibleOrderButton" :to="paths.servingRobotManagement")
       span 로봇 관리
       img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
-    router-link.button-added(v-if="visibleOrderButton" :to="paths.auctionManager")
+    router-link.button-added(v-if="visibleOrderButton && !isDevTeam" :to="paths.auctionManager")
       span 경매 관리
       img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
     router-link.button-added(v-if="useGame" :to="paths.gameManagement")
@@ -49,7 +49,10 @@
 
 <script>
 import paths from '@router/paths';
-import { STOP_REDIRECT } from '@utils/constants';
+import {
+  STOP_REDIRECT,
+  IS_DEV_TEAM,
+} from '@utils/constants';
 import { tableGame } from '@apis';
 
 const {
@@ -60,6 +63,7 @@ export default {
   data: () => ({
     paths,
     stopRedirect: STOP_REDIRECT,
+    isDevTeam: IS_DEV_TEAM,
     useGame : false,
   }),
   methods: {
