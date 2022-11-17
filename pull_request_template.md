@@ -29,7 +29,7 @@
 > **📍 하단 이미지 참고하셔서 commit 번호에 링크 넣어주세요!**
 > ![image](https://user-images.githubusercontent.com/102947243/199665555-e6cc34db-3970-4930-8099-db3661ba9aa1.png)
 
-|commit링크|추가사항   
+|commit링크|추가사항
 |----|:-------
 |commit번호|![엣설](https://user-images.githubusercontent.com/102947243/199666234-e438a6b3-7734-470e-b499-3ebdee1e5881.png)
 
