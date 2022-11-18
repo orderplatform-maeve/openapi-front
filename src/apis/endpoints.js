@@ -7,12 +7,9 @@ const NOTICE_URL = IS_DEV_TEAM ? 'http://dev-apigw.torder.co.kr/v2' : 'http://re
 const TORDER_V2 = IS_DEV_TEAM ? 'https://dev-apigw.torder.co.kr/v2' : 'https://apigw.torder.co.kr/v2';
 const TABLE_GAME_URL = IS_DEV_TEAM ? 'http://dev-apigw.torder.co.kr' : 'http://apigw.torder.co.kr';
 const ROBOT_TEXT = IS_DEV_TEAM ? 'http://dev.robot.torder.co.kr' : 'http://robot.torder.co.kr:8888/v2/order';
+const DEMO_URL = IS_DEV_TEAM ? 'http://development.rest.torder.co.kr:8000' : 'http://demo.api.torder.co.kr';
 
-const DEMO_URL = 'http://demo.api.torder.co.kr';
 const HAPPY_TALK = 'https://happytalk.torder.co.kr';
-// const ENTERTAINMENT_URL = 'https://dev-apigw.torder.co.kr';
-// const DEV_ADMIN_URL = 'http://dev.admin.torder.co.kr';
-// const SERVER_URL = isDemo ? DEMO_URL : REST_URL;
 
 const endpoints = {
   authentication: {
