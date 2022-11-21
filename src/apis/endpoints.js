@@ -5,7 +5,7 @@ const ADMIN_URL = IS_DEV_TEAM ? 'http://development.rest.torder.co.kr:8000' : 'h
 const API_URL = IS_DEV_TEAM ? 'http://development.cache.torder.co.kr' : 'http://api.torder.co.kr';
 const NOTICE_URL = IS_DEV_TEAM ? 'http://dev-apigw.torder.co.kr/v2' : 'http://rest.torder.co.kr';
 const TORDER_V2 = IS_DEV_TEAM ? 'https://dev-apigw.torder.co.kr/v2' : 'https://apigw.torder.co.kr/v2';
-const TABLE_GAME_URL = IS_DEV_TEAM ? 'http://dev-apigw.torder.co.kr' : 'http://apigw.torder.co.kr';
+const TABLE_GAME_URL = IS_DEV_TEAM ? 'https://dev-apigw.torder.co.kr' : 'http://apigw.torder.co.kr';
 const ROBOT_TEXT = IS_DEV_TEAM ? 'http://dev.robot.torder.co.kr' : 'http://robot.torder.co.kr:8888/v2/order';
 const DEMO_URL = IS_DEV_TEAM ? 'http://development.rest.torder.co.kr:8000' : 'http://demo.api.torder.co.kr';
 
