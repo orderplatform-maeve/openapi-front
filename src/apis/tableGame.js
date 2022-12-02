@@ -47,6 +47,13 @@ export const gameUpdateAtStore = async (body) => {
   return res;
 };
 
+// 단일 매장의 선택한 게임 설정 변경
+export const gameUpdate = async (body) => {
+  const url = endpoints.tableGame.entertainment.games;
+  const res = await axios.put(url, body);
+  return res;
+};
+
 export default {
   gameProgressHistory,
   gameQuickMsgSave,
@@ -54,4 +61,5 @@ export default {
   gameStoreInfo,
   gameUpdateAtStore,
   gamesInfo,
+  gameUpdate,
 };
