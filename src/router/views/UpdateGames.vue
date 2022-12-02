@@ -4,33 +4,34 @@
   .main-categories
     .main-category(class="active") 게임설정
   .background-white
-    .wrap-main-category-status
+    .wrap-main-category-status(v-if="!isLoading")
       p.main-category-status-title 게임 사용 여부
       .main-category-status-button
         button.main-category-status-visible(
-          @click="() => {}"
-          :style="getAbleButtonColor(true)"
+          @click="() => onGame()"
+          :style="getAbleButtonColor(useGame)"
         ) 사용
         button.main-category-status-unvisible(
-          @click="() => {}"
-          :style="getAbleButtonColor(false)"
+          @click="() => offGame()"
+          :style="getAbleButtonColor(!useGame)"
         ) 사용안함
-    .wrap-sub-category-status
+    .wrap-sub-category-status(v-if="!isLoading && useGame")
       p.sub-category-status-title 게임별 사용 여부
       .wrap-sub-category-status-button
         .sub-category-status(
+          v-if="!game.isDeleted"
           v-for="(game, subIndex) in games"
-          :key="game"
+          :key="gameId"
         )
-          p.sub-category-name {{game}}
+          p.sub-category-name {{game.gameName}}
           .sub-category-status-button
             button.sub-category-status-visible(
               @click="() => {}"
-              :style="getAbleButtonColor(true)"
+              :style="getAbleButtonColor(game.isEnabled)"
             ) 표시
             button.sub-category-status-unvisible(
               @click="() => {}"
-              :style="getAbleButtonColor(false)"
+              :style="getAbleButtonColor(!game.isEnabled)"
             ) 숨김
 </template>
 
@@ -38,35 +39,96 @@
 import { tableGame } from '@apis';
 
 const {
-  gameStoreInfo
+  gameStoreInfo,
+  gameUpdateAtStore,
+  gamesInfo,
 } = tableGame;
 
 export default {
   data() {
     return {
-      games: ['악어게임', '양궁', '가위바위보', '동전먹기대결'],
+      // games: ['악어게임', '양궁', '가위바위보', '동전먹기대결'],
+      games: [],
       useGame: false,
+      isLoading: true,
     };
   },
   computed: {
   },
   async mounted() {
+    await this.init();
   },
   methods: {
-    async reqGameStoreInfo() {
+    async init() {
       try {
-        const storeCode = this.$store.state.auth.store.store_code;
-        const res = await gameStoreInfo(storeCode);
+        const resGameStoreInfo = await this.reqGameStoreInfo();
+        if (resGameStoreInfo.data.resultCode === 200) {
+          if (resGameStoreInfo.data.resultData.useTableGame) {
+            console.log(resGameStoreInfo.data.resultData.storeId);
+            const storeId = resGameStoreInfo.data.resultData.storeId;
+            const resGamesInfo = await this.reqGamesInfo(storeId);
+            console.log('resGamesInfo', resGamesInfo.data.resultData);
 
-        if (res.data.resultCode === 200) {
-          if (res.data.resultData.useTableGame) {
             this.useGame = true;
-          } else {
-            this.useGame = false;
+            this.games = resGamesInfo.data.resultData.gameList;
+            this.isLoading = false;
           }
         }
       } catch (error) {
         console.log(error);
+      }
+    },
+    async reqGamesInfo(storeId) {
+      const res = await gamesInfo(storeId);
+      return res;
+    },
+    async reqGameStoreInfo() {
+      try {
+        const storeCode = this.$store.state.auth.store.store_code;
+        const res = await gameStoreInfo(storeCode);
+        return res;
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async reqGameUpdateAtStore(usage) {
+      const body = {
+        storeCode: this.$store.state.auth.store.store_code,
+        isIconDisplay: usage,
+        storeName:this.$store.state.auth.store.store_name,
+        status: usage,
+      };
+
+      const res = await gameUpdateAtStore(body);
+      return res;
+    },
+    async onGame() {
+      if (this.useGame) {
+        this.$store.commit('pushFlashMessage', '이미 게임 사용 상태입니다.');
+        return;
+      }
+
+      const res = await this.reqGameUpdateAtStore(true);
+      console.log(res);
+      if (res.data.resultCode === 200) {
+        this.useGame = true;
+        this.$store.commit('pushFlashMessage', '게임 사용 상태로 변경되었습니다.');
+        return;
+      }
+      // this.$store.commit('pushFlashMessage', '게임 사용 상태로 변경 실패 되었습니다.');
+    },
+    async offGame() {
+      if (!this.useGame) {
+        this.$store.commit('pushFlashMessage', '이미 게임 사용안함 상태입니다.');
+        return;
+      }
+
+      const res = await this.reqGameUpdateAtStore(false);
+      console.log(res);
+      if (res.data.resultCode === 200) {
+        this.useGame = false;
+        this.$store.commit('pushFlashMessage', '게임 사용 안함 상태로 변경되었습니다.');
+        return;
       }
     },
     getAbleButtonColor(isOk) {
