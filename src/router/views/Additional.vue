@@ -6,6 +6,9 @@
     //-   <br> (테스트)
     router-link.button-added(v-if="visibleOrderButton" :to="paths.newProducts") 상품 관리(신)<br>
     router-link.button-added(v-if="visibleOrderButton" :to="paths.updateCategories") 분류 관리<br>
+    router-link.button-added(:to="paths.updateGames")
+      span 게임 관리
+      img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
     router-link.button-added(v-if="visibleOrderButton" :to="paths.tables")
       span 테이블 주문
       img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
@@ -33,9 +36,9 @@
     router-link.button-added(v-if="visibleOrderButton && !isDevTeam" :to="paths.auctionManager")
       span 경매 관리
       img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
-    router-link.button-added(v-if="useGame" :to="paths.gameManagement")
-      span 게임 관리
-      img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
+    //- router-link.button-added(v-if="useGame" :to="paths.gameManagement")
+    //-   span 게임 관리
+    //-   img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
     router-link.button-added(v-if="visibleOrderButton" :to="paths.valetTableList")
       span 발렛 파킹
       img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
