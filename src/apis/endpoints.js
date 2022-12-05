@@ -90,7 +90,12 @@ const endpoints = {
         quick: `${TABLE_GAME_URL}/table-game/admin/master/quick`,
       },
       store: `${TABLE_GAME_URL}/table-game/admin/store`,
-    }
+      icon:  `${TABLE_GAME_URL}/table-game/admin/store/icon`,
+      game: `${TABLE_GAME_URL}/table-game/admin/game`,
+    },
+    entertainment: {
+      games: `${TABLE_GAME_URL}/entertainment/admin/stores/games`,
+    },
   },
   category : {
     updateCategoryScheduleOff : `${ADMIN_URL}/category/updateCategoryScheduleOff`,

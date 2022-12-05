@@ -1,5 +1,5 @@
 <template lang="pug">
-  .game-management-container
+.game-management-container
     vertical-long-modal(
       v-if="verticalModalVisible"
       :data="searchOptions[currentSearchModal]"

@@ -32,9 +32,34 @@ export const gameStoreInfo = async (storeCode) => {
   return res;
 };
 
+// 각 게임별 상태 정보 조회
+export const gamesInfo = async (storeCode) => {
+  const url = `${endpoints.tableGame.admin.game}/${storeCode}`;
+  const res = await axios.get(url);
+
+  return res;
+};
+
+// 매장 게임 사용 여부 제어
+export const gameUpdateAtStore = async (body) => {
+  const url = `${endpoints.tableGame.admin.store}`;
+  const res = await axios.post(url, body);
+  return res;
+};
+
+// 단일 매장의 선택한 게임 설정 변경
+export const gameUpdate = async (body) => {
+  const url = endpoints.tableGame.entertainment.games;
+  const res = await axios.put(url, body);
+  return res;
+};
+
 export default {
   gameProgressHistory,
   gameQuickMsgSave,
   gameQuickMsgLoad,
-  gameStoreInfo
+  gameStoreInfo,
+  gameUpdateAtStore,
+  gamesInfo,
+  gameUpdate,
 };
