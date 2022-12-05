@@ -1,38 +1,41 @@
 <template lang="pug">
-.update-categories-container
-  p.update-categories-title 게임관리
-  .main-categories
-    .main-category(class="active") 게임설정
-  .background-white
-    .wrap-main-category-status(v-if="!isLoading")
-      p.main-category-status-title 게임 사용 여부
-      .main-category-status-button
-        button.main-category-status-visible(
-          @click="() => onStoreGame()"
-          :style="getAbleButtonColor(useGame)"
-        ) 사용
-        button.main-category-status-unvisible(
-          @click="() => offStoreGame()"
-          :style="getAbleButtonColor(!useGame)"
-        ) 사용안함
-    .wrap-sub-category-status(v-if="!isLoading && useGame")
-      p.sub-category-status-title 게임별 사용 여부
-      .wrap-sub-category-status-button
-        .sub-category-status(
-          v-if="!game.isDeleted"
-          v-for="(game, subIndex) in games"
-          :key="game.gameId"
-        )
-          p.sub-category-name {{game.gameName}}
-          .sub-category-status-button
-            button.sub-category-status-visible(
-              @click="() => onGame(game)"
-              :style="getAbleButtonColor(game.isEnabled)"
-            ) 표시
-            button.sub-category-status-unvisible(
-              @click="() => offGame(game)"
-              :style="getAbleButtonColor(!game.isEnabled)"
-            ) 숨김
+.update-games-top-container
+  .update-games-container-dimmed(v-if="isUpdateGame")
+    p.game-setting-notice 게임 설정 변경 중입니다. 잠시만 대기해 주세요.
+  .update-games-container
+    p.update-games-title 게임관리
+    .main-games
+      .main-game(class="active") 게임설정
+    .background-white
+      .wrap-main-game-status(v-if="!isLoading")
+        p.main-game-status-title 게임 사용 여부
+        .main-game-status-button
+          button.main-game-status-visible(
+            @click="() => onStoreGame()"
+            :style="getAbleButtonColor(useGame)"
+          ) 사용
+          button.main-game-status-unvisible(
+            @click="() => offStoreGame()"
+            :style="getAbleButtonColor(!useGame)"
+          ) 사용안함
+      .wrap-sub-game-status(v-if="!isLoading && useGame")
+        p.sub-game-status-title 게임별 사용 여부
+        .wrap-sub-game-status-button
+          .sub-game-status(
+            v-if="!game.isDeleted"
+            v-for="(game, subIndex) in games"
+            :key="game.gameId"
+          )
+            p.sub-game-name {{game.gameName}}
+            .sub-game-status-button
+              button.sub-game-status-visible(
+                @click="() => onGame(game)"
+                :style="getAbleButtonColor(game.isEnabled)"
+              ) 표시
+              button.sub-game-status-unvisible(
+                @click="() => offGame(game)"
+                :style="getAbleButtonColor(!game.isEnabled)"
+              ) 숨김
 </template>
 
 <script>
@@ -48,10 +51,10 @@ const {
 export default {
   data() {
     return {
-      // games: ['악어게임', '양궁', '가위바위보', '동전먹기대결'],
       games: [],
       useGame: false,
       isLoading: true,
+      isUpdateGame: false,
     };
   },
   computed: {
@@ -80,9 +83,8 @@ export default {
       }
     },
     async reqGameUpdate(body) {
-      // console.log(body);
       const res = await gameUpdate(body);
-      console.log(res);
+      return res;
     },
     async reqGamesInfo(storeId) {
       const res = await gamesInfo(storeId);
@@ -162,7 +164,7 @@ export default {
           isEnabled : false,
           gameBetList: targetGame.gameBetList,
         };
-        console.log(body);
+        // console.log(body);
         const res = await this.reqGameUpdate(body);
         console.log(res);
       } catch (error) {
@@ -191,7 +193,28 @@ a {
   text-decoration: none;
 }
 
-.update-categories-container {
+.update-games-top-container {
+  flex: 1;
+  position: relative;
+  .update-games-container-dimmed{
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgb(43, 43, 43, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .game-setting-notice{
+      font-size: 3.0rem;
+      color: white;
+    }
+  }
+}
+
+
+.update-games-container {
   flex: 1;
   font-family: 'Spoqa Han Sans Neo', 'sans-serif';
   color:#ffffff;
@@ -199,7 +222,7 @@ a {
   box-sizing: border-box;
   overflow: hidden;
 
-  .update-categories-title {
+  .update-games-title {
     font-family: "notosans";
     font-weight: bold;
     font-size: 1.71875vw;
@@ -207,14 +230,14 @@ a {
     color: #fff;
   }
 
-  .main-categories {
+  .main-games {
     display: flex;
     align-items: center;
     gap: 0.78125vw;
     max-width: 84.53125vw;
     overflow: auto;
 
-    .main-category {
+    .main-game {
       font-size: 1.5625vw;
       color: #ddd;
       letter-spacing: -0.0390625vw;
@@ -240,17 +263,17 @@ a {
     box-sizing: border-box;
     overflow: auto;
 
-    .wrap-main-category-status {
+    .wrap-main-game-status {
       padding: 2.34375vw !important;
       box-sizing: border-box;
 
-      .main-category-status-title {
+      .main-game-status-title {
         color: #000;
         font-size: 1.5625vw;
         letter-spacing: -0.078125vw;
       }
 
-      .main-category-status-button {
+      .main-game-status-button {
         margin-top: 1.5625vw !important;
         display: flex;
         align-items: center;
@@ -270,13 +293,13 @@ a {
         }
       }
 
-      .main-category-day-of-week {
+      .main-game-day-of-week {
         margin-top: 1.5625vw !important;
         display: flex;
         align-items: center;
         gap: 0.781250vw;
 
-        .category-visible-time {
+        .game-visible-time {
           display: flex;
           justify-content: center;
           align-items: center;
@@ -325,17 +348,17 @@ a {
       }
     }
 
-    .wrap-sub-category-status {
+    .wrap-sub-game-status {
       padding: 2.34375vw !important;
       box-sizing: border-box;
 
-      .sub-category-status-title {
+      .sub-game-status-title {
         color: #000;
         font-size: 1.5625vw;
         letter-spacing: -0.078125vw;
       }
 
-      .wrap-sub-category-status-button {
+      .wrap-sub-game-status-button {
         margin-top: 1.5625vw !important;
         font-family: 'Spoqa Han Sans Neo', 'sans-serif';
         color: #000;
@@ -343,7 +366,7 @@ a {
         grid-template-columns: repeat(auto-fill, 19.375vw);
         gap: 0.78125vw;
 
-        .sub-category-status {
+        .sub-game-status {
           min-height: 11.71875vw;
           background-color: #f5f5f5;
           border: solid 0.078125vw #d6d6d6;
@@ -353,7 +376,7 @@ a {
           justify-content: center;
           align-items: center;
 
-          .sub-category-name {
+          .sub-game-name {
             flex: 1;
             font-size: 1.5625vw;
             font-weight: bold;
@@ -366,7 +389,7 @@ a {
             word-break: break-all;
           }
 
-          .sub-category-status-button {
+          .sub-game-status-button {
             width: 100%;
             display: flex;
             gap: 0.78125vw;
