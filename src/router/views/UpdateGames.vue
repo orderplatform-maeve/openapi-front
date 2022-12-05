@@ -23,17 +23,17 @@
         .wrap-sub-game-status-button
           .sub-game-status(
             v-if="!game.isDeleted"
-            v-for="(game, subIndex) in games"
+            v-for="(game, gameIndex) in games"
             :key="game.gameId"
           )
             p.sub-game-name {{game.gameName}}
             .sub-game-status-button
               button.sub-game-status-visible(
-                @click="() => onGame(game)"
+                @click="() => onGame(game, gameIndex)"
                 :style="getAbleButtonColor(game.isEnabled)"
               ) 표시
               button.sub-game-status-unvisible(
-                @click="() => offGame(game)"
+                @click="() => offGame(game, gameIndex)"
                 :style="getAbleButtonColor(!game.isEnabled)"
               ) 숨김
 </template>
@@ -68,10 +68,8 @@ export default {
         const resGameStoreInfo = await this.reqGameStoreInfo();
         if (resGameStoreInfo.data.resultCode === 200) {
           if (resGameStoreInfo.data.resultData.useTableGame) {
-            console.log(resGameStoreInfo.data.resultData.storeId);
             const storeId = resGameStoreInfo.data.resultData.storeId;
             const resGamesInfo = await this.reqGamesInfo(storeId);
-            console.log('resGamesInfo', resGamesInfo.data.resultData);
 
             this.useGame = true;
             this.games = resGamesInfo.data.resultData.gameList;
@@ -139,8 +137,15 @@ export default {
         return;
       }
     },
-    async onGame(targetGame) {
+    async onGame(targetGame, targetIndex) {
       try {
+        if (targetGame.isEnabled) {
+          const message = `${targetGame.gameName} 이미 표시 상태 입니다.`;
+          this.$store.commit('pushFlashMessage', message);
+          return;
+        }
+
+        this.isUpdateGame = true;
         const body = {
           storeCode: this.$store.state.auth.store.store_code,
           gameId : targetGame.gameId,
@@ -150,13 +155,28 @@ export default {
         };
         console.log(body);
         const res = await this.reqGameUpdate(body);
-        console.log(res);
+        if (res.data.resultCode === 200) {
+          this.games[targetIndex].isEnabled = true;
+          const deepCopyGames = JSON.parse(JSON.stringify(this.games));
+          this.games = deepCopyGames;
+          const message = `${res.data.data.gameName} 표시 상태로 변경 했습니다.`;
+          this.$store.commit('pushFlashMessage', message);
+          this.isUpdateGame = false;
+          return;
+        }
       } catch (error) {
         console.log(error);
       }
     },
-    async offGame(targetGame) {
+    async offGame(targetGame, targetIndex) {
       try {
+        if (!targetGame.isEnabled) {
+          const message = `${targetGame.gameName} 이미 숨김 상태 입니다.`;
+          this.$store.commit('pushFlashMessage', message);
+          return;
+        }
+
+        this.isUpdateGame = true;
         const body = {
           storeCode: this.$store.state.auth.store.store_code,
           gameId : targetGame.gameId,
@@ -166,7 +186,15 @@ export default {
         };
         // console.log(body);
         const res = await this.reqGameUpdate(body);
-        console.log(res);
+        if (res.data.resultCode === 200) {
+          this.games[targetIndex].isEnabled = false;
+          const deepCopyGames = JSON.parse(JSON.stringify(this.games));
+          this.games = deepCopyGames;
+          const message = `${res.data.data.gameName} 숨김 상태로 변경 했습니다.`;
+          this.$store.commit('pushFlashMessage', message);
+          this.isUpdateGame = false;
+          return;
+        }
       } catch (error) {
         console.log(error);
       }
