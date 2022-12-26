@@ -1,13 +1,15 @@
 import { IS_DEV_TEAM } from '@utils/constants';
 
-const REST_URL = IS_DEV_TEAM ? 'http://development.rest.torder.co.kr:8000' : 'http://rest.torder.co.kr';
-const ADMIN_URL = IS_DEV_TEAM ? 'http://development.rest.torder.co.kr:8000' : 'http://admin.torder.co.kr';
+const REST_URL = IS_DEV_TEAM ? 'http://development.rest.torder.co.kr' : 'http://rest.torder.co.kr';
+const ORDER_URL = IS_DEV_TEAM ? 'http://development.order.torder.co.kr' : 'http://rest.torder.co.kr';
+const GET_CART_LIST_URL = IS_DEV_TEAM ? 'http://development.cart.torder.co.kr' : 'http://rest.torder.co.kr';
+const ADMIN_URL = IS_DEV_TEAM ? 'http://development.rest.torder.co.kr' : 'http://admin.torder.co.kr';
 const API_URL = IS_DEV_TEAM ? 'http://development.cache.torder.co.kr' : 'http://api.torder.co.kr';
 const NOTICE_URL = IS_DEV_TEAM ? 'https://dev-apigw.torder.co.kr/v2' : 'http://rest.torder.co.kr';
 const TORDER_V2 = IS_DEV_TEAM ? 'https://dev-apigw.torder.co.kr/v2' : 'https://apigw.torder.co.kr/v2';
 const TABLE_GAME_URL = IS_DEV_TEAM ? 'https://dev-apigw.torder.co.kr' : 'https://apigw.torder.co.kr';
 const ROBOT_TEXT = IS_DEV_TEAM ? 'http://dev.robot.torder.co.kr' : 'http://robot.torder.co.kr:8888/v2/order';
-const DEMO_URL = IS_DEV_TEAM ? 'http://development.rest.torder.co.kr:8000' : 'http://demo.api.torder.co.kr';
+const DEMO_URL = IS_DEV_TEAM ? 'http://development.rest.torder.co.kr' : 'http://demo.api.torder.co.kr';
 
 const HAPPY_TALK = 'https://happytalk.torder.co.kr';
 
@@ -35,8 +37,8 @@ const endpoints = {
   },
   table: {
     getTableList: `${REST_URL}/shop/get_table_list`,
-    getCartList: `${REST_URL}/tablet_order/get_cart_list`,
-    order: `${REST_URL}/tablet_order/order`,
+    getCartList: `${GET_CART_LIST_URL}/tablet_order/get_cart_list`,
+    order: `${ORDER_URL}/tablet_order/order`,
   },
   menu: {
     categories: `${REST_URL}/shop/categorys`,
