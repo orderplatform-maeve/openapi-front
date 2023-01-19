@@ -1,7 +1,8 @@
 <template lang="pug">
 .container
   .top
-    .title {{ name }}
+    //- .title {{ name }}
+    .title 매장을 선택해주세요.
   .body
     ul.store-list
       li.store-item(v-for="store in data" :key="getStoreItemKey(store)")
