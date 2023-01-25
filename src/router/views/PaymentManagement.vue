@@ -502,7 +502,7 @@ export default {
         this.timer = setTimeout(() => {
           this.reRequest = false;
           return;
-        }, 5000);
+        }, 10000);
 
         this.reRequest = true;
 
