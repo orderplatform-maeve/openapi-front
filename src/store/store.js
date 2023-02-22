@@ -333,12 +333,19 @@ const socket = {
 
       const isRobot = payload.type === 'Ready' || payload.type === 'OnTheWay' || payload.type === 'Arrived' || payload.type === 'Unknown' || payload.type === 'Returning' || payload.type === 'Charge';
 
-      if (payload.type === 'Error') {
+      if (payload?.type === 'Error') {
         this.commit('robot/updateErrorModalStatus', true);
         this.commit('robot/updateErrorRobotStatus', {
           name: payload.robotInfo.name,
           message: payload.robotInfo.message,
         });
+      }
+
+      // 새로운 공지사항 유입시 갯수 갱신
+      if (payload?.type === 'countUpdate') {
+        const newNoticeCount = this.$store.state.noticePopup.noticeQuantity + 1;
+        console.log('newNoticeCount', newNoticeCount);
+        this.commit('noticePopup/updateNoticeQuantity', newNoticeCount);
       }
 
       if (isRobot) {
