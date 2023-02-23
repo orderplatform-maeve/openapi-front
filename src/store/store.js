@@ -359,7 +359,7 @@ const socket = {
 
       // 새로운 공지사항 유입시 갯수 갱신
       if (payload?.type === 'countUpdate') {
-        const newNoticeCount = state.noticePopup.noticeQuantity + 1;
+        const newNoticeCount = payload?.count;
         console.log('newNoticeCount', newNoticeCount);
         this.commit('noticePopup/updateNoticeQuantity', newNoticeCount);
       }
