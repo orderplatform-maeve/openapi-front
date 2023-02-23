@@ -37,36 +37,36 @@ function imagePreload(url) {
 * - vue-socket.io 내 emitter.js에서 분리된 vuex 모듈 config 코드가 없음 커스텀 작업 필요
 */
 const socket = {
-  mutations: {
-    SOCKET_orderlog(state, order) {
-      if (validShopCode(state, order)) {
-        if (router.currentRoute.name !== 'paymentManagement') {
+  // mutations: {
+  //   SOCKET_orderlog(state, order) {
+  //     if (validShopCode(state, order)) {
+  //       if (router.currentRoute.name !== 'paymentManagement') {
 
-          if (!state.orderKeys.has(order.order_view_key)) {
+  //         if (!state.orderKeys.has(order.order_view_key)) {
 
-            if (order.type === 'posResponseMessage') {
-              if (order.errorMsg?.length > 0) {
-                state.posResponseMessage = true;
-                state.orderModal = false;
-              }
-            } else {
-              state.posResponseMessage = false;
-              state.orderModal = true;
-            }
+  //           if (order.type === 'posResponseMessage') {
+  //             if (order.errorMsg?.length > 0) {
+  //               state.posResponseMessage = true;
+  //               state.orderModal = false;
+  //             }
+  //           } else {
+  //             state.posResponseMessage = false;
+  //             state.orderModal = true;
+  //           }
 
-            if (window?.UUID?.playOrderBell) {
-              if (order.creditType !== "cash") {
-                window.UUID.playOrderBell();
-              }
-            }
+  //           if (window?.UUID?.playOrderBell) {
+  //             if (order.creditType !== "cash") {
+  //               window.UUID.playOrderBell();
+  //             }
+  //           }
 
-            state.orderKeys.set(order.order_view_key, true);
-            Vue.set(state, 'order', order);
-          }
-        }
-      }
-    },
-  },
+  //           state.orderKeys.set(order.order_view_key, true);
+  //           Vue.set(state, 'order', order);
+  //         }
+  //       }
+  //     }
+  //   },
+  // },
   actions: {
     SOCKET_orderlog({ commit , state }, order) {
       // console.log('SOCKET_orderlog', order);
@@ -87,17 +87,21 @@ const socket = {
         }
 
         // pos error 메세지는 orders list에 추가되면 안되므로 주문키 if문 외부에 작성
-        if (order.type === 'posResponseMessage') {
-          if (order.tableNumber && order.errorMsg?.length > 0) {
-            // mutations에서 pos message에 대한 order가 set 되지 않을 경우 방지
-            commit('SET_ORDER', order);
-            state.posResponseMessage = true;
-            state.orderModal = false;
-          }
-        } else {
+        // if (order.type === 'posResponseMessage') {
+        //   if (order.tableNumber && order.errorMsg?.length > 0) {
+        //     // mutations에서 pos message에 대한 order가 set 되지 않을 경우 방지
+        //     commit('SET_ORDER', order);
+        //     state.posResponseMessage = true;
+        //     state.orderModal = false;
+        //   }
+        // }
+
+        if (order.type !== 'posResponseMessage') {
+          state.orderKeys.set(order.order_view_key, true);
           commit('SET_ORDER', order);
           state.posResponseMessage = false;
           state.orderModal = true;
+          commit('PUSH_ORDER', order);
         }
 
         if (!state.orderKeys.has(order.order_view_key)) {
@@ -109,12 +113,24 @@ const socket = {
           } else {
             state.auction = false;
           }
-          commit('PUSH_ORDER', order);
+          // commit('PUSH_ORDER', order);
         }
       }
     },
     async SOCKET_orderview({ commit, state, dispatch }, payload) {
       //console.log('out SOCKET_orderview', payload);
+
+      // pos error 메세지는 orders list에 추가되면 안되므로 주문키 if문 외부에 작성
+      if (payload?.type === 'posResponseMessage') {
+        if (payload.tableNumber && payload.errorMsg?.length > 0) {
+          // mutations에서 pos message에 대한 order가 set 되지 않을 경우 방지
+          state.orderKeys.set(payload.order_view_key, true);
+          commit('SET_ORDER', payload);
+          state.posResponseMessage = true;
+          state.orderModal = false;
+          // commit('PUSH_ORDER', order);
+        }
+      }
 
       if (payload?.type_msg === 'commit') {
         const targetOrder = {
@@ -333,12 +349,19 @@ const socket = {
 
       const isRobot = payload.type === 'Ready' || payload.type === 'OnTheWay' || payload.type === 'Arrived' || payload.type === 'Unknown' || payload.type === 'Returning' || payload.type === 'Charge';
 
-      if (payload.type === 'Error') {
+      if (payload?.type === 'Error') {
         this.commit('robot/updateErrorModalStatus', true);
         this.commit('robot/updateErrorRobotStatus', {
           name: payload.robotInfo.name,
           message: payload.robotInfo.message,
         });
+      }
+
+      // 새로운 공지사항 유입시 갯수 갱신
+      if (payload?.type === 'countUpdate') {
+        const newNoticeCount = payload?.count;
+        console.log('newNoticeCount', newNoticeCount);
+        this.commit('noticePopup/updateNoticeQuantity', newNoticeCount);
       }
 
       if (isRobot) {
