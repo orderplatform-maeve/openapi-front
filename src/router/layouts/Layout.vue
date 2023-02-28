@@ -853,6 +853,7 @@ export default {
     closePopup() {
       this.$store.commit('noticePopup/updatePopupVisible', false);
       this.$store.commit('noticePopup/updateNoticeEmergency', false);
+      this.$store.commit('noticePopup/updateNoticePopupData', []);
     },
     oneDayNoPopup() {
       this.$cookies.set('NoVisiblePopup', true);
