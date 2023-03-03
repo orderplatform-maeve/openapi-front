@@ -23,10 +23,10 @@
           :class="getNoticePopupPageStyle(page)"
         )
       .wrap-notice-popup-button-list
-        button.one-day-no-button(
-          @click="oneDayNoPopup"
-          v-if="!noticeEmergency"
-        ) 오늘 하루 보지 않기
+        //- button.one-day-no-button(
+        //-   @click="oneDayNoPopup"
+        //-   v-if="!noticeEmergency"
+        //- ) 오늘 하루 보지 않기
         button.close-button(@click="closePopup") 닫기
 </template>
 
