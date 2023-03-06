@@ -1,7 +1,8 @@
 <template lang="pug">
 .container
   .top
-    .title {{ name }}
+    //- .title {{ name }}
+    .title 매장을 선택해주세요.
   .body
     ul.store-list
       li.store-item(v-for="store in data" :key="getStoreItemKey(store)")
@@ -11,6 +12,13 @@
 
 <script>
 import paths from '@router/paths';
+import {
+  notice
+} from '@apis';
+
+const {
+  getNoticeInfo,
+} = notice;
 
 export default {
   props: {
@@ -52,6 +60,18 @@ export default {
     }
   },
   methods: {
+    async getDefaultNoticeData(storeCode) {
+      try {
+        const res = await getNoticeInfo(`page=0&size=8&noticeCategoryList=EVENT,UPDATE,NOTICE,NEWS&noticeStatusList=1&noticeSearchQuery=&noticeCaller=MASTER&storeCode=${storeCode}`);
+
+        if (res.status === 200) {
+          const data = res.data;
+          this.$store.commit('noticePopup/updateNoticeQuantity', data.noticeNewCount);
+        }
+      } catch {
+        console.log('에러');
+      }
+    },
     async selectStore(store) {
       this.auth.store = store;
 
@@ -66,6 +86,8 @@ export default {
 
       localStorage.auth = JSON.stringify(auth);
       await this.$store.dispatch('updateAuth', auth);
+
+      await this.getDefaultNoticeData(store.store_code);
 
       try {
         if (auth.store.code) {

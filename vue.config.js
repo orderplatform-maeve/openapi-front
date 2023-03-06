@@ -15,6 +15,7 @@ module.exports = {
         'process.env.STOP_REDIRECT': process.env.STOP_REDIRECT,
         'process.env.UPLOAD_TYPE': JSON.stringify(process.env.UPLOAD_TYPE),
         'process.env.SERVER_TYPE': JSON.stringify(process.env.SERVER_TYPE),
+        'process.env.IS_DEV_TEAM': JSON.stringify(process.env.IS_DEV_TEAM),
       };
       return args;
     });

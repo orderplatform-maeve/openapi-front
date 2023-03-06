@@ -9,6 +9,7 @@
     "lint": "vue-cli-service lint",
     "dev": "cross-env NODE_ENV=development SERVER_TYPE=rest STOP_REDIRECT=true vue-cli-service serve --open",
     "dev:stop-redirect": "cross-env NODE_ENV=development SERVER_TYPE=rest STOP_REDIRECT=true vue-cli-service serve --open",
+    "dev:devTeam": "cross-env NODE_ENV=development SERVER_TYPE=rest STOP_REDIRECT=true IS_DEV_TEAM=true vue-cli-service serve --open",
     "demo:stop-redirect": "cross-env NODE_ENV=development SERVER_TYPE=demo STOP_REDIRECT=true vue-cli-service serve --open",
     "build": "vue-cli-service build",
     "build:prod": "vue-cli-service build --mode development",
@@ -17,6 +18,7 @@
     "deploy:paycanceltest": "node ./script/s3Uploader.paycanceltest.js",
     "deploy:tmp": "node ./script/deployTmp.js",
     "deploy:dev": "cross-env NODE_ENV=development SERVER_TYPE=rest STOP_REDIRECT=true vue-cli-service build && node ./script/s3Uploader.dev.js",
+    "deploy:dev-team": "cross-env NODE_ENV=development SERVER_TYPE=rest STOP_REDIRECT=true IS_DEV_TEAM=true vue-cli-service build && node  ./script/s3Uploader.dev.team.js",
     "deploy:dev:demo": "cross-env NODE_ENV=development SERVER_TYPE=demo STOP_REDIRECT=true vue-cli-service build && node ./script/s3Uploader.dev.js",
     "deploy:action:dev": "node ./script/deploy.action.dev.js",
     "deploy:action:prod": "node ./script/deploy.action.prod.js"

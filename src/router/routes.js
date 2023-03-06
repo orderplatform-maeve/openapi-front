@@ -27,6 +27,7 @@ import {
   OrdersIP,
   OrderStatusCheck,
   TableCreditInfoList,
+  UpdateGames,
 } from '@views';
 
 import paths from './paths';
@@ -159,6 +160,12 @@ const routes = [{
       path: paths.gameManagement,
       name: paths.gameManagement.replace('/', ''),
       component: GameManagement,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: paths.updateGames,
+      name: paths.updateGames.replace('/', ''),
+      component: UpdateGames,
       meta: { requiresAuth: true },
     },
     {

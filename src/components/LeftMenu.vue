@@ -383,7 +383,7 @@ export default {
     },
     async getDefaultNoticeData() {
       try {
-        const res = await getNoticeInfo(`page=0&size=10&noticeCategoryList=EVENT,UPDATE,NOTICE,NEWS&noticeStatusList=1&noticeSearchQuery=&noticeCaller=MASTER&storeCode=${this.getStoreCode}`);
+        const res = await getNoticeInfo(`page=0&size=8&noticeCategoryList=EVENT,UPDATE,NOTICE,NEWS&noticeStatusList=1&noticeSearchQuery=&noticeCaller=MASTER&storeCode=${this.getStoreCode}`);
 
         if (res.status === 200) {
           const data = res.data;
@@ -394,11 +394,13 @@ export default {
       }
     },
   },
-  created() {
-    this.getDefaultNoticeData();
-  },
+  // created() {
+  //   this.getDefaultNoticeData();
+  // },
   mounted() {
+    // console.log('first');
     this.loopBeep();
+    this.getDefaultNoticeData();
   },
   computed: {
     getNoticeQuantity() {
