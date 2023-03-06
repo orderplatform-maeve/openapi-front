@@ -96,12 +96,13 @@ const socket = {
         //   }
         // }
 
-        if (order.type !== 'posResponseMessage') {
+        if (order.type !== 'posResponseMessage' && !state.orderKeys.has(order.order_view_key)) {
           state.orderKeys.set(order.order_view_key, true);
           commit('SET_ORDER', order);
           state.posResponseMessage = false;
           state.orderModal = true;
           commit('PUSH_ORDER', order);
+          state.orderKeys.set(order.order_view_key, true);
         }
 
         if (!state.orderKeys.has(order.order_view_key)) {
