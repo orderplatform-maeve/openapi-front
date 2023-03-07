@@ -28,4 +28,5 @@ export default {
   ordersIP: '/ordersIP',
   orderStatusCheck: '/orderStatusCheck',
   tableCreditInfoList: '/tableCreditInfoList',
+  paymentDetails: '/paymentDetails',
 };

@@ -28,6 +28,7 @@ import {
   OrderStatusCheck,
   TableCreditInfoList,
   UpdateGames,
+  PaymentDetails,
 } from '@views';
 
 import paths from './paths';
@@ -213,6 +214,12 @@ const routes = [{
         }
       ]
     },
+    {
+      path: paths.paymentDetails,
+      name: paths.paymentDetails.replace('/', ''),
+      component: PaymentDetails,
+      meta: { requiresAuth: true },
+    }
   ],
 }];
 

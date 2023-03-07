@@ -128,9 +128,6 @@
 import { STOP_REDIRECT } from '@utils/constants';
 import axios from 'axios';
 import endpoints from '@apis/endpoints';
-import { credit } from '@apis';
-
-const { requestPayDetails } = credit;
 
 export default {
   components: {
@@ -397,7 +394,6 @@ export default {
 
     this.picker.today = this.$moment();
     this.picker.context = this.$moment();
-    this.getPaysDetails();
   },
   methods: {
     selectDateModalSubmit(date) {
@@ -689,21 +685,6 @@ export default {
     search() {
       this.updatePaymentList(1);
     },
-    async getPaysDetails() {
-      try {
-        console.log('조회 실행~!');
-        const config = {
-          page : 0,
-          size : 20,
-          storeCode: 'TEST_TPAY_003',
-        };
-        const res = await requestPayDetails(config);
-        console.log(res);
-      } catch (error) {
-        console.log(error);
-      }
-
-    }
   },
 };
 </script>
