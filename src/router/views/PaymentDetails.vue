@@ -1,20 +1,40 @@
 <template lang="pug">
 .payment-details-container
+  select-date-modal(
+    v-if="selectDateModalVisible"
+    :data="searchOptions.datetime"
+    :selectDateModalSubmit="selectDateModalSubmit"
+    :closeSearchModal="closeSearchModal"
+  )
+  vertical-long-modal(
+    v-if="verticalModalVisible"
+    :data="searchOptions[currentSearchModal]"
+    :type="currentSearchModal"
+    :selectOption="selectOption"
+    :closeSearchModal="closeSearchModal"
+  )
+  select-table-modal(
+    v-if="selectTableModalVisible"
+    :data="searchOptions.table"
+    :type="currentSearchModal"
+    :toggleTable="toggleTable"
+    :closeSearchModal="closeSearchModal"
+  )
   p.payment-management-title 결제내역
   .payment-type-button-list
-    button.search-button
-      p 날짜/시간별 조회
+    button.search-button(@click.stop="openSearchModal('date')")
+      p {{ displayDate }}
       icon-under-arrow
-    button.search-button
-      p 결제 유형
+    button.search-button(@click.stop="openSearchModal('paymentMethod')")
+      p {{ displayPaymentMethod() }}
       icon-under-arrow
-    button.search-button
-      p 결제 상태
+    button.search-button(@click.stop="openSearchModal('paymentStatus')")
+      p {{ displayPaymentStatus() }}
       icon-under-arrow
-    button.search-button
-      p 테이블 번호
+    button.search-button(@click.stop="openSearchModal('table')")
+      p {{ displayTableName }}
       icon-under-arrow
-    button.inquiry-button
+    button.inquiry-button(@click="getPaysDetails(1)")
       p 조회
   .wrap-credit-information-table
     .fixed-credit-information-header
@@ -30,17 +50,18 @@
       p 주문접수 상태
       p 자세히
     .credit-info-wrap
-      .fixed-credit-information(v-for="item in paymentList" :key="item.id")
-        p {{ item.no }}
-        p {{ item.tabletNumber }}
-        p {{ item.paymentMethod }}
-        p {{ item.paymentStatus }}
-        button.check-payment {{ item.paymentConfirmation }}
-        p {{ item.amount.toLocaleString() }}
-        p {{ item.acquirer }}
-        p {{ item.cardNumber }}
-        p {{ item.approvalDatetime }}
-        p {{ item.orderStatus }}
+      .fixed-credit-information(v-for="payment in paymentList" :key="payment.id")
+        p {{ payment.no }}
+        p {{ payment.tabletNumber }}
+        p {{ payment.paymentMethod }}
+        p {{ payment.paymentStatus }}
+        p(v-if="!payment.paymentConfirmation") {{ getPaymentConfirm(payment.paymentConfirmation) }}
+        button.check-payment(v-else) {{ getPaymentConfirm(payment.paymentConfirmation) }}
+        p {{ payment.amount.toLocaleString() }}
+        p {{ payment.acquirer }}
+        p {{ payment.cardNumber }}
+        p {{ payment.approvalDatetime }}
+        p {{ payment.orderStatus }}
         button.detail-button 자세히
   .wrap-pagination
     button.previous-button(v-if="showPageArrow" @click="clickPrevPage()") <
@@ -75,16 +96,99 @@ export default {
         size: 10,
         startPage: 0,
         endPage: 0,
-      }
+      },
+      searchOptions: {
+        datetime: {
+          start: new Date(),
+          end: new Date(),
+        },
+        paymentMethod: {
+          name: '결제 유형',
+          selected: '',
+          list: [
+            {
+              name: '전체',
+              value: 'ALL'
+            },
+            {
+              name: '카드',
+              value: 'CARD'
+            },
+            {
+              name: '현금',
+              value: 'CASH'
+            }
+          ]
+        },
+        paymentStatus: {
+          name: '결제 상태',
+          selected: '',
+          list: [
+            {
+              name: '전체',
+              value: 'ALL'
+            },
+            {
+              name: '승인',
+              value: 'APPROVAL'
+            },
+            {
+              name: '취소',
+              value: 'CANCEL'
+            },
+            {
+              name: '미수',
+              value: 'MISU'
+            }
+          ],
+        },
+        table: {
+          list: [],
+          selected: '',
+        }
+      },
+      selectStartDate: '',
+      selectEndDate: '',
+      currentSearchModal: '',
     };
   },
   computed: {
-    // 페이지 양 옆 화살표 버튼
+    // 페이지네이션 화살표
     showPageArrow() {
       return this.pageInfo.totalPageCount > this.pagination.size;
     },
+    selectDateModalVisible() {
+      return this.currentSearchModal === 'date';
+    },
+    verticalModalVisible() {
+      return this.currentSearchModal === 'paymentMethod' || this.currentSearchModal === 'paymentStatus' ;
+    },
+    selectTableModalVisible() {
+      return this.currentSearchModal === 'table';
+    },
+    selectDate() {
+      return this.selectStartDate && this.selectEndDate;
+    },
+    displayDate() {
+      return this.selectDate ? `${this.selectStartDate.format('YYYY-MM-DD')} ~ ${this.selectEndDate.format('YYYY-MM-DD')}` : '날짜/시간별 조회';
+    },
+    displayTableName() {
+      return this.searchOptions.table.selected ? this.searchOptions.table.selected : '테이블 번호';
+    },
+    tableNumValue() {
+      return this.searchOptions.table.selected === '모든 테이블' ? '' : this.searchOptions.table.selected;
+    },
+    paymentMethodValue() {
+      return this.searchOptions.paymentMethod.selected === 'ALL' ? '' : this.searchOptions.paymentMethod.selected;
+    },
+    paymentStatusValue() {
+      return this.searchOptions.paymentStatus.selected === 'ALL' ? '' : this.searchOptions.paymentStatus.selected;
+    },
   },
   methods: {
+    getPaymentConfirm(paymentConfirmation) {
+      return paymentConfirmation ? paymentConfirmation : '-';
+    },
     // 페이지네이션
     loadPagination() {
       const { currentPageNo, totalPageCount } = this.pageInfo;
@@ -93,14 +197,20 @@ export default {
       // 조회하려는 현재 페이지의 소속된 페이지 그룹 위치 계산
       pagination.pageIndex = Math.ceil(currentPageNo / pagination.size);
 
-      // 페이지 그룹의 마지막 페이지
-      pagination.endPage = currentPageNo + Math.ceil(pagination.size / 2);
-      if (pagination.endPage > totalPageCount) {
+      // 페이지 10개 미만
+      if (pagination.size > totalPageCount) {
         pagination.endPage = totalPageCount;
+
+      // 페이지 10개 초과
+      } else {
+        if (pagination.pageIndex * Math.ceil(pagination.size / 2) < currentPageNo) {
+          const half = currentPageNo + Math.ceil(pagination.size / 2);
+          pagination.endPage = totalPageCount > half ? half : totalPageCount;
+        } else {
+          pagination.endPage = pagination.size;
+        }
       }
-      else if (pagination.endPage < pagination.size) {
-        pagination.endPage = pagination.size;
-      }
+
       // 페이지 그룹의 첫 페이지
       pagination.startPage = pagination.endPage - (pagination.size - 1);
       if (pagination.startPage < 1) {
@@ -125,17 +235,32 @@ export default {
         this.getPaysDetails(minus);
       }
     },
+    async initTables() {
+      const params = { shop_code: this.$store.state.auth.store.store_code };
+      await this.$store.dispatch('setTables', params);
+      let tables = JSON.parse(JSON.stringify(this.$store.state.tables));
+      tables.sort((a, b) => {
+        return a.Tablet_name - b.Tablet_name;
+      });
+
+      tables.unshift({
+        'Tablet_name': '모든 테이블',
+      });
+
+      this.searchOptions.table.list = tables;
+
+    },
     async getPaysDetails(page) {
       try {
         const config = {
           page: page - 1,
           size: 1,
           storeCode: this.$store.state.auth.store.store_code,
-          tabletNumber: '',
-          paymentMethod: '',
-          paymentStatus: '',
-          startDatetime: '',
-          endDatetime: '',
+          tabletNumber: this.tableNumValue,
+          paymentMethod: this.paymentMethodValue,
+          paymentStatus: this.paymentStatusValue,
+          startDatetime: this.$moment(this.searchOptions.datetime.start).format('YYYY-MM-DD HH:mm:ss'),
+          endDatetime: this.$moment(this.searchOptions.datetime.end).format('YYYY-MM-DD HH:mm:ss'),
         };
         const res = await requestPayDetails(config);
         if (res.data.resultCode === 200) {
@@ -157,9 +282,56 @@ export default {
         'page-number': true,
         'pagination-active': this.pageInfo.currentPageNo === current,
       };
-    }
+    },
+    openSearchModal(name){
+      this.currentSearchModal = name;
+    },
+    closeSearchModal() {
+      this.$store.commit('updateItemModal', {
+        currName: null,
+        index: null,
+      });
+      this.currentSearchModal = null;
+    },
+    selectDateModalSubmit(date) {
+      this.selectStartDate =  date.start;
+      this.selectEndDate = date.end;
+      this.searchOptions.datetime.start = date.start;
+      this.searchOptions.datetime.end = date.end;
+      this.closeSearchModal();
+    },
+    pickerSelectToday() {
+      this.searchOptions.datetime.start = this.$moment({ hour:0, minute:0 });
+      this.searchOptions.datetime.end = this.$moment({ hour:23, minute:59 });
+    },
+    toggleTable(table) {
+      this.searchOptions.table.selected = table.Tablet_name;
+    },
+    selectOption(_type, index) {
+      this.searchOptions[_type].selected = this.searchOptions[_type].list[index].value;
+      this.closeSearchModal();
+    },
+    displayPaymentMethod() {
+      if (this.searchOptions.paymentMethod.selected) {
+        const find = this.searchOptions.paymentMethod.list.find(item => item.value === this.searchOptions.paymentMethod.selected);
+        return find.name;
+      }
+      return '결제 유형';
+    },
+    displayPaymentStatus() {
+      if (this.searchOptions.paymentStatus.selected) {
+        const find = this.searchOptions.paymentStatus.list.find(item => item.value === this.searchOptions.paymentStatus.selected);
+        return find.name;
+      }
+      return '결제 상태';
+    },
   },
   mounted() {
+    // 테이블리스트 조회 API
+    this.initTables();
+    // 오늘 날짜 선택
+    this.pickerSelectToday();
+    // 결제내역 조회 API
     this.getPaysDetails(1);
   },
 };

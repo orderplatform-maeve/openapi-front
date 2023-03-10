@@ -4,10 +4,10 @@
       p.vertical-long-modal-title {{data.name}} 선택
       .button-list
         button(
-          v-for="(value, name) in data.list"
-          :key="`index-`+name+'value'+value.name"
-          :class="{activeButton: data.selected == name}"
-          @click="selectOption(type, name)") {{value.name}}
+          v-for="(item, index) in data.list"
+          :key="`index-`+index+'value'+item.name"
+          :class="{activeButton: data.selected === item.value}"
+          @click="selectOption(type, index)") {{item.name}}
 </template>
 
 <script>

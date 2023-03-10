@@ -4,10 +4,10 @@
       p.select-table-modal-title 테이블 선택
       .button-list
         button(
-          v-for="(value, name) in data.list"
-          :key="`index-`+name+'value'+value.name"
-          :class="{activeButton: value.selected}"
-          @click="toggleTable(value)") {{value.Tablet_name}}
+          v-for="(table, name) in data.list"
+          :key="`index-`+name+'value'+table.name"
+          :class="{activeButton: data.selected === table.Tablet_name}"
+          @click="toggleTable(table)") {{table.Tablet_name}}
       .wrap-submit-button
         button.submit(@click="closeSearchModal") 선택완료
 </template>
@@ -39,7 +39,7 @@ export default {
   top: 0;
   width: 100vw;
   height: 100vh;
-  font-family: 'Spoqa Han Sans Neo', 'sans-serif'; 
+  font-family: 'Spoqa Han Sans Neo', 'sans-serif';
   display: flex;
   justify-content: center;
   align-items: center;

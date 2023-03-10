@@ -1,12 +1,12 @@
 <template lang="pug">
 .game-management-container
-    vertical-long-modal(
-      v-if="verticalModalVisible"
-      :data="searchOptions[currentSearchModal]"
-      :type="currentSearchModal"
-      :selectOption="selectOption"
-      :closeSearchModal="closeSearchModal"
-    )
+    //- vertical-long-modal(
+    //-   v-if="verticalModalVisible"
+    //-   :data="searchOptions[currentSearchModal]"
+    //-   :type="currentSearchModal"
+    //-   :selectOption="selectOption"
+    //-   :closeSearchModal="closeSearchModal"
+    //- )
     select-date-modal(
       v-if="selectDateModalVisible"
       :data="searchOptions.datetime"
