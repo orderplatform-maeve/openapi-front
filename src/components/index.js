@@ -39,3 +39,5 @@ export { default as PosErrorModal } from './PosErrorModal';
 export { default as OrderCreditHistoryModal } from './OrderCreditHistoryModal';
 export { default as OptionSoldOutModal } from './OptionSoldOutModal';
 export { default as OptionSaveCheckModal } from './OptionSaveCheckModal';
+export { default as PaymentDetailModal } from './PaymentDetailModal';
+export { default as CashCheckOrCancelModal } from './CashCheckOrCancelModal';

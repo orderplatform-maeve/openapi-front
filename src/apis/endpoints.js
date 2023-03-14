@@ -113,6 +113,9 @@ const endpoints = {
   },
   credit: {
     payDetails: `${PAYMENT_URL}/credit/v2/pay-details`,
+    cashAllCommit: `${PAYMENT_URL}/credit/v2/cash-all-commit`,
+    cashCommit: `${PAYMENT_URL}/credit/v2/cash-commit`,
+    cashCancelCommit: `${PAYMENT_URL}/credit/v2/cash-cancel-commit`,
   },
 };
 

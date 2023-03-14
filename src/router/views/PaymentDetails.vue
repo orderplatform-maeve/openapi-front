@@ -20,6 +20,21 @@
     :toggleTable="toggleTable"
     :closeSearchModal="closeSearchModal"
   )
+  payment-detail-modal(
+    v-if="isDetailModal"
+    :closeDetailModal="closeDetailModal"
+    :detailPayData="detailPayData"
+    :getAmount="getAmount"
+  )
+  cash-check-or-cancel-modal(
+    v-if="isCashModal"
+    :cashType="cashType"
+    :closePayCheckModal="closePayCheckModal"
+    :detailPayData="detailPayData"
+    :cashCommit="cashCommit"
+    :cashCancelCommit="cashCancelCommit"
+    :getAmount="getAmount"
+  )
   p.payment-management-title 결제내역
   .payment-type-button-list
     button.search-button(@click.stop="openSearchModal('date')")
@@ -48,21 +63,21 @@
       p 카드 번호
       p 결제 일시
       p 주문접수 상태
-      p 자세히
+      p
     .credit-info-wrap
-      .fixed-credit-information(v-for="payment in paymentList" :key="payment.id")
+      div(v-for="payment in paymentList" :key="payment.id" :class="getCreditInfoRowStyle(payment.orderStatus)")
         p {{ payment.no }}
         p {{ payment.tabletNumber }}
         p {{ payment.paymentMethod }}
         p {{ payment.paymentStatus }}
         p(v-if="!payment.paymentConfirmation") {{ getPaymentConfirm(payment.paymentConfirmation) }}
-        button.check-payment(v-else) {{ getPaymentConfirm(payment.paymentConfirmation) }}
-        p {{ payment.amount.toLocaleString() }}
+        button.check-payment(v-else @click="openPayCheckModal(payment)") {{ getPaymentConfirm(payment.paymentConfirmation) }}
+        p {{ getAmount(payment.amount) }}
         p {{ payment.acquirer }}
         p {{ payment.cardNumber }}
         p {{ payment.approvalDatetime }}
-        p {{ payment.orderStatus }}
-        button.detail-button 자세히
+        p(:class="getOrderStatusStyle(payment.orderStatus)") {{ payment.orderStatus }}
+        button.detail-button(v-if="payment.showDetails" @click="openDetailModal(payment)") 자세히
   .wrap-pagination
     button.previous-button(v-if="showPageArrow" @click="clickPrevPage()") <
     button.page-block(
@@ -72,12 +87,15 @@
       @click="getPaysDetails(num)"
       ) {{ num }}
     button.next-button(v-if="showPageArrow" @click="clickNextPage()") >
-
 </template>
 
 <script>
 import { credit } from '@apis';
-const { requestPayDetails } = credit;
+const {
+  requestPayDetails,
+  requestCashCommit,
+  requestCashCancelCommit
+} = credit;
 
 export default {
   data() {
@@ -150,6 +168,10 @@ export default {
       selectStartDate: '',
       selectEndDate: '',
       currentSearchModal: '',
+      isDetailModal: false,
+      isCashModal: false,
+      cashType: '',
+      detailPayData: {},
     };
   },
   computed: {
@@ -254,7 +276,7 @@ export default {
       try {
         const config = {
           page: page - 1,
-          size: 1,
+          size: 30,
           storeCode: this.$store.state.auth.store.store_code,
           tabletNumber: this.tableNumValue,
           paymentMethod: this.paymentMethodValue,
@@ -325,6 +347,81 @@ export default {
       }
       return '결제 상태';
     },
+    openDetailModal(payment) {
+      this.detailPayData = payment;
+      this.isDetailModal = true;
+    },
+    closeDetailModal() {
+      this.isDetailModal = false;
+    },
+    openPayCheckModal(payment) {
+      this.detailPayData = payment;
+      if (this.detailPayData.paymentConfirmation === '현금 확인 요청') {
+        this.cashType = 'CHECK';
+      }
+      if (this.detailPayData.paymentConfirmation === '현금 취소 요청') {
+        this.cashType = 'CANCEL';
+      }
+      this.isCashModal = true;
+    },
+    closePayCheckModal() {
+      this.isCashModal = false;
+      this.cashType = '';
+      this.detailPayData = '';
+
+    },
+    async cashCommit() {
+      try {
+        const config = {
+          orderKey: this.detailPayData.orderKey,
+          paymentRequestKey: this.detailPayData.paymentRequestKey,
+        };
+
+        const res = await requestCashCommit(config);
+        console.log(res);
+        if (res.data.resultCode === 200) {
+          this.getPaysDetails(1);
+          this.closePayCheckModal();
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async cashCancelCommit() {
+      try {
+        const config = {
+          orderKey: this.detailPayData.orderKey,
+          paymentRequestKey: this.detailPayData.paymentRequestKey,
+        };
+
+        const res = await requestCashCancelCommit(config);
+        console.log(res);
+        if (res.data.resultCode === 200) {
+          this.getPaysDetails(1);
+          this.closePayCheckModal();
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    getAmount(amount) {
+      if (amount) {
+        return amount.toLocaleString();
+      }
+      return 0;
+    },
+    getOrderStatusStyle(status) {
+      return {
+        'fail-text': status === '포스 접수 실패'
+      };
+    },
+    getCreditInfoRowStyle(status) {
+      return {
+        'fixed-credit-information': true,
+        'fail-row': status === '포스 접수 실패',
+        'pay-progress-row': status === '결제 진행 중'
+      };
+    }
   },
   mounted() {
     // 테이블리스트 조회 API
@@ -399,10 +496,9 @@ export default {
 
     .fixed-credit-information-header {
       display: grid;
-      grid-template-columns: 2.6563vw 3.9063vw 2.3438vw 3.0469vw 11.71875vw 4.2969vw 9.3750vw 6.2500vw 6.2500vw 6.5625vw 4.6875vw;
+      grid-template-columns: 2.6563vw 3.9063vw 2.3438vw 3.0469vw 10.1563vw 4.2969vw 9.3750vw 6.2500vw 6.2500vw 6.5625vw 7.4219vw;
       justify-content: space-between;
       align-items: center;
-
       border-bottom: solid 0.078125vw #ccc;
 
       > p {
@@ -420,47 +516,60 @@ export default {
     .credit-info-wrap {
       overflow-y: scroll;
       .fixed-credit-information {
-      display: grid;
-      grid-template-columns: 2.6563vw 3.9063vw 2.3438vw 3.0469vw 11.71875vw 4.2969vw 9.3750vw 6.2500vw 6.2500vw 6.5625vw 4.6875vw;
-      column-gap: 5px;
-      justify-content: space-between;
-      align-items: center;
-
-      > p {
-        min-height: 4.375vw;
-        font-family: 'Spoqa Han Sans Neo', 'sans-serif';
-        font-size: 1.09375vw;
-        color: #666;
-        display: flex;
-        justify-content: center;
+        display: grid;
+        grid-template-columns: 2.6563vw 3.9063vw 2.3438vw 3.0469vw 10.1563vw 4.2969vw 9.3750vw 6.2500vw 6.2500vw 6.5625vw 7.4219vw;
+        column-gap: 0.3906vw;
+        justify-content: space-between;
         align-items: center;
-        text-align: center;
-      }
-      .check-payment {
-        font-family: 'Spoqa Han Sans Neo', 'sans-serif';
-        font-size: 1.25vw;
-        letter-spacing: -0.03125vw;
-        color: #fc0000;
-        width: 100%;
-        height: 2.8125vw;
-        background-color: #fff;
-        border: solid 0.078125vw #fc0000;
-        border-radius: 0.390625vw;
+        border-bottom: 0.0781vw solid #ccc;
+
+        > p {
+          min-height: 4.375vw;
+          font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+          font-size: 1.0938vw;
+          font-weight: 500;
+          color: #000;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          text-align: center;
+        }
+
+        .fail-text {
+          color: #fc0000;
+        }
+        .check-payment {
+          font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+          font-size: 1.25vw;
+          letter-spacing: -0.03125vw;
+          color: #fc0000;
+          width: 100%;
+          height: 2.8125vw;
+          background-color: #fff;
+          border: solid 0.078125vw #fc0000;
+          border-radius: 0.390625vw;
+        }
+
+        .detail-button {
+          font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+          font-size: 1.25vw;
+          letter-spacing: -0.03125vw;
+          color: #fff;
+          width: 5.9375vw;
+          height: 2.8125vw;
+          background-color: #000;
+          border: solid 0.078125vw #000;
+          border-radius: 0.390625vw;
+        }
       }
 
-      .detail-button {
-        font-family: 'Spoqa Han Sans Neo', 'sans-serif';
-        font-size: 1.25vw;
-        letter-spacing: -0.03125vw;
-        color: #fff;
-        width: 100%;
-        height: 2.8125vw;
-        background-color: #000;
-        border: solid 0.078125vw #000;
-        border-radius: 0.390625vw;
+      .fail-row {
+        background-color: #ffdada;
       }
 
-    }
+      .pay-progress-row {
+        background-color: #cbd4ff;
+      }
     }
 
   }

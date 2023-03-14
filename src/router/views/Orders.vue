@@ -92,14 +92,12 @@
 <script>
 import utils from '@utils/orders.utils';
 import { won } from '@utils/regularExpressions';
-import { payments } from '@apis';
+import { credit } from '@apis';
 import { version } from '@utils/constants';
 import { checkBoxActive, checkBoxDisable  } from '@svg';
 import { PosErrorModal } from '@components';
 
-const {
-  requestMisuCommit,
-} = payments;
+const { requestCashAllCommit } = credit;
 export default {
   data () {
     return {
@@ -209,7 +207,7 @@ export default {
     },
     async reqConfirmMisu(order) {
       if (order?.order_view_key) {
-        const res = await requestMisuCommit(order.order_view_key);
+        const res = await requestCashAllCommit(order.order_view_key);
         if (res?.status === 200) {
           this.chooseOrder = {};
           this.$store.commit('UPDATE_DONE_MISU_ORDERS', order);

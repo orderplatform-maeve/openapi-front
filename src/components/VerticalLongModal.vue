@@ -1,13 +1,13 @@
 <template lang="pug">
-  .vertical-long-modal-container(@click.self="closeSearchModal")
-    .wrap-button-list
-      p.vertical-long-modal-title {{data.name}} 선택
-      .button-list
-        button(
-          v-for="(item, index) in data.list"
-          :key="`index-`+index+'value'+item.name"
-          :class="{activeButton: data.selected === item.value}"
-          @click="selectOption(type, index)") {{item.name}}
+.vertical-long-modal-container(@click.self="closeSearchModal")
+  .wrap-button-list
+    p.vertical-long-modal-title {{data.name}} 선택
+    .button-list
+      button(
+        v-for="(item, index) in data.list"
+        :key="`index-`+index+'value'+item.name"
+        :class="{activeButton: data.selected === item.value}"
+        @click="selectOption(type, index)") {{item.name}}
 </template>
 
 <script>
