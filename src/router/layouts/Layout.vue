@@ -957,7 +957,7 @@ export default {
         const res = await postMessage(this.getStoreCode, this.phoneNumber);
 
         if (res.data?.resultCode !== 200) {
-          const errorMessage = res.data?.resultMessage || '상담 신청에 실패하였습니다.';
+          const errorMessage = res.data?.errorData.errorMessage || '상담 신청에 실패하였습니다.';
           this.$store.commit('pushFlashMessage', errorMessage);
           return;
         }
