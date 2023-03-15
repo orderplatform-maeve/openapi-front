@@ -24,7 +24,7 @@
     )
       span 추가기능
       img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_w.png")
-    router-link.paid-history(v-if="visibleOrderButton" :to="paths.paymentManagement" :class="{activeButton: path === '/paymentManagement'}") 결제내역
+    router-link.paid-history(v-if="visibleOrderButton" :to="paths.paymentDetails" :class="{activeButton: path === '/paymentDetails'}") 결제내역
   .wrap-bottom-button-area
     .on-off-button-list
       .wrap-on-off-button

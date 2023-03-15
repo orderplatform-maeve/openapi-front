@@ -36,6 +36,10 @@
         .table-body {{ detailPayData.acquirer }}
         .table-head 카드번호
         .table-body {{ detailPayData.cardNumber }}
+      //- 개발망만
+      .table-row(v-if="isDev")
+        .table-head orderKey
+        .table-body {{ detailPayData.orderKey }}
       .table-row(v-if="showCancelDate")
         .table-head 취소 일시
         .table-body {{ detailPayData.cancelApprovalDatetime }}
@@ -45,6 +49,7 @@
 
 <script>
 import { BigCloseButton } from '@svg';
+import { IS_DEV_TEAM } from '@utils/constants';
 
 export default {
   props: {
@@ -64,9 +69,14 @@ export default {
   computed: {
     showCancelDate() {
       return this.detailPayData.paymentStatus === '취소';
+    },
+    isDev() {
+      return IS_DEV_TEAM;
     }
   },
-
+  mounted() {
+    console.log(this.detailPayData);
+  },
 };
 
 </script>

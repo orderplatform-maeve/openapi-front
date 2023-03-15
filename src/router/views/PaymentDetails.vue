@@ -378,7 +378,6 @@ export default {
         };
 
         const res = await requestCashCommit(config);
-        console.log(res);
         if (res.data.resultCode === 200) {
           this.getPaysDetails(1);
           this.closePayCheckModal();
@@ -395,7 +394,6 @@ export default {
         };
 
         const res = await requestCashCancelCommit(config);
-        console.log(res);
         if (res.data.resultCode === 200) {
           this.getPaysDetails(1);
           this.closePayCheckModal();
