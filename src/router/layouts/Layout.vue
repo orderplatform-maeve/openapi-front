@@ -1,5 +1,9 @@
 <template lang="pug">
 #orderview
+  cash-payment-cancel-modal(
+    v-if="cashPaymentCancelModal"
+    :goPaymentDetailsPage="goPaymentDetailsPage"
+    )
   alert-modal(v-if="isAlertModal")
   auction-modal(v-if="order && auction")
   modal-order(v-if="order && orderModal")
@@ -153,6 +157,9 @@ export default {
     },
     posResponseModal() {
       return this.$store.state.posResponseModal;
+    },
+    cashPaymentCancelModal() {
+      return this.$store.state.cashPaymentCancelModal;
     },
     orderModal() {
       return this.$store.state.orderModal;
@@ -1019,6 +1026,14 @@ export default {
     closeVisibleLogoutConfirmModal() {
       this.isVisibleLogoutConfirmModal = false;
     },
+    goPaymentDetailsPage() {
+      if (this.$route.path === '/paymentDetails') {
+        this.$router.go(0);
+      } else {
+        this.$router.push('/paymentDetails');
+      }
+      this.$store.commit('updateCashPaymentCancelModal', false);
+    }
   },
 };
 </script>

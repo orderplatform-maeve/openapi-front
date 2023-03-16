@@ -404,6 +404,11 @@ const socket = {
           });
         }
       }
+      // 선결제 - 현금 취소 요청 알림
+      if (payload?.type === 'requestCancelCash') {
+        commit('updateCashPaymentCancelModal', true);
+        commit('updateCashPaymentCancelInfo', payload);
+      }
     },
     SOCKET_disconnect({ commit }) {
       const now = new Date(Date.now());
@@ -591,6 +596,12 @@ const order = {
     updateOrderKeys(state, payload) {
       state.orderKeys = payload;
     },
+    updateCashPaymentCancelModal(state, payload) {
+      state.cashPaymentCancelModal = payload;
+    },
+    updateCashPaymentCancelInfo(state, payload) {
+      state.cashPaymentCancelInfo = payload;
+    }
   },
   actions: {
     async commitOrder(context, payload) {
@@ -1482,6 +1493,16 @@ const state = {
   // 시작 위치: true, 종료 위치: false
   standardPriceFrontPosition: false,
   isTorderTwo: false,
+  cashPaymentCancelModal: false,
+  cashPaymentCancelInfo: {
+    table: {
+      name: ''
+    },
+    paymentInfo: {
+      count: 0,
+      amount: 0,
+    }
+  },
 };
 
 const mutations = {

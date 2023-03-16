@@ -32,7 +32,7 @@
         .table-body {{ detailPayData.approvalDatetime }}
       .table-wrap
         .table-head 주문 일시
-        .table-body ??
+        .table-body {{ detailPayData.orderDatetime }}
     span.confirm-text 해당 테이블에 환불처리 하셨습니까?
     .modal-footer-wrap
       button(@click="closePayCheckModal()") 취소
@@ -66,9 +66,6 @@ export default {
     showCashType() {
       return this.cashType === 'CHECK' ? true : false;
     }
-  },
-  methods: {
-
   },
 };
 </script>

@@ -33,7 +33,8 @@ import {
   CancelCashPaymentModal,
   OptionSaveCheckModal,
   PaymentDetailModal,
-  CashCheckOrCancelModal
+  CashCheckOrCancelModal,
+  CashPaymentCancelModal
 } from '@components';
 
 import {
@@ -102,6 +103,7 @@ Vue.component('cancel-cash-payment-modal', CancelCashPaymentModal);
 Vue.component('option-save-check-modal', OptionSaveCheckModal);
 Vue.component('payment-detail-modal', PaymentDetailModal);
 Vue.component('cash-check-or-cancel-modal', CashCheckOrCancelModal);
+Vue.component('cash-payment-cancel-modal', CashPaymentCancelModal);
 
 
 
