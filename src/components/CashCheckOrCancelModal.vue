@@ -87,7 +87,7 @@ export default {
   .check-or-cancel-wrap {
     width: 58.28125vw;
     height: 41.640625vw;
-    padding: 3.125vw 0 !important;
+    padding: 2.125vw 0 !important;
     background-color: #fff;
     box-sizing: border-box;
     border-radius: 1.5625vw;
@@ -95,7 +95,7 @@ export default {
     flex-direction: column;
     justify-content: space-between;
     .modal-title-wrap {
-      font-size: 1.5625vw;
+      font-size: 2.1875vw;
       font-weight: bold;
       letter-spacing: -0.0390625vw;
       padding-bottom: 1.5625vw !important;
@@ -108,7 +108,7 @@ export default {
 
     .modal-body-wrap {
       padding: 0 3.125vw !important;
-      font-size: 1.875vw;
+      font-size: 1.7188vw;
       letter-spacing: -0.046875vw;
 
       .table-wrap {

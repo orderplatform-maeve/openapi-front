@@ -42,3 +42,4 @@ export { default as OptionSaveCheckModal } from './OptionSaveCheckModal';
 export { default as PaymentDetailModal } from './PaymentDetailModal';
 export { default as CashCheckOrCancelModal } from './CashCheckOrCancelModal';
 export { default as CashPaymentCancelModal } from './CashPaymentCancelModal';
+export { default as AlertModalTwoButton } from './AlertModalTwoButton';

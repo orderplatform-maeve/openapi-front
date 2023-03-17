@@ -213,6 +213,8 @@ export default {
           this.$store.commit('UPDATE_DONE_MISU_ORDERS', order);
           this.$store.commit('updateAlertModalMessage', '현금 수납 처리 되었습니다.');
           this.$store.commit('updateIsAlertModal', true);
+        } else {
+          this.$store.commit('pushFlashMessage', '현금 수납 확인에 실패했습니다. 티오더로 문의 바랍니다.');
         }
       }
     },

@@ -101,11 +101,16 @@ export default {
       letter-spacing: -0.0820vw;
       align-items: center;
       margin-bottom: 1.8750vw !important;
+      height: 4.8438vw;
     }
 
     .modal-body-wrap {
       font-size: 2.1094vw;
       letter-spacing: -0.046875vw;
+      display: flex;
+      flex-direction: column;
+      height: calc(54.375vw - 12.1875vw);
+      justify-content: center;
 
       .table-row {
         display: grid;

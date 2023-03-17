@@ -1341,6 +1341,12 @@ const payment = {
     updateIsAlertModal(state, visible) {
       state.isAlertModal = visible;
     },
+    updateAlertTwoBtMessage(state, payload) {
+      state.alertTwoBtMessage = payload;
+    },
+    updateIsAlertTwoBtModal(state, payload) {
+      state.isAlertTwoBtModal = payload;
+    },
     setRequestCashItem(state, payload) {
       state.requestCashItem = payload;
     },
@@ -1503,6 +1509,8 @@ const state = {
       amount: 0,
     }
   },
+  alertTwoBtMessage: '',
+  isAlertTwoBtModal: false,
 };
 
 const mutations = {

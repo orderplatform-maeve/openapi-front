@@ -63,8 +63,8 @@
       p 카드 번호
       p 결제 일시
       p 주문접수 상태
-      p
-    .credit-info-wrap
+      p 결제내역
+    .credit-info-wrap(v-if="paymentList.length > 0")
       div(v-for="payment in paymentList" :key="payment.id" :class="getCreditInfoRowStyle(payment.orderStatus)")
         p {{ payment.no }}
         p {{ payment.tabletNumber }}
@@ -78,6 +78,8 @@
         p {{ payment.approvalDatetime }}
         p(:class="getOrderStatusStyle(payment.orderStatus)") {{ payment.orderStatus }}
         button.detail-button(v-if="payment.showDetails" @click="openDetailModal(payment)") 자세히
+    .credit-info-wrap(v-else)
+      .none-data 조회된 결제 내역이 없습니다.
   .wrap-pagination
     button.previous-button(v-if="showPageArrow" @click="clickPrevPage()") <
     button.page-block(
@@ -294,6 +296,8 @@ export default {
           this.pageInfo.totalPageCount = res.data.resultData.totalPageCount;
 
           this.loadPagination();
+        } else {
+          this.$store.commit('pushFlashMessage', '결제 내역 불러오기를 실패했습니다. 티오더로 문의 바랍니다.');
         }
       } catch (error) {
         console.log(error);
@@ -381,6 +385,8 @@ export default {
         if (res.data.resultCode === 200) {
           this.getPaysDetails(1);
           this.closePayCheckModal();
+        } else {
+          this.$store.commit('pushFlashMessage', '현금 확인 확인에 실패했습니다. 티오더로 문의 바랍니다.');
         }
       } catch (error) {
         console.log(error);
@@ -397,6 +403,8 @@ export default {
         if (res.data.resultCode === 200) {
           this.getPaysDetails(1);
           this.closePayCheckModal();
+        } else {
+          this.$store.commit('pushFlashMessage', '현금 취소 요청을 실패했습니다. 티오더로 문의 바랍니다.');
         }
       } catch (error) {
         console.log(error);
@@ -449,8 +457,8 @@ export default {
   .payment-type-button-list {
     display: grid;
     align-items: center;
-    grid-template-columns: 18.75vw 12.1875vw 12.1875vw 12.1875vw 7.8125vw;
-    gap: 0.390625vw;
+    grid-template-columns: 19.8438vw 13.2813vw 13.2813vw 13.2813vw 7.8125vw;
+    gap: 0.8594vw;
     box-sizing: border-box;
 
     .search-button {
@@ -464,6 +472,7 @@ export default {
       align-items: center;
       border: none;
       border-radius: 0.390625vw;
+      background-color: #e5e5e5;
     }
 
     .inquiry-button {
@@ -563,10 +572,24 @@ export default {
 
       .fail-row {
         background-color: #ffdada;
+        border-bottom: 0.0781vw solid #fff;
       }
 
       .pay-progress-row {
         background-color: #cbd4ff;
+        border-bottom: 0.0781vw solid #fff;
+
+      }
+
+      .none-data {
+        font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+        font-size: 1.0938vw;
+        font-weight: 500;
+        color: #000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 1.5625vw !important;
       }
     }
 

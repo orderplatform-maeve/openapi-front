@@ -87,7 +87,7 @@ import {
   PhoneNumberErrorModal,
   HappyTalkSuccessModal,
   LogoutSecret,
-  PosErrorModal
+  PosErrorModal,
 } from '@components';
 import {
   payments,

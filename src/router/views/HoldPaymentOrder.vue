@@ -1,26 +1,40 @@
 <template lang="pug">
 .cancel-payment-order-page-container
+  AlertModalTwoButton(
+    v-if="isAlertTwoBtModal"
+    :confirm="() => postPendPaymentTableOrder()"
+  )
   p.cancel-payment-order-page-title 결제 보류 처리
   .order-table-list
-    button.order-table-name(v-for="table in tables" :key="table.Ta_id" @click="postPendPaymentTableOrder(table)")
-      p {{getTableName(table)}}
+    button.order-table-name(v-for="table in tables" :key="table.Ta_id" @click="openCheckAlert(table)")
+      p {{ getTableName(table) }}
 </template>
 
 <script>
 import { credit } from '@apis';
+import { AlertModalTwoButton } from '@components';
+
 const {
   requestPaymentPend
 } = credit;
 
+
+
 export default {
   data() {
     return {
-      //
+      currentTable: {},
     };
+  },
+  components: {
+    AlertModalTwoButton
   },
   computed: {
     tables() {
       return this.$store.state.tables;
+    },
+    isAlertTwoBtModal() {
+      return this.$store.state.isAlertTwoBtModal;
     },
   },
   methods: {
@@ -38,22 +52,29 @@ export default {
     getTableName(table) {
       return table?.Tablet_name;
     },
-    async postPendPaymentTableOrder(table) {
+    async postPendPaymentTableOrder() {
       try {
         const config = {
           storeCode: this.$store.state.auth.store.store_code,
-          tabletCode: table.Ta_id,
+          tabletCode: this.currentTable.Ta_id,
         };
 
         const res = await requestPaymentPend(config);
-        console.log(res);
 
         if (res.data.resultCode === 200) {
           this.$store.commit('pushFlashMessage', '해당 테이블의 결제를 보류 처리 했습니다!');
+        } else {
+          this.$store.commit('pushFlashMessage', '결제 보류 처리에 실패했습니다. 티오더로 문의 바랍니다.');
         }
+        this.$store.commit('updateIsAlertTwoBtModal', false);
       } catch (error) {
         console.log(error);
       }
+    },
+    openCheckAlert(table) {
+      this.currentTable = table;
+      this.$store.commit('updateAlertTwoBtMessage', `"테이블 ${table.Tablet_name}"의 결제 내역을 <br/>보류 처리하시겠습니까?`);
+      this.$store.commit('updateIsAlertTwoBtModal', true);
     }
   },
   mounted() {
