@@ -48,7 +48,7 @@
     router-link.button-added(v-if="visibleOrderButton && stopRedirect" :to="paths.orderStatusCheck")
       span 주문상태확인
       img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
-    router-link.button-added(v-if="visibleOrderButton && stopRedirect" :to="paths.holdPaymentOrder")
+    router-link.button-added(v-if="visibleOrderButton" :to="paths.holdPaymentOrder")
       span 결제 보류 처리
       img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
 </template>
