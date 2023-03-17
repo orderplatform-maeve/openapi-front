@@ -59,10 +59,24 @@ const requestCashCancelCommit = (config) => {
   return res;
 };
 
+const requestPaymentPend = (config) => {
+  const url = `${endpoints.credit.pend}`;
+  const auth = {
+    auth: {
+      username: 'torder-credit-api',
+      password: 'xldhejtjsrufwp123!',
+    }
+  };
+
+  const res = axios.post(url, config, auth);
+  return res;
+};
+
 
 export default {
   requestPayDetails,
   requestCashAllCommit,
   requestCashCommit,
-  requestCashCancelCommit
+  requestCashCancelCommit,
+  requestPaymentPend
 };

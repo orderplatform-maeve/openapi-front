@@ -29,4 +29,5 @@ export default {
   orderStatusCheck: '/orderStatusCheck',
   tableCreditInfoList: '/tableCreditInfoList',
   paymentDetails: '/paymentDetails',
+  holdPaymentOrder: '/holdPaymentOrder',
 };
