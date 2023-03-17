@@ -54,7 +54,7 @@ export default {
 
   .cash-payment-cancel-modal-wrap {
     width: 58.28125vw;
-    height: 340px;
+    height: 26.5625vw;
     padding: 3.125vw!important;
     background-color: #fff;
     box-sizing: border-box;
@@ -64,7 +64,7 @@ export default {
     justify-content: space-between;
 
     .modal-title-wrap {
-      font-size: 24px;
+      font-size: 1.8750vw;
       font-weight: bold;
       letter-spacing: -0.0390625vw;
     }
