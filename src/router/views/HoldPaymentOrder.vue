@@ -120,7 +120,7 @@ export default {
     },
     getStatusText(table) {
       if (table.status === 'PAYING' || table.status === 'FAIL') {
-        return table.statue === 'PAYING' ? '결제 진행 중' : '포스 접수 실패';
+        return table.status === 'PAYING' ? '결제 진행 중' : '포스 접수 실패';
       }
       return '';
     },
