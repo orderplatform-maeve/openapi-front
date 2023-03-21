@@ -65,7 +65,7 @@
       p 주문접수 상태
       p 결제내역
     .credit-info-wrap(v-if="paymentList.length > 0")
-      div(v-for="payment in paymentList" :key="payment.id" :class="getCreditInfoRowStyle(payment.orderStatus)")
+      div(v-for="payment in paymentList" :key="payment.id" :class="getCreditInfoRowStyle(payment.paymentConfirmation)")
         p {{ payment.no }}
         p {{ payment.tabletNumber }}
         p {{ payment.paymentMethod }}
@@ -73,7 +73,7 @@
         p(v-if="!payment.paymentConfirmation") {{ getPaymentConfirm(payment.paymentConfirmation) }}
         button.check-payment(v-else @click="openPayCheckModal(payment)") {{ getPaymentConfirm(payment.paymentConfirmation) }}
         p {{ getAmount(payment.amount) }}
-        p {{ payment.acquirer }}
+        p {{ payment.issuer }}
         p {{ payment.cardNumber }}
         p {{ payment.approvalDatetime }}
         p(:class="getOrderStatusStyle(payment.orderStatus)") {{ payment.orderStatus }}
@@ -424,8 +424,8 @@ export default {
     getCreditInfoRowStyle(status) {
       return {
         'fixed-credit-information': true,
-        'fail-row': status === '포스 접수 실패',
-        'pay-progress-row': status === '결제 진행 중'
+        'cash-cancel-row-bg': status === '포스 접수 실패',
+        'cash-confirm-row-bg': status === '결제 진행 중'
       };
     }
   },
@@ -570,12 +570,12 @@ export default {
         }
       }
 
-      .fail-row {
+      .cash-cancel-row-bg {
         background-color: #ffdada;
         border-bottom: 0.0781vw solid #fff;
       }
 
-      .pay-progress-row {
+      .cash-confirm-row-bg {
         background-color: #cbd4ff;
         border-bottom: 0.0781vw solid #fff;
 

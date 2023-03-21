@@ -33,7 +33,7 @@
         .table-body {{ detailPayData.issuer }}
       .table-row
         .table-head 카드사명
-        .table-body {{ detailPayData.acquirer }}
+        .table-body {{ detailPayData.issuer }}
         .table-head 카드번호
         .table-body {{ detailPayData.cardNumber }}
       .table-row(v-if="showCancelDate")

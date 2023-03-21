@@ -42,7 +42,7 @@
         p.order-title 결제금액
         p.order-title 미수금
         p.order-title 선/후불
-        p.order-title 결제수단
+        p.order-title 결제방식
         p.order-title 주문시간
         p.order-title 총 인원수
       .wrap-order-information-lists
@@ -405,6 +405,23 @@ export default {
 
       if (creditType === 'complex') {
         return '카드+현금';
+      }
+
+      // remake 선결제(성빈님 스펙)
+      if (creditType === 'V2_CARD') {
+        return '카드';
+      }
+
+      if (creditType === 'V2_CASH') {
+        return '현금';
+      }
+
+      if (creditType === 'V2_BY_PRICE') {
+        return '더치페이';
+      }
+
+      if (creditType === 'V2_BY_MENU') {
+        return '메뉴별결제';
       }
     },
     visitGroups(order) {
