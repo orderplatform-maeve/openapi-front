@@ -72,11 +72,25 @@ const requestPaymentPend = (config) => {
   return res;
 };
 
+const requestTabletStatus = (config) => {
+  const url = `${endpoints.credit.tablet.status}?storeCode=${config.storeCode}`;
+  const auth = {
+    auth: {
+      username: 'torder-credit-api',
+      password: 'xldhejtjsrufwp123!',
+    }
+  };
+
+  const res = axios.get(url, auth);
+  return res;
+};
+
 
 export default {
   requestPayDetails,
   requestCashAllCommit,
   requestCashCommit,
   requestCashCancelCommit,
-  requestPaymentPend
+  requestPaymentPend,
+  requestTabletStatus
 };

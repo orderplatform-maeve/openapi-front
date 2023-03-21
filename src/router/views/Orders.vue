@@ -403,6 +403,10 @@ export default {
         return '카드';
       }
 
+      if (creditType === 'card') {
+        return '카드';
+      }
+
       if (creditType === 'complex') {
         return '카드+현금';
       }

@@ -117,6 +117,9 @@ const endpoints = {
     cashCommit: `${PAYMENT_URL}/credit/v2/cash-commit`,
     cashCancelCommit: `${PAYMENT_URL}/credit/v2/cash-cancel-commit`,
     pend: `${PAYMENT_URL}/credit/v2/pays/pend`,
+    tablet: {
+      status: `${PAYMENT_URL}/credit/v2/tablet/status`,
+    },
   },
 };
 
