@@ -25,6 +25,7 @@
       span 추가기능
       img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_w.png")
     router-link.paid-history(v-if="visibleOrderButton" :to="paths.paymentDetails" :class="{activeButton: path === '/paymentDetails'}") 결제내역
+    router-link(v-if="visibleOrderButton && isCreditUseStore" :to="paths.holdPaymentOrder" :class="{activeButton: path === '/holdPaymentOrder'}") 결제 보류 처리
   .wrap-bottom-button-area
     .on-off-button-list
       .wrap-on-off-button
@@ -88,6 +89,7 @@ export default {
         newStatus: 0,
         noticeNewCount: 0,
       },
+      isCreditUseStore: 0,
     };
   },
   methods: {
@@ -393,6 +395,16 @@ export default {
         console.log('에러');
       }
     },
+    async getConfigData() {
+      this.isLoading = true;
+
+      const fd = new FormData();
+      fd.append('store_code', this.$store.state.auth.store.store_code);
+
+      const config = await this.$store.dispatch('setMenuConfig', fd);
+      this.isCreditUseStore = config.init.preCreditTableUse;
+
+    },
   },
   // created() {
   //   this.getDefaultNoticeData();
@@ -401,6 +413,7 @@ export default {
     // console.log('first');
     this.loopBeep();
     this.getDefaultNoticeData();
+    this.getConfigData();
   },
   computed: {
     getNoticeQuantity() {
