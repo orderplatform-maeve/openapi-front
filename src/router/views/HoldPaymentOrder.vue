@@ -83,7 +83,8 @@ import { RefreshBlackNewIcon } from '@svg';
 const {
   requestPaymentPend,
   requestTabletStatus,
-  requestPendingList
+  requestPendingList,
+  requestCreditWebLogs
 } = credit;
 
 export default {
@@ -377,9 +378,28 @@ export default {
     },
     clickAndroidCallCancelPayment(order) {
       const orderKey = order.orderKey;
+
       if (window.UUID) {
         window.UUID.cancelPaymentPending(orderKey);
+        this.postCreditWeblogFromAndroid(orderKey, order.tabletCode);
       }
+    },
+    async postCreditWeblogFromAndroid(orderKey, tabletCode) {
+      try {
+        const config = {
+          orderKey,
+          status: 'SEND_PENDING_ORDER_KEY_TO_ANDROID',
+          store: {
+            storeCode: this.$store.state.auth.store.store_code,
+            tabletCode,
+          }
+        };
+
+        await requestCreditWebLogs(config);
+      } catch (error) {
+        console.log(error);
+      }
+
     }
   },
   mounted() {

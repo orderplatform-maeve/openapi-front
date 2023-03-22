@@ -96,8 +96,21 @@ const requestPendingList = (config) => {
     }
   };
   const res = axios.get(url, auth);
-  return res;
 
+  return res;
+};
+
+const requestCreditWebLogs = (payload) => {
+  const url = endpoints.credit.webLogs;
+  const auth = {
+    auth: {
+      username: 'torder-credit-api',
+      password: 'xldhejtjsrufwp123!',
+    }
+  };
+
+  const res = axios.post(url, payload, auth);
+  return res;
 };
 
 export default {
@@ -107,5 +120,6 @@ export default {
   requestCashCancelCommit,
   requestPaymentPend,
   requestTabletStatus,
-  requestPendingList
+  requestPendingList,
+  requestCreditWebLogs
 };

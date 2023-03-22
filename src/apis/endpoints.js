@@ -121,6 +121,7 @@ const endpoints = {
       status: `${PAYMENT_URL}/credit/v2/tablet/status`,
     },
     pends: `${PAYMENT_URL}/credit/v2/pays/pends`,
+    webLogs: `${PAYMENT_URL}/credit/v2/web-logs`,
   },
 };
 
