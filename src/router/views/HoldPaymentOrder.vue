@@ -614,7 +614,7 @@ export default {
 
           .detail-button {
             font-family: 'Spoqa Han Sans Neo', 'sans-serif';
-            font-size: 1.25vw;
+            font-size: 1.0938vw;
             letter-spacing: -0.03125vw;
             color: #fff;
             width: 5.9375vw;
