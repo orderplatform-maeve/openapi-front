@@ -59,6 +59,7 @@ const requestCashCancelCommit = (config) => {
   return res;
 };
 
+// 결제주문 보류처리 요청
 const requestPaymentPend = (config) => {
   const url = `${endpoints.credit.pend}`;
   const auth = {
@@ -85,6 +86,19 @@ const requestTabletStatus = (config) => {
   return res;
 };
 
+// 보류된 주문 리스트 조회
+const requestPendingList = (config) => {
+  const url = `${endpoints.credit.pends}?storeCode=${config.storeCode}&tabletNumber=${config.tabletNumber}&startDatetime=${config.startDatetime}&endDatetime=${config.endDatetime}&page=${config.page}&size=${config.size}`;
+  const auth = {
+    auth: {
+      username: 'torder-credit-api',
+      password: 'xldhejtjsrufwp123!',
+    }
+  };
+  const res = axios.get(url, auth);
+  return res;
+
+};
 
 export default {
   requestPayDetails,
@@ -92,5 +106,6 @@ export default {
   requestCashCommit,
   requestCashCancelCommit,
   requestPaymentPend,
-  requestTabletStatus
+  requestTabletStatus,
+  requestPendingList
 };

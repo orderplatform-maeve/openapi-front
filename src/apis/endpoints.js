@@ -120,6 +120,7 @@ const endpoints = {
     tablet: {
       status: `${PAYMENT_URL}/credit/v2/tablet/status`,
     },
+    pends: `${PAYMENT_URL}/credit/v2/pays/pends`,
   },
 };
 

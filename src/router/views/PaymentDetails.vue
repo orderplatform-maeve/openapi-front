@@ -546,6 +546,7 @@ export default {
         justify-content: space-between;
         align-items: center;
         border-bottom: 0.0781vw solid #ccc;
+        justify-items: center;
 
         > p {
           min-height: 4.375vw;
