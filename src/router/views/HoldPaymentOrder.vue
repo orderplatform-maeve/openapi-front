@@ -27,10 +27,11 @@
       p 테이블 보기
     .panel-item(@click="setPanelType('list')" :class="{'panel-active': panelType === 'list'}")
       p 보류 리스트
-  .panel-show-table(v-if="panelType === 'table'")
-    button(:class="getTableBoxStyle(table)" v-for="table in tableStatusList" :key="table.tabletCode" @click="openCheckAlert(table)")
-      p {{ getTableName(table) }}
-      p {{ getStatusText(table) }}
+  .panel-show-table-wrap(v-if="panelType === 'table'")
+    .panel-show-table
+      button(:class="getTableBoxStyle(table)" v-for="table in tableStatusList" :key="table.tabletCode" @click="openCheckAlert(table)")
+        p {{ getTableName(table) }}
+        p {{ getStatusText(table) }}
   .panel-show-list(v-if="panelType === 'list'")
     .search-button-wrap
       button.search-button(@click.stop="openSearchModal('date')")
@@ -499,14 +500,18 @@ export default {
     }
   }
 
+
+  .panel-show-table-wrap {
+    background-color: #fff;
+    height: 100%;
+    overflow-y: scroll;
+
   .panel-show-table {
     display: grid;
-    grid-template-columns: repeat(auto-fill, 10.9375vw);
+    grid-template-columns: repeat(5, minmax(140px, auto));
     align-items: center;
     gap: 0.78125vw;
-    overflow-y: scroll;
     padding: 1.5625vw !important;
-    background-color: #fff;
     .table-box {
       min-height: 4.6875vw;
       display: flex;
@@ -535,6 +540,8 @@ export default {
 
 
   }
+  }
+
 
   .panel-show-list {
     padding: 1.5625vw !important;
