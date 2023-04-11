@@ -174,8 +174,6 @@ export default {
       isCashModal: false,
       cashType: '',
       detailPayData: {},
-      doubleClick: false,
-      timer: 0,
     };
   },
   computed: {
@@ -278,21 +276,6 @@ export default {
     },
     async getPaysDetails(page) {
       try {
-        if (this.doubleClick) {
-          return;
-        }
-
-        if (this.timer) {
-          clearTimeout(this.timer);
-        }
-
-        this.timer = setTimeout(() => {
-          this.doubleClick = false;
-          return;
-        }, 2000);
-
-        this.doubleClick = true;
-
         const config = {
           page: page - 1,
           size: 30,
