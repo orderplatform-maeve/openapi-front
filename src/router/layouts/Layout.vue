@@ -889,6 +889,12 @@ export default {
     closeHappyTalk() {
       this.isOpenHappyTalk = false;
     },
+    openCustomerService() {
+      this.isOpenCustomerService = true;
+    },
+    closeCustomerService() {
+      this.isOpenCustomerService = false;
+    },
     toggleCustomerServiceButton() {
       if (!this.isOpenCustomerService) {
         this.openCustomerService();
@@ -1109,7 +1115,7 @@ export default {
   right: 0;
   bottom: 0.78125vw;
   width: 9.140625vw;
-  height: 7.03125vw;
+  height: 22.03125vw;
   display: flex;
   align-items: center;
   transition: transform 0.5s linear;

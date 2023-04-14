@@ -54,7 +54,6 @@ export default {
   },
   methods: {
     checkOrderTableStyle(table) {
-      console.log('test');
       const orderTableStyle = {
         'order-table-color': table.orderId !== "1"
       };

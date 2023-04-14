@@ -26,4 +26,3 @@ export { default as OrdersIP } from './OrdersIP';
 export { default as OrderStatusCheck } from './OrderStatusCheck';
 export { default as TableCreditInfoList } from './TableCreditInfoList';
 export { default as UpdateGames } from './UpdateGames';
-export { default as CustomerService } from './CustomerService';
