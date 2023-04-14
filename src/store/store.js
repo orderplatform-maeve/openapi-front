@@ -101,14 +101,18 @@ const socket = {
           commit('SET_ORDER', order);
           state.posResponseMessage = false;
           state.orderModal = true;
+
+          if (window?.UUID?.playOrderBell) {
+            window.UUID.playOrderBell();
+          }
           commit('PUSH_ORDER', order);
           state.orderKeys.set(order.order_view_key, true);
         }
 
         if (!state.orderKeys.has(order.order_view_key)) {
-          if (window?.UUID?.playOrderBell) {
-            window.UUID.playOrderBell();
-          }
+          // if (window?.UUID?.playOrderBell) {
+          //   window.UUID.playOrderBell();
+          // }
           if (order.viewType === 5) {
             state.auction = true;
           } else {
