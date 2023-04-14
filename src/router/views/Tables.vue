@@ -2,7 +2,7 @@
   .tables-page-container
     p.tables-page-title 테이블 주문 (테스트)
     .order-table-list
-      button.order-table-name(v-for="table in sortedTables" :key="table.Ta_id" @click="openTableOrders(table)")
+      button.order-table-name(v-for="table in sortedTables" :key="table.Ta_id" @click="openTableOrders(table)" :class="checkOrderTableStyle(table)")
         p {{getTableName(table)}}
         p {{table.ordering ? '주문중' : ''}}
     .wrap-all-table-reset-button
@@ -53,6 +53,14 @@ export default {
     this.initialized();
   },
   methods: {
+    checkOrderTableStyle(table) {
+      console.log('test');
+      const orderTableStyle = {
+        'order-table-color': table.orderId !== "1"
+      };
+
+      return orderTableStyle;
+    },
     async initialized() {
       if (this.$store.state.tables.length === 0) {
         try {
@@ -197,6 +205,11 @@ export default {
       color: #666;
       letter-spacing: -0.0390625vw;
       text-align: center;
+    }
+
+    .order-table-color {
+      background-color: #fc0000;
+      color: #fff;
     }
   }
 

@@ -29,6 +29,11 @@
     :stores="stores"
     :time="time"
   )
+  div(:class="getCustomerServiceStyle" v-if="!isDevTeam")
+    .wrap-customer-service-arrow(@click="toggleCustomerServiceButton")
+      .wrap-triangle-arrow
+        .triangle-arrow
+    .wrap-customer-service-icon
   div(:class="getHappyTalkStyle" v-if="!isDevTeam")
     .wrap-happy-talk-arrow(@click="toggleHappyTalkButton")
       .wrap-triangle-arrow
@@ -87,7 +92,8 @@ import {
   happyTalk as happyTalkAction
 } from '@apis';
 import {
-  HappyTalk
+  HappyTalk,
+  CustomerService
 } from '@svg';
 
 const {
@@ -108,7 +114,8 @@ export default {
     PhoneNumberErrorModal,
     HappyTalkSuccessModal,
     LogoutSecret,
-    PosErrorModal
+    PosErrorModal,
+    CustomerService
   },
   // https://vuex.vuejs.org/kr/guide/state.html#vuex-%EC%83%81%ED%83%9C%EB%A5%BC-vue-%EC%BB%B4%ED%8F%AC%EB%84%8C%ED%8A%B8%EC%97%90%EC%84%9C-%EA%B0%80%EC%A0%B8%EC%98%A4%EA%B8%B0
   store,
@@ -125,6 +132,7 @@ export default {
       version,
       popupTouchStartPosition: 0,
       popupTouchEndPosition: 0,
+      isOpenCustomerService: true,
       isOpenHappyTalk: true,
       phoneNumber: '010-',
       isVisibleHappyTalkApplyModal: false,
@@ -235,6 +243,22 @@ export default {
     },
     getNoticeEmergency() {
       return this.$store.state.noticePopup.isNoticeEmergency;
+    },
+    getCustomerServiceStyle() {
+      const customerServiceStyle = {
+        'wrap-customer-service': true,
+        'close-wrap-customer-service': !this.isOpenCustomerService,
+      };
+
+      return customerServiceStyle;
+    },
+    getCustomerServiceArrowStyle() {
+      const customerServiceArrowStyle = {
+        'triangle-right': this.isOpenHappyTalk,
+        'triangle-left': !this.isOpenHappyTalk,
+      };
+
+      return customerServiceArrowStyle;
     },
     getHappyTalkStyle() {
       const happyTalkStyle = {
@@ -865,6 +889,13 @@ export default {
     closeHappyTalk() {
       this.isOpenHappyTalk = false;
     },
+    toggleCustomerServiceButton() {
+      if (!this.isOpenCustomerService) {
+        this.openCustomerService();
+        return;
+      }
+      this.closeCustomerService();
+    },
     toggleHappyTalkButton() {
       if (!this.isOpenHappyTalk) {
         this.openHappyTalk();
@@ -1073,5 +1104,57 @@ export default {
   }
 }
 
+.wrap-customer-service {
+  position: fixed;
+  right: 0;
+  bottom: 0.78125vw;
+  width: 9.140625vw;
+  height: 7.03125vw;
+  display: flex;
+  align-items: center;
+  transition: transform 0.5s linear;
 
+  .wrap-customer-service-arrow {
+    width: 2.1875vw;
+    height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+
+    .wrap-triangle-arrow {
+      padding: 1.6vw 0.78125vw 1.6vw 1.171875vw !important;
+      box-sizing: border-box;
+      border-right: solid 0.15625vw #C3A908;
+      .triangle-arrow {
+        width: 0;
+        height: 0;
+        border-top: 0.5859375vw solid transparent;
+        border-bottom: 0.5859375vw solid transparent;
+        border-left: 0.5859375vw solid  #000;
+        border-right: none;
+      }
+    }
+  }
+
+  .wrap-customer-service-icon {
+    position: absolute;
+  }
+}
+
+.close-wrap-customer-service {
+  transform: translateX(7.109375vw);
+  .wrap-customer-service-arrow {
+    .wrap-triangle-arrow {
+      .triangle-arrow {
+        width: 0;
+        height: 0;
+        border-top: 0.5859375vw solid transparent;
+        border-right: 0.5859375vw solid #000;
+        border-bottom: 0.5859375vw solid transparent;
+        border-left: none;
+      }
+    }
+  }
+}
 </style>
