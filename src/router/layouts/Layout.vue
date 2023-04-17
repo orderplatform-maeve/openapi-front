@@ -88,7 +88,6 @@ import {
 } from '@apis';
 import {
   HappyTalk,
-  CustomerService
 } from '@svg';
 
 const {
