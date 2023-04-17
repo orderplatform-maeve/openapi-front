@@ -29,11 +29,6 @@
     :stores="stores"
     :time="time"
   )
-  div(:class="getCustomerServiceStyle" v-if="!isDevTeam")
-    .wrap-customer-service-arrow(@click="toggleCustomerServiceButton")
-      .wrap-triangle-arrow
-        .triangle-arrow
-    .wrap-customer-service-icon
   div(:class="getHappyTalkStyle" v-if="!isDevTeam")
     .wrap-happy-talk-arrow(@click="toggleHappyTalkButton")
       .wrap-triangle-arrow
@@ -243,22 +238,6 @@ export default {
     },
     getNoticeEmergency() {
       return this.$store.state.noticePopup.isNoticeEmergency;
-    },
-    getCustomerServiceStyle() {
-      const customerServiceStyle = {
-        'wrap-customer-service': true,
-        'close-wrap-customer-service': !this.isOpenCustomerService,
-      };
-
-      return customerServiceStyle;
-    },
-    getCustomerServiceArrowStyle() {
-      const customerServiceArrowStyle = {
-        'triangle-right': this.isOpenHappyTalk,
-        'triangle-left': !this.isOpenHappyTalk,
-      };
-
-      return customerServiceArrowStyle;
     },
     getHappyTalkStyle() {
       const happyTalkStyle = {
@@ -895,13 +874,6 @@ export default {
     closeCustomerService() {
       this.isOpenCustomerService = false;
     },
-    toggleCustomerServiceButton() {
-      if (!this.isOpenCustomerService) {
-        this.openCustomerService();
-        return;
-      }
-      this.closeCustomerService();
-    },
     toggleHappyTalkButton() {
       if (!this.isOpenHappyTalk) {
         this.openHappyTalk();
@@ -1060,30 +1032,30 @@ export default {
   position: fixed;
   right: 0;
   bottom: 0.78125vw;
-  width: 9.140625vw;
-  height: 7.03125vw;
+  width: 13.140625vw;
+  height: 6.03125vw;
   display: flex;
   align-items: center;
   transition: transform 0.5s linear;
 
   .wrap-happy-talk-arrow {
     width: 2.1875vw;
-    height: 90px;
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 1;
 
     .wrap-triangle-arrow {
-      padding: 1.6vw 0.78125vw 1.6vw 1.171875vw !important;
+      padding: 1.8vw 0.78125vw 2vw 3vw !important;
       box-sizing: border-box;
-      border-right: solid 0.15625vw #C3A908;
+      border-right: solid 0.15625vw #391b1b;
+
       .triangle-arrow {
         width: 0;
         height: 0;
-        border-top: 0.5859375vw solid transparent;
-        border-bottom: 0.5859375vw solid transparent;
-        border-left: 0.5859375vw solid  #000;
+        border-top: 0.6859375vw solid transparent;
+        border-bottom: 0.6859375vw solid transparent;
+        border-left: 0.6859375vw solid  #000;
         border-right: none;
       }
     }
@@ -1095,15 +1067,15 @@ export default {
 }
 
 .close-wrap-happy-talk {
-  transform: translateX(7.109375vw);
+  transform: translateX(10.14vw);
   .wrap-happy-talk-arrow {
     .wrap-triangle-arrow {
       .triangle-arrow {
         width: 0;
         height: 0;
-        border-top: 0.5859375vw solid transparent;
-        border-right: 0.5859375vw solid #000;
-        border-bottom: 0.5859375vw solid transparent;
+        border-top: 0.6859375vw solid transparent;
+        border-right: 0.6859375vw solid #391b1b;
+        border-bottom: 0.6859375vw solid transparent;
         border-left: none;
       }
     }
@@ -1114,30 +1086,28 @@ export default {
   position: fixed;
   right: 0;
   bottom: 0.78125vw;
-  width: 9.140625vw;
-  height: 22.03125vw;
+  width: 13.140625vw;
+  height: 23.03125vw;
   display: flex;
   align-items: center;
   transition: transform 0.5s linear;
 
   .wrap-customer-service-arrow {
     width: 2.1875vw;
-    height: 90px;
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 1;
 
     .wrap-triangle-arrow {
-      padding: 1.6vw 0.78125vw 1.6vw 1.171875vw !important;
+      padding: 1.8vw 0.78125vw 2vw 3vw !important;
       box-sizing: border-box;
-      border-right: solid 0.15625vw #C3A908;
+      border-right: solid 0.15625vw #8d89fb;;
+
       .triangle-arrow {
-        width: 0;
-        height: 0;
-        border-top: 0.5859375vw solid transparent;
-        border-bottom: 0.5859375vw solid transparent;
-        border-left: 0.5859375vw solid  #000;
+        border-top: 0.6859375vw solid transparent;
+        border-bottom: 0.6859375vw solid transparent;
+        border-left: 0.6859375vw solid  #fff;
         border-right: none;
       }
     }
@@ -1149,15 +1119,13 @@ export default {
 }
 
 .close-wrap-customer-service {
-  transform: translateX(7.109375vw);
+  transform: translateX(10.14vw);
   .wrap-customer-service-arrow {
     .wrap-triangle-arrow {
       .triangle-arrow {
-        width: 0;
-        height: 0;
-        border-top: 0.5859375vw solid transparent;
-        border-right: 0.5859375vw solid #000;
-        border-bottom: 0.5859375vw solid transparent;
+        border-top: 0.6859375vw solid transparent;
+        border-right: 0.6859375vw solid #fff;
+        border-bottom: 0.6859375vw solid transparent;
         border-left: none;
       }
     }
