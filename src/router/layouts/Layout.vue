@@ -1019,7 +1019,7 @@ export default {
 <style lang="scss" scoped>
 .wrap-happy-talk {
   position: fixed;
-  right: 0;
+  right: -1.3889vw;
   bottom: 1.5vw;
   width: 13.140625vw;
   height: 6.03125vw;
