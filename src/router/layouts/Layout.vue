@@ -86,9 +86,7 @@ import {
   payments,
   happyTalk as happyTalkAction
 } from '@apis';
-import {
-  HappyTalk
-} from '@svg';
+import { HappyTalk } from '@svg';
 
 const {
   requestCardCancelCommit,
@@ -108,7 +106,7 @@ export default {
     PhoneNumberErrorModal,
     HappyTalkSuccessModal,
     LogoutSecret,
-    PosErrorModal
+    PosErrorModal,
   },
   // https://vuex.vuejs.org/kr/guide/state.html#vuex-%EC%83%81%ED%83%9C%EB%A5%BC-vue-%EC%BB%B4%ED%8F%AC%EB%84%8C%ED%8A%B8%EC%97%90%EC%84%9C-%EA%B0%80%EC%A0%B8%EC%98%A4%EA%B8%B0
   store,
@@ -1021,32 +1019,32 @@ export default {
 <style lang="scss" scoped>
 .wrap-happy-talk {
   position: fixed;
-  right: 0;
-  bottom: 0.78125vw;
-  width: 9.140625vw;
-  height: 7.03125vw;
+  right: -1.3889vw;
+  bottom: 1.5vw;
+  width: 13.140625vw;
+  height: 6.03125vw;
   display: flex;
   align-items: center;
   transition: transform 0.5s linear;
 
   .wrap-happy-talk-arrow {
     width: 2.1875vw;
-    height: 90px;
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 1;
 
     .wrap-triangle-arrow {
-      padding: 1.6vw 0.78125vw 1.6vw 1.171875vw !important;
+      padding: 1.8vw 0.78125vw 2vw 2vw !important;
       box-sizing: border-box;
-      border-right: solid 0.15625vw #C3A908;
+      border-right: solid 0.15625vw #391b1b;
+
       .triangle-arrow {
         width: 0;
         height: 0;
-        border-top: 0.5859375vw solid transparent;
-        border-bottom: 0.5859375vw solid transparent;
-        border-left: 0.5859375vw solid  #000;
+        border-top: 0.6859375vw solid transparent;
+        border-bottom: 0.6859375vw solid transparent;
+        border-left: 0.6859375vw solid  #000;
         border-right: none;
       }
     }
@@ -1058,20 +1056,18 @@ export default {
 }
 
 .close-wrap-happy-talk {
-  transform: translateX(7.109375vw);
+  transform: translateX(9.1vw);
   .wrap-happy-talk-arrow {
     .wrap-triangle-arrow {
       .triangle-arrow {
         width: 0;
         height: 0;
-        border-top: 0.5859375vw solid transparent;
-        border-right: 0.5859375vw solid #000;
-        border-bottom: 0.5859375vw solid transparent;
+        border-top: 0.6859375vw solid transparent;
+        border-right: 0.6859375vw solid #391b1b;
+        border-bottom: 0.6859375vw solid transparent;
         border-left: none;
       }
     }
   }
 }
-
-
 </style>
