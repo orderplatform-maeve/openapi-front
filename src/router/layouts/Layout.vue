@@ -1019,7 +1019,7 @@ export default {
 <style lang="scss" scoped>
 .wrap-happy-talk {
   position: fixed;
-  right: 0;
+  right: -1.3889vw;
   bottom: 1.5vw;
   width: 13.140625vw;
   height: 6.03125vw;
@@ -1056,7 +1056,7 @@ export default {
 }
 
 .close-wrap-happy-talk {
-  transform: translateX(10.5vw);
+  transform: translateX(9.1vw);
   .wrap-happy-talk-arrow {
     .wrap-triangle-arrow {
       .triangle-arrow {
