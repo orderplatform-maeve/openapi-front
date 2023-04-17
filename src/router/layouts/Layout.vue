@@ -1056,7 +1056,7 @@ export default {
 }
 
 .close-wrap-happy-talk {
-  transform: translateX(10.5vw);
+  transform: translateX(9.1vw);
   .wrap-happy-talk-arrow {
     .wrap-triangle-arrow {
       .triangle-arrow {
