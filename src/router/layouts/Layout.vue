@@ -86,9 +86,7 @@ import {
   payments,
   happyTalk as happyTalkAction
 } from '@apis';
-import {
-  HappyTalk,
-} from '@svg';
+import { HappyTalk } from '@svg';
 
 const {
   requestCardCancelCommit,
@@ -109,7 +107,6 @@ export default {
     HappyTalkSuccessModal,
     LogoutSecret,
     PosErrorModal,
-    CustomerService
   },
   // https://vuex.vuejs.org/kr/guide/state.html#vuex-%EC%83%81%ED%83%9C%EB%A5%BC-vue-%EC%BB%B4%ED%8F%AC%EB%84%8C%ED%8A%B8%EC%97%90%EC%84%9C-%EA%B0%80%EC%A0%B8%EC%98%A4%EA%B8%B0
   store,
@@ -126,7 +123,6 @@ export default {
       version,
       popupTouchStartPosition: 0,
       popupTouchEndPosition: 0,
-      isOpenCustomerService: true,
       isOpenHappyTalk: true,
       phoneNumber: '010-',
       isVisibleHappyTalkApplyModal: false,
@@ -867,12 +863,6 @@ export default {
     closeHappyTalk() {
       this.isOpenHappyTalk = false;
     },
-    openCustomerService() {
-      this.isOpenCustomerService = true;
-    },
-    closeCustomerService() {
-      this.isOpenCustomerService = false;
-    },
     toggleHappyTalkButton() {
       if (!this.isOpenHappyTalk) {
         this.openHappyTalk();
@@ -1030,7 +1020,7 @@ export default {
 .wrap-happy-talk {
   position: fixed;
   right: 0;
-  bottom: 0.78125vw;
+  bottom: 1.5vw;
   width: 13.140625vw;
   height: 6.03125vw;
   display: flex;
@@ -1074,56 +1064,6 @@ export default {
         height: 0;
         border-top: 0.6859375vw solid transparent;
         border-right: 0.6859375vw solid #391b1b;
-        border-bottom: 0.6859375vw solid transparent;
-        border-left: none;
-      }
-    }
-  }
-}
-
-.wrap-customer-service {
-  position: fixed;
-  right: 0;
-  bottom: 0.78125vw;
-  width: 13.140625vw;
-  height: 23.03125vw;
-  display: flex;
-  align-items: center;
-  transition: transform 0.5s linear;
-
-  .wrap-customer-service-arrow {
-    width: 2.1875vw;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1;
-
-    .wrap-triangle-arrow {
-      padding: 1.8vw 0.78125vw 2vw 3vw !important;
-      box-sizing: border-box;
-      border-right: solid 0.15625vw #8d89fb;;
-
-      .triangle-arrow {
-        border-top: 0.6859375vw solid transparent;
-        border-bottom: 0.6859375vw solid transparent;
-        border-left: 0.6859375vw solid  #fff;
-        border-right: none;
-      }
-    }
-  }
-
-  .wrap-customer-service-icon {
-    position: absolute;
-  }
-}
-
-.close-wrap-customer-service {
-  transform: translateX(10.14vw);
-  .wrap-customer-service-arrow {
-    .wrap-triangle-arrow {
-      .triangle-arrow {
-        border-top: 0.6859375vw solid transparent;
-        border-right: 0.6859375vw solid #fff;
         border-bottom: 0.6859375vw solid transparent;
         border-left: none;
       }
