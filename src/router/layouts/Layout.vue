@@ -1035,7 +1035,7 @@ export default {
     z-index: 1;
 
     .wrap-triangle-arrow {
-      padding: 1.8vw 0.78125vw 2vw 3vw !important;
+      padding: 1.8vw 0.78125vw 2vw 2vw !important;
       box-sizing: border-box;
       border-right: solid 0.15625vw #391b1b;
 
@@ -1056,7 +1056,7 @@ export default {
 }
 
 .close-wrap-happy-talk {
-  transform: translateX(10.14vw);
+  transform: translateX(10.5vw);
   .wrap-happy-talk-arrow {
     .wrap-triangle-arrow {
       .triangle-arrow {
