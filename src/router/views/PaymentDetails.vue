@@ -96,7 +96,8 @@ import { credit } from '@apis';
 const {
   requestPayDetails,
   requestCashCommit,
-  requestCashCancelCommit
+  requestCashCancelCommit,
+  requestCreditWebLogs
 } = credit;
 
 export default {
@@ -356,17 +357,41 @@ export default {
       this.isDetailModal = true;
     },
     closeDetailModal() {
+      this.detailPayData = {};
       this.isDetailModal = false;
     },
     openPayCheckModal(payment) {
       this.detailPayData = payment;
-      if (this.detailPayData.paymentConfirmation === '현금 확인 요청') {
+      if (payment.paymentConfirmation === '현금 확인 요청') {
         this.cashType = 'CHECK';
+        this.isCashModal = true;
       }
-      if (this.detailPayData.paymentConfirmation === '현금 취소 요청') {
+      if (payment.paymentConfirmation === '현금 취소 요청') {
         this.cashType = 'CANCEL';
+        this.isCashModal = true;
       }
-      this.isCashModal = true;
+      if (payment.paymentConfirmation === '결제 취소') {
+        if (window.UUID) {
+          window.UUID.cancelPaymentPending(payment.orderKey);
+          this.postCreditWeblogFromAndroid(payment.orderKey, payment.tabletCode);
+        }
+      }
+    },
+    async postCreditWeblogFromAndroid(orderKey, tabletCode) {
+      try {
+        const config = {
+          orderKey,
+          status: 'SEND_PENDING_ORDER_KEY_TO_ANDROID',
+          store: {
+            storeCode: this.$store.state.auth.store.store_code,
+            tabletCode,
+          }
+        };
+
+        await requestCreditWebLogs(config);
+      } catch (error) {
+        console.log(error);
+      }
     },
     closePayCheckModal() {
       this.isCashModal = false;
