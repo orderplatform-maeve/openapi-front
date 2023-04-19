@@ -480,7 +480,7 @@ const authentication = {
         }
 
         if (res.data.shop_data.length === 0) {
-          throw '가게 정보 리스트가 빈 배열 입니다.';
+          throw '로그인 정보가 없습니다.';
         }
 
         const member = {
