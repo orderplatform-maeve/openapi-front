@@ -413,7 +413,7 @@ export default {
         } catch (error) {
           console.log(error);
         }
-      } );
+      });
     }
   },
   mounted() {
@@ -425,7 +425,7 @@ export default {
     this.getTabletsStatus();
     // 결제 보류 주문건 조회
     this.getPendingPaymentOrderList(1);
-    // 안드로이드 결제완료 수신
+    // 안드로이드 결제취소완료 수신
     this.catchCancelPaymentSuccess();
   },
 };

@@ -452,6 +452,20 @@ export default {
         'cash-cancel-row-bg': status === '포스 접수 실패',
         'cash-confirm-row-bg': status === '결제 진행 중'
       };
+    },
+    catchCancelPaymentSuccess() {
+      window.addEventListener('message', (event) => {
+        try {
+          const msg = event?.data;
+          const methodName = msg?.methodName;
+
+          if (methodName === 'pendPaymentResult') {
+            this.getPaysDetails(1);
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      });
     }
   },
   mounted() {
@@ -461,6 +475,8 @@ export default {
     this.pickerSelectToday();
     // 결제내역 조회 API
     this.getPaysDetails(1);
+    // 안드로이드 결제취소완료 수신
+    this.catchCancelPaymentSuccess();
   },
 };
 </script>
