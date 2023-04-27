@@ -1027,9 +1027,7 @@ export default {
       this.isVisibleLogoutConfirmModal = false;
     },
     goPaymentDetailsPage() {
-      if (this.$route.path === '/paymentDetails') {
-        this.$router.go(0);
-      } else {
+      if (!this.$route.path === '/paymentDetails') {
         this.$router.push('/paymentDetails');
       }
       this.$store.commit('updateCashPaymentCancelModal', false);

@@ -209,6 +209,9 @@ export default {
     paymentStatusValue() {
       return this.searchOptions.paymentStatus.selected === 'ALL' ? '' : this.searchOptions.paymentStatus.selected;
     },
+    cashPaymentCancelModal() {
+      return this.$store.state.cashPaymentCancelModal;
+    }
   },
   methods: {
     getPaymentConfirm(paymentConfirmation) {
@@ -466,6 +469,14 @@ export default {
           console.log(error);
         }
       });
+    },
+  },
+
+  watch: {
+    cashPaymentCancelModal() {
+      if (!this.cashPaymentCancelModal) {
+        this.getPaysDetails(1);
+      }
     }
   },
   mounted() {
