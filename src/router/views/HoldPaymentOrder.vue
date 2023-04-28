@@ -307,7 +307,14 @@ export default {
         if (res.data.resultCode === 200) {
           this.$store.commit('pushFlashMessage', '해당 테이블의 결제를 보류 처리 했습니다!');
           this.getTabletsStatus();
-        } else {
+        }
+        else if (res.resultCode === 412) {
+          const errorCode = Number(res.errorData.errorCode);
+          if (errorCode === -311 || errorCode === -807) {
+            this.$store.commit('pushFlashMessage', res.errorData.errorMessage);
+          }
+        }
+        else {
           this.$store.commit('pushFlashMessage', '결제 보류 처리에 실패했습니다. 티오더로 문의 바랍니다.');
         }
         this.$store.commit('updateIsAlertTwoBtModal', false);
