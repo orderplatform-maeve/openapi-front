@@ -313,6 +313,9 @@ export default {
           if (errorCode === -311 || errorCode === -807) {
             this.$store.commit('pushFlashMessage', res.errorData.errorMessage);
           }
+          else {
+            this.$store.commit('pushFlashMessage', '결제 보류 처리에 실패했습니다. 티오더로 문의 바랍니다.');
+          }
         }
         else {
           this.$store.commit('pushFlashMessage', '결제 보류 처리에 실패했습니다. 티오더로 문의 바랍니다.');
