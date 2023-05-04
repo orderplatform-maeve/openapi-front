@@ -191,7 +191,7 @@ export default {
     await this.getMenu();
     await this.getPreviousOrders();
     await this.getOrderData();
-    this.emitTargetTable();
+    // this.emitTargetTable();
     this.initialize();
     this.initTableName();
   },
@@ -689,27 +689,27 @@ export default {
       // return process.env.UPLOAD_TYPE === 'tmp';
       return process.env.STOP_REDIRECT;
     },
-    emitTargetTable() {
-      if (this.$route?.params?.id) {
-        const { store_code } = this.$store.state.auth.store;
-        this.timer = setInterval(() => {
-          // console.log('emitTargetTable', this.$route.params.id);
-          const payload = {
-            store: {
-              code: store_code,
-            },
-            type: '@request/ordering/location/table',
-            tableId: this.$route.params.id,
-            uCode: this.$store.state.uCode,
-            MACAddr: this.$store.state.MACAddr,
-            ordering: true,
-          };
-
-          this.$socket.emit('orderview', payload);
-
-        }, 1000);
-      }
-    },
+    // emitTargetTable() {
+    //   if (this.$route?.params?.id) {
+    //     const { store_code } = this.$store.state.auth.store;
+    //     this.timer = setInterval(() => {
+    //       // console.log('emitTargetTable', this.$route.params.id);
+    //       const payload = {
+    //         store: {
+    //           code: store_code,
+    //         },
+    //         type: '@request/ordering/location/table',
+    //         tableId: this.$route.params.id,
+    //         uCode: this.$store.state.uCode,
+    //         MACAddr: this.$store.state.MACAddr,
+    //         ordering: true,
+    //       };
+    //
+    //       this.$socket.emit('orderview', payload);
+    //
+    //     }, 1000);
+    //   }
+    // },
   },
 };
 </script>
