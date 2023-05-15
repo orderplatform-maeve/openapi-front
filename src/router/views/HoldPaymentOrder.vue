@@ -29,7 +29,12 @@
       p 보류 리스트
   .panel-show-table-wrap(v-if="panelType === 'table'")
     .panel-show-table
-      button(:class="getTableBoxStyle(table)" v-for="table in tableStatusList" :key="table.tabletCode" @click="openCheckAlert(table)")
+      button(
+        :class="getTableBoxStyle(table)"
+        v-for="table in tableStatusList"
+        :key="table.tabletCode"
+        @click="openCheckAlert(table)"
+      )
         p {{ getTableName(table) }}
         p {{ getStatusText(table) }}
   .panel-show-list(v-if="panelType === 'list'")
@@ -337,11 +342,18 @@ export default {
         'table-box': true,
         'status-paying' : table.status === 'PAYING',
         'state-fail': table.status === 'FAIL',
+        'state-paid' : table.status === 'PAID',
       };
     },
     getStatusText(table) {
-      if (table.status === 'PAYING' || table.status === 'FAIL') {
-        return table.status === 'PAYING' ? '결제 진행 중' : '포스 접수 실패';
+      if (table.status === 'PAYING') {
+        return '결제 진행 중';
+      }
+      if (table.status === 'FAIL') {
+        return '포스 접수 실패';
+      }
+      if (table.status === 'PAID') {
+        return '주문 확인 중';
       }
       return '';
     },
@@ -546,6 +558,12 @@ export default {
     .state-fail {
       background-color: #e33d3d;
       color: #fff;
+    }
+
+    .state-paid {
+      background-color: #a382ff;
+      color: #fff;
+
     }
 
 
