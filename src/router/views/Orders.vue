@@ -463,7 +463,7 @@ export default {
     getGoodsName(order) {
       const goodsList = order.order_info ?? [];
       const isOverOneGoodsList = goodsList.length > 1;
-      const firstGoodsName = goodsList[0]?.good_name;
+      const firstGoodsName = goodsList[0]?.display_name;
       const isUndefinedName = firstGoodsName === undefined;
 
       if (isUndefinedName) {

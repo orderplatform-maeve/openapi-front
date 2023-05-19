@@ -362,34 +362,36 @@ export default {
                 console.log('결제 취소 완료', vanData);
                 const requestCreditItem = this.$store?.state?.requestCreditItem;
                 if (!requestCreditItem?.key) {
-                  return this.showAlert(`key 값이 없습니다 아닙니다. 에러메세지: ${requestCreditItem?.key}`);
+                  return this.showAlert(`key 값이 없습니다. 에러메세지: ${requestCreditItem?.key}`);
                 }
                 if (!requestCreditItem?.id) {
-                  return this.showAlert(`id 값이 없습니다 아닙니다. 에러메세지: ${requestCreditItem?.id}`);
+                  return this.showAlert(`id 값이 없습니다. 에러메세지: ${requestCreditItem?.id}`);
                 }
                 if (!requestCreditItem?.creditStat) {
-                  return this.showAlert(`stat 값이 없습니다 아닙니다. 에러메세지: ${requestCreditItem?.creditStat}`);
+                  return this.showAlert(`stat 값이 없습니다. 에러메세지: ${requestCreditItem?.creditStat}`);
                 }
                 if (!requestCreditItem?.creditType) {
-                  return this.showAlert(`type 값이 없습니다 아닙니다. 에러메세지: ${requestCreditItem?.creditType}`);
+                  return this.showAlert(`type 값이 없습니다. 에러메세지: ${requestCreditItem?.creditType}`);
                 }
                 if (!requestCreditItem?.storeCode) {
-                  return this.showAlert(`storeCode 값이 없습니다 아닙니다. 에러메세지: ${requestCreditItem?.storeCode}`);
+                  return this.showAlert(`storeCode 값이 없습니다. 에러메세지: ${requestCreditItem?.storeCode}`);
                 }
                 if (!requestCreditItem?.tabletnumber) {
-                  return this.showAlert(`tabletnumber 값이 없습니다 아닙니다. 에러메세지: ${requestCreditItem?.tabletnumber}`);
+                  return this.showAlert(`tabletnumber 값이 없습니다. 에러메세지: ${requestCreditItem?.tabletnumber}`);
                 }
                 if (!requestCreditItem?.tableName) {
-                  return this.showAlert(`tableName 값이 없습니다 아닙니다. 에러메세지: ${requestCreditItem?.tableName}`);
+                  return this.showAlert(`tableName 값이 없습니다. 에러메세지: ${requestCreditItem?.tableName}`);
                 }
                 if (!requestCreditItem?.orderkey) {
-                  return this.showAlert(`orderkey 값이 없습니다 아닙니다. 에러메세지: ${requestCreditItem?.orderkey}`);
+                  return this.showAlert(`orderkey 값이 없습니다. 에러메세지: ${requestCreditItem?.orderkey}`);
                 }
 
                 const res = await requestCardCancelCommit(vanData);
                 if (res.status === 200) {
-                  const newItem = res?.data?.rowData;
-                  this.$store.commit('replacePaymentListItem', newItem);
+                  this.showAlert('승인 요청했습니다. 조회하여 새로고침 해주세요.');
+                  if (res.data.result) {
+                    const newItem = res?.data?.rowData;
+                    this.$store.commit('replacePaymentListItem', newItem);
                   // if (!res.data) {
                   //   return this.showAlert(`API cardCancelCommit 응답값 data이 없습니다 아닙니다. 응답값: ${newItem}`);
                   // }
@@ -405,6 +407,7 @@ export default {
                   //   currName: null,
                   //   index: null,
                   // });
+                  }
                 }
                 // return this.showAlert(`잘못된 response status 200이 아닙니다. status: ${res?.status}`);
 
@@ -416,14 +419,14 @@ export default {
                 return;
 
               } else {
-                return this.showAlert(`잘못된 responseCode 0000이 아닙니다. 에러메세지: ${vanData?.errorMessage}`);
+                return this.showAlert(`잘못된 responseCode 0000입니다. 에러메세지: ${vanData?.errorMessage}`);
               }
             } else {
               return this.showAlert(`잘못된 callBackPayment message 형태입니다. 출력값: ${msg?.result}`);
             }
           }
         } catch (error) {
-          return this.showAlert(`${event?.data?.methodName} 잘못된 message 형태입니다. 에러: ${error.message}`);
+          return this.showAlert('승인 요청했습니다. 조회하여 새로고침 해주세요.');
         }
       });
     },
