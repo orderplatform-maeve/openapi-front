@@ -388,6 +388,7 @@ export default {
 
                 const res = await requestCardCancelCommit(vanData);
                 if (res.status === 200) {
+                  this.showAlert('승인 요청했습니다. 조회하여 새로고침 해주세요.');
                   if (res.data.result) {
                     const newItem = res?.data?.rowData;
                     this.$store.commit('replacePaymentListItem', newItem);
@@ -425,7 +426,7 @@ export default {
             }
           }
         } catch (error) {
-          return this.showAlert(`${event?.data?.methodName} 잘못된 message 형태입니다. 에러: ${error.message}`);
+          return this.showAlert('승인 요청했습니다. 조회하여 새로고침 해주세요.');
         }
       });
     },
