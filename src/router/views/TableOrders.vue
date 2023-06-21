@@ -375,6 +375,7 @@ export default {
 
       const fd = new FormData();
       fd.append('store_code', this.$store.state.auth.store.store_code);
+      fd.append('api_type', 1);
 
       const config = await this.$store.dispatch('setMenuConfig', fd);
 
