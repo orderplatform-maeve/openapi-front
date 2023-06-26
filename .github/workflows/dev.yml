@@ -54,53 +54,70 @@ jobs:
         run: yarn deploy:action:dev
 
       - name: Actions-Slack
-        uses: 8398a7/action-slack@v3
+        uses: 8398a7/action-slack@v3.14.0
         with:
           status: custom
           fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
           custom_payload: |
             {
-              text: '오더뷰 개발 업데이트',
-              attachments: [{
-                color: '${{ job.status }}' === 'success' ? 'good' : '${{ job.status }}' === 'failure' ? 'danger' : 'warning',
-                fields: [
-                  {
-                    title: '업데이트 내용',
-                    value: `${process.env.AS_MESSAGE}`,
-                    short: false
-                  },
-                  {
-                    title: '저장소',
-                    value: `${process.env.AS_REPO}`,
-                    short: false
-                  },
-                  {
-                    title: '저자',
-                    value: `${process.env.AS_AUTHOR}`,
-                    short: false
-                  },
-                  {
-                    title: 'JOB',
-                    value: `${process.env.AS_JOB}`,
-                    short: false
-                  },
-                  {
-                    title: 'TOOK',
-                    value: `${process.env.AS_TOOK}`,
-                    short: false
-                  },
-                  {
-                    title: 'event name',
-                    value: `${process.env.AS_EVENT_NAME}`,
-                    short: false
-                  },
-                  {
-                    title: 'workflow',
-                    value: `${process.env.AS_WORKFLOW}`,
-                    short: false
-                  }
-                ]
-              }]
+              "attachments": [
+                {
+                  "color": '${{ job.status }}' === 'success' ? '#52BF90' : '${{ job.status }}' === 'failure' ? '#FF240D' : '#FFC000',
+                  "blocks": [
+                    {
+                      "type": "header",
+                      "text": {
+                        "type": "plain_text",
+                        "text": ":t'order: 마스터1 DEV UPDATE 알림"
+                      }
+                    },
+                    {
+                      "type": "divider"
+                    },
+                    {
+                      "type": "section",
+                      "fields": [
+                        {
+                          "type": "mrkdwn",
+                          "text": "*담당자*\n${{ github.event.pull_request.user.login }}"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "section",
+                      "fields": [
+                        {
+                          "type": "mrkdwn",
+                          "text": "*업데이트 내용*\n${{ github.event.pull_request.title }}"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "actions",
+                      "elements": [
+                        {
+                          "type": "button",
+                          "text": {
+                            "type": "plain_text",
+                            "text": "CI DEV",
+                            "emoji": true
+                          },
+                          "url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                        },
+                        {
+                          "type": "button",
+                          "text": {
+                            "type": "plain_text",
+                            "text": "PR 바로가기",
+                            "emoji": true
+                          },
+                          "url": "${{ github.event.pull_request.html_url }}"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} # required
