@@ -51,7 +51,7 @@
               div
                 p.new-product-good-name {{ good.displayName }}
                 div.option-setting-button(
-                  v-if="good.options"
+                  v-if="good.options && !isTorderTwo"
                   @click="openOptionSoldOutModal(good)"
                   ) 옵션 상태 변경
                   icon-under-white-arrow
@@ -79,6 +79,7 @@ export default {
         goodsCode: '',
         options: null,
       },
+      isTorderTwo: false,
     };
   },
   computed: {
@@ -345,9 +346,10 @@ export default {
 
       const config = await this.$store.dispatch('setMenuConfig', fd);
 
-      const { categorys, goods } = config;
+      const { categorys, goods, init } = config;
       const categories = categorys;
 
+      this.isTorderTwo = init.T_order_store_tablet_version.includes('order2');
       // console.log( goods[0]);
       // const ctgRes = await this.$store.dispatch('setCategories', fd);
       // const goodsRes = await this.$store.dispatch('setGoods', fd);
