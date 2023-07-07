@@ -3,7 +3,7 @@
   alert-modal(v-if="isAlertModal")
   auction-modal(v-if="order && auction")
   modal-order(v-if="order && orderModal")
-  PosErrorModal(v-if="order && posResponseMessage")
+  PosErrorModal(v-if="posResponseModal.isOn" :tableNumber="posResponseModal.tableNumber")
   modal-all-refresh(
     :show="visibleAllRefreshModal"
     :close="onCloseAllRefreshModal"
@@ -148,8 +148,8 @@ export default {
     auction() {
       return this.$store.state.auction;
     },
-    posResponseMessage() {
-      return this.$store.state.posResponseMessage;
+    posResponseModal() {
+      return this.$store.state.posResponseModal;
     },
     orderModal() {
       return this.$store.state.orderModal;
