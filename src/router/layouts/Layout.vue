@@ -3,7 +3,10 @@
   alert-modal(v-if="isAlertModal")
   auction-modal(v-if="order && auction")
   modal-order(v-if="order && orderModal")
-  PosErrorModal(v-if="posResponseModal.isOn" :tableNumber="posResponseModal.tableNumber")
+  PosErrorModal(
+    v-if="posResponseModal.isOn" 
+    :tableNumber="posResponseModal.tableNumber"
+  )
   modal-all-refresh(
     :show="visibleAllRefreshModal"
     :close="onCloseAllRefreshModal"
