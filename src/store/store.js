@@ -98,8 +98,11 @@ const socket = {
 
         if (order.type !== 'posResponseMessage' && !state.orderKeys.has(order.order_view_key)) {
           state.orderKeys.set(order.order_view_key, true);
+          if (state.posResponseModal.isOn) {
+            state.posResponseModal.isOn = false;
+            state.posResponseModal.tableNumber = '';
+          }
           commit('SET_ORDER', order);
-          state.posResponseMessage = false;
           state.orderModal = true;
 
           if (window?.UUID?.playOrderBell) {
@@ -130,8 +133,8 @@ const socket = {
         if (payload.tableNumber && payload.errorMsg?.length > 0) {
           // mutations에서 pos message에 대한 order가 set 되지 않을 경우 방지
           state.orderKeys.set(payload.order_view_key, true);
-          commit('SET_ORDER', payload);
-          state.posResponseMessage = true;
+          state.posResponseModal.isOn = true;
+          state.posResponseModal.tableNumber = payload.tableNumber;
           state.orderModal = false;
           // commit('PUSH_ORDER', order);
         }
@@ -572,8 +575,9 @@ const order = {
     auctionFlag(state, payload) {
       state.auction = payload;
     },
-    posResponseMessageFlag(state, payload) {
-      state.posResponseMessage = payload;
+    closePosResponseModal(state) {
+      state.posResponseModal.isOn = false;
+      state.posResponseModal.tableNumber = '';
     },
     optionSoldOutModalFlag(state, payload) {
       state.optionSoldOutModal = payload;
@@ -1425,7 +1429,10 @@ const payment = {
 const state = {
   order: undefined,
   auction : false,
-  posResponseMessage: false,
+  posResponseModal : {
+    isOn: false,
+    tableNumber: '',
+  },
   optionSoldOutModal: false,
   orderModal: false,
   orders: [],
