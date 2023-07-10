@@ -54,7 +54,7 @@ const minorVersion = 0;
 const getCurrentBucketKey = async () => {
   try {
     const prefix = `v/${majorVersion}/${minorVersion}/`;
-    const hotfixVersion = 0;
+    const hotfixVersion = '0';
     if (!hotfixVersion) { throw 'hotFix 버젼 넘버를 찾을수 없습니다.'; }
     const key = `${prefix}${hotfixVersion}`;
 
