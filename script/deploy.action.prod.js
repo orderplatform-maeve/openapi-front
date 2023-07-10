@@ -22,39 +22,39 @@ const s3 = new S3({ AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, SIGNATURE_VERSION 
 const majorVersion = 3;
 const minorVersion = 0;
 
-const getCurrentHotfixVersionAtS3 = async (prefix) => {
-  try {
-    const params = {
-      Bucket: BUCKET_NAME,
-      Prefix: prefix,
-    };
-    const data = await s3.listObjectsV2(params).promise();
+// const getCurrentHotfixVersionAtS3 = async (prefix) => {
+//   try {
+//     const params = {
+//       Bucket: BUCKET_NAME,
+//       Prefix: prefix,
+//     };
+//     const data = await s3.listObjectsV2(params).promise();
 
-    let beforeFolderName = -1;
-    const defineNextFolderName = (obj) => {
-      const skimPrefixPath = obj.Key.replace(prefix, '');
-      const slashIndex = skimPrefixPath.indexOf('/');
-      const currentFolderName = Number(skimPrefixPath.substr(0, slashIndex));
-      // console.log(currentFolderName, "<<<file path")
-      if (beforeFolderName < currentFolderName) {
-        beforeFolderName = currentFolderName;
-      }
-    };
+//     let beforeFolderName = -1;
+//     const defineNextFolderName = (obj) => {
+//       const skimPrefixPath = obj.Key.replace(prefix, '');
+//       const slashIndex = skimPrefixPath.indexOf('/');
+//       const currentFolderName = Number(skimPrefixPath.substr(0, slashIndex));
+//       // console.log(currentFolderName, "<<<file path")
+//       if (beforeFolderName < currentFolderName) {
+//         beforeFolderName = currentFolderName;
+//       }
+//     };
 
-    data.Contents.forEach(defineNextFolderName);
+//     data.Contents.forEach(defineNextFolderName);
 
-    const hotfixNumber = beforeFolderName + 1;
-    return hotfixNumber;
-  } catch (error) {
-    core.setFailed('There was an error viewing your album: ' + error.stack);
-    return false;
-  }
-};
+//     const hotfixNumber = beforeFolderName + 1;
+//     return hotfixNumber;
+//   } catch (error) {
+//     core.setFailed('There was an error viewing your album: ' + error.stack);
+//     return false;
+//   }
+// };
 
 const getCurrentBucketKey = async () => {
   try {
     const prefix = `v/${majorVersion}/${minorVersion}/`;
-    const hotfixVersion = await getCurrentHotfixVersionAtS3(prefix);
+    const hotfixVersion = 0;
     if (!hotfixVersion) { throw 'hotFix 버젼 넘버를 찾을수 없습니다.'; }
     const key = `${prefix}${hotfixVersion}`;
 
