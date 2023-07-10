@@ -3,7 +3,7 @@
   .wrap-pos-error-modal
     p.pos-error-modal-title 오류 발생
     .pos-error-modal-body
-      p.pos-error-modal-body-title {{tableNumber(order)}} 테이블
+      p.pos-error-modal-body-title {{ getTableName() }} 테이블
       p.pos-error-modal-body-message 주문이 정상적으로 접수되지 못하였습니다.
     .pos-error-modal-footer
       button.pos-error-modal-button-commit(@click="goErrorOrderList()") 주문 내역 오류 보기
@@ -12,6 +12,12 @@
 
 <script>
 export default {
+  props: {
+    tableNumber: {
+      type: String,
+      default: '',
+    },
+  },
   data() {
     return {
       interval: undefined,
@@ -19,20 +25,15 @@ export default {
       tableList: [],
     };
   },
-  computed: {
-    order() {
-      return this.$store.state.order;
-    },
-  },
   methods: {
     goErrorOrderList() {
       this.$router.push('/ordersIP');
       this.closeOrder();
     },
-    tableNumber(order) {
+    getTableName() {
       try {
         const matchingTableId = (table) => {
-          if (table.Ta_id === order.tableNumber) {
+          if (table.Ta_id === this.tableNumber) {
             return true;
           }
         };
@@ -53,8 +54,7 @@ export default {
     },
     closeOrder() {
       clearInterval(this.interval);
-      this.$store.commit('posResponseMessageFlag', false);
-      this.$store.commit('UNSET_ORDER');
+      this.$store.commit('closePosResponseModal', false);
     },
     async getTableList() {
       const params = { shop_code: this.$store.state.auth.store.store_code };
