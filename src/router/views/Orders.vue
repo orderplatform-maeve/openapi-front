@@ -481,7 +481,7 @@ export default {
 
         if (!this.isTorderTwo) {
           // 안드로이드 인터페이스 config 전송 (API 1.0)
-          // window.UUID.writeFile(JSON.stringify(res.data.data), '/torder/json/config.json');
+          window.UUID.writeFile(JSON.stringify(res.data.data), '/torder/json/config.json');
 
         } else {
           // 안드로이드 인터페이스 config 전송 (API 2.0)
