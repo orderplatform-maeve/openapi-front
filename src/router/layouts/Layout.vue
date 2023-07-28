@@ -1,14 +1,14 @@
 <template lang="pug">
 #orderview
   cash-payment-cancel-modal(
-    v-if="cashPaymentCancelModal"
+    v-if="cashPaymentCancelModal && (isTorderTwo || isRemakePaid)"
     :goPaymentDetailsPage="goPaymentDetailsPage"
     )
   alert-modal(v-if="isAlertModal")
   auction-modal(v-if="order && auction")
   modal-order(v-if="order && orderModal")
   PosErrorModal(
-    v-if="posResponseModal.isOn" 
+    v-if="posResponseModal.isOn"
     :tableNumber="posResponseModal.tableNumber"
   )
   modal-all-refresh(
@@ -262,6 +262,12 @@ export default {
     },
     getStopRedirect() {
       return process.env.STOP_REDIRECT;
+    },
+    isTorderTwo() {
+      return this.$store.state.isTorderTwo;
+    },
+    isRemakePaid() {
+      return this.$store.state.isRemakePaid;
     },
   },
   watch: {

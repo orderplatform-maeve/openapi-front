@@ -92,7 +92,7 @@ export default {
     },
     isTorderTwo() {
       return this.$store.state.isTorderTwo;
-    }
+    },
   },
   watch: {
     data(newData) {

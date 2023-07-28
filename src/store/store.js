@@ -700,7 +700,10 @@ const shop = {
     },
     updateIsTorderTwo(state, payload) {
       state.isTorderTwo = payload;
-    }
+    },
+    updateIsRemakePaid(state, payload) {
+      state.isRemakePaid = payload;
+    },
   },
   actions: {
     setStores: ({ commit }, stores) => {
@@ -724,6 +727,8 @@ const shop = {
         commit('setDeviceStatus', device);
         commit('updateStandardPriceUnit', target.standardPriceUnit);
         commit('updateIsTorderTwo', target.T_order_store_tablet_version.includes('order2'));
+        commit('updateIsRemakePaid', target.T_order_store_tablet_version.includes('remake'));
+
         return response;
       } catch (error) {
         console.error(error);
@@ -1499,6 +1504,7 @@ const state = {
   // 시작 위치: true, 종료 위치: false
   standardPriceFrontPosition: false,
   isTorderTwo: false,
+  isRemakePaid: false,
   cashPaymentCancelModal: false,
   cashPaymentCancelInfo: {
     table: {

@@ -24,8 +24,8 @@
     )
       span 추가기능
       img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_w.png")
-    router-link.paid-history(v-if="visibleOrderButton" :to="paths.paymentDetails" :class="{activeButton: path === '/paymentDetails'}") 결제내역
-    router-link(v-if="visibleOrderButton && isCreditUseStore" :to="paths.holdPaymentOrder" :class="{activeButton: path === '/holdPaymentOrder'}") 결제 보류 처리
+    router-link.paid-history(v-if="visibleOrderButton" :to="getPaidHistoryPath()" :class="{activeButton: path === getPaidHistoryPath()}") 결제내역
+    router-link(v-if="visibleOrderButton && (isTorderTwo || isRemakePaid)" :to="paths.holdPaymentOrder" :class="{activeButton: path === '/holdPaymentOrder'}") 결제 보류 처리
   .wrap-bottom-button-area
     .on-off-button-list
       .wrap-on-off-button
@@ -89,7 +89,7 @@ export default {
         newStatus: 0,
         noticeNewCount: 0,
       },
-      isCreditUseStore: 0,
+      creditUse: 0,
     };
   },
   methods: {
@@ -403,9 +403,12 @@ export default {
       fd.append('api_type', 1);
 
       const config = await this.$store.dispatch('setMenuConfig', fd);
-      this.isCreditUseStore = config.init.preCreditTableUse;
+      this.creditUse = config.init.preCreditTableUse;
 
     },
+    getPaidHistoryPath() {
+      return this.isTorderTwo ? paths.paymentDetails : paths.paymentManagement;
+    }
   },
   // created() {
   //   this.getDefaultNoticeData();
@@ -489,7 +492,13 @@ export default {
     },
     getStoreCode() {
       return this.$store.state.auth.store.store_code;
-    }
+    },
+    isTorderTwo() {
+      return this.$store.state.isTorderTwo;
+    },
+    isRemakePaid() {
+      return this.$store.state.isRemakePaid;
+    },
   }
 };
 </script>
