@@ -79,7 +79,6 @@ export default {
         goodsCode: '',
         options: null,
       },
-      isTorderTwo: false,
     };
   },
   computed: {
@@ -90,6 +89,9 @@ export default {
     optionSoldOutModalFlag() {
       const optionSoldOutModal = this.$store.state.optionSoldOutModal;
       return optionSoldOutModal;
+    },
+    isTorderTwo() {
+      return this.$store.state.isTorderTwo;
     }
   },
   watch: {
@@ -346,10 +348,9 @@ export default {
 
       const config = await this.$store.dispatch('setMenuConfig', fd);
 
-      const { categorys, goods, init } = config;
+      const { categorys, goods } = config;
       const categories = categorys;
 
-      this.isTorderTwo = init.T_order_store_tablet_version.includes('order2');
       // console.log( goods[0]);
       // const ctgRes = await this.$store.dispatch('setCategories', fd);
       // const goodsRes = await this.$store.dispatch('setGoods', fd);

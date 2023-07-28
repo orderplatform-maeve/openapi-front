@@ -686,6 +686,9 @@ const shop = {
         // 화폐단위가 '$', '¥'이면 가격 앞에 표시
         state.standardPriceFrontPosition = true;
       }
+    },
+    updateIsTorderTwo(state, payload) {
+      state.isTorderTwo = payload;
     }
   },
   actions: {
@@ -708,8 +711,8 @@ const shop = {
         };
 
         commit('setDeviceStatus', device);
-        commit('updateStandardPriceUnit', response.data.data.standardPriceUnit);
-
+        commit('updateStandardPriceUnit', target.standardPriceUnit);
+        commit('updateIsTorderTwo', target.T_order_store_tablet_version.includes('order2'));
         return response;
       } catch (error) {
         console.error(error);
@@ -1478,6 +1481,7 @@ const state = {
   standardPriceUnit: '원',
   // 시작 위치: true, 종료 위치: false
   standardPriceFrontPosition: false,
+  isTorderTwo: false,
 };
 
 const mutations = {
