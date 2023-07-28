@@ -490,7 +490,7 @@ export default {
             storeName: res.data.data.T_order_store_name,
             businessNumber: res.data.data.saupNumber,
             paymentInfo: {
-              usePrepayment: res.data.data.preCreditTableUse,
+              usePayment: Boolean(res.data.data.preCreditTableUse),
               vanType: res.data.data.vanInfo,
               vanDeviceId: res.data.data.storeVanTid,
               vanSerialNumber: res.data.data.storeSerialNumber,
