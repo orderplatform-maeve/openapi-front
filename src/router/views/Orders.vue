@@ -35,19 +35,19 @@
           check-box-disable
         p.event-text 이벤트 주문 내역만 보기
     .wrap-order-list(v-if="payloadStatus === 0")
-      .order-title-list
+      div(:class="getOrderTitleListStyle()")
         p.order-title 테이블번호
         p.order-title 주문유형
         p.order-title 주문금액
         p.order-title 결제금액
-        p.order-title 미수금
+        p.order-title(v-if="!isTorderTwo && !isRemakePaid") 미수금
         p.order-title 선/후불
         p.order-title 결제방식
         p.order-title 주문시간
         p.order-title 총 인원수
       .wrap-order-information-lists
         div(v-for="(order, index) in sortedOrders" :key="`order-index-`+index" :class="getOrderListStyle(order, index)")
-          .order-information-list(v-if="visibleOrderItem(order)" @click="openView(order)")
+          div(:class="getOrderInformationListStyle()" v-if="visibleOrderItem(order)" @click="openView(order)")
             p.order-information-table-number(:class="orderStyleCheck(order)") {{checkedTabletNum(order)}}
             p.order-information-order-type(:class="getOrderTypeStyle(order)") {{orderTypeCheck(order)}}
             p.order-information-price
@@ -58,7 +58,7 @@
               span(v-if="standardPriceFrontPosition") {{standardPriceUnit}}
               span {{getTotalAmount(order)}}
               span(v-if="!standardPriceFrontPosition") {{standardPriceUnit}}
-            p.order-information-unpaid-money(@click.stop="() => openMisuModal(order)")
+            p.order-information-unpaid-money(v-if="!isTorderTwo && !isRemakePaid" @click.stop="() => openMisuModal(order)")
               span(:class="{unpaid: getMisu(order) !== '미수금없음'}")
                 span(v-if="getVisibleWon(order) && standardPriceFrontPosition") {{standardPriceUnit}}
                 span {{ getMisu(order) }}
@@ -176,6 +176,9 @@ export default {
     },
     isTorderTwo() {
       return this.$store.state.isTorderTwo;
+    },
+    isRemakePaid() {
+      return this.$store.state.isRemakePaid;
     },
   },
   async mounted() {
@@ -525,6 +528,18 @@ export default {
       }
 
       return firstGoodsName;
+    },
+    getOrderTitleListStyle() {
+      return {
+        'order-title-list': true,
+        'remake-paid': this.isTorderTwo || this.isRemakePaid
+      };
+    },
+    getOrderInformationListStyle() {
+      return {
+        'order-information-list': true,
+        'remake-paid': this.isTorderTwo || this.isRemakePaid
+      };
     }
   },
 };
@@ -643,6 +658,7 @@ export default {
       padding: 3.75vh 0.78125vw 1.25vh !important;
       border-bottom: solid 0.078125vw #333333;
       box-sizing: border-box;
+      justify-content: center;
 
 
       .order-title {
@@ -650,6 +666,10 @@ export default {
         color: #fff;
         text-align: center;
       }
+    }
+
+    .remake-paid {
+      grid-template-columns: 12.71875vw 6.46875vw 10.375vw 10.375vw 4.75vw 11.3125vw 10.90625vw 4.375vw;
     }
 
     // 결제 포함 버전
@@ -662,6 +682,7 @@ export default {
           padding: 0 0.78125vw !important;
           display: grid;
           grid-template-columns: 11.71875vw 5.46875vw 9.375vw 9.375vw 9.375vw 3.75vw 10.3125vw 8.90625vw 4.375vw;
+          justify-content: center;
           align-items: center;
           gap: 0.78125vw;
           box-sizing: border-box;
@@ -735,6 +756,10 @@ export default {
             align-items: center;
             border-radius: 0.390625vw;
           }
+        }
+
+        .remake-paid {
+          grid-template-columns: 12.71875vw 6.46875vw 10.375vw 10.375vw 4.75vw 11.3125vw 10.90625vw 4.375vw;
         }
       }
 
