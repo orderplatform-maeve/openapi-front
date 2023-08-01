@@ -102,6 +102,8 @@ export default {
       panelType: 'table',
       doubleClick: false,
       timer: 0,
+      holdDoubleClick: false,
+      holdTimer: 0,
       //
       pageInfo: {
         currentPageNo: 0, // 현재페이지 (0)
@@ -302,6 +304,22 @@ export default {
     },
     async postPendPaymentTableOrder() {
       try {
+
+        if (this.holdDoubleClick) {
+          return;
+        }
+
+        if (this.holdTimer) {
+          clearTimeout(this.holdTimer);
+        }
+
+        this.holdTimer = setTimeout(() => {
+          this.holdDoubleClick = false;
+          return;
+        }, 2000);
+
+        this.holdDoubleClick = true;
+
         const config = {
           storeCode: this.$store.state.auth.store.store_code,
           tabletCode: this.currentTable.tabletCode,
