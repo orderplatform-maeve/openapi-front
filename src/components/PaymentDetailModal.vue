@@ -41,6 +41,8 @@
         .table-body {{ detailPayData.cancelApprovalDatetime }}
         .table-head
         .table-body
+    .bottom-button-wrap
+      button.force-cancel-button(v-if="showOrderForceCancelButton") 주문 강제 취소
 </template>
 
 <script>
@@ -65,6 +67,12 @@ export default {
     showCancelDate() {
       return this.detailPayData.paymentStatus === '취소';
     },
+    showOrderForceCancelButton() {
+      return this.detailPayData.status === 3; // 성공한 주문에 대한 결제취소 요청
+    }
+  },
+  mounted() {
+    console.log(this.detailPayData);
   },
 };
 
@@ -136,6 +144,22 @@ export default {
 
       .table-row:last-child {
         border-bottom: 0.0781vw solid #ccc;
+      }
+    }
+
+    .bottom-button-wrap {
+      display: flex;
+      justify-content: center;
+
+      .force-cancel-button {
+        border: none;
+        width: 18.7500vw;
+        height: 4.6875vw;
+        background-color: #fc0000;
+        font-size: 2.0313vw;
+        color:#fff;
+        border-radius: 1.015625vw;
+        margin-top: -1.7969vw;
       }
     }
   }
