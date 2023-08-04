@@ -48,7 +48,7 @@
       .wrap-order-information-lists
         div(v-for="(order, index) in sortedOrders" :key="`order-index-`+index" :class="getOrderListStyle(order, index)")
           div(:class="getOrderInformationListStyle()" v-if="visibleOrderItem(order)" @click="openView(order)")
-            p.order-information-table-number(:class="orderStyleCheck(order)") {{checkedTabletNum(order)}}
+            p.order-information-table-number(:class="orderStyleCheck(order)") {{checkedTabletNum(order) }}
             p.order-information-order-type(:class="getOrderTypeStyle(order)") {{orderTypeCheck(order)}}
             p.order-information-price
               span(v-if="standardPriceFrontPosition") {{standardPriceUnit}}
@@ -321,6 +321,9 @@ export default {
     },
     orderTypeCheck(order) {
       const viewType = order.viewType;
+      if (order.is_cancel_order) {
+        return '주문취소';
+      }
 
       if (viewType === 0) {
         return '첫주문';
@@ -373,20 +376,13 @@ export default {
     getOrderTypeStyle(order) {
       const orderType = this.orderTypeCheck(order);
 
-      if (orderType === '호출') {
-        return 'orderFontColorBlue';
-      }
-
-      if (orderType === '세팅완료') {
-        return 'orderFontColorOrange';
-      }
-
-      if (orderType === '평가') {
-        return 'orderFontColorYellow';
-      }
-      if (orderType === '경매' || orderType === '게임') {
-        return 'orderFontColorGreen';
-      }
+      return {
+        'text-through': this.getIsCancelOrder(order),
+        'orderFontColorBlue': orderType === '호출',
+        'orderFontColorOrange': orderType === '세팅완료',
+        'orderFontColorYellow': orderType === '평가',
+        'orderFontColorGreen': orderType === '경매' || orderType === '게임'
+      };
     },
     paidTypeCheck(order) {
       if (order.paidOrder) {
@@ -430,6 +426,10 @@ export default {
       if (creditType === 'V2_BY_MENU') {
         return '메뉴별결제';
       }
+    },
+    getIsCancelOrder(order) {
+      console.log(order.is_cancel_order);
+      return order.is_cancel_order ? order.is_cancel_order : false;
     },
     visitGroups(order) {
       return order?.visitGroups?.total ? order.visitGroups.total : 0;
@@ -834,7 +834,7 @@ export default {
           box-sizing: border-box;
 
           > p {
-            font-size: 2.03125vw;
+            font-size: 1.83125vw;
             letter-spacing: -0.05rem;
             text-align: center;
             color: #fff;
@@ -961,6 +961,10 @@ export default {
       }
     }
   }
+}
+
+.text-through {
+  text-decoration: line-through;
 }
 
 </style>
