@@ -137,8 +137,8 @@ export default {
     align-items: center;
 
     .confirm-wrap {
-      width: 640px;
-      height: 400px;
+      width: 50vw;
+      height: 31.2500vw;
       border-radius: 0.6250vw;
       background-color: white;
       display: flex;
@@ -150,18 +150,18 @@ export default {
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        height: calc(100% - 100px);
-        font-size: 30px;
+        height: calc(100% - 7.8125vw);
+        font-size: 2.3438vw;
         line-height: 1.5;
-        padding: 10px !important;
+        padding: 0.7813vw !important;
         box-sizing: border-box;
       }
 
       .confirm-bottom-wrap {
-        height: 100px;
+        height: 7.8125vw;
         display: flex;
         justify-content: center;
-        gap: 30px;
+        gap: 2.3438vw;
         align-items: center;
 
         .confirm-button {
@@ -176,7 +176,7 @@ export default {
 
         .close {
           background-color: #fff;
-          border: 1px solid #000;
+          border: 0.0781vw solid #000;
           color: #000;
         }
 
