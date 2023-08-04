@@ -25,6 +25,7 @@
     :closeDetailModal="closeDetailModal"
     :detailPayData="detailPayData"
     :getAmount="getAmount"
+    :clickAndroidCallOrderForceCancel="clickAndroidCallOrderForceCancel"
   )
   cash-check-or-cancel-modal(
     v-if="isCashModal"
@@ -470,6 +471,14 @@ export default {
         }
       });
     },
+    // 주문 강제 취소 요청
+    clickAndroidCallOrderForceCancel(orderKey) {
+      if (window.UUID) {
+        window.UUID.cancelForcedOrder(orderKey);
+      } else {
+        console.log('안드로이드 cancelForcedOrder 발신');
+      }
+    }
   },
 
   watch: {

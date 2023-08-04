@@ -1,5 +1,17 @@
 <template lang="pug">
 .payment-detail-container
+  .order-force-confirm-container(v-if="isForceConfirm")
+    .confirm-wrap
+      .confirm-body-wrap
+        p 마스터로 주문을 강제 취소하더라도
+        p 포스에 접수된 해당 주문은 취소되지 않습니다.
+        br
+        p 주문을 강제 취소하시겠습니까?
+      .confirm-bottom-wrap
+        button.confirm-button.close(@click="closeForceConfirm()") 아니오
+        button.confirm-button(
+          @click="clickYesButton()"
+        ) 예
   .payment-detail-wrap
     .detail-modal-title-wrap
       p {{ detailPayData.tabletNumber }}
@@ -42,13 +54,21 @@
         .table-head
         .table-body
     .bottom-button-wrap
-      button.force-cancel-button(v-if="showOrderForceCancelButton") 주문 강제 취소
+      button.force-cancel-button(
+        v-if="showOrderForceCancelButton"
+        @click="openForceConfirm()"
+      ) 주문 강제 취소
 </template>
 
 <script>
 import { BigCloseButton } from '@svg';
 
 export default {
+  data() {
+    return {
+      isForceConfirm: false,
+    };
+  },
   props: {
     closeDetailModal: {
       type: Function,
@@ -57,6 +77,9 @@ export default {
       type: Object,
     },
     getAmount: {
+      type: Function,
+    },
+    clickAndroidCallOrderForceCancel: {
       type: Function,
     }
   },
@@ -71,9 +94,19 @@ export default {
       return this.detailPayData.status === 3; // 성공한 주문에 대한 결제취소 요청
     }
   },
-  mounted() {
-    console.log(this.detailPayData);
-  },
+  methods: {
+    openForceConfirm() {
+      this.isForceConfirm = true;
+    },
+    closeForceConfirm() {
+      this.isForceConfirm = false;
+    },
+    clickYesButton() {
+      this.clickAndroidCallOrderForceCancel(this.detailPayData.orderKey);
+      this.closeForceConfirm();
+      this.closeDetailModal();
+    }
+  }
 };
 
 </script>
@@ -91,6 +124,66 @@ export default {
   align-items: center;
   background-color: rgba(0, 0, 0, 0.85);
   z-index: 1;
+
+  .order-force-confirm-container {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .confirm-wrap {
+      width: 640px;
+      height: 400px;
+      border-radius: 0.6250vw;
+      background-color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+
+      .confirm-body-wrap {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: calc(100% - 100px);
+        font-size: 30px;
+        line-height: 1.5;
+        padding: 10px !important;
+        box-sizing: border-box;
+      }
+
+      .confirm-bottom-wrap {
+        height: 100px;
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        align-items: center;
+
+        .confirm-button {
+          border: none;
+          width: 18.7500vw;
+          height: 4.6875vw;
+          background-color: #fc0000;
+          font-size: 2.0313vw;
+          color:#fff;
+          border-radius: 1.015625vw;
+        }
+
+        .close {
+          background-color: #fff;
+          border: 1px solid #000;
+          color: #000;
+        }
+
+      }
+    }
+  }
+
 
   .payment-detail-wrap {
     width: 92.1875vw;
