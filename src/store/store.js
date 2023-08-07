@@ -165,6 +165,13 @@ const socket = {
         }
       }
 
+      // 주문 강제취소에 대한 소켓메세지
+      if (payload?.type === 'cancelOrder') {
+        const fd = new FormData();
+        fd.append('shop_code', state.auth.store.store_code);
+        dispatch('setOrders', fd);
+      }
+
       if (payload?.type === 'reload') {
         // // console.log('reload', payload);
 
