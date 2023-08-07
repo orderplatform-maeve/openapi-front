@@ -407,7 +407,7 @@ export default {
 
     },
     getPaidHistoryPath() {
-      return this.isTorderTwo ? paths.paymentDetails : paths.paymentManagement;
+      return this.isTorderTwo || this.isRemakePaid ? paths.paymentDetails : paths.paymentManagement;
     }
   },
   // created() {
