@@ -91,7 +91,7 @@ export default {
       return this.detailPayData.paymentStatus === '취소';
     },
     showOrderForceCancelButton() {
-      return this.detailPayData.status === 3; // 성공한 주문에 대한 결제취소 요청
+      return this.detailPayData.isShowForceCancelButton; // 주문 강제 취소 버튼 노출 조건(결제취소)
     }
   },
   methods: {

@@ -79,7 +79,7 @@
           .order-information-list(v-if="visibleOrderItem(order)" @click="openView(order)")
             p.order-information-order-type(:class="getOrderTypeStyle(order)") {{orderTypeCheck(order)}}
             p.order-information-table-number(:class="orderStyleCheck(order)") {{checkedTabletNum(order)}}
-            p.order-information-goods-name {{getGoodsName(order)}}
+            p.order-information-goods-name(:class="getGoodsNameStyle(order)") {{getGoodsName(order)}}
             p.order-information-order-time {{getOrderTime(order).substr(11)}}
             .order-information-people-group
               p.wrap-small-text
@@ -354,34 +354,28 @@ export default {
     orderStyleCheck(order) {
       const orderType = this.orderTypeCheck(order);
 
-      if (orderType === '첫주문' || orderType === '주문') {
-        return 'orderColorRed';
-      }
-
-      if (orderType === '호출') {
-        return 'orderColorBlue';
-      }
-
-      if (orderType === '세팅완료') {
-        return 'orderColorOrange';
-      }
-
-      if (orderType === '평가') {
-        return 'orderColorYellow';
-      }
-      if (orderType === '경매' || orderType === '게임') {
-        return 'orderColorGreen';
-      }
+      return {
+        'text-through': this.getIsCancelOrder(order),
+        'orderColorRed': orderType === '첫주문' || orderType === '주문',
+        'orderColorBlue': orderType === '호출',
+        'orderColorOrange': orderType === '세팅완료',
+        'orderColorYellow': orderType === '평가',
+        'orderColorGreen': orderType === '경매' || orderType === '게임',
+      };
     },
     getOrderTypeStyle(order) {
       const orderType = this.orderTypeCheck(order);
 
       return {
-        'text-through': this.getIsCancelOrder(order),
         'orderFontColorBlue': orderType === '호출',
         'orderFontColorOrange': orderType === '세팅완료',
         'orderFontColorYellow': orderType === '평가',
         'orderFontColorGreen': orderType === '경매' || orderType === '게임'
+      };
+    },
+    getGoodsNameStyle(order) {
+      return {
+        'text-through': this.getIsCancelOrder(order),
       };
     },
     paidTypeCheck(order) {
@@ -428,7 +422,6 @@ export default {
       }
     },
     getIsCancelOrder(order) {
-      console.log(order.is_cancel_order);
       return order.is_cancel_order ? order.is_cancel_order : false;
     },
     visitGroups(order) {
