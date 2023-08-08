@@ -81,7 +81,7 @@ export default {
     },
     clickAndroidCallOrderForceCancel: {
       type: Function,
-    }
+    },
   },
   components: {
     BigCloseButton,
@@ -102,11 +102,12 @@ export default {
       this.isForceConfirm = false;
     },
     clickYesButton() {
-      this.clickAndroidCallOrderForceCancel(this.detailPayData.orderKey);
+      const { orderKey, tabletCode } = this.detailPayData;
+      this.clickAndroidCallOrderForceCancel(orderKey, tabletCode);
       this.closeForceConfirm();
       this.closeDetailModal();
     }
-  }
+  },
 };
 
 </script>
