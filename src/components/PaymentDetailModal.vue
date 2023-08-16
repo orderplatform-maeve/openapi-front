@@ -1,7 +1,7 @@
 <template lang="pug">
 .payment-detail-container
   .order-force-confirm-container(v-if="isForceConfirm")
-    .confirm-wrap
+    .confirm-wrap(v-if="formatAppVersion()")
       .confirm-body-wrap
         p 마스터로 주문을 강제 취소하더라도
         p 포스에 접수된 해당 주문은 취소되지 않습니다.
@@ -12,6 +12,13 @@
         button.confirm-button(
           @click="clickYesButton()"
         ) 예
+    .confirm-wrap(v-else)
+      .confirm-body-wrap
+        p 앱 버전 1.6.5 이상부터 주문 강제 취소를
+        p 사용할 수 있습니다.
+        p 앱 버전을 업데이트 해주세요.
+      .confirm-bottom-wrap
+        button.confirm-button(@click="closeForceConfirm()") 확인
   .payment-detail-wrap
     .detail-modal-title-wrap
       p {{ detailPayData.tabletNumber }}
@@ -92,6 +99,9 @@ export default {
     },
     showOrderForceCancelButton() {
       return this.detailPayData.isShowForceCancelButton; // 주문 강제 취소 버튼 노출 조건(결제취소)
+    },
+    appVersion() {
+      return this.$store.state.appVersion;
     }
   },
   methods: {
@@ -106,6 +116,13 @@ export default {
       this.clickAndroidCallOrderForceCancel(orderKey, tabletCode);
       this.closeForceConfirm();
       this.closeDetailModal();
+    },
+    formatAppVersion(){
+      let formatText = this.appVersion.replaceAll('.', '');
+      if (formatText?.length === 3) { // 앱 버전의 마이너가 1자리일 경우
+        formatText += '0';
+      }
+      return Number(formatText) >= 1650; // 앱 버전 1.6.5x 버전 이상부터 [주문 강제 취소] 가능
     }
   },
 };

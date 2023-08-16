@@ -1247,7 +1247,9 @@ const monitoring = {
     updateUCode(state, payload) {
       state.uCode = payload;
     },
-
+    updateAppVersion(state, payload) {
+      state.appVersion = payload;
+    }
   },
 };
 
@@ -1524,6 +1526,7 @@ const state = {
   },
   alertTwoBtMessage: '',
   isAlertTwoBtModal: false,
+  appVersion: '1.6.5', // 앱버전 1.6.5x 이상부터 [주문강제취소] 기능 지원
 };
 
 const mutations = {

@@ -269,6 +269,7 @@ export default {
     isRemakePaid() {
       return this.$store.state.isRemakePaid;
     },
+
   },
   watch: {
     '$route'(to, from) {
@@ -774,10 +775,13 @@ export default {
       try {
         if (window.UUID) {
           deviceUsage = JSON.parse(window.UUID.getDeviceUsage());
+          this.$store.commit('updateAppVersion', deviceUsage?.message.app.name);
+
         }
       } catch(e) {
         //// console.log(e);
       }
+
       const data = {
         type: 'beep',
         uCode: this.$store.state.uCode,
@@ -791,6 +795,7 @@ export default {
         path: this.$route.path,
         datetime: datetime,
       };
+
       this.$socket.emit('event', data, () => {
         // // console.log('event', answer.msg);
       });
