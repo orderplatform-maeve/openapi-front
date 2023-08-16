@@ -403,7 +403,7 @@ export default {
       fd.append('api_type', 1);
 
       const config = await this.$store.dispatch('setMenuConfig', fd);
-      this.creditUse = config.init.preCreditTableUse;
+      this.creditUse = config.init?.preCreditTableUse;
 
     },
     getPaidHistoryPath() {
