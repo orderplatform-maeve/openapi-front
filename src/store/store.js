@@ -404,6 +404,11 @@ const socket = {
           });
         }
       }
+      // 선결제 - 현금 취소 요청 알림
+      if (payload?.type === 'requestCancelCash') {
+        commit('updateCashPaymentCancelModal', true);
+        commit('updateCashPaymentCancelInfo', payload);
+      }
     },
     SOCKET_disconnect({ commit }) {
       const now = new Date(Date.now());
@@ -591,6 +596,12 @@ const order = {
     updateOrderKeys(state, payload) {
       state.orderKeys = payload;
     },
+    updateCashPaymentCancelModal(state, payload) {
+      state.cashPaymentCancelModal = payload;
+    },
+    updateCashPaymentCancelInfo(state, payload) {
+      state.cashPaymentCancelInfo = payload;
+    }
   },
   actions: {
     async commitOrder(context, payload) {
@@ -686,7 +697,13 @@ const shop = {
         // 화폐단위가 '$', '¥'이면 가격 앞에 표시
         state.standardPriceFrontPosition = true;
       }
-    }
+    },
+    updateIsTorderTwo(state, payload) {
+      state.isTorderTwo = payload;
+    },
+    updateIsRemakePaid(state, payload) {
+      state.isRemakePaid = payload;
+    },
   },
   actions: {
     setStores: ({ commit }, stores) => {
@@ -708,7 +725,9 @@ const shop = {
         };
 
         commit('setDeviceStatus', device);
-        commit('updateStandardPriceUnit', response.data.data.standardPriceUnit);
+        commit('updateStandardPriceUnit', target.standardPriceUnit);
+        commit('updateIsTorderTwo', target.T_order_store_tablet_version.includes('order2'));
+        commit('updateIsRemakePaid', target.T_order_store_tablet_version.includes('remake'));
 
         return response;
       } catch (error) {
@@ -1327,6 +1346,12 @@ const payment = {
     updateIsAlertModal(state, visible) {
       state.isAlertModal = visible;
     },
+    updateAlertTwoBtMessage(state, payload) {
+      state.alertTwoBtMessage = payload;
+    },
+    updateIsAlertTwoBtModal(state, payload) {
+      state.isAlertTwoBtModal = payload;
+    },
     setRequestCashItem(state, payload) {
       state.requestCashItem = payload;
     },
@@ -1478,6 +1503,20 @@ const state = {
   standardPriceUnit: '원',
   // 시작 위치: true, 종료 위치: false
   standardPriceFrontPosition: false,
+  isTorderTwo: false,
+  isRemakePaid: false,
+  cashPaymentCancelModal: false,
+  cashPaymentCancelInfo: {
+    table: {
+      name: ''
+    },
+    paymentInfo: {
+      count: 0,
+      amount: 0,
+    }
+  },
+  alertTwoBtMessage: '',
+  isAlertTwoBtModal: false,
 };
 
 const mutations = {

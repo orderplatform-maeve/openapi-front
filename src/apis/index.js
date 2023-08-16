@@ -6,3 +6,4 @@ export { default as category } from './category';
 export { default as orders } from './orders';
 export { default as happyTalk } from './happyTalk';
 export { default as goods } from './goods';
+export { default as credit } from './credit';

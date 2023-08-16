@@ -1,10 +1,14 @@
 <template lang="pug">
 #orderview
+  cash-payment-cancel-modal(
+    v-if="cashPaymentCancelModal && (isTorderTwo || isRemakePaid)"
+    :goPaymentDetailsPage="goPaymentDetailsPage"
+    )
   alert-modal(v-if="isAlertModal")
   auction-modal(v-if="order && auction")
   modal-order(v-if="order && orderModal")
   PosErrorModal(
-    v-if="posResponseModal.isOn" 
+    v-if="posResponseModal.isOn"
     :tableNumber="posResponseModal.tableNumber"
   )
   modal-all-refresh(
@@ -83,7 +87,7 @@ import {
   PhoneNumberErrorModal,
   HappyTalkSuccessModal,
   LogoutSecret,
-  PosErrorModal
+  PosErrorModal,
 } from '@components';
 import {
   payments,
@@ -153,6 +157,9 @@ export default {
     },
     posResponseModal() {
       return this.$store.state.posResponseModal;
+    },
+    cashPaymentCancelModal() {
+      return this.$store.state.cashPaymentCancelModal;
     },
     orderModal() {
       return this.$store.state.orderModal;
@@ -255,6 +262,12 @@ export default {
     },
     getStopRedirect() {
       return process.env.STOP_REDIRECT;
+    },
+    isTorderTwo() {
+      return this.$store.state.isTorderTwo;
+    },
+    isRemakePaid() {
+      return this.$store.state.isRemakePaid;
     },
   },
   watch: {
@@ -957,7 +970,7 @@ export default {
         const res = await postMessage(this.getStoreCode, this.phoneNumber);
 
         if (res.data?.resultCode !== 200) {
-          const errorMessage = res.data?.resultMessage || '상담 신청에 실패하였습니다.';
+          const errorMessage = res.data?.errorData.errorMessage || '상담 신청에 실패하였습니다.';
           this.$store.commit('pushFlashMessage', errorMessage);
           return;
         }
@@ -1019,6 +1032,12 @@ export default {
     closeVisibleLogoutConfirmModal() {
       this.isVisibleLogoutConfirmModal = false;
     },
+    goPaymentDetailsPage() {
+      if (this.$route.path !== '/paymentDetails') {
+        this.$router.push('/paymentDetails');
+      }
+      this.$store.commit('updateCashPaymentCancelModal', false);
+    }
   },
 };
 </script>
