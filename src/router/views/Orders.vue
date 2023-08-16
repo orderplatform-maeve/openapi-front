@@ -478,29 +478,29 @@ export default {
         params.append('store_code', this.auth.store.store_code);
 
         const res = await this.$store.dispatch('setStoreInit', params);
+        window.UUID.writeFile(JSON.stringify(res.data.data), '/torder/json/config.json');
+        // if (!this.isTorderTwo) {
+        //   // 안드로이드 인터페이스 config 전송 (API 1.0)
+        //   window.UUID.writeFile(JSON.stringify(res.data.data), '/torder/json/config.json');
 
-        if (!this.isTorderTwo) {
-          // 안드로이드 인터페이스 config 전송 (API 1.0)
-          window.UUID.writeFile(JSON.stringify(res.data.data), '/torder/json/config.json');
+        // } else {
+        //   // 안드로이드 인터페이스 config 전송 (API 2.0)
+        //   const data = {
+        //     storeCode: this.$store.state.auth.store.store_code,
+        //     storeName: res.data.data.T_order_store_name,
+        //     businessNumber: res.data.data.saupNumber,
+        //     paymentInfo: {
+        //       usePayment: Boolean(res.data.data.preCreditTableUse),
+        //       vanType: res.data.data.vanInfo,
+        //       vanDeviceId: res.data.data.storeVanTid,
+        //       vanSerialNumber: res.data.data.storeSerialNumber,
+        //     },
+        //     language: res.data.data.T_order_store_language,
+        //     baseUrl: res.data.data.T_order_store_orderView_version,
+        //   };
 
-        } else {
-          // 안드로이드 인터페이스 config 전송 (API 2.0)
-          const data = {
-            storeCode: this.$store.state.auth.store.store_code,
-            storeName: res.data.data.T_order_store_name,
-            businessNumber: res.data.data.saupNumber,
-            paymentInfo: {
-              usePayment: Boolean(res.data.data.preCreditTableUse),
-              vanType: res.data.data.vanInfo,
-              vanDeviceId: res.data.data.storeVanTid,
-              vanSerialNumber: res.data.data.storeSerialNumber,
-            },
-            language: res.data.data.T_order_store_language,
-            baseUrl: res.data.data.T_order_store_orderView_version,
-          };
-
-          window.UUID?.initStoreInfo(data);
-        }
+        //   window.UUID?.initStoreInfo(data);
+        // }
 
 
       } catch (error) {
