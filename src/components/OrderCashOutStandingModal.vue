@@ -4,7 +4,7 @@
     p.cash-out-standing-title 현금미결제
     .cash-out-standing
       .credit-information
-        p.wrap-order-price 주문금액:
+        p.wrap-order-price 주문금액:&nbsp;
           span.order-price
             span(v-if="standardPriceFrontPosition") {{standardPriceUnit}}
             span {{item.orderPrice.toLocaleString()}}

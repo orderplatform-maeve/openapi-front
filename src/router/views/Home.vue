@@ -689,6 +689,8 @@ export default {
       try {
         if (window.UUID) {
           deviceUsage = JSON.parse(window.UUID.getDeviceUsage());
+          this.$store.commit('updateAppVersion', deviceUsage?.message.app.name);
+
         }
       } catch(e) {
         //// console.log(e);

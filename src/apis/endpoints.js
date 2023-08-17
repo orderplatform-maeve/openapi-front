@@ -10,6 +10,7 @@ const TORDER_V2 = IS_DEV_TEAM ? 'https://dev-apigw.torder.co.kr/v2' : 'https://a
 const TABLE_GAME_URL = IS_DEV_TEAM ? 'https://dev-apigw.torder.co.kr' : 'https://apigw.torder.co.kr';
 const ROBOT_TEXT = IS_DEV_TEAM ? 'http://dev.robot.torder.co.kr' : 'http://robot.torder.co.kr:8888/v2/order';
 const DEMO_URL = IS_DEV_TEAM ? 'http://development.rest.torder.co.kr' : 'http://demo.api.torder.co.kr';
+const PAYMENT_URL = IS_DEV_TEAM ? 'https://dev-sgw.torder.co.kr' : 'https://sgw.torder.co.kr';
 
 const HAPPY_TALK = 'https://happytalk.torder.co.kr';
 
@@ -109,7 +110,19 @@ const endpoints = {
   },
   happyTalk: {
     postMessage: `${HAPPY_TALK}/happytalk/happy-talk/message`,
-  }
+  },
+  credit: {
+    payDetails: `${PAYMENT_URL}/credit/v2/pay-details`,
+    cashAllCommit: `${PAYMENT_URL}/credit/v2/cash-all-commit`,
+    cashCommit: `${PAYMENT_URL}/credit/v2/cash-commit`,
+    cashCancelCommit: `${PAYMENT_URL}/credit/v2/cash-cancel-commit`,
+    pend: `${PAYMENT_URL}/credit/v2/pays/pend`,
+    tablet: {
+      status: `${PAYMENT_URL}/credit/v2/tablet/status`,
+    },
+    pends: `${PAYMENT_URL}/credit/v2/pays/pends`,
+    webLogs: `${PAYMENT_URL}/credit/v2/web-logs`,
+  },
 };
 
 export default endpoints;

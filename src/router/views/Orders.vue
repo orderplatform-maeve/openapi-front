@@ -35,38 +35,42 @@
           check-box-disable
         p.event-text 이벤트 주문 내역만 보기
     .wrap-order-list(v-if="payloadStatus === 0")
-      .order-title-list
+      div(:class="getOrderTitleListStyle()")
         p.order-title 테이블번호
         p.order-title 주문유형
         p.order-title 주문금액
         p.order-title 결제금액
-        p.order-title 미수금
+        p.order-title(v-if="!isTorderTwo && !isRemakePaid") 미수금
         p.order-title 선/후불
-        p.order-title 결제수단
+        p.order-title 결제방식
         p.order-title 주문시간
         p.order-title 총 인원수
       .wrap-order-information-lists
         div(v-for="(order, index) in sortedOrders" :key="`order-index-`+index" :class="getOrderListStyle(order, index)")
-          .order-information-list(v-if="visibleOrderItem(order)" @click="openView(order)")
-            p.order-information-table-number(:class="orderStyleCheck(order)") {{checkedTabletNum(order)}}
+          div(:class="getOrderInformationListStyle()" v-if="visibleOrderItem(order)" @click="openView(order)")
+            p.order-information-table-number(:class="orderStyleCheck(order)") {{checkedTabletNum(order) }}
             p.order-information-order-type(:class="getOrderTypeStyle(order)") {{orderTypeCheck(order)}}
-            p.order-information-price
+            p.order-information-price(:class="getTextThroughStyle(order)")
               span(v-if="standardPriceFrontPosition") {{standardPriceUnit}}
               span {{getOrderPrice(order)}}
               span(v-if="!standardPriceFrontPosition") {{standardPriceUnit}}
-            p.order-information-paid-price
+            p.order-information-paid-price(:class="getTextThroughStyle(order)")
               span(v-if="standardPriceFrontPosition") {{standardPriceUnit}}
               span {{getTotalAmount(order)}}
               span(v-if="!standardPriceFrontPosition") {{standardPriceUnit}}
-            p.order-information-unpaid-money(@click.stop="() => openMisuModal(order)")
+            p.order-information-unpaid-money(
+              v-if="!isTorderTwo && !isRemakePaid"
+              @click.stop="() => openMisuModal(order)"
+              :class="getTextThroughStyle(order)"
+            )
               span(:class="{unpaid: getMisu(order) !== '미수금없음'}")
                 span(v-if="getVisibleWon(order) && standardPriceFrontPosition") {{standardPriceUnit}}
                 span {{ getMisu(order) }}
                 span(v-if="getVisibleWon(order) && !standardPriceFrontPosition") {{standardPriceUnit}}
-            p.order-information-paid-type {{paidTypeCheck(order)}}
-            p.order-information-credit-type {{creditTypeCheck(order)}}
-            p.order-information-order-time {{getOrderTime(order).substr(11)}}
-            p.order-information-total-people {{visitGroups(order)}}명
+            p.order-information-paid-type(:class="getTextThroughStyle(order)") {{paidTypeCheck(order)}}
+            p.order-information-credit-type(:class="getTextThroughStyle(order)") {{creditTypeCheck(order)}}
+            p.order-information-order-time(:class="getTextThroughStyle(order)") {{getOrderTime(order).substr(11)}}
+            p.order-information-total-people(:class="getTextThroughStyle(order)") {{visitGroups(order)}}명
     .wrap-order-list(v-if="payloadStatus === 1")
       .electronic-access-list-version
         p.order-title 주문유형
@@ -79,27 +83,25 @@
           .order-information-list(v-if="visibleOrderItem(order)" @click="openView(order)")
             p.order-information-order-type(:class="getOrderTypeStyle(order)") {{orderTypeCheck(order)}}
             p.order-information-table-number(:class="orderStyleCheck(order)") {{checkedTabletNum(order)}}
-            p.order-information-goods-name {{getGoodsName(order)}}
-            p.order-information-order-time {{getOrderTime(order).substr(11)}}
+            p.order-information-goods-name(:class="getTextThroughStyle(order)") {{getGoodsName(order)}}
+            p.order-information-order-time(:class="getTextThroughStyle(order)") {{getOrderTime(order).substr(11)}}
             .order-information-people-group
-              p.wrap-small-text
+              p.wrap-small-text(:class="getTextThroughStyle(order)")
                 span.small-text {{totalVisitPeopleDeepDepth(order)}}
                 span.small-text(v-if="totalVisitPeopleDeepDepth(order)")  =
-              span.red-box {{visitGroups(order)}}명
+              span.red-box(:class="getTextThroughStyle(order)") {{visitGroups(order)}}명
 
 </template>
 
 <script>
 import utils from '@utils/orders.utils';
 import { won } from '@utils/regularExpressions';
-import { payments } from '@apis';
+import { credit } from '@apis';
 import { version } from '@utils/constants';
 import { checkBoxActive, checkBoxDisable  } from '@svg';
 import { PosErrorModal } from '@components';
 
-const {
-  requestMisuCommit,
-} = payments;
+const { requestCashAllCommit } = credit;
 export default {
   data () {
     return {
@@ -175,7 +177,13 @@ export default {
     standardPriceFrontPosition() {
       const standardPriceFrontPosition = this.$store.state.standardPriceFrontPosition;
       return standardPriceFrontPosition;
-    }
+    },
+    isTorderTwo() {
+      return this.$store.state.isTorderTwo;
+    },
+    isRemakePaid() {
+      return this.$store.state.isRemakePaid;
+    },
   },
   async mounted() {
     this.isLoading = true;
@@ -206,12 +214,14 @@ export default {
     },
     async reqConfirmMisu(order) {
       if (order?.order_view_key) {
-        const res = await requestMisuCommit(order.order_view_key);
+        const res = await requestCashAllCommit(order.order_view_key);
         if (res?.status === 200) {
           this.chooseOrder = {};
           this.$store.commit('UPDATE_DONE_MISU_ORDERS', order);
           this.$store.commit('updateAlertModalMessage', '현금 수납 처리 되었습니다.');
           this.$store.commit('updateIsAlertModal', true);
+        } else {
+          this.$store.commit('pushFlashMessage', '현금 수납 확인에 실패했습니다. 티오더로 문의 바랍니다.');
         }
       }
     },
@@ -315,6 +325,9 @@ export default {
     },
     orderTypeCheck(order) {
       const viewType = order.viewType;
+      if (order.is_cancel_order) {
+        return '주문취소';
+      }
 
       if (viewType === 0) {
         return '첫주문';
@@ -345,42 +358,29 @@ export default {
     orderStyleCheck(order) {
       const orderType = this.orderTypeCheck(order);
 
-      if (orderType === '첫주문' || orderType === '주문') {
-        return 'orderColorRed';
-      }
-
-      if (orderType === '호출') {
-        return 'orderColorBlue';
-      }
-
-      if (orderType === '세팅완료') {
-        return 'orderColorOrange';
-      }
-
-      if (orderType === '평가') {
-        return 'orderColorYellow';
-      }
-      if (orderType === '경매' || orderType === '게임') {
-        return 'orderColorGreen';
-      }
+      return {
+        'text-through': this.getIsCancelOrder(order),
+        'orderColorRed': orderType === '첫주문' || orderType === '주문',
+        'orderColorBlue': orderType === '호출',
+        'orderColorOrange': orderType === '세팅완료',
+        'orderColorYellow': orderType === '평가',
+        'orderColorGreen': orderType === '경매' || orderType === '게임',
+      };
     },
     getOrderTypeStyle(order) {
       const orderType = this.orderTypeCheck(order);
 
-      if (orderType === '호출') {
-        return 'orderFontColorBlue';
-      }
-
-      if (orderType === '세팅완료') {
-        return 'orderFontColorOrange';
-      }
-
-      if (orderType === '평가') {
-        return 'orderFontColorYellow';
-      }
-      if (orderType === '경매' || orderType === '게임') {
-        return 'orderFontColorGreen';
-      }
+      return {
+        'orderFontColorBlue': orderType === '호출',
+        'orderFontColorOrange': orderType === '세팅완료',
+        'orderFontColorYellow': orderType === '평가',
+        'orderFontColorGreen': orderType === '경매' || orderType === '게임'
+      };
+    },
+    getTextThroughStyle(order) {
+      return {
+        'text-through': this.getIsCancelOrder(order),
+      };
     },
     paidTypeCheck(order) {
       if (order.paidOrder) {
@@ -400,9 +400,33 @@ export default {
         return '카드';
       }
 
+      if (creditType === 'card') {
+        return '카드';
+      }
+
       if (creditType === 'complex') {
         return '카드+현금';
       }
+
+      // remake 선결제(성빈님 스펙)
+      if (creditType === 'V2_CARD') {
+        return '카드';
+      }
+
+      if (creditType === 'V2_CASH') {
+        return '현금';
+      }
+
+      if (creditType === 'V2_BY_PRICE') {
+        return '더치페이';
+      }
+
+      if (creditType === 'V2_BY_MENU') {
+        return '메뉴별결제';
+      }
+    },
+    getIsCancelOrder(order) {
+      return order.is_cancel_order ? order.is_cancel_order : false;
     },
     visitGroups(order) {
       return order?.visitGroups?.total ? order.visitGroups.total : 0;
@@ -455,6 +479,29 @@ export default {
 
         const res = await this.$store.dispatch('setStoreInit', params);
         window.UUID.writeFile(JSON.stringify(res.data.data), '/torder/json/config.json');
+        // if (!this.isTorderTwo) {
+        //   // 안드로이드 인터페이스 config 전송 (API 1.0)
+        //   window.UUID.writeFile(JSON.stringify(res.data.data), '/torder/json/config.json');
+
+        // } else {
+        //   // 안드로이드 인터페이스 config 전송 (API 2.0)
+        //   const data = {
+        //     storeCode: this.$store.state.auth.store.store_code,
+        //     storeName: res.data.data.T_order_store_name,
+        //     businessNumber: res.data.data.saupNumber,
+        //     paymentInfo: {
+        //       usePayment: Boolean(res.data.data.preCreditTableUse),
+        //       vanType: res.data.data.vanInfo,
+        //       vanDeviceId: res.data.data.storeVanTid,
+        //       vanSerialNumber: res.data.data.storeSerialNumber,
+        //     },
+        //     language: res.data.data.T_order_store_language,
+        //     baseUrl: res.data.data.T_order_store_orderView_version,
+        //   };
+
+        //   window.UUID?.initStoreInfo(data);
+        // }
+
 
       } catch (error) {
         console.log('안드로이드에서 실행하지 않아서 발생', error);
@@ -478,6 +525,18 @@ export default {
       }
 
       return firstGoodsName;
+    },
+    getOrderTitleListStyle() {
+      return {
+        'order-title-list': true,
+        'remake-paid': this.isTorderTwo || this.isRemakePaid
+      };
+    },
+    getOrderInformationListStyle() {
+      return {
+        'order-information-list': true,
+        'remake-paid': this.isTorderTwo || this.isRemakePaid
+      };
     }
   },
 };
@@ -596,6 +655,7 @@ export default {
       padding: 3.75vh 0.78125vw 1.25vh !important;
       border-bottom: solid 0.078125vw #333333;
       box-sizing: border-box;
+      justify-content: center;
 
 
       .order-title {
@@ -603,6 +663,10 @@ export default {
         color: #fff;
         text-align: center;
       }
+    }
+
+    .remake-paid {
+      grid-template-columns: 12.71875vw 7.46875vw 10.375vw 10.375vw 4.75vw 11.3125vw 10.90625vw 4.375vw;
     }
 
     // 결제 포함 버전
@@ -615,6 +679,7 @@ export default {
           padding: 0 0.78125vw !important;
           display: grid;
           grid-template-columns: 11.71875vw 5.46875vw 9.375vw 9.375vw 9.375vw 3.75vw 10.3125vw 8.90625vw 4.375vw;
+          justify-content: center;
           align-items: center;
           gap: 0.78125vw;
           box-sizing: border-box;
@@ -689,6 +754,10 @@ export default {
             border-radius: 0.390625vw;
           }
         }
+
+        .remake-paid {
+          grid-template-columns: 12.71875vw 7.46875vw 10.375vw 10.375vw 4.75vw 11.3125vw 10.90625vw 4.375vw;
+        }
       }
 
       .bg-black {
@@ -762,7 +831,7 @@ export default {
           box-sizing: border-box;
 
           > p {
-            font-size: 2.03125vw;
+            font-size: 1.83125vw;
             letter-spacing: -0.05rem;
             text-align: center;
             color: #fff;
@@ -889,6 +958,11 @@ export default {
       }
     }
   }
+}
+
+.text-through {
+  text-decoration: line-through;
+  text-decoration-thickness: 0.3906vw;
 }
 
 </style>
