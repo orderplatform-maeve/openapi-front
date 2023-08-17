@@ -129,6 +129,8 @@ export default {
       try {
         if (window.UUID) {
           deviceUsage = JSON.parse(window.UUID.getDeviceUsage());
+          this.$store.commit('updateAppVersion', deviceUsage?.message.app.name);
+
         }
       } catch(e) {
         //// console.log(e);
@@ -403,7 +405,7 @@ export default {
       fd.append('api_type', 1);
 
       const config = await this.$store.dispatch('setMenuConfig', fd);
-      this.creditUse = config.init.preCreditTableUse;
+      this.creditUse = config.init?.preCreditTableUse;
 
     },
     getPaidHistoryPath() {

@@ -165,6 +165,13 @@ const socket = {
         }
       }
 
+      // 주문 강제취소에 대한 소켓메세지
+      if (payload?.type === 'cancelOrder') {
+        const fd = new FormData();
+        fd.append('shop_code', state.auth.store.store_code);
+        dispatch('setOrders', fd);
+      }
+
       if (payload?.type === 'reload') {
         // // console.log('reload', payload);
 
@@ -1240,7 +1247,9 @@ const monitoring = {
     updateUCode(state, payload) {
       state.uCode = payload;
     },
-
+    updateAppVersion(state, payload) {
+      state.appVersion = payload;
+    }
   },
 };
 
@@ -1517,6 +1526,7 @@ const state = {
   },
   alertTwoBtMessage: '',
   isAlertTwoBtModal: false,
+  appVersion: '1.6.5', // 앱버전 1.6.5x 이상부터 [주문강제취소] 기능 지원
 };
 
 const mutations = {

@@ -25,6 +25,7 @@
     :closeDetailModal="closeDetailModal"
     :detailPayData="detailPayData"
     :getAmount="getAmount"
+    :clickAndroidCallOrderForceCancel="clickAndroidCallOrderForceCancel"
   )
   cash-check-or-cancel-modal(
     v-if="isCashModal"
@@ -470,6 +471,31 @@ export default {
         }
       });
     },
+    async postForceCancelWeblogFromAndroid(orderKey, tabletCode) {
+      try {
+        const config = {
+          orderKey,
+          status: 'SEND_FORCED_CANCEL_ORDER_KEY_TO_ANDROID',
+          store: {
+            storeCode: this.$store.state.auth.store.store_code,
+            tabletCode,
+          }
+        };
+
+        await requestCreditWebLogs(config);
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    // 주문 강제 취소 요청
+    clickAndroidCallOrderForceCancel(orderKey, tabletCode) {
+      if (window.UUID) {
+        window.UUID.cancelForcedOrder(orderKey);
+        this.postForceCancelWeblogFromAndroid(orderKey, tabletCode);
+      } else {
+        console.log('안드로이드 cancelForcedOrder 발신');
+      }
+    }
   },
 
   watch: {

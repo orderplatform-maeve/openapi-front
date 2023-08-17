@@ -1,5 +1,24 @@
 <template lang="pug">
 .payment-detail-container
+  .order-force-confirm-container(v-if="isForceConfirm")
+    .confirm-wrap(v-if="formatAppVersion()")
+      .confirm-body-wrap
+        p 마스터로 주문을 강제 취소하더라도
+        p 포스에 접수된 해당 주문은 취소되지 않습니다.
+        br
+        p 주문을 강제 취소하시겠습니까?
+      .confirm-bottom-wrap
+        button.confirm-button.close(@click="closeForceConfirm()") 아니오
+        button.confirm-button(
+          @click="clickYesButton()"
+        ) 예
+    .confirm-wrap(v-else)
+      .confirm-body-wrap
+        p 앱 버전 1.6.5 이상부터 주문 강제 취소를
+        p 사용할 수 있습니다.
+        p 앱 버전을 업데이트 해주세요.
+      .confirm-bottom-wrap
+        button.confirm-button(@click="closeForceConfirm()") 확인
   .payment-detail-wrap
     .detail-modal-title-wrap
       p {{ detailPayData.tabletNumber }}
@@ -41,12 +60,22 @@
         .table-body {{ detailPayData.cancelApprovalDatetime }}
         .table-head
         .table-body
+    .bottom-button-wrap
+      button.force-cancel-button(
+        v-if="showOrderForceCancelButton"
+        @click="openForceConfirm()"
+      ) 주문 강제 취소
 </template>
 
 <script>
 import { BigCloseButton } from '@svg';
 
 export default {
+  data() {
+    return {
+      isForceConfirm: false,
+    };
+  },
   props: {
     closeDetailModal: {
       type: Function,
@@ -56,7 +85,10 @@ export default {
     },
     getAmount: {
       type: Function,
-    }
+    },
+    clickAndroidCallOrderForceCancel: {
+      type: Function,
+    },
   },
   components: {
     BigCloseButton,
@@ -65,6 +97,33 @@ export default {
     showCancelDate() {
       return this.detailPayData.paymentStatus === '취소';
     },
+    showOrderForceCancelButton() {
+      return this.detailPayData.isShowForceCancelButton; // 주문 강제 취소 버튼 노출 조건(결제취소)
+    },
+    appVersion() {
+      return this.$store.state.appVersion;
+    }
+  },
+  methods: {
+    openForceConfirm() {
+      this.isForceConfirm = true;
+    },
+    closeForceConfirm() {
+      this.isForceConfirm = false;
+    },
+    clickYesButton() {
+      const { orderKey, tabletCode } = this.detailPayData;
+      this.clickAndroidCallOrderForceCancel(orderKey, tabletCode);
+      this.closeForceConfirm();
+      this.closeDetailModal();
+    },
+    formatAppVersion(){
+      let formatText = this.appVersion.replaceAll('.', '');
+      if (formatText?.length === 3) { // 앱 버전의 마이너가 1자리일 경우
+        formatText += '0';
+      }
+      return Number(formatText) >= 1650; // 앱 버전 1.6.5x 버전 이상부터 [주문 강제 취소] 가능
+    }
   },
 };
 
@@ -83,6 +142,66 @@ export default {
   align-items: center;
   background-color: rgba(0, 0, 0, 0.85);
   z-index: 1;
+
+  .order-force-confirm-container {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .confirm-wrap {
+      width: 50vw;
+      height: 31.2500vw;
+      border-radius: 0.6250vw;
+      background-color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+
+      .confirm-body-wrap {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: calc(100% - 7.8125vw);
+        font-size: 2.3438vw;
+        line-height: 1.5;
+        padding: 0.7813vw !important;
+        box-sizing: border-box;
+      }
+
+      .confirm-bottom-wrap {
+        height: 7.8125vw;
+        display: flex;
+        justify-content: center;
+        gap: 2.3438vw;
+        align-items: center;
+
+        .confirm-button {
+          border: none;
+          width: 18.7500vw;
+          height: 4.6875vw;
+          background-color: #fc0000;
+          font-size: 2.0313vw;
+          color:#fff;
+          border-radius: 1.015625vw;
+        }
+
+        .close {
+          background-color: #fff;
+          border: 0.0781vw solid #000;
+          color: #000;
+        }
+
+      }
+    }
+  }
+
 
   .payment-detail-wrap {
     width: 92.1875vw;
@@ -136,6 +255,22 @@ export default {
 
       .table-row:last-child {
         border-bottom: 0.0781vw solid #ccc;
+      }
+    }
+
+    .bottom-button-wrap {
+      display: flex;
+      justify-content: center;
+
+      .force-cancel-button {
+        border: none;
+        width: 18.7500vw;
+        height: 4.6875vw;
+        background-color: #fc0000;
+        font-size: 2.0313vw;
+        color:#fff;
+        border-radius: 1.015625vw;
+        margin-top: -1.7969vw;
       }
     }
   }
