@@ -90,6 +90,7 @@ export default {
         noticeNewCount: 0,
       },
       creditUse: 0,
+      deviceUsage: {},
     };
   },
   methods: {
@@ -124,14 +125,8 @@ export default {
       const time = Date.now();
       const ISONow = new Date(time).toISOString();
       const datetime = this.$moment(ISONow).format();
-
-      let deviceUsage = {};
       try {
-        if (window.UUID) {
-          deviceUsage = JSON.parse(window.UUID.getDeviceUsage());
-          this.$store.commit('updateAppVersion', deviceUsage?.message.app.name);
-
-        }
+        window.UUID?.getDeviceUsage();
       } catch(e) {
         //// console.log(e);
       }
@@ -140,7 +135,7 @@ export default {
         type: 'beep',
         uCode: this.$store.state.uCode,
         MACAddr: this.$store.state.MACAddr,
-        deviceUsage: deviceUsage,
+        deviceUsage: this.deviceUsage,
         location: window.location,
         store: {
           code: this.$store.state.auth?.store?.code,

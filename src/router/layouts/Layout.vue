@@ -141,6 +141,7 @@ export default {
       secretFunctionTouchTimer: 0,
       isVisibleLogoutConfirmModal: false,
       isDevTeam: IS_DEV_TEAM,
+      deviceUsage: {},
     };
   },
   computed: {
@@ -442,7 +443,13 @@ export default {
               return this.showAlert(`잘못된 callBackPayment message 형태입니다. 출력값: ${msg?.result}`);
             }
           }
+          if (methodName === 'getDeviceUsage') {
+            this.deviceUsage = msg.message;
+            console.log(JSON.parse(msg.message)?.app?.versionName);
+            if (msg.message) this.$store.commit('updateAppVersion', JSON.parse(msg.message)?.app?.versionName);
+          }
         } catch (error) {
+          console.log(error);
           return this.showAlert('승인 요청했습니다. 조회하여 새로고침 해주세요.');
         }
       });
@@ -771,13 +778,8 @@ export default {
       const time = Date.now();
       const ISONow = new Date(time).toISOString();
       const datetime = this.$moment(ISONow).format();
-      let deviceUsage = {};
       try {
-        if (window.UUID) {
-          deviceUsage = JSON.parse(window.UUID.getDeviceUsage());
-          this.$store.commit('updateAppVersion', deviceUsage?.message.app.name);
-
-        }
+          window.UUID?.getDeviceUsage();
       } catch(e) {
         //// console.log(e);
       }
@@ -786,7 +788,7 @@ export default {
         type: 'beep',
         uCode: this.$store.state.uCode,
         MACAddr: this.$store.state.MACAddr,
-        deviceUsage: deviceUsage,
+        deviceUsage: this.deviceUsage,
         location: window.location,
         store: {
           code: this.$store.state.auth?.store?.code,
