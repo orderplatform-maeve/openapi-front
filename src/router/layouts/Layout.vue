@@ -443,11 +443,6 @@ export default {
               return this.showAlert(`잘못된 callBackPayment message 형태입니다. 출력값: ${msg?.result}`);
             }
           }
-          if (methodName === 'getDeviceUsage') {
-            this.deviceUsage = msg.message;
-            console.log(JSON.parse(msg.message)?.app?.versionName);
-            if (msg.message) this.$store.commit('updateAppVersion', JSON.parse(msg.message)?.app?.versionName);
-          }
         } catch (error) {
           console.log(error);
           return this.showAlert('승인 요청했습니다. 조회하여 새로고침 해주세요.');
@@ -779,7 +774,7 @@ export default {
       const ISONow = new Date(time).toISOString();
       const datetime = this.$moment(ISONow).format();
       try {
-          window.UUID?.getDeviceUsage();
+        window.UUID?.getDeviceUsage();
       } catch(e) {
         //// console.log(e);
       }
