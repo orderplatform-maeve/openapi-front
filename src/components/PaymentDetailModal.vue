@@ -116,13 +116,12 @@ export default {
     },
     androidMethodFlag() {
       try {
-        if (window.UUID) {
-          return Boolean(window.UUID.cancelForcedOrder());
+        if (window.UUID.cancelForcedOrder) {
+          return true;
         }
       } catch (error) {
         return false;
       }
-
     }
   },
 };
