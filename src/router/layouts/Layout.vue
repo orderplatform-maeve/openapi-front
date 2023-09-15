@@ -94,6 +94,7 @@ import {
   happyTalk as happyTalkAction
 } from '@apis';
 import { HappyTalk } from '@svg';
+import endpoints from "@apis/endpoints";
 
 const {
   requestCardCancelCommit,
@@ -316,6 +317,47 @@ export default {
         // console.log('socket res');
       });
     },
+    async storeHash(message) {
+      console.log(`Socket on ${message.type}`);
+      console.log(this.auth);
+      const isDev = process.env.STOP_REDIRECT;
+
+      try {
+        if (!isDev) {
+          const { store_code } = this.auth.store;
+          const { code: member_id } = this.auth.member;
+
+          const params = new FormData();
+          params.append('store_code', store_code);
+          const url = endpoints.shop.config;
+          const res = await axios.post(url, params);
+
+          let nextUrl = res.data.data.T_order_store_orderView_version;
+
+          if (nextUrl) {
+            const {
+              protocol,
+              hostname,
+              pathname,
+            } = location;
+
+            const nowPath = `${protocol}//${hostname}${pathname}#/`;
+
+            if (nextUrl.includes('torder.io')) {
+              nextUrl += `#/login?memberId=${member_id}&storeCode=${store_code}`;
+            }
+
+
+            // diff version
+            if (nowPath !== nextUrl) {
+              return location.replace(nextUrl);
+            }
+          }
+        }
+      } catch (error) {
+        // console.log(error);
+      }
+    }
   },
   methods: {
     async commit(item, url) {
