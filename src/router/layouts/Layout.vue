@@ -91,10 +91,10 @@ import {
 } from '@components';
 import {
   payments,
-  happyTalk as happyTalkAction
+  happyTalk as happyTalkAction,
+  shop
 } from '@apis';
 import { HappyTalk } from '@svg';
-import endpoints from "@apis/endpoints";
 
 const {
   requestCardCancelCommit,
@@ -103,6 +103,10 @@ const {
 const {
   postMessage
 } = happyTalkAction;
+
+const {
+  postShopConfigData,
+} = shop;
 
 export default {
   components: {
@@ -317,9 +321,7 @@ export default {
         // console.log('socket res');
       });
     },
-    async storeHash(message) {
-      console.log(`Socket on ${message.type}`);
-      console.log(this.auth);
+    async storeHash() {
       const isDev = process.env.STOP_REDIRECT;
 
       try {
@@ -329,24 +331,22 @@ export default {
 
           const params = new FormData();
           params.append('store_code', store_code);
-          const url = endpoints.shop.config;
-          const res = await axios.post(url, params);
+
+          const res = await postShopConfigData(params);
 
           let nextUrl = res.data.data.T_order_store_orderView_version;
 
           if (nextUrl) {
             const {
-              protocol,
-              hostname,
-              pathname,
+              origin,
+              pathname
             } = location;
 
-            const nowPath = `${protocol}//${hostname}${pathname}#/`;
+            const nowPath = `${origin}${pathname}#/`;
 
             if (nextUrl.includes('torder.io')) {
-              nextUrl += `#/login?memberId=${member_id}&storeCode=${store_code}`;
+              nextUrl = `${nextUrl}#/login?memberId=${member_id}&storeCode=${store_code}`;
             }
-
 
             // diff version
             if (nowPath !== nextUrl) {
