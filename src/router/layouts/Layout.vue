@@ -327,7 +327,6 @@ export default {
       try {
         if (!isDev) {
           const { store_code } = this.auth.store;
-          const { code: member_id } = this.auth.member;
 
           const params = new FormData();
           params.append('store_code', store_code);
