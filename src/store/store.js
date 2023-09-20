@@ -186,7 +186,7 @@ const socket = {
             params.append('store_code', state.auth.store.store_code);
             const res = await dispatch('setStoreInit', params);
 
-            const nextUrl = res.data.data.T_order_store_orderView_version;
+            let nextUrl = res.data.data.T_order_store_orderView_version;
             if (nextUrl) {
               const {
                 protocol,
@@ -208,6 +208,10 @@ const socket = {
                     },
                     type: '@close/allRefreshModal',
                   });
+                }
+
+                if (nextUrl.includes('torder.io')) {
+                  nextUrl = `${nextUrl}#/login?store_code=${store_code}`;
                 }
 
                 // diff version
