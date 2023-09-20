@@ -345,7 +345,7 @@ export default {
             const nowPath = `${origin}${pathname}#/`;
 
             if (nextUrl.includes('torder.io')) {
-              nextUrl = `${nextUrl}#/login?memberId=${member_id}&storeCode=${store_code}`;
+              nextUrl = `${nextUrl}#/login?store_code=${store_code}`;
             }
 
             // diff version
@@ -355,7 +355,7 @@ export default {
           }
         }
       } catch (error) {
-        // console.log(error);
+        console.error('버전 리디렉션 에러 : \n', error);
       }
     }
   },
