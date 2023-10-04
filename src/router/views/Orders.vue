@@ -242,8 +242,9 @@ export default {
     },
     getAmount(amount) {
       if (amount) {
-        return amount.toLocaleString();
+        return amount?.toLocaleString();
       }
+
       return 0;
     },
     openCashConfirmModal(order) {
