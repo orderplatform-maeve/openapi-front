@@ -51,7 +51,7 @@
         p.order-title(v-if="!isTorderTwo && !isRemakePaid") 미수금
         p.order-title 선/후불
         p.order-title 결제방식
-        p.order-title(v-else) 현금 확인
+        p.order-title(v-if="isTorderTwo || isRemakePaid") 현금 확인
         p.order-title 주문시간
         p.order-title 총 인원수
       .wrap-order-information-lists
