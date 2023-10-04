@@ -51,7 +51,7 @@
         p.order-title(v-if="!isTorderTwo && !isRemakePaid") 미수금
         p.order-title 선/후불
         p.order-title 결제방식
-        p.order-title(v-if="isTorderTwo || isRemakePaid") 현금 확인
+        p.order-title(v-else) 현금 확인
         p.order-title 주문시간
         p.order-title 총 인원수
       .wrap-order-information-lists
@@ -80,7 +80,7 @@
             p.order-information-credit-type(:class="getTextThroughStyle(order)") {{creditTypeCheck(order)}}
             p.order-information-cash-confirm(:class="getTextThroughStyle(order)" v-if="isTorderTwo || isRemakePaid")
               span(v-if="showCashCheckButton(order)") {{preCreditCheck(order)}}
-              span(v-else @click.stop="() => openCashConfirmModal(order)" class="cash-confirm-button") 현금 확인 요청
+              span.cash-confirm-button(v-else @click.stop="openCashConfirmModal(order)") 현금 확인 요청
             p.order-information-order-time(:class="getTextThroughStyle(order)") {{getOrderTime(order).substr(11)}}
             p.order-information-total-people(:class="getTextThroughStyle(order)") {{visitGroups(order)}}명
     .wrap-order-list(v-if="payloadStatus === 1")
@@ -254,11 +254,11 @@ export default {
         amount: order.totalMisu,
         approvalDatetime: order.order_time,
       };
-      this.$store.state.isCashConfirmModal = true;
+      this.$store.commit('updateCashPaymentConfirmModal', true);
     },
     closePayCheckModal() {
       this.detailPayData = {};
-      this.$store.state.isCashConfirmModal = false;
+      this.$store.commit('updateCashPaymentConfirmModal', false);
     },
     getCashOutPopVisble() {
       return this.chooseOrder?.totalMisu > 0;
@@ -477,13 +477,12 @@ export default {
     },
     async reqCashConfirm(order) {
       try {
-        if (!order?.orderViewKey) return;
-
         const res = await requestCashAllCommit(order.orderViewKey);
 
         if (res.data.resultCode === 200) {
           this.closePayCheckModal();
 
+          // 현금 확인 요청 후 주문내역 갱신
           const fd = new FormData();
           fd.append('shop_code', this.$store.state.auth.store.store_code);
           await this.$store.dispatch('setOrders', fd);

@@ -2,11 +2,11 @@
 .cash-payment-confirm-container
   .cash-payment-confirm-wrap
     .modal-title-wrap
-      p 현금 결제 요청
+      p.modal-title 현금 결제 요청
     .modal-body-wrap {{ cashPaymentConfirmInfo.tableName }}테이블에서 {{ cashPaymentConfirmInfo.amount }}원
     .modal-body-wrap 현금결제를 요청했습니다.
     .modal-footer-wrap
-      button.confirm-button(@click="close") 닫기
+      button.confirm-button(@click="closeCashPaymentModal") 닫기
 </template>
 
 <script>
@@ -17,7 +17,7 @@ export default {
     },
   },
   methods: {
-    close() {
+    closeCashPaymentModal() {
       this.$store.commit('updateCashPaymentConfirmModal', false);
     },
   },
@@ -56,7 +56,7 @@ export default {
       padding-bottom: 1.5625vw !important;
       border-bottom: 0.0781vw solid #fc0000;
 
-      > p {
+      .modal-title {
         display: flex;
         justify-content: center;
       }

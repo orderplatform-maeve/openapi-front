@@ -409,13 +409,16 @@ const socket = {
 
       // 선결제 - 현금 확인 요청 알림
       if (payload?.type === 'requestReceiptCash') {
-        if (!payload.data) return;
+        if (!payload.data) {
+          // 예외처리 기획 추가 필요
+          return;
+        }
 
         if (window?.UUID?.playOrderBell) {
           window.UUID.playOrderBell();
         }
 
-        // commit('setRequestCashItem', item);
+        commit('setRequestCashItem', payload.data);
         commit('updateCashPaymentConfirmModal', true);
         commit('updateCashPaymentConfirmInfo', payload);
       }
@@ -612,8 +615,8 @@ const order = {
     updateCashPaymentCancelInfo(state, payload) {
       state.cashPaymentCancelInfo = payload;
     },
-    updateCashPaymentConfirmModal(state, visible) {
-      state.cashPaymentConfirmModal = visible;
+    updateCashPaymentConfirmModal(state, payload) {
+      state.cashPaymentConfirmModal = payload;
     },
     updateCashPaymentConfirmInfo(state, payload) {
       state.cashPaymentConfirmInfo = payload;

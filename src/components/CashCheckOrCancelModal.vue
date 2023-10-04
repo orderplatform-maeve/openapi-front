@@ -8,8 +8,7 @@
         .table-head 테이블 번호
         .table-body {{ detailPayData.tabletNumber }}
       .table-wrap
-        .table-head(v-if="isCashConfirmModal") 총 현금 결제금액
-        .table-head(v-else) 현금 결제금액
+      .table-head {{ isCashConfirmModal ? '총 현금 결제금액' : '현금 결제금액' }}
         .table-body {{ getAmount(detailPayData.amount) }}
       .table-wrap
         .table-head 주문 일시

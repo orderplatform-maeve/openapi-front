@@ -1,9 +1,12 @@
 <template lang="pug">
 #orderview
+  CashPaymentConfirmModal(
+    v-if="cashPaymentConfirmModal && (isTorderTwo || isRemakePaid)"
+  )
   cash-payment-cancel-modal(
     v-if="cashPaymentCancelModal && (isTorderTwo || isRemakePaid)"
     :goPaymentDetailsPage="goPaymentDetailsPage"
-    )
+  )
   alert-modal(v-if="isAlertModal")
   auction-modal(v-if="order && auction")
   modal-order(v-if="order && orderModal")
@@ -88,6 +91,7 @@ import {
   HappyTalkSuccessModal,
   LogoutSecret,
   PosErrorModal,
+  CashPaymentConfirmModal,
 } from '@components';
 import {
   payments,
@@ -114,6 +118,7 @@ export default {
     HappyTalkSuccessModal,
     LogoutSecret,
     PosErrorModal,
+    CashPaymentConfirmModal,
   },
   // https://vuex.vuejs.org/kr/guide/state.html#vuex-%EC%83%81%ED%83%9C%EB%A5%BC-vue-%EC%BB%B4%ED%8F%AC%EB%84%8C%ED%8A%B8%EC%97%90%EC%84%9C-%EA%B0%80%EC%A0%B8%EC%98%A4%EA%B8%B0
   store,
@@ -161,6 +166,9 @@ export default {
     },
     cashPaymentCancelModal() {
       return this.$store.state.cashPaymentCancelModal;
+    },
+    cashPaymentConfirmModal() {
+      return this.$store.state.isCashConfirmModal;
     },
     orderModal() {
       return this.$store.state.orderModal;
