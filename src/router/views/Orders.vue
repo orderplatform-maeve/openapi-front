@@ -13,6 +13,14 @@
       :standardPriceUnit="standardPriceUnit"
       :standardPriceFrontPosition="standardPriceFrontPosition"
     )
+    cash-check-or-cancel-modal(
+      v-if="isCashConfirmModal"
+      cashType="CHECK"
+      :closePayCheckModal="closePayCheckModal"
+      :detailPayData="detailPayData"
+      :cashCommit="() => reqCashConfirm(detailPayData)"
+      :getAmount="getAmount"
+    )
     p.store-name {{storeName}}{{version}}
     .header-orders-status-list
       .orders-status(@click="setViewMode('all')" :class="{activeButton: viewMode === 'all'}")
@@ -43,6 +51,7 @@
         p.order-title(v-if="!isTorderTwo && !isRemakePaid") 미수금
         p.order-title 선/후불
         p.order-title 결제방식
+        p.order-title(v-if="isTorderTwo || isRemakePaid") 현금 확인
         p.order-title 주문시간
         p.order-title 총 인원수
       .wrap-order-information-lists
@@ -69,6 +78,9 @@
                 span(v-if="getVisibleWon(order) && !standardPriceFrontPosition") {{standardPriceUnit}}
             p.order-information-paid-type(:class="getTextThroughStyle(order)") {{paidTypeCheck(order)}}
             p.order-information-credit-type(:class="getTextThroughStyle(order)") {{creditTypeCheck(order)}}
+            p.order-information-cash-confirm(:class="getTextThroughStyle(order)" v-if="isTorderTwo || isRemakePaid")
+              span(v-if="showCashCheckButton(order)") {{preCreditCheck(order)}}
+              span(v-else @click.stop="() => openCashConfirmModal(order)" class="cash-confirm-button") 현금 확인 요청
             p.order-information-order-time(:class="getTextThroughStyle(order)") {{getOrderTime(order).substr(11)}}
             p.order-information-total-people(:class="getTextThroughStyle(order)") {{visitGroups(order)}}명
     .wrap-order-list(v-if="payloadStatus === 1")
@@ -90,7 +102,6 @@
                 span.small-text {{totalVisitPeopleDeepDepth(order)}}
                 span.small-text(v-if="totalVisitPeopleDeepDepth(order)")  =
               span.red-box(:class="getTextThroughStyle(order)") {{visitGroups(order)}}명
-
 </template>
 
 <script>
@@ -110,6 +121,7 @@ export default {
       chooseOrder: {},
       version,
       onlyEvent: false,
+      detailPayData: {},
     };
   },
   components: {
@@ -129,6 +141,9 @@ export default {
     },
     orderModal() {
       return this.$store.state.orderModal;
+    },
+    isCashConfirmModal() {
+      return this.$store.state.isCashConfirmModal;
     },
     sortedOrders() {
       const { orders } = this.$store.state;
@@ -224,6 +239,25 @@ export default {
           this.$store.commit('pushFlashMessage', '현금 수납 확인에 실패했습니다. 티오더로 문의 바랍니다.');
         }
       }
+    },
+    getAmount(amount) {
+      if (amount) {
+        return amount.toLocaleString();
+      }
+      return 0;
+    },
+    openCashConfirmModal(order) {
+      this.detailPayData = {
+        orderViewKey: order.order_view_key,
+        tabletNumber: order.T_order_order_tablet_number,
+        amount: order.totalMisu,
+        approvalDatetime: order.order_time,
+      };
+      this.$store.state.isCashConfirmModal = true;
+    },
+    closePayCheckModal() {
+      this.detailPayData = {};
+      this.$store.state.isCashConfirmModal = false;
     },
     getCashOutPopVisble() {
       return this.chooseOrder?.totalMisu > 0;
@@ -425,6 +459,41 @@ export default {
         return '메뉴별결제';
       }
     },
+    showCashCheckButton(order) {
+      const cardCreditTypes = ['cart', 'card', 'V2_CARD'];
+      const isIncludedCashCreditType = cardCreditTypes.includes(order.creditType);
+
+      return isIncludedCashCreditType && order.totalMisu !== 0;
+    },
+    preCreditCheck(order) {
+      const isPreCredit = order.totalMisu === undefined;
+
+      if (isPreCredit) {
+        return '확인 완료';
+      }
+
+      return '-';
+    },
+    async reqCashConfirm(order) {
+      try {
+        if (!order?.orderViewKey) return;
+
+        const res = await requestCashAllCommit(order.orderViewKey);
+
+        if (res.data.resultCode === 200) {
+          this.closePayCheckModal();
+
+          const fd = new FormData();
+          fd.append('shop_code', this.$store.state.auth.store.store_code);
+          await this.$store.dispatch('setOrders', fd);
+          return;
+        }
+
+        this.$store.commit('pushFlashMessage', '현금 확인에 실패했습니다. 티오더로 문의 바랍니다.');
+      } catch (error) {
+        console.log(error);
+      }
+    },
     getIsCancelOrder(order) {
       return order.is_cancel_order ? order.is_cancel_order : false;
     },
@@ -537,7 +606,7 @@ export default {
         'order-information-list': true,
         'remake-paid': this.isTorderTwo || this.isRemakePaid
       };
-    }
+    },
   },
 };
 </script>
@@ -666,7 +735,7 @@ export default {
     }
 
     .remake-paid {
-      grid-template-columns: 12.71875vw 7.46875vw 10.375vw 10.375vw 4.75vw 11.3125vw 10.90625vw 4.375vw;
+      grid-template-columns: 11.71875vw 5.46875vw 9.375vw 9.375vw 3.75vw 10.3125vw 9.375vw 8.90625vw 4.375vw;
     }
 
     // 결제 포함 버전
@@ -756,7 +825,7 @@ export default {
         }
 
         .remake-paid {
-          grid-template-columns: 12.71875vw 7.46875vw 10.375vw 10.375vw 4.75vw 11.3125vw 10.90625vw 4.375vw;
+          grid-template-columns: 11.71875vw 5.46875vw 9.375vw 9.375vw 3.75vw 10.3125vw 9.375vw 8.90625vw 4.375vw;
         }
       }
 
@@ -965,4 +1034,17 @@ export default {
   text-decoration-thickness: 0.3906vw;
 }
 
+.cash-confirm-button {
+  width: 9.375vw;
+  height: 2.45vw;
+  background-color: #fff;
+  border-radius: 0.390625vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5625vw;
+  color: #000;
+  border: 1px solid #000;
+  font-weight: bold;
+}
 </style>

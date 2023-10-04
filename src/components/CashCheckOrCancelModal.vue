@@ -2,18 +2,19 @@
 .cash-check-or-cancel-container
   .check-or-cancel-wrap(v-if="showCashType")
     .modal-title-wrap
-      span 현금 수금 확인 요청
+      span 현금 확인 요청
     .modal-body-wrap
       .table-wrap
         .table-head 테이블 번호
         .table-body {{ detailPayData.tabletNumber }}
       .table-wrap
-        .table-head 결제 금액
+        .table-head(v-if="isCashConfirmModal") 총 현금 결제금액
+        .table-head(v-else) 현금 결제금액
         .table-body {{ getAmount(detailPayData.amount) }}
       .table-wrap
-        .table-head 결제 일시
+        .table-head 주문 일시
         .table-body {{ detailPayData.approvalDatetime }}
-    span.confirm-text 해당 테이블에서 현금 수금이 확인되었습니까?
+    span.confirm-text 해당 테이블에서 현금을 받으셨습니까?
     .modal-footer-wrap
       button(@click="closePayCheckModal()") 취소
       button.confirm-button(@click="cashCommit()") 완료
@@ -37,7 +38,6 @@
     .modal-footer-wrap
       button(@click="closePayCheckModal()") 취소
       button.confirm-button(@click="cashCancelCommit()") 완료
-
 </template>
 
 <script>
@@ -65,7 +65,10 @@ export default {
   computed: {
     showCashType() {
       return this.cashType === 'CHECK' ? true : false;
-    }
+    },
+    isCashConfirmModal() {
+      return this.$store.state.isCashConfirmModal;
+    },
   },
 };
 </script>

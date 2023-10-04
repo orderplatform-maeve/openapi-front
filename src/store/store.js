@@ -155,16 +155,6 @@ const socket = {
         return commit('UNSET_ORDER');
       }
 
-      if (payload?.type === 'requestReceiptCash') {
-        if (payload.data) {
-          const item = payload.data;
-          if (window?.UUID?.playOrderBell) {
-            window.UUID.playOrderBell();
-          }
-          commit('setRequestCashItem', item);
-        }
-      }
-
       // 주문 강제취소에 대한 소켓메세지
       if (payload?.type === 'cancelOrder') {
         const fd = new FormData();
@@ -416,6 +406,19 @@ const socket = {
         commit('updateCashPaymentCancelModal', true);
         commit('updateCashPaymentCancelInfo', payload);
       }
+
+      // 선결제 - 현금 확인 요청 알림
+      if (payload?.type === 'requestReceiptCash') {
+        if (!payload.data) return;
+
+        if (window?.UUID?.playOrderBell) {
+          window.UUID.playOrderBell();
+        }
+
+        // commit('setRequestCashItem', item);
+        commit('updateCashPaymentConfirmModal', true);
+        commit('updateCashPaymentConfirmInfo', payload);
+      }
     },
     SOCKET_disconnect({ commit }) {
       const now = new Date(Date.now());
@@ -608,7 +611,13 @@ const order = {
     },
     updateCashPaymentCancelInfo(state, payload) {
       state.cashPaymentCancelInfo = payload;
-    }
+    },
+    updateCashPaymentConfirmModal(state, visible) {
+      state.cashPaymentConfirmModal = visible;
+    },
+    updateCashPaymentConfirmInfo(state, payload) {
+      state.cashPaymentConfirmInfo = payload;
+    },
   },
   actions: {
     async commitOrder(context, payload) {
@@ -1521,8 +1530,14 @@ const state = {
       amount: 0,
     }
   },
+  cashPaymentConfirmModal: false,
+  cashPaymentConfirmInfo: {
+    tableName: '',
+    amount: 0,
+  },
   alertTwoBtMessage: '',
   isAlertTwoBtModal: false,
+  isCashConfirmModal: false,
 };
 
 const mutations = {

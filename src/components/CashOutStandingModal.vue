@@ -1,34 +1,34 @@
 <template lang="pug">
-  .cash-out-standing-container
-    .wrap-cash-out-standing
-      p.cash-out-standing-title 현금미결제
-      .cash-out-standing
-        .credit-information
-          p.wrap-order-price 주문금액:
-            span.order-price
-              span(v-if="standardPriceFrontPosition") {{standardPriceUnit}}
-              span {{item.amount.toLocaleString()}}
-              span(v-if="!standardPriceFrontPosition") {{standardPriceUnit}}
-          p.approval-number 승인번호: {{item.paymentId}}
-          p.order-date 주문일시: {{item.orderdateTime}}
-        .order-information-list
-          .order-information(
-            v-for="(order, index) in item.orderInfo"
-            :key="getOrderInformationKey(order, index)"
-          )
-            .wrap-order-product-name
-              p.order-product-name {{order.display_name}}
-              p.order-product-quantity {{order.good_qty}}개
-            .order-product-option-list(v-if="order.option")
-              p.order-product-option(
-                v-for="(option, index) in order.option"
-                :key="getOrderProductOptionKey(option, index)") {{option.display_name}}
-      .caution-message
-        p 테이블에서
-        p 현금 수납이 확인되었습니까?
-      .confirm-button-list
-        button.close-button(@click.stop="closeItemModal()") 닫기
-        button.confirm-button(@click.stop="cashCommit(item)") 확인
+.cash-out-standing-container
+  .wrap-cash-out-standing
+    p.cash-out-standing-title 현금미결제
+    .cash-out-standing
+      .credit-information
+        p.wrap-order-price 주문금액:
+          span.order-price
+            span(v-if="standardPriceFrontPosition") {{standardPriceUnit}}
+            span {{item.amount.toLocaleString()}}
+            span(v-if="!standardPriceFrontPosition") {{standardPriceUnit}}
+        p.approval-number 승인번호: {{item.paymentId}}
+        p.order-date 주문일시: {{item.orderdateTime}}
+      .order-information-list
+        .order-information(
+          v-for="(order, index) in item.orderInfo"
+          :key="getOrderInformationKey(order, index)"
+        )
+          .wrap-order-product-name
+            p.order-product-name {{order.display_name}}
+            p.order-product-quantity {{order.good_qty}}개
+          .order-product-option-list(v-if="order.option")
+            p.order-product-option(
+              v-for="(option, index) in order.option"
+              :key="getOrderProductOptionKey(option, index)") {{option.display_name}}
+    .caution-message
+      p 테이블에서
+      p 현금 수납이 확인되었습니까?
+    .confirm-button-list
+      button.close-button(@click.stop="closeItemModal()") 닫기
+      button.confirm-button(@click.stop="cashCommit(item)") 확인
 </template>
 
 <script>
