@@ -1,8 +1,6 @@
 <template lang="pug">
 #orderview
-  CashPaymentConfirmModal(
-    v-if="cashPaymentConfirmModal && (isTorderTwo || isRemakePaid)"
-  )
+  CashPaymentConfirmModal(v-if="cashPaymentConfirmModal")
   cash-payment-cancel-modal(
     v-if="cashPaymentCancelModal && (isTorderTwo || isRemakePaid)"
     :goPaymentDetailsPage="goPaymentDetailsPage"
@@ -168,7 +166,7 @@ export default {
       return this.$store.state.cashPaymentCancelModal;
     },
     cashPaymentConfirmModal() {
-      return this.$store.state.isCashConfirmModal;
+      return this.$store.state.cashPaymentConfirmModal;
     },
     orderModal() {
       return this.$store.state.orderModal;

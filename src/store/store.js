@@ -407,8 +407,9 @@ const socket = {
         commit('updateCashPaymentCancelInfo', payload);
       }
 
-      // 선결제 - 현금 확인 요청 알림
+      // 선결제 - 현금 결제 요청 알림
       if (payload?.type === 'requestReceiptCash') {
+        console.log('ㅜ투투투');
         if (!payload.data) {
           // 예외처리 기획 추가 필요
           return;
@@ -417,10 +418,11 @@ const socket = {
         if (window?.UUID?.playOrderBell) {
           window.UUID.playOrderBell();
         }
-
+        console.log(payload.data);
         commit('setRequestCashItem', payload.data);
-        commit('updateCashPaymentConfirmModal', true);
+        console.log(payload.data);
         commit('updateCashPaymentConfirmInfo', payload);
+        commit('updateCashPaymentConfirmModal', true);
       }
     },
     SOCKET_disconnect({ commit }) {
@@ -1540,7 +1542,6 @@ const state = {
   },
   alertTwoBtMessage: '',
   isAlertTwoBtModal: false,
-  isCashConfirmModal: false,
 };
 
 const mutations = {

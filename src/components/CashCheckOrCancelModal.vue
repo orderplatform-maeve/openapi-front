@@ -8,7 +8,7 @@
         .table-head 테이블 번호
         .table-body {{ detailPayData.tabletNumber }}
       .table-wrap
-      .table-head {{ isCashConfirmModal ? '총 현금 결제금액' : '현금 결제금액' }}
+        .table-head {{ isCashPaymentConfirmModal ? '총 현금 결제금액' : '현금 결제금액' }}
         .table-body {{ getAmount(detailPayData.amount) }}
       .table-wrap
         .table-head 주문 일시
@@ -65,8 +65,8 @@ export default {
     showCashType() {
       return this.cashType === 'CHECK' ? true : false;
     },
-    isCashConfirmModal() {
-      return this.$store.state.isCashConfirmModal;
+    isCashPaymentConfirmModal() {
+      return this.$store.state.cashPaymentConfirmModal;
     },
   },
 };

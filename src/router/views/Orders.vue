@@ -14,7 +14,7 @@
       :standardPriceFrontPosition="standardPriceFrontPosition"
     )
     cash-check-or-cancel-modal(
-      v-if="isCashConfirmModal"
+      v-if="isCashPaymentConfirmModal"
       cashType="CHECK"
       :closePayCheckModal="closePayCheckModal"
       :detailPayData="detailPayData"
@@ -142,8 +142,8 @@ export default {
     orderModal() {
       return this.$store.state.orderModal;
     },
-    isCashConfirmModal() {
-      return this.$store.state.isCashConfirmModal;
+    isCashPaymentConfirmModal() {
+      return this.$store.state.cashPaymentConfirmModal;
     },
     sortedOrders() {
       const { orders } = this.$store.state;
@@ -199,6 +199,9 @@ export default {
     isRemakePaid() {
       return this.$store.state.isRemakePaid;
     },
+    isTorderTwoOrRemakePaid() {
+      return this.$store.state.isTorderTwo && this.$store.state.isRemakePaid;
+    }
   },
   async mounted() {
     this.isLoading = true;
