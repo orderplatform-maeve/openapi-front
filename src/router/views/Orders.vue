@@ -20,6 +20,7 @@
       :detailPayData="detailPayData"
       :cashCommit="() => reqCashConfirm(detailPayData)"
       :getAmount="getAmount"
+      :isCashPaymentConfirmModal="isCashPaymentConfirmModal"
     )
     p.store-name {{storeName}}{{version}}
     .header-orders-status-list
@@ -256,6 +257,7 @@ export default {
         approvalDatetime: order.order_time,
       };
       this.isCashPaymentConfirmModal = true;
+      this.$store.commit('orderModalFlag', true);
     },
     closePayCheckModal() {
       this.detailPayData = {};

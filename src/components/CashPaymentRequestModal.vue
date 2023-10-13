@@ -6,7 +6,7 @@
     .modal-body-wrap {{ cashPaymentConfirmInfo.tableName }}테이블에서 {{ cashPaymentConfirmInfo.amount }}원
     .modal-body-wrap 현금결제를 요청했습니다.
     .modal-footer-wrap
-      button.confirm-button(@click="closeCashPaymentModal") 닫기
+      button.confirm-button(@click="closeCashPaymentRequestModal") 닫기
 </template>
 
 <script>
@@ -17,8 +17,8 @@ export default {
     },
   },
   methods: {
-    closeCashPaymentModal() {
-      this.$store.commit('updateCashPaymentConfirmModal', false);
+    closeCashPaymentRequestModal() {
+      this.$store.commit('updateCashPaymentRequestModal', false);
     },
   },
 };

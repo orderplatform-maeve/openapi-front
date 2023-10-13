@@ -417,8 +417,8 @@ const socket = {
         commit('setRequestCashItem', payload.data);
 
         const cashPaymentInfo = { tableName: payload.table.name, amount: payload.amount };
-        commit('updateCashPaymentConfirmInfo', cashPaymentInfo);
-        commit('updateCashPaymentConfirmModal', true);
+        commit('updateCashPaymentRequestInfo', cashPaymentInfo);
+        commit('updateCashPaymentRequestModal', true);
       }
     },
     SOCKET_disconnect({ commit }) {
@@ -613,11 +613,11 @@ const order = {
     updateCashPaymentCancelInfo(state, payload) {
       state.cashPaymentCancelInfo = payload;
     },
-    updateCashPaymentConfirmModal(state, payload) {
-      state.cashPaymentConfirmModal = payload;
+    updateCashPaymentRequestModal(state, payload) {
+      state.cashPaymentRequestModal = payload;
     },
-    updateCashPaymentConfirmInfo(state, payload) {
-      state.cashPaymentConfirmInfo = payload;
+    updateCashPaymentRequestInfo(state, payload) {
+      state.cashPaymentRequestInfo = payload;
     },
   },
   actions: {
@@ -1531,8 +1531,8 @@ const state = {
       amount: 0,
     }
   },
-  cashPaymentConfirmModal: false,
-  cashPaymentConfirmInfo: {
+  cashPaymentRequestModal: false,
+  cashPaymentRequestInfo: {
     tableName: '',
     amount: 0,
   },
