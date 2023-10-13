@@ -198,9 +198,6 @@ export default {
     isRemakePaid() {
       return this.$store.state.isRemakePaid;
     },
-    isTorderTwoOrRemakePaid() {
-      return this.$store.state.isTorderTwo && this.$store.state.isRemakePaid;
-    },
   },
   async mounted() {
     this.isLoading = true;
