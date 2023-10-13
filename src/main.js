@@ -34,7 +34,7 @@ import {
   OptionSaveCheckModal,
   PaymentDetailModal,
   CashCheckOrCancelModal,
-  CashPaymentCancelModal,
+  CashPaymentCancelModal
 } from '@components';
 
 import {

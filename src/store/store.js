@@ -416,7 +416,10 @@ const socket = {
 
         commit('setRequestCashItem', payload.data);
 
-        const cashPaymentInfo = { tableName: payload.table.name, amount: payload.amount };
+        const cashPaymentInfo = {
+          tableName: payload.table.name,
+          amount: payload.amount
+        };
         commit('updateCashPaymentRequestInfo', cashPaymentInfo);
         commit('updateCashPaymentRequestModal', true);
       }
