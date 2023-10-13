@@ -122,6 +122,7 @@ export default {
       version,
       onlyEvent: false,
       detailPayData: {},
+      isCashPaymentConfirmModal: false,
     };
   },
   components: {
@@ -141,9 +142,6 @@ export default {
     },
     orderModal() {
       return this.$store.state.orderModal;
-    },
-    isCashPaymentConfirmModal() {
-      return this.$store.state.cashPaymentConfirmModal;
     },
     sortedOrders() {
       const { orders } = this.$store.state;
@@ -201,7 +199,7 @@ export default {
     },
     isTorderTwoOrRemakePaid() {
       return this.$store.state.isTorderTwo && this.$store.state.isRemakePaid;
-    }
+    },
   },
   async mounted() {
     this.isLoading = true;
@@ -257,11 +255,11 @@ export default {
         amount: order.totalMisu,
         approvalDatetime: order.order_time,
       };
-      this.$store.commit('updateCashPaymentConfirmModal', true);
+      this.isCashPaymentConfirmModal = true;
     },
     closePayCheckModal() {
       this.detailPayData = {};
-      this.$store.commit('updateCashPaymentConfirmModal', false);
+      this.isCashPaymentConfirmModal = false;
     },
     getCashOutPopVisble() {
       return this.chooseOrder?.totalMisu > 0;
@@ -738,7 +736,7 @@ export default {
     }
 
     .remake-paid {
-      grid-template-columns: 11.71875vw 5.46875vw 9.375vw 9.375vw 3.75vw 10.3125vw 9.375vw 8.90625vw 4.375vw;
+      grid-template-columns: 11.71875vw 7.3vw 9.375vw 9.375vw 3.75vw 10.3125vw 9.375vw 8.90625vw 4.375vw;
     }
 
     // 결제 포함 버전
@@ -750,7 +748,7 @@ export default {
           height: 4.375vw;
           padding: 0 0.78125vw !important;
           display: grid;
-          grid-template-columns: 11.71875vw 5.46875vw 9.375vw 9.375vw 9.375vw 3.75vw 10.3125vw 8.90625vw 4.375vw;
+          grid-template-columns: 11.71875vw 7.3vw 9.375vw 9.375vw 3.75vw 10.3125vw 9.375vw 8.90625vw 4.375vw;
           justify-content: center;
           align-items: center;
           gap: 0.78125vw;
@@ -828,7 +826,7 @@ export default {
         }
 
         .remake-paid {
-          grid-template-columns: 11.71875vw 5.46875vw 9.375vw 9.375vw 3.75vw 10.3125vw 9.375vw 8.90625vw 4.375vw;
+          grid-template-columns: 11.71875vw 7.3vw 9.375vw 9.375vw 3.75vw 10.3125vw 9.375vw 8.90625vw 4.375vw;
         }
       }
 

@@ -401,6 +401,7 @@ const socket = {
           });
         }
       }
+
       // 선결제 - 현금 취소 요청 알림
       if (payload?.type === 'requestCancelCash') {
         commit('updateCashPaymentCancelModal', true);
@@ -409,19 +410,14 @@ const socket = {
 
       // 선결제 - 현금 결제 요청 알림
       if (payload?.type === 'requestReceiptCash') {
-        console.log('ㅜ투투투');
-        if (!payload.data) {
-          // 예외처리 기획 추가 필요
-          return;
-        }
-
         if (window?.UUID?.playOrderBell) {
           window.UUID.playOrderBell();
         }
-        console.log(payload.data);
+
         commit('setRequestCashItem', payload.data);
-        console.log(payload.data);
-        commit('updateCashPaymentConfirmInfo', payload);
+
+        const cashPaymentInfo = { tableName: payload.table.name, amount: payload.amount };
+        commit('updateCashPaymentConfirmInfo', cashPaymentInfo);
         commit('updateCashPaymentConfirmModal', true);
       }
     },

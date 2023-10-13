@@ -21,7 +21,7 @@
     router-link.button-added(v-if="visibleOrderButton" :to="paths.controlLastOrder")
       span 타이머 관리
       img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
-    router-link.button-added(v-if="isTorderTwo || isRemakePaid" :to="paths.cancelPaymentOrder")
+    router-link.button-added(v-if="!isTorderTwo || !isRemakePaid" :to="paths.cancelPaymentOrder")
       span 결제 주문 강제 취소
       img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
     router-link.button-added(v-if="visibleOrderButton" :to="paths.oldPaymentManagement")
