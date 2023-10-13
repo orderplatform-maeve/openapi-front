@@ -80,8 +80,8 @@
             p.order-information-paid-type(:class="getTextThroughStyle(order)") {{paidTypeCheck(order)}}
             p.order-information-credit-type(:class="getTextThroughStyle(order)") {{creditTypeCheck(order)}}
             p.order-information-cash-confirm(:class="getTextThroughStyle(order)" v-if="isTorderTwo || isRemakePaid")
-              span(v-if="showCashCheckButton(order)") {{preCreditCheck(order)}}
-              span.cash-confirm-button(v-else @click.stop="openCashConfirmModal(order)") 현금 확인 요청
+              span.cash-confirm-button(v-if="showCashCheckConfirmButton(order)" @click.stop="openCashConfirmModal(order)") 현금 확인 요청
+              span(v-else) {{preCreditCheck(order)}}
             p.order-information-order-time(:class="getTextThroughStyle(order)") {{getOrderTime(order).substr(11)}}
             p.order-information-total-people(:class="getTextThroughStyle(order)") {{visitGroups(order)}}명
     .wrap-order-list(v-if="payloadStatus === 1")
@@ -225,32 +225,8 @@ export default {
         'bg-black': index % 2 === 0,
       };
     },
-    async reqConfirmMisu(order) {
-      if (order?.order_view_key) {
-        const res = await requestCashAllCommit(order.order_view_key);
-        if (res?.status === 200) {
-          this.chooseOrder = {};
-          this.$store.commit('UPDATE_DONE_MISU_ORDERS', order);
-          this.$store.commit('updateAlertModalMessage', '현금 수납 처리 되었습니다.');
-          this.$store.commit('updateIsAlertModal', true);
-
-          // 현금 확인 요청 후 주문내역 갱신
-          if (!this.isCashPaymentConfirmModal) return;
-
-          const fd = new FormData();
-          fd.append('shop_code', this.$store.state.auth.store.store_code);
-          await this.$store.dispatch('setOrders', fd);
-        } else {
-          this.$store.commit('pushFlashMessage', '현금 수납 확인에 실패했습니다. 티오더로 문의 바랍니다.');
-        }
-      }
-    },
     getAmount(amount) {
-      if (amount) {
-        return amount?.toLocaleString();
-      }
-
-      return 0;
+      return amount ? amount?.toLocaleString() : 0;
     },
     openCashConfirmModal(order) {
       this.chooseOrder = {
@@ -264,6 +240,27 @@ export default {
     closePayCheckModal() {
       this.chooseOrder = {};
       this.isCashPaymentConfirmModal = false;
+    },
+    async reqConfirmMisu(order) {
+      if (order?.order_view_key) {
+        const res = await requestCashAllCommit(order.order_view_key);
+        if (res?.status === 200) {
+          this.chooseOrder = {};
+          this.$store.commit('UPDATE_DONE_MISU_ORDERS', order);
+          this.$store.commit('updateAlertModalMessage', '현금 수납 처리 되었습니다.');
+          this.$store.commit('updateIsAlertModal', true);
+
+          // 현금 확인 요청 후 주문내역 갱신
+          if (!this.isCashPaymentConfirmModal) return;
+
+          this.closePayCheckModal();
+          const fd = new FormData();
+          fd.append('shop_code', this.$store.state.auth.store.store_code);
+          await this.$store.dispatch('setOrders', fd);
+        } else {
+          this.$store.commit('pushFlashMessage', '현금 수납 확인에 실패했습니다. 티오더로 문의 바랍니다.');
+        }
+      }
     },
     getCashOutPopVisble() {
       return this.chooseOrder?.totalMisu > 0;
@@ -465,14 +462,17 @@ export default {
         return '메뉴별결제';
       }
     },
-    showCashCheckButton(order) {
+    showCashCheckConfirmButton(order) {
       const cardCreditTypes = ['cart', 'card', 'V2_CARD'];
-      const isIncludedCashCreditType = cardCreditTypes.includes(order.creditType);
+      const isIncludedCashCreditType = !cardCreditTypes.includes(order.creditType);
 
       return isIncludedCashCreditType && order.totalMisu !== 0;
     },
     preCreditCheck(order) {
-      return !order.totalMisu ? '-' : '확인 완료';
+      const cardCreditTypes = ['cart', 'card', 'V2_CARD'];
+      const isIncludedCashCreditType = !cardCreditTypes.includes(order.creditType);
+
+      return isIncludedCashCreditType && order.totalMisu === 0 ? '확인 완료' : '-';
     },
     getIsCancelOrder(order) {
       return order.is_cancel_order ? order.is_cancel_order : false;
