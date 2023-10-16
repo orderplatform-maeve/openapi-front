@@ -472,9 +472,8 @@ export default {
     preCreditCheck(order) {
       const cardCreditTypes = ['cart', 'card', 'V2_CARD'];
       const isIncludedCashCreditType = !cardCreditTypes.includes(order.creditType);
-      console.log(order.creditArray);
       const isAllCardPay = order.creditArray?.every(goods => goods.payment_method === 'Card');
-      console.log(isAllCardPay);
+
       if (isAllCardPay) return '-';
       return order.paidOrder && isIncludedCashCreditType && order.totalMisu === 0  ? '확인 완료' : '-';
     },
