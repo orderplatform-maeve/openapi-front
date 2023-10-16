@@ -470,9 +470,9 @@ export default {
     },
     preCreditCheck(order) {
       const cardCreditTypes = ['cart', 'card', 'V2_CARD'];
-      const isIncludedCashCreditType = !cardCreditTypes.includes(order.creditType);
+      const isCardCreditType = cardCreditTypes.includes(order.creditType);
 
-      return isIncludedCashCreditType && order.totalMisu === 0 ? '확인 완료' : '-';
+      return isCardCreditType ? '-' : '확인 완료';
     },
     getIsCancelOrder(order) {
       return order.is_cancel_order ? order.is_cancel_order : false;
