@@ -8,7 +8,7 @@
         .table-head 테이블 번호
         .table-body {{ detailPayData.tabletNumber }}
       .table-wrap
-        .table-head {{ isCashPaymentConfirmModal ? '총 현금 결제금액' : '현금 결제금액' }}
+        .table-head {{ currentPage === 'orders' ? '총 현금 결제금액' : '현금 결제금액' }}
         .table-body {{ getAmount(detailPayData.amount) }}
       .table-wrap
         .table-head 주문 일시
@@ -60,6 +60,9 @@ export default {
     getAmount: {
       type: Function,
     },
+    currentPage: {
+      type: String,
+    }
   },
   computed: {
     showCashType() {

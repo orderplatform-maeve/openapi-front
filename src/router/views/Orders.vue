@@ -20,6 +20,7 @@
       :detailPayData="chooseOrder"
       :cashCommit="() => reqConfirmMisu(chooseOrder)"
       :getAmount="getAmount"
+      currentPage='orders'
     )
     p.store-name {{storeName}}{{version}}
     .header-orders-status-list
