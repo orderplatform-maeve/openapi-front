@@ -622,6 +622,9 @@ const order = {
     updateCashPaymentRequestInfo(state, payload) {
       state.cashPaymentRequestInfo = payload;
     },
+    updateCashPaymentConfirmModal(state, payload) {
+      state.cashPaymentConfirmModal = payload;
+    },
   },
   actions: {
     async commitOrder(context, payload) {
@@ -1539,6 +1542,7 @@ const state = {
     tableName: '',
     amount: 0,
   },
+  cashPaymentConfirmModal: false,
   alertTwoBtMessage: '',
   isAlertTwoBtModal: false,
 };

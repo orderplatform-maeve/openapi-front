@@ -20,7 +20,6 @@
       :detailPayData="chooseOrder"
       :cashCommit="() => reqConfirmMisu(chooseOrder)"
       :getAmount="getAmount"
-      :isCashPaymentConfirmModal="isCashPaymentConfirmModal"
     )
     p.store-name {{storeName}}{{version}}
     .header-orders-status-list
@@ -122,7 +121,6 @@ export default {
       chooseOrder: {},
       version,
       onlyEvent: false,
-      isCashPaymentConfirmModal: false,
     };
   },
   components: {
@@ -197,6 +195,9 @@ export default {
     isRemakePaid() {
       return this.$store.state.isRemakePaid;
     },
+    isCashPaymentConfirmModal() {
+      return this.$store.state.cashPaymentConfirmModal;
+    },
   },
   async mounted() {
     this.isLoading = true;
@@ -235,11 +236,11 @@ export default {
         amount: order.totalMisu,
         approvalDatetime: order.order_time,
       };
-      this.isCashPaymentConfirmModal = true;
+      this.$store.commit('updateCashPaymentConfirmModal', true);
     },
     closePayCheckModal() {
       this.chooseOrder = {};
-      this.isCashPaymentConfirmModal = false;
+      this.$store.commit('updateCashPaymentConfirmModal', false);
     },
     async reqConfirmMisu(order) {
       if (order?.order_view_key) {

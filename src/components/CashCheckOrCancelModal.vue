@@ -60,13 +60,13 @@ export default {
     getAmount: {
       type: Function,
     },
-    isCashPaymentConfirmModal: {
-      type: Boolean,
-    }
   },
   computed: {
     showCashType() {
       return this.cashType === 'CHECK' ? true : false;
+    },
+    isCashPaymentConfirmModal() {
+      return this.$store.state.cashPaymentConfirmModal;
     },
   },
 };
