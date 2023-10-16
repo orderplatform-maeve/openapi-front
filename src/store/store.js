@@ -418,10 +418,11 @@ const socket = {
 
         const cashPaymentInfo = {
           tableName: payload.table.name,
-          amount: payload.amount
+          amount: payload.amount ? payload.amount?.toLocaleString() : 0,
         };
         commit('updateCashPaymentRequestInfo', cashPaymentInfo);
         commit('updateCashPaymentRequestModal', true);
+        console.log(this.state.cashPaymentRequestModal, this.state.cashPaymentRequestInfo);
       }
     },
     SOCKET_disconnect({ commit }) {

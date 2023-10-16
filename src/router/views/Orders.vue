@@ -466,13 +466,17 @@ export default {
       const cardCreditTypes = ['cart', 'card', 'V2_CARD'];
       const isIncludedCashCreditType = !cardCreditTypes.includes(order.creditType);
 
-      return isIncludedCashCreditType && order.totalMisu !== 0;
+      if (order.is_cancel_order) return false;
+      return order.paidOrder && isIncludedCashCreditType && order.totalMisu !== 0;
     },
     preCreditCheck(order) {
       const cardCreditTypes = ['cart', 'card', 'V2_CARD'];
-      const isCardCreditType = cardCreditTypes.includes(order.creditType);
-
-      return isCardCreditType ? '-' : '확인 완료';
+      const isIncludedCashCreditType = !cardCreditTypes.includes(order.creditType);
+      console.log(order.creditArray);
+      const isAllCardPay = order.creditArray?.every(goods => goods.payment_method === 'Card');
+      console.log(isAllCardPay);
+      if (isAllCardPay) return '-';
+      return order.paidOrder && isIncludedCashCreditType && order.totalMisu === 0  ? '확인 완료' : '-';
     },
     getIsCancelOrder(order) {
       return order.is_cancel_order ? order.is_cancel_order : false;
