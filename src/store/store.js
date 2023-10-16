@@ -422,7 +422,6 @@ const socket = {
         };
         commit('updateCashPaymentRequestInfo', cashPaymentInfo);
         commit('updateCashPaymentRequestModal', true);
-        console.log(this.state.cashPaymentRequestModal, this.state.cashPaymentRequestInfo);
       }
     },
     SOCKET_disconnect({ commit }) {
