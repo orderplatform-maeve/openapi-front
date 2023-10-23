@@ -51,7 +51,7 @@
               div
                 p.new-product-good-name {{ good.displayName }}
                 div.option-setting-button(
-                  v-if="good.options && !isTorderTwo"
+                  v-if="good.options"
                   @click="openOptionSoldOutModal(good)"
                   ) 옵션 상태 변경
                   icon-under-white-arrow
