@@ -78,7 +78,9 @@
                 span {{ getMisu(order) }}
                 span(v-if="getVisibleWon(order) && !standardPriceFrontPosition") {{standardPriceUnit}}
             p.order-information-paid-type(:class="getTextThroughStyle(order)") {{paidTypeCheck(order)}}
-            p.order-information-credit-type(:class="getTextThroughStyle(order)") {{creditTypeCheck(order)}}
+            p.order-information-credit-type(:class="getTextThroughStyle(order)")
+              span {{creditTypeCheck(order)}}
+              span.order-defer-text(v-if="order.is_pend") (보류 건)
             p.order-information-cash-confirm(:class="getTextThroughStyle(order)" v-if="isTorderTwo || isRemakePaid")
               span.cash-confirm-button(v-if="showCashCheckConfirmButton(order)" @click.stop="openCashConfirmModal(order)") 현금 확인 요청
               span(v-else) {{preCreditCheck(order)}}
@@ -466,18 +468,24 @@ export default {
     },
     showCashCheckConfirmButton(order) {
       const cardCreditTypes = ['cart', 'card', 'V2_CARD'];
-      const isIncludedCashCreditType = !cardCreditTypes.includes(order.creditType);
+      const isCardPaymentCreditTypes = cardCreditTypes.includes(order.creditType);
 
-      if (order.is_cancel_order) return false;
-      return order.paidOrder && isIncludedCashCreditType && order.totalMisu !== 0;
+      // 주문 취소일 경우 || 현금결제 미포함일 경우 || 후불 결제일 경우 || 결제방식이 카드일 경우
+      if (order.is_cancel_order || !order.is_show_cash_reception || !order.paidOrder || isCardPaymentCreditTypes || order.is_pend) return false;
+
+      // 토탈 미수금 존재할 경우만 true
+      const isExistTotalMisu = order.totalMisu !== 0;
+
+      return  isExistTotalMisu;
     },
     preCreditCheck(order) {
       const cardCreditTypes = ['cart', 'card', 'V2_CARD'];
-      const isIncludedCashCreditType = !cardCreditTypes.includes(order.creditType);
-      const isAllCardPay = order.creditArray?.every(goods => goods.payment_method === 'Card');
+      const isCardPaymentCreditTypes = cardCreditTypes.includes(order.creditType);
+      const isZeroTotalMisu = order.totalMisu === 0;
+      // 현금 결제가 포함되어 있을 경우 - 더치페이, 메뉴별결제에서 필요한 조건
+      const isIncludedCashPayment = order.is_show_cash_reception;
 
-      if (isAllCardPay) return '-';
-      return order.paidOrder && isIncludedCashCreditType && order.totalMisu === 0  ? '확인 완료' : '-';
+      return order.paidOrder && !isCardPaymentCreditTypes && isZeroTotalMisu && isIncludedCashPayment ? '확인 완료' : '-';
     },
     getIsCancelOrder(order) {
       return order.is_cancel_order ? order.is_cancel_order : false;
@@ -732,7 +740,7 @@ export default {
           height: 4.375vw;
           padding: 0 0.78125vw !important;
           display: grid;
-          grid-template-columns: 11.71875vw 7.3vw 9.375vw 9.375vw 3.75vw 10.3125vw 9.375vw 8.90625vw 4.375vw;
+          grid-template-columns: 11.71875vw 5.46875vw 9.375vw 9.375vw 9.375vw 3.75vw 10.3125vw 8.90625vw 4.375vw;
           justify-content: center;
           align-items: center;
           gap: 0.78125vw;
@@ -811,6 +819,10 @@ export default {
 
         .remake-paid {
           grid-template-columns: 11.71875vw 7.3vw 9.375vw 9.375vw 3.75vw 10.3125vw 9.375vw 8.90625vw 4.375vw;
+        }
+
+        .order-information-credit-type {
+          display: grid;
         }
       }
 

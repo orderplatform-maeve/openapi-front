@@ -155,8 +155,8 @@ const socket = {
         return commit('UNSET_ORDER');
       }
 
-      // 주문 강제취소에 대한 소켓메세지
-      if (payload?.type === 'cancelOrder') {
+      // 주문 강제취소에 대한 소켓메세지 & 보류 처리건에 대한 소켓메세지 - 서버측 추후 하나로 통합 예정
+      if (payload?.type === 'cancelOrder' || payload?.type === 'pendOrder') {
         const fd = new FormData();
         fd.append('shop_code', state.auth.store.store_code);
         dispatch('setOrders', fd);
