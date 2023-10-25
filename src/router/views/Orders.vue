@@ -712,7 +712,7 @@ export default {
 
     .order-title-list {
       display: grid;
-      grid-template-columns: 11.71875vw 5.46875vw 9.375vw 9.375vw 9.375vw 3.75vw 10.3125vw 8.90625vw 4.375vw;
+      grid-template-columns: 11.71875vw 8vw 9.375vw 9.375vw 9.375vw 3.75vw 10.3125vw 8.90625vw 4.375vw;
       gap: 0.78125vw;
       padding: 3.75vh 0.78125vw 1.25vh !important;
       border-bottom: solid 0.078125vw #333333;
@@ -737,10 +737,10 @@ export default {
       overflow: auto;
       .order-information-lists {
         .order-information-list {
-          height: 4.375vw;
+          height: 4.55vw;
           padding: 0 0.78125vw !important;
           display: grid;
-          grid-template-columns: 11.71875vw 5.46875vw 9.375vw 9.375vw 9.375vw 3.75vw 10.3125vw 8.90625vw 4.375vw;
+          grid-template-columns: 11.71875vw 8vw 9.375vw 9.375vw 9.375vw 3.75vw 10.3125vw 8.90625vw 4.375vw;
           justify-content: center;
           align-items: center;
           gap: 0.78125vw;
@@ -823,6 +823,7 @@ export default {
 
         .order-information-credit-type {
           display: grid;
+          line-height: 1.075;
         }
       }
 
