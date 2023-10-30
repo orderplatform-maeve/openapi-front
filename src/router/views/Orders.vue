@@ -1042,7 +1042,7 @@ export default {
   align-items: center;
   font-size: 1.5625vw;
   color: #000;
-  border: 1px solid #000;
+  border: .0781vw solid #000;
   font-weight: bold;
 }
 </style>
