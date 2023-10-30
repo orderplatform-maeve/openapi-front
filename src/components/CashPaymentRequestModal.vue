@@ -6,7 +6,7 @@
     .modal-body-wrap
       div.modal-body-text
         .cash-payment-info {{ cashPaymentRequestInfo.tableName }} 테이블
-        p 에서
+        .at-text 에서
         .cash-payment-info {{ getAmount(cashPaymentRequestInfo.amount) }}원
       p 현금결제를 요청했습니다.
     .modal-footer-wrap
@@ -89,7 +89,12 @@ export default {
       .modal-body-text {
         display: flex;
         gap: .3125vw;
+
+        .at-text {
+          padding-top: .1563vw !important;
+        }
       }
+
     }
 
     .modal-footer-wrap {
