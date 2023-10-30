@@ -155,18 +155,8 @@ const socket = {
         return commit('UNSET_ORDER');
       }
 
-      if (payload?.type === 'requestReceiptCash') {
-        if (payload.data) {
-          const item = payload.data;
-          if (window?.UUID?.playOrderBell) {
-            window.UUID.playOrderBell();
-          }
-          commit('setRequestCashItem', item);
-        }
-      }
-
-      // 주문 강제취소에 대한 소켓메세지
-      if (payload?.type === 'cancelOrder') {
+      // 주문 강제취소에 대한 소켓메세지 & 보류 처리건에 대한 소켓메세지 - 서버측 추후 하나로 통합 예정
+      if (payload?.type === 'cancelOrder' || payload?.type === 'pendOrder') {
         const fd = new FormData();
         fd.append('shop_code', state.auth.store.store_code);
         dispatch('setOrders', fd);
@@ -415,10 +405,27 @@ const socket = {
           });
         }
       }
+
       // 선결제 - 현금 취소 요청 알림
       if (payload?.type === 'requestCancelCash') {
         commit('updateCashPaymentCancelModal', true);
         commit('updateCashPaymentCancelInfo', payload);
+      }
+
+      // 선결제 - 현금 결제 요청 알림
+      if (payload?.type === 'requestReceiptCash') {
+        if (window?.UUID?.playOrderBell) {
+          window.UUID.playOrderBell();
+        }
+
+        commit('setRequestCashItem', payload.data);
+
+        const cashPaymentInfo = {
+          tableName: payload.table.name,
+          amount: payload.amount,
+        };
+        commit('updateCashPaymentRequestInfo', cashPaymentInfo);
+        commit('updateCashPaymentRequestModal', true);
       }
     },
     SOCKET_disconnect({ commit }) {
@@ -612,7 +619,16 @@ const order = {
     },
     updateCashPaymentCancelInfo(state, payload) {
       state.cashPaymentCancelInfo = payload;
-    }
+    },
+    updateCashPaymentRequestModal(state, payload) {
+      state.cashPaymentRequestModal = payload;
+    },
+    updateCashPaymentRequestInfo(state, payload) {
+      state.cashPaymentRequestInfo = payload;
+    },
+    updateCashPaymentConfirmModal(state, payload) {
+      state.cashPaymentConfirmModal = payload;
+    },
   },
   actions: {
     async commitOrder(context, payload) {
@@ -1525,6 +1541,12 @@ const state = {
       amount: 0,
     }
   },
+  cashPaymentRequestModal: false,
+  cashPaymentRequestInfo: {
+    tableName: '',
+    amount: 0,
+  },
+  cashPaymentConfirmModal: false,
   alertTwoBtMessage: '',
   isAlertTwoBtModal: false,
 };

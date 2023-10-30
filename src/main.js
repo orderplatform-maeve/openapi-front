@@ -105,9 +105,6 @@ Vue.component('payment-detail-modal', PaymentDetailModal);
 Vue.component('cash-check-or-cancel-modal', CashCheckOrCancelModal);
 Vue.component('cash-payment-cancel-modal', CashPaymentCancelModal);
 
-
-
-
 Vue.component('icon-torder-logo', TorderLogo);
 Vue.component('icon-refresh-icon', RefreshIcon);
 Vue.component('icon-logout-icon', LogoutIcon);

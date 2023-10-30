@@ -13,6 +13,15 @@
       :standardPriceUnit="standardPriceUnit"
       :standardPriceFrontPosition="standardPriceFrontPosition"
     )
+    cash-check-or-cancel-modal(
+      v-if="isCashPaymentConfirmModal"
+      cashType="CHECK"
+      :closePayCheckModal="closePayCheckModal"
+      :detailPayData="chooseOrder"
+      :cashCommit="() => reqConfirmMisu(chooseOrder)"
+      :getAmount="getAmount"
+      currentPage='orders'
+    )
     p.store-name {{storeName}}{{version}}
     .header-orders-status-list
       .orders-status(@click="setViewMode('all')" :class="{activeButton: viewMode === 'all'}")
@@ -43,6 +52,7 @@
         p.order-title(v-if="!isTorderTwo && !isRemakePaid") 미수금
         p.order-title 선/후불
         p.order-title 결제방식
+        p.order-title(v-if="isTorderTwo || isRemakePaid") 현금 확인
         p.order-title 주문시간
         p.order-title 총 인원수
       .wrap-order-information-lists
@@ -68,7 +78,12 @@
                 span {{ getMisu(order) }}
                 span(v-if="getVisibleWon(order) && !standardPriceFrontPosition") {{standardPriceUnit}}
             p.order-information-paid-type(:class="getTextThroughStyle(order)") {{paidTypeCheck(order)}}
-            p.order-information-credit-type(:class="getTextThroughStyle(order)") {{creditTypeCheck(order)}}
+            p.order-information-credit-type(:class="getTextThroughStyle(order)")
+              span {{creditTypeCheck(order)}}
+              span.order-defer-text(v-if="order.is_pend") (보류 건)
+            p.order-information-cash-confirm(:class="getTextThroughStyle(order)" v-if="isTorderTwo || isRemakePaid")
+              span.cash-confirm-button(v-if="showCashCheckConfirmButton(order)" @click.stop="openCashConfirmModal(order)") 현금 확인 요청
+              span(v-else) {{preCreditCheck(order)}}
             p.order-information-order-time(:class="getTextThroughStyle(order)") {{getOrderTime(order).substr(11)}}
             p.order-information-total-people(:class="getTextThroughStyle(order)") {{visitGroups(order)}}명
     .wrap-order-list(v-if="payloadStatus === 1")
@@ -90,7 +105,6 @@
                 span.small-text {{totalVisitPeopleDeepDepth(order)}}
                 span.small-text(v-if="totalVisitPeopleDeepDepth(order)")  =
               span.red-box(:class="getTextThroughStyle(order)") {{visitGroups(order)}}명
-
 </template>
 
 <script>
@@ -184,6 +198,9 @@ export default {
     isRemakePaid() {
       return this.$store.state.isRemakePaid;
     },
+    isCashPaymentConfirmModal() {
+      return this.$store.state.cashPaymentConfirmModal;
+    },
   },
   async mounted() {
     this.isLoading = true;
@@ -212,6 +229,22 @@ export default {
         'bg-black': index % 2 === 0,
       };
     },
+    getAmount(amount) {
+      return amount ? amount?.toLocaleString() : 0;
+    },
+    openCashConfirmModal(order) {
+      this.chooseOrder = {
+        order_view_key: order.order_view_key,
+        tabletNumber: order.T_order_order_tablet_number,
+        amount: order.totalMisu,
+        approvalDatetime: order.order_time,
+      };
+      this.$store.commit('updateCashPaymentConfirmModal', true);
+    },
+    closePayCheckModal() {
+      this.chooseOrder = {};
+      this.$store.commit('updateCashPaymentConfirmModal', false);
+    },
     async reqConfirmMisu(order) {
       if (order?.order_view_key) {
         const res = await requestCashAllCommit(order.order_view_key);
@@ -220,6 +253,14 @@ export default {
           this.$store.commit('UPDATE_DONE_MISU_ORDERS', order);
           this.$store.commit('updateAlertModalMessage', '현금 수납 처리 되었습니다.');
           this.$store.commit('updateIsAlertModal', true);
+
+          // 현금 확인 요청 후 주문내역 갱신
+          if (!this.isCashPaymentConfirmModal) return;
+
+          this.closePayCheckModal();
+          const fd = new FormData();
+          fd.append('shop_code', this.$store.state.auth.store.store_code);
+          await this.$store.dispatch('setOrders', fd);
         } else {
           this.$store.commit('pushFlashMessage', '현금 수납 확인에 실패했습니다. 티오더로 문의 바랍니다.');
         }
@@ -425,6 +466,27 @@ export default {
         return '메뉴별결제';
       }
     },
+    showCashCheckConfirmButton(order) {
+      const cardCreditTypes = ['cart', 'card', 'V2_CARD'];
+      const isCardPaymentCreditTypes = cardCreditTypes.includes(order.creditType);
+
+      // 주문 취소일 경우 || 현금결제 미포함일 경우 || 후불 결제일 경우 || 결제방식이 카드일 경우
+      if (order.is_cancel_order || !order.is_show_cash_reception || !order.paidOrder || isCardPaymentCreditTypes || order.is_pend) return false;
+
+      // 토탈 미수금 존재할 경우만 true
+      const isExistTotalMisu = order.totalMisu !== 0;
+
+      return  isExistTotalMisu;
+    },
+    preCreditCheck(order) {
+      const cardCreditTypes = ['cart', 'card', 'V2_CARD'];
+      const isCardPaymentCreditTypes = cardCreditTypes.includes(order.creditType);
+      const isZeroTotalMisu = order.totalMisu === 0;
+      // 현금 결제가 포함되어 있을 경우 - 더치페이, 메뉴별결제에서 필요한 조건
+      const isIncludedCashPayment = order.is_show_cash_reception;
+
+      return order.paidOrder && !isCardPaymentCreditTypes && isZeroTotalMisu && isIncludedCashPayment ? '확인 완료' : '-';
+    },
     getIsCancelOrder(order) {
       return order.is_cancel_order ? order.is_cancel_order : false;
     },
@@ -537,7 +599,7 @@ export default {
         'order-information-list': true,
         'remake-paid': this.isTorderTwo || this.isRemakePaid
       };
-    }
+    },
   },
 };
 </script>
@@ -650,7 +712,7 @@ export default {
 
     .order-title-list {
       display: grid;
-      grid-template-columns: 11.71875vw 5.46875vw 9.375vw 9.375vw 9.375vw 3.75vw 10.3125vw 8.90625vw 4.375vw;
+      grid-template-columns: 11.71875vw 8vw 9.375vw 9.375vw 9.375vw 3.75vw 10.3125vw 8.90625vw 4.375vw;
       gap: 0.78125vw;
       padding: 3.75vh 0.78125vw 1.25vh !important;
       border-bottom: solid 0.078125vw #333333;
@@ -666,7 +728,7 @@ export default {
     }
 
     .remake-paid {
-      grid-template-columns: 12.71875vw 7.46875vw 10.375vw 10.375vw 4.75vw 11.3125vw 10.90625vw 4.375vw;
+      grid-template-columns: 11.71875vw 7.3vw 9.375vw 9.375vw 3.75vw 10.3125vw 9.375vw 8.90625vw 4.375vw;
     }
 
     // 결제 포함 버전
@@ -675,10 +737,10 @@ export default {
       overflow: auto;
       .order-information-lists {
         .order-information-list {
-          height: 4.375vw;
+          height: 4.55vw;
           padding: 0 0.78125vw !important;
           display: grid;
-          grid-template-columns: 11.71875vw 5.46875vw 9.375vw 9.375vw 9.375vw 3.75vw 10.3125vw 8.90625vw 4.375vw;
+          grid-template-columns: 11.71875vw 8vw 9.375vw 9.375vw 9.375vw 3.75vw 10.3125vw 8.90625vw 4.375vw;
           justify-content: center;
           align-items: center;
           gap: 0.78125vw;
@@ -756,7 +818,12 @@ export default {
         }
 
         .remake-paid {
-          grid-template-columns: 12.71875vw 7.46875vw 10.375vw 10.375vw 4.75vw 11.3125vw 10.90625vw 4.375vw;
+          grid-template-columns: 11.71875vw 7.3vw 9.375vw 9.375vw 3.75vw 10.3125vw 9.375vw 8.90625vw 4.375vw;
+        }
+
+        .order-information-credit-type {
+          display: grid;
+          line-height: 1.075;
         }
       }
 
@@ -965,4 +1032,17 @@ export default {
   text-decoration-thickness: 0.3906vw;
 }
 
+.cash-confirm-button {
+  width: 9.375vw;
+  height: 2.45vw;
+  background-color: #fff;
+  border-radius: 0.390625vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5625vw;
+  color: #000;
+  border: .0781vw solid #000;
+  font-weight: bold;
+}
 </style>
