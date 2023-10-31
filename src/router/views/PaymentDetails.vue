@@ -28,13 +28,14 @@
     :clickAndroidCallOrderForceCancel="clickAndroidCallOrderForceCancel"
   )
   cash-check-or-cancel-modal(
-    v-if="isCashModal"
+    v-if="isCashPaymentConfirmModal"
     :cashType="cashType"
     :closePayCheckModal="closePayCheckModal"
     :detailPayData="detailPayData"
     :cashCommit="cashCommit"
     :cashCancelCommit="cashCancelCommit"
     :getAmount="getAmount"
+    currentPage='paymentDetails'
   )
   p.payment-management-title 결제내역
   .payment-type-button-list
@@ -173,7 +174,6 @@ export default {
       selectEndDate: '',
       currentSearchModal: '',
       isDetailModal: false,
-      isCashModal: false,
       cashType: '',
       detailPayData: {},
     };
@@ -212,7 +212,10 @@ export default {
     },
     cashPaymentCancelModal() {
       return this.$store.state.cashPaymentCancelModal;
-    }
+    },
+    isCashPaymentConfirmModal() {
+      return this.$store.state.cashPaymentConfirmModal;
+    },
   },
   methods: {
     getPaymentConfirm(paymentConfirmation) {
@@ -368,11 +371,11 @@ export default {
       this.detailPayData = payment;
       if (payment.paymentConfirmation === '현금 확인 요청') {
         this.cashType = 'CHECK';
-        this.isCashModal = true;
+        this.$store.commit('updateCashPaymentConfirmModal', true);
       }
       if (payment.paymentConfirmation === '현금 취소 요청') {
         this.cashType = 'CANCEL';
-        this.isCashModal = true;
+        this.$store.commit('updateCashPaymentConfirmModal', true);
       }
       if (payment.paymentConfirmation === '결제 취소') {
         if (window.UUID) {
@@ -398,7 +401,7 @@ export default {
       }
     },
     closePayCheckModal() {
-      this.isCashModal = false;
+      this.$store.commit('updateCashPaymentConfirmModal', false);
       this.cashType = '';
       this.detailPayData = '';
 

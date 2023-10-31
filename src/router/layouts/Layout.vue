@@ -1,9 +1,10 @@
 <template lang="pug">
 #orderview
+  CashPaymentRequestModal(v-if="cashPaymentRequestModal && (isTorderTwo || isRemakePaid)")
   cash-payment-cancel-modal(
     v-if="cashPaymentCancelModal && (isTorderTwo || isRemakePaid)"
     :goPaymentDetailsPage="goPaymentDetailsPage"
-    )
+  )
   alert-modal(v-if="isAlertModal")
   auction-modal(v-if="order && auction")
   modal-order(v-if="order && orderModal")
@@ -88,10 +89,12 @@ import {
   HappyTalkSuccessModal,
   LogoutSecret,
   PosErrorModal,
+  CashPaymentRequestModal,
 } from '@components';
 import {
   payments,
-  happyTalk as happyTalkAction
+  happyTalk as happyTalkAction,
+  shop
 } from '@apis';
 import { HappyTalk } from '@svg';
 
@@ -102,6 +105,10 @@ const {
 const {
   postMessage
 } = happyTalkAction;
+
+const {
+  postShopConfigData,
+} = shop;
 
 export default {
   components: {
@@ -114,6 +121,7 @@ export default {
     HappyTalkSuccessModal,
     LogoutSecret,
     PosErrorModal,
+    CashPaymentRequestModal,
   },
   // https://vuex.vuejs.org/kr/guide/state.html#vuex-%EC%83%81%ED%83%9C%EB%A5%BC-vue-%EC%BB%B4%ED%8F%AC%EB%84%8C%ED%8A%B8%EC%97%90%EC%84%9C-%EA%B0%80%EC%A0%B8%EC%98%A4%EA%B8%B0
   store,
@@ -161,6 +169,9 @@ export default {
     },
     cashPaymentCancelModal() {
       return this.$store.state.cashPaymentCancelModal;
+    },
+    cashPaymentRequestModal() {
+      return this.$store.state.cashPaymentRequestModal;
     },
     orderModal() {
       return this.$store.state.orderModal;
@@ -315,7 +326,7 @@ export default {
       this.$socket.emit('res', message, () => {
         // console.log('socket res');
       });
-    },
+    }
   },
   methods: {
     async commit(item, url) {
@@ -769,7 +780,7 @@ export default {
       };
       return this.$socket.emit('orderview', payload);
     },
-    beep() {
+    async beep() {
       const time = Date.now();
       const ISONow = new Date(time).toISOString();
       const datetime = this.$moment(ISONow).format();
@@ -796,6 +807,42 @@ export default {
       this.$socket.emit('event', data, () => {
         // // console.log('event', answer.msg);
       });
+
+      const isDev = process.env.STOP_REDIRECT;
+      const isLogined = this.auth.store.store_code.length > 1;
+
+      try {
+        if (!isDev && isLogined) {
+          const { store_code } = this.auth.store;
+
+          const params = new FormData();
+          params.append('store_code', store_code);
+
+          const res = await postShopConfigData(params);
+
+          let nextUrl = res.data.data.T_order_store_orderView_version;
+
+          if (nextUrl) {
+            const {
+              origin,
+              pathname
+            } = location;
+
+            const nowPath = `${origin}${pathname}#/`;
+
+            if (nextUrl.includes('torder.io')) {
+              nextUrl = `${nextUrl}#/login?store_code=${store_code}`;
+            }
+
+            // diff version
+            if (nowPath !== nextUrl) {
+              return location.replace(nextUrl);
+            }
+          }
+        }
+      } catch (error) {
+        console.error('버전 리디렉션 에러 : \n', error);
+      }
     },
     getAuthentication() {
       try {
