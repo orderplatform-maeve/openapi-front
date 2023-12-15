@@ -60,9 +60,9 @@
                   .button(@click="() => onNoUse(good)" :class="getButtonStatusStyle(good.noUse)") {{ getUseStatusText(good.noUse) }}
                   .button(@click="() => onSoldoutStatus(good)" :class="getButtonStatusStyle(good.soldout)") {{ getSoldoutStatusText(good.soldout) }}
                   .button(@click="() => onBestStatus(good)" :class="getButtonStatusStyle(good.best)") {{ getBestStatusText(good.best) }}
-                  .button(@click="() => onHitStatus(good)" :class="getButtonStatusStyle(good.hit)") {{ getHitStatusText(good.hit) }}
-                  .button(@click="() => onMdStatus(good)" :class="getButtonStatusStyle(good.md)") {{ getMdStatusText(good.md) }}
-                  .button(@click="() => onSaleStatus(good)" :class="getButtonStatusStyle(good.sale)") {{ getSaleStatusText(good.sale) }}
+                  .button(v-if="!isLimitSticker" @click="() => onHitStatus(good)" :class="getButtonStatusStyle(good.hit)") {{ getHitStatusText(good.hit) }}
+                  .button(v-if="!isLimitSticker" @click="() => onMdStatus(good)" :class="getButtonStatusStyle(good.md)") {{ getMdStatusText(good.md) }}
+                  .button(v-if="!isLimitSticker" @click="() => onSaleStatus(good)" :class="getButtonStatusStyle(good.sale)") {{ getSaleStatusText(good.sale) }}
                   .button(@click="() => onNewStatus(good)" :class="getButtonStatusStyle(good.new)") {{ getNewStatusText(good.new) }}
 </template>
 
@@ -92,6 +92,12 @@ export default {
     },
     isTorderTwo() {
       return this.$store.state.isTorderTwo;
+    },
+    storeTheme() {
+      return this.$store.state.storeTheme;
+    },
+    isLimitSticker() {
+      return this.isTorderTwo && this.storeTheme === 'hyatt';
     },
   },
   watch: {
@@ -201,9 +207,10 @@ export default {
       return isVisivle ? '신제품 취소' : '신제품 적용';
     },
     getButtonStatusStyle(visible) {
-      if (visible) {
-        return 'buttonActive';
-      }
+      return {
+        'buttonActive': visible,
+        'button-long': this.isLimitSticker,
+      };
     },
     onNoUse(good) {
       const { noUse } = good;
@@ -890,11 +897,11 @@ a {
               border-bottom: solid 0.078125vw #ccc;
 
               .new-product-good-name {
-                flex: 1;
                 font-size: 1.71875vw;
                 color: #000;
                 font-weight: bold;
                 word-break: break-all;
+                width: 23.4375vw;
               }
 
               .option-setting-button {
@@ -927,6 +934,10 @@ a {
                   border: solid 0.078125vw #000;
                   border-radius: 0.390625vw;
                   box-sizing: border-box;
+                }
+
+                .button-long {
+                  width: 13vw;
                 }
 
                 .buttonActive {
