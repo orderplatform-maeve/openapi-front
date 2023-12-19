@@ -96,7 +96,7 @@ export default {
     storeTheme() {
       return this.$store.state.storeTheme;
     },
-    isLimitSticker() {
+    isLimitSticker() { // 티오더2 커스텀테마 스티커 3가지만 사용: new, best, spicy
       return this.isTorderTwo && this.storeTheme === 'hyatt';
     },
   },
