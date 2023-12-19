@@ -753,7 +753,6 @@ const shop = {
           orderStatus: !!target.T_order_store_close_order,
           recentOrderStatus: !!target.T_order_recent_order_hide,
         };
-        console.log('target theme', target.T_order_store_Theme);
 
         commit('setDeviceStatus', device);
         commit('updateStandardPriceUnit', target.standardPriceUnit);
