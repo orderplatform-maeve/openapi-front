@@ -728,6 +728,9 @@ const shop = {
     updateIsTorderTwo(state, payload) {
       state.isTorderTwo = payload;
     },
+    updateStoreTheme(state, payload) {
+      state.storeTheme = payload;
+    },
     updateIsRemakePaid(state, payload) {
       state.isRemakePaid = payload;
     },
@@ -755,7 +758,7 @@ const shop = {
         commit('updateStandardPriceUnit', target.standardPriceUnit);
         commit('updateIsTorderTwo', target.T_order_store_tablet_version.includes('order2'));
         commit('updateIsRemakePaid', target.T_order_store_tablet_version.includes('remake'));
-
+        commit('updateStoreTheme', target.T_order_store_Theme);
         return response;
       } catch (error) {
         console.error(error);
@@ -1531,6 +1534,7 @@ const state = {
   standardPriceFrontPosition: false,
   isTorderTwo: false,
   isRemakePaid: false,
+  storeTheme: '',
   cashPaymentCancelModal: false,
   cashPaymentCancelInfo: {
     table: {
