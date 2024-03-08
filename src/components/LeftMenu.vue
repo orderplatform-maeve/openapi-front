@@ -8,7 +8,8 @@
     :confirm="confirmModal.confirm"
   )
   .torder-logo
-    icon-torder-logo
+    icon-uplus-logo(v-if='businessType === "uplus"')
+    icon-torder-logo(v-if='businessType === "torder"')
   .wrap-current-date(@click="onTouchSecretFunction")
     p.current-date {{getNowDate()}}
     p.current-time {{getNowTime()}}
@@ -89,8 +90,8 @@ export default {
         newStatus: 0,
         noticeNewCount: 0,
       },
-      creditUse: 0,
       deviceUsage: {},
+      businessType: null
     };
   },
   methods: {
@@ -400,8 +401,8 @@ export default {
       fd.append('api_type', 1);
 
       const config = await this.$store.dispatch('setMenuConfig', fd);
-      this.creditUse = config.init?.preCreditTableUse;
 
+      this.businessType = config.init?.business_type ?? 'torder';
     },
     getPaidHistoryPath() {
       return this.isTorderTwo || this.isRemakePaid ? paths.paymentDetails : paths.paymentManagement;

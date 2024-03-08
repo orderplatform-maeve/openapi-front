@@ -201,6 +201,9 @@ export default {
     isCashPaymentConfirmModal() {
       return this.$store.state.cashPaymentConfirmModal;
     },
+    businessType() {
+      return this.$store.state.menuConfig?.init.business_type;
+    },
   },
   async mounted() {
     this.isLoading = true;
@@ -248,6 +251,9 @@ export default {
     async reqConfirmMisu(order) {
       if (order?.order_view_key) {
         const res = await requestCashAllCommit(order.order_view_key);
+        const displayNameTorder = this.businessType === 'torder';
+        const torderMessage = displayNameTorder ? '티오더로 문의 바랍니다.' : '';
+
         if (res?.status === 200) {
           this.chooseOrder = {};
           this.$store.commit('UPDATE_DONE_MISU_ORDERS', order);
@@ -262,7 +268,7 @@ export default {
           fd.append('shop_code', this.$store.state.auth.store.store_code);
           await this.$store.dispatch('setOrders', fd);
         } else {
-          this.$store.commit('pushFlashMessage', '현금 수납 확인에 실패했습니다. 티오더로 문의 바랍니다.');
+          this.$store.commit('pushFlashMessage', `현금 수납 확인에 실패했습니다. ${torderMessage}`);
         }
       }
     },

@@ -37,7 +37,7 @@
     :stores="stores"
     :time="time"
   )
-  div(:class="getHappyTalkStyle" v-if="!isDevTeam")
+  div(:class="getHappyTalkStyle" v-if="!isDevTeam && businessType === 'torder'")
     .wrap-happy-talk-arrow(@click="toggleHappyTalkButton")
       .wrap-triangle-arrow
         .triangle-arrow
@@ -280,6 +280,9 @@ export default {
     },
     isRemakePaid() {
       return this.$store.state.isRemakePaid;
+    },
+    businessType() {
+      return this.$store.state.menuConfig?.init.business_type;
     },
 
   },

@@ -216,6 +216,9 @@ export default {
     isCashPaymentConfirmModal() {
       return this.$store.state.cashPaymentConfirmModal;
     },
+    businessType() {
+      return this.$store.state.menuConfig?.init.business_type;
+    },
   },
   methods: {
     getPaymentConfirm(paymentConfirmation) {
@@ -283,6 +286,9 @@ export default {
 
     },
     async getPaysDetails(page) {
+      const displayNameTorder = this.businessType === 'torder';
+      const torderMessage = displayNameTorder ? '티오더로 문의 바랍니다.' : '';
+
       try {
         const config = {
           page: page - 1,
@@ -305,7 +311,7 @@ export default {
 
           this.loadPagination();
         } else {
-          this.$store.commit('pushFlashMessage', '결제 내역 불러오기를 실패했습니다. 티오더로 문의 바랍니다.');
+          this.$store.commit('pushFlashMessage', `결제 내역 불러오기를 실패했습니다. ${torderMessage}`);
         }
       } catch (error) {
         console.log(error);
@@ -414,11 +420,14 @@ export default {
         };
 
         const res = await requestCashCommit(config);
+        const displayNameTorder = this.businessType === 'torder';
+        const torderMessage = displayNameTorder ? '티오더로 문의 바랍니다.' : '';
+
         if (res.data.resultCode === 200) {
           this.getPaysDetails(1);
           this.closePayCheckModal();
         } else {
-          this.$store.commit('pushFlashMessage', '현금 확인 확인에 실패했습니다. 티오더로 문의 바랍니다.');
+          this.$store.commit('pushFlashMessage', `현금 확인 확인에 실패했습니다. ${torderMessage}`);
         }
       } catch (error) {
         console.log(error);
@@ -432,11 +441,14 @@ export default {
         };
 
         const res = await requestCashCancelCommit(config);
+        const displayNameTorder = this.businessType === 'torder';
+        const torderMessage = displayNameTorder ? '티오더로 문의 바랍니다.' : '';
+
         if (res.data.resultCode === 200) {
           this.getPaysDetails(1);
           this.closePayCheckModal();
         } else {
-          this.$store.commit('pushFlashMessage', '현금 취소 요청을 실패했습니다. 티오더로 문의 바랍니다.');
+          this.$store.commit('pushFlashMessage', `현금 취소 요청을 실패했습니다. ${torderMessage}`);
         }
       } catch (error) {
         console.log(error);

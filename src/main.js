@@ -39,6 +39,7 @@ import {
 
 import {
   TorderLogo,
+  UPlusLogo,
   RefreshIcon,
   LogoutIcon,
   UnderArrow,
@@ -106,6 +107,7 @@ Vue.component('cash-check-or-cancel-modal', CashCheckOrCancelModal);
 Vue.component('cash-payment-cancel-modal', CashPaymentCancelModal);
 
 Vue.component('icon-torder-logo', TorderLogo);
+Vue.component('icon-uplus-logo', UPlusLogo);
 Vue.component('icon-refresh-icon', RefreshIcon);
 Vue.component('icon-logout-icon', LogoutIcon);
 Vue.component('icon-under-arrow', UnderArrow);

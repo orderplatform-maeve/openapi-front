@@ -164,6 +164,9 @@ export default {
     tableNumValue() {
       return this.searchOptions.table.selected === '모든 테이블' ? '' : this.searchOptions.table.selected;
     },
+    businessType() {
+      return this.$store.state.menuConfig?.init.business_type;
+    },
   },
   methods: {
     // 페이지네이션
@@ -326,6 +329,8 @@ export default {
         };
 
         const res = await requestPaymentPend(config);
+        const displayNameTorder = this.businessType === 'torder';
+        const torderMessage = displayNameTorder ? '티오더로 문의 바랍니다.' : '';
 
         if (res.data.resultCode === 200) {
           this.$store.commit('pushFlashMessage', '해당 테이블의 결제를 보류 처리 했습니다!');
@@ -337,11 +342,11 @@ export default {
             this.$store.commit('pushFlashMessage', res.errorData.errorMessage);
           }
           else {
-            this.$store.commit('pushFlashMessage', '결제 보류 처리에 실패했습니다. 티오더로 문의 바랍니다.');
+            this.$store.commit('pushFlashMessage', `결제 보류 처리에 실패했습니다. ${torderMessage}`);
           }
         }
         else {
-          this.$store.commit('pushFlashMessage', '결제 보류 처리에 실패했습니다. 티오더로 문의 바랍니다.');
+          this.$store.commit('pushFlashMessage', `결제 보류 처리에 실패했습니다. ${torderMessage}`);
         }
         this.$store.commit('updateIsAlertTwoBtModal', false);
       } catch (error) {
