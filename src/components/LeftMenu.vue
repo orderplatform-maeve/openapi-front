@@ -91,7 +91,6 @@ export default {
         noticeNewCount: 0,
       },
       deviceUsage: {},
-      businessType: null
     };
   },
   methods: {
@@ -400,9 +399,7 @@ export default {
       fd.append('store_code', this.$store.state.auth.store.store_code);
       fd.append('api_type', 1);
 
-      const config = await this.$store.dispatch('setMenuConfig', fd);
-
-      this.businessType = config.init?.business_type ?? 'torder';
+      await this.$store.dispatch('setMenuConfig', fd);
     },
     getPaidHistoryPath() {
       return this.isTorderTwo || this.isRemakePaid ? paths.paymentDetails : paths.paymentManagement;
@@ -496,6 +493,9 @@ export default {
     },
     isRemakePaid() {
       return this.$store.state.isRemakePaid;
+    },
+    businessType() {
+      return this.$store.state.menuConfig?.init.business_type;
     },
   }
 };
