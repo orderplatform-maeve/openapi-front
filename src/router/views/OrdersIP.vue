@@ -36,7 +36,7 @@
             //- p.small-message {{errorMessage(order)}}
             .small-message(v-if="order.errorMsg")
               .order-bold 오류 발생!
-              |주문키와 주문IP 사진을 찍어서 카카오 상담 문의해주세요.
+              |{{ businessType === 'torder' ? '주문키와 주문IP 사진을 찍어서 카카오 상담 문의해주세요.' : '주문접수가 실패했습니다.'}}
             //- p {{visitGroups(order)}}명
             .small-message(v-else)
             .small-message {{order.order_view_key}}
@@ -123,7 +123,10 @@ export default {
     standardPriceFrontPosition() {
       const standardPriceFrontPosition = this.$store.state.standardPriceFrontPosition;
       return standardPriceFrontPosition;
-    }
+    },
+    businessType() {
+      return this.$store.state.menuConfig?.init.business_type;
+    },
   },
   async mounted() {
     this.isLoading = true;
