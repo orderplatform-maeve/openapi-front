@@ -69,7 +69,6 @@ const socket = {
   // },
   actions: {
     SOCKET_orderlog({ commit , state }, order) {
-      console.log(state);
       // console.log('SOCKET_orderlog', order);
       if (validShopCode(state, order)) {
         // console.log('주문 커먼-order', order);
@@ -466,9 +465,7 @@ const socket = {
           localStorage.networkLog = JSON.stringify([...parse, log]);
         }
       }
-      console.log(state.menuConfig.init.business_type);
       console.log(log);
-      console.log(state);
 
       const payload = {
         visible: false,
