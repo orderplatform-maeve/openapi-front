@@ -453,7 +453,7 @@ const socket = {
 
       commit('setSignBoardStatus', payload);
     },
-    SOCKET_connect({ commit, state }) {
+    SOCKET_connect({ commit }) {
       const now = new Date(Date.now());
       const log = `connected socket ${now}`;
 
