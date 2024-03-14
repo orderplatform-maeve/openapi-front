@@ -30,16 +30,16 @@
     router-link.button-added(v-if="visibleOrderButton" :to="paths.newPaymentManagement")
       span 신 결제내역<br>
       img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
-    router-link.button-added(v-if="visibleOrderButton" :to="paths.servingRobotManagement")
+    router-link.button-added(v-if="visibleOrderButton && businessType ==='torder'" :to="paths.servingRobotManagement")
       span 로봇 관리
       img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
-    router-link.button-added(v-if="visibleOrderButton && !isDevTeam" :to="paths.auctionManager")
+    router-link.button-added(v-if="visibleOrderButton && !isDevTeam && businessType ==='torder'" :to="paths.auctionManager")
       span 경매 관리
       img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
     //- router-link.button-added(v-if="useGame" :to="paths.gameManagement")
     //-   span 게임 관리
     //-   img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
-    router-link.button-added(v-if="visibleOrderButton" :to="paths.valetTableList")
+    router-link.button-added(v-if="visibleOrderButton && businessType ==='torder'" :to="paths.valetTableList")
       span 발렛 파킹
       img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
     router-link.button-added(v-if="visibleOrderButton" :to="paths.ordersIP")
@@ -78,6 +78,9 @@ export default {
     },
     isRemakePaid() {
       return this.$store.state.isRemakePaid;
+    },
+    businessType() {
+      return this.$store.state.menuConfig?.init.business_type;
     },
   },
   methods: {

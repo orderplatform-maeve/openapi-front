@@ -8,12 +8,13 @@
     :confirm="confirmModal.confirm"
   )
   .torder-logo
-    icon-torder-logo
+    icon-uplus-logo(v-if='businessType === "uplus"')
+    icon-torder-logo(v-if='businessType === "torder"')
   .wrap-current-date(@click="onTouchSecretFunction")
     p.current-date {{getNowDate()}}
     p.current-time {{getNowTime()}}
   .wrap-page-button-list
-    router-link.order-history.wrap-notice(v-if="visibleOrderButton" :to="paths.notice" :class="{activeButton: path === '/notice'}")
+    router-link.order-history.wrap-notice(v-if="visibleOrderButton && businessType === 'torder'" :to="paths.notice" :class="{activeButton: path === '/notice'}")
       span 공지사항
       p.big-title {{getNoticeQuantity}}
     router-link.order-history(v-if="visibleOrderButton" :to="paths.order" :class="{activeButton: path === '/order'}") 주문보기
@@ -89,14 +90,13 @@ export default {
         newStatus: 0,
         noticeNewCount: 0,
       },
-      creditUse: 0,
       deviceUsage: {},
     };
   },
   methods: {
     restart() {
       // location.href = '/'; // cache 파일을 먼저 로드한다.
-      location.replace('/'); // cache 파일을 로드하지 않는다.
+      location.reload();
     },
     logout() {
       this.$store.dispatch('logout');
@@ -399,9 +399,7 @@ export default {
       fd.append('store_code', this.$store.state.auth.store.store_code);
       fd.append('api_type', 1);
 
-      const config = await this.$store.dispatch('setMenuConfig', fd);
-      this.creditUse = config.init?.preCreditTableUse;
-
+      await this.$store.dispatch('setMenuConfig', fd);
     },
     getPaidHistoryPath() {
       return this.isTorderTwo || this.isRemakePaid ? paths.paymentDetails : paths.paymentManagement;
@@ -496,6 +494,9 @@ export default {
     isRemakePaid() {
       return this.$store.state.isRemakePaid;
     },
+    businessType() {
+      return this.$store.state.menuConfig?.init.business_type;
+    },
   }
 };
 </script>
@@ -521,7 +522,6 @@ export default {
   .wrap-current-date {
     padding: 0 1.171875vw !important;
     margin: 1.5vw 0 0 !important;
-    // margin: 2.34375vw 0 !important; 김동주 - 이걸로 하면 공지사항 안보일때
     color: #fff;
     display: flex;
     flex-direction: column;

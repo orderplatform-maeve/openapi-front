@@ -105,7 +105,9 @@ const socket = {
           commit('SET_ORDER', order);
           state.orderModal = true;
 
-          if (window?.UUID?.playOrderBell) {
+          const businessType = state.menuConfig?.init?.business_type;
+
+          if (window?.UUID?.playOrderBell && businessType === 'torder') {
             window.UUID.playOrderBell();
           }
           commit('PUSH_ORDER', order);
@@ -389,11 +391,14 @@ const socket = {
         }
       }
 
+      const businessType = state.menuConfig?.init?.business_type;
+
       if (
         state.auth.store.store_code === payload?.store?.code &&
         payload?.type === "valetParking"
       ) {
-        if (window?.UUID?.playOrderBell) {
+
+        if (window?.UUID?.playOrderBell && businessType === 'torder') {
           window.UUID.playOrderBell();
         }
 
@@ -414,7 +419,7 @@ const socket = {
 
       // 선결제 - 현금 결제 요청 알림
       if (payload?.type === 'requestReceiptCash') {
-        if (window?.UUID?.playOrderBell) {
+        if (window?.UUID?.playOrderBell && businessType === 'torder') {
           window.UUID.playOrderBell();
         }
 
@@ -460,7 +465,6 @@ const socket = {
           localStorage.networkLog = JSON.stringify([...parse, log]);
         }
       }
-
       console.log(log);
 
       const payload = {
