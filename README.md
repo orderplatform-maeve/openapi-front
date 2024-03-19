@@ -12,3 +12,13 @@
 - `npm install @openapitools/openapi-generator-cli -D`
 
 ###
+
+### 2. package.json
+```json
+"scripts": {
+"openapi-tsc": "openapi-generator-cli generate -g typescript-axios -i https://petstore.swagger.io/v2/swagger.json -o ./src/generate",
+}
+```
+- `$ npm run openapi-tsc`
+  - openapi-generator-cli 기본 generator 설정
+  - ./src/generate 에 모든 산출물이 생성됨
