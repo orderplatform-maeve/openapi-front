@@ -12,3 +12,19 @@
 - `npm install @openapitools/openapi-generator-cli -D`
 
 ###
+
+### 2. package.json
+```json
+"scripts": {
+"openapi-tsc": "openapi-generator-cli generate -g typescript-axios -i https://petstore.swagger.io/v2/swagger.json -o ./src/generate",
+"openapi-tsc-template": "openapi-generator-cli author template -g typescript-axios -o ./mustaches",
+}
+```
+- `$ npm run openapi-tsc`
+  - openapi-generator-cli 기본 generator 설정
+  - ./src/generate 에 모든 산출물이 생성됨
+
+
+- `$ npm run openapi-tsc-template`
+  - generate 결과물들의 포맷팅을 위해 기본 템플릿 받아오기.
+  - ./mustaches 에 생성된 .mustache 파일을 수정해서 컨벤션 수정 필요
