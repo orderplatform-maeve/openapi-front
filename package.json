@@ -5,6 +5,7 @@
   "scripts": {
     "openapi-tsc": "openapi-generator-cli generate -g typescript-axios -i https://petstore.swagger.io/v2/swagger.json -o ./src/generate",
     "openapi-tsc-template": "openapi-generator-cli author template -g typescript-axios -o ./mustaches",
+    "openapi-tsc-config": "openapi-generator-cli generate -g typescript-axios -i https://petstore.swagger.io/v2/swagger.json -c ./openapi.json",
 
     "start": "react-scripts start",
     "build": "react-scripts build",

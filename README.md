@@ -16,8 +16,9 @@
 ### 2. package.json
 ```json
 "scripts": {
-"openapi-tsc": "openapi-generator-cli generate -g typescript-axios -i https://petstore.swagger.io/v2/swagger.json -o ./src/generate",
-"openapi-tsc-template": "openapi-generator-cli author template -g typescript-axios -o ./mustaches",
+  "openapi-tsc": "openapi-generator-cli generate -g typescript-axios -i https://petstore.swagger.io/v2/swagger.json -o ./src/generate",
+  "openapi-tsc-template": "openapi-generator-cli author template -g typescript-axios -o ./mustaches",
+  "openapi-tsc-config": "openapi-generator-cli generate -g typescript-axios -i https://petstore.swagger.io/v2/swagger.json -c ./openapi.json",
 }
 ```
 - `$ npm run openapi-tsc`
@@ -28,3 +29,8 @@
 - `$ npm run openapi-tsc-template`
   - generate 결과물들의 포맷팅을 위해 기본 템플릿 받아오기.
   - ./mustaches 에 생성된 .mustache 파일을 수정해서 컨벤션 수정 필요
+
+
+- `$ npm run openapi-tsc-config`
+  - generator config 설정: 프로젝트 구조에 따라 model, api 생성 위치 분리 등 설정
+  - ./openapi.json 의 설정을 따름
