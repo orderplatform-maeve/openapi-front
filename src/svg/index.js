@@ -24,3 +24,4 @@ export { default as CloseIcon } from './CloseIcon';
 export { default as RefreshBlackNewIcon } from './RefreshBlackNewIcon';
 export { default as UnderWhiteArrow } from './UnderWhiteArrow';
 export { default as BigCloseButton } from './BigCloseButton';
+export { default as UPlusLogo } from './UPlusLogo';

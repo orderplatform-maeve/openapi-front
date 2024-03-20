@@ -105,6 +105,7 @@ const socket = {
           commit('SET_ORDER', order);
           state.orderModal = true;
 
+
           if (window?.UUID?.playOrderBell) {
             window.UUID.playOrderBell();
           }
@@ -393,6 +394,7 @@ const socket = {
         state.auth.store.store_code === payload?.store?.code &&
         payload?.type === "valetParking"
       ) {
+
         if (window?.UUID?.playOrderBell) {
           window.UUID.playOrderBell();
         }
@@ -460,7 +462,6 @@ const socket = {
           localStorage.networkLog = JSON.stringify([...parse, log]);
         }
       }
-
       console.log(log);
 
       const payload = {
@@ -728,6 +729,9 @@ const shop = {
     updateIsTorderTwo(state, payload) {
       state.isTorderTwo = payload;
     },
+    updateStoreTheme(state, payload) {
+      state.storeTheme = payload;
+    },
     updateIsRemakePaid(state, payload) {
       state.isRemakePaid = payload;
     },
@@ -755,7 +759,7 @@ const shop = {
         commit('updateStandardPriceUnit', target.standardPriceUnit);
         commit('updateIsTorderTwo', target.T_order_store_tablet_version.includes('order2'));
         commit('updateIsRemakePaid', target.T_order_store_tablet_version.includes('remake'));
-
+        commit('updateStoreTheme', target.T_order_store_Theme);
         return response;
       } catch (error) {
         console.error(error);
@@ -1531,6 +1535,7 @@ const state = {
   standardPriceFrontPosition: false,
   isTorderTwo: false,
   isRemakePaid: false,
+  storeTheme: '',
   cashPaymentCancelModal: false,
   cashPaymentCancelInfo: {
     table: {
