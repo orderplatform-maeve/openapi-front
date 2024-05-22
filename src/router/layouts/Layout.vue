@@ -823,6 +823,7 @@ export default {
 
           const res = await postShopConfigData(params);
 
+          console.log('event emit');
           let nextUrl = res.data.data.T_order_store_orderView_version;
 
           if (nextUrl) {
@@ -1021,7 +1022,7 @@ export default {
       try {
         const res = await postMessage(this.getStoreCode, this.phoneNumber);
 
-        if (res.data?.resultCode !== 200) {
+        if (!res.data?.return) {
           const errorMessage = res.data?.errorData.errorMessage || '상담 신청에 실패하였습니다.';
           this.$store.commit('pushFlashMessage', errorMessage);
           return;

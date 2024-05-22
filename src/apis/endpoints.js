@@ -12,7 +12,8 @@ const ROBOT_TEXT = IS_DEV_TEAM ? 'http://dev.robot.torder.co.kr' : 'http://robot
 const DEMO_URL = IS_DEV_TEAM ? 'http://development.rest.torder.co.kr' : 'http://demo.api.torder.co.kr';
 const PAYMENT_URL = IS_DEV_TEAM ? 'https://dev-sgw.torder.co.kr' : 'https://sgw.torder.co.kr';
 
-const HAPPY_TALK = 'https://happytalk.torder.co.kr';
+// const HAPPY_TALK = 'https://happytalk.torder.co.kr';
+const HAPPY_TALK = IS_DEV_TEAM ? 'http://development.rest.torder.co.kr' : 'https://rest.torder.co.kr';
 
 const endpoints = {
   authentication: {
@@ -109,7 +110,7 @@ const endpoints = {
     updateCategoryShow : `${ADMIN_URL}/category/updateCategoryShow`
   },
   happyTalk: {
-    postMessage: `${HAPPY_TALK}/happytalk/happy-talk/message`,
+    postMessage: `${HAPPY_TALK}/event/happytalk`,
   },
   credit: {
     payDetails: `${PAYMENT_URL}/credit/v2/pay-details`,

@@ -3,11 +3,11 @@ import endpoints from '@apis/endpoints';
 
 export const postMessage = (storeCode, phoneNumber) => {
   const url = `${endpoints.happyTalk.postMessage}/${storeCode}`;
-  const data = {
-    "receiverNum": phoneNumber,
-  };
+  const fd = new FormData();
 
-  const res = axios.post(url, data);
+  fd.append('phone', phoneNumber);
+
+  const res = axios.post(url, fd);
   return res;
 };
 
