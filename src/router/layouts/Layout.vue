@@ -1021,7 +1021,6 @@ export default {
     async applyHappyTalk() {
       try {
         const res = await postMessage(this.getStoreCode, this.phoneNumber);
-        console.log(res.data);
 
         if (res.data?.code !== 200) {
           const errorMessage = res.data?.message || '상담 신청에 실패하였습니다.';
