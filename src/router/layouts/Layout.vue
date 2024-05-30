@@ -823,7 +823,6 @@ export default {
 
           const res = await postShopConfigData(params);
 
-          console.log('event emit');
           let nextUrl = res.data.data.T_order_store_orderView_version;
 
           if (nextUrl) {
