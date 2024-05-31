@@ -30,7 +30,7 @@
     router-link.button-added(v-if="visibleOrderButton" :to="paths.newPaymentManagement")
       span 신 결제내역<br>
       img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
-    router-link.button-added(v-if="visibleOrderButton" :to="paths.servingRobotManagement")
+    router-link.button-added(v-if="visibleOrderButton && businessType ==='torder'" :to="paths.servingRobotManagement")
       span 로봇 관리
       img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
     router-link.button-added(v-if="visibleOrderButton && !isDevTeam && businessType ==='torder'" :to="paths.auctionManager")
