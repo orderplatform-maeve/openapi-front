@@ -1021,8 +1021,8 @@ export default {
       try {
         const res = await postMessage(this.getStoreCode, this.phoneNumber);
 
-        if (res.data?.resultCode !== 200) {
-          const errorMessage = res.data?.errorData.errorMessage || '상담 신청에 실패하였습니다.';
+        if (res.data?.code !== 200) {
+          const errorMessage = res.data?.message || '상담 신청에 실패하였습니다.';
           this.$store.commit('pushFlashMessage', errorMessage);
           return;
         }
