@@ -319,6 +319,44 @@ export default {
       this.tagetVersionRedirect();
     }
     this.initialized();
+    this.sockets.subscribe("storeUpdate", async () => {
+
+      const isDev = process.env.STOP_REDIRECT;
+      const isLogined = this.auth.store.store_code.length > 1;
+
+      try {
+        if (!isDev && isLogined) {
+          const { store_code } = this.auth.store;
+
+          const params = new FormData();
+          params.append('store_code', store_code);
+
+          const res = await postShopConfigData(params);
+
+          let nextUrl = res.data.data.T_order_store_orderView_version;
+
+          if (nextUrl) {
+            const {
+              origin,
+              pathname
+            } = location;
+
+            const nowPath = `${origin}${pathname}#/`;
+
+            if (nextUrl.includes('torder.io')) {
+              nextUrl = `${nextUrl}#/login?store_code=${store_code}`;
+            }
+
+            // diff version
+            if (nowPath !== nextUrl) {
+              return location.replace(nextUrl);
+            }
+          }
+        }
+      } catch (error) {
+        console.error('버전 리디렉션 에러 : \n', error);
+      }
+    });
   },
   sockets: {
     connect() {
