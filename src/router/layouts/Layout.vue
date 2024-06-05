@@ -325,7 +325,7 @@ export default {
       const isLogined = this.auth.store.store_code.length > 1;
 
       try {
-        if (isDev && isLogined) {
+        if (!isDev && isLogined) {
           const { store_code } = this.auth.store;
 
           const params = new FormData();
