@@ -546,6 +546,23 @@ export default {
         params.append('store_code', this.auth.store.store_code);
 
         const res = await this.$store.dispatch('setStoreInit', params);
+
+        const isDev = process.env.STOP_REDIRECT;
+        const isLogined = this.auth.store.store_code.length > 1;
+
+        if(!isDev && isLogined) {
+          const redirectionUrl = res.data.data.T_order_store_orderView_version;
+
+          const formatInitTabletVersion = redirectionUrl[redirectionUrl?.length - 1] !== '/' ? `${redirectionUrl}/` : redirectionUrl;
+
+          const removedHashRouter = formatInitTabletVersion.replace('/#/', '/');
+          const currentUrl = window.location.origin + window.location.pathname;
+
+          if (currentUrl !== removedHashRouter) {
+            window.location.href = removedHashRouter;
+          }
+        }
+
         window.UUID.writeFile(JSON.stringify(res.data.data), '/torder/json/config.json');
         // if (!this.isTorderTwo) {
         //   // 안드로이드 인터페이스 config 전송 (API 1.0)
