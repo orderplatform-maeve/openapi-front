@@ -580,26 +580,25 @@ export default {
           const params = new FormData();
           params.append('store_code', this.$store.state.auth.store.store_code);
           const res = await this.$store.dispatch('setStoreInit', params);
-          // // console.log('tagetVersionRedirect', res);
-          const nextUrl = res.data.data.T_order_store_orderView_version;
-          if (nextUrl) {
-            const {
-              protocol,
-              hostname,
-              pathname,
-            } = location;
-            const nowPath = `${protocol}//${hostname}${pathname}#/`;
-            // console.log('location', nowPath, nextUrl);
-            if (!this.getStopRedirect) {
-              if (nowPath !== nextUrl) {
-                return location.replace(nextUrl);
-              }
+
+          const isDev = process.env.STOP_REDIRECT;
+          const isLogined = this.auth.store.store_code.length > 1;
+
+          if(!isDev && isLogined) {
+            const redirectionUrl = res.data.data.T_order_store_orderView_version;
+
+            const formatInitTabletVersion = redirectionUrl[redirectionUrl?.length - 1] !== '/' ? `${redirectionUrl}/` : redirectionUrl;
+
+            const removedHashRouter = formatInitTabletVersion.replace('/#/', '/');
+            const currentUrl = window.location.origin + window.location.pathname;
+
+            if (currentUrl !== removedHashRouter) {
+              window.location.href = removedHashRouter;
             }
           }
-          return false;
         }
       } catch (error) {
-        return false;
+        console.log(error);
       }
     },
     visibleSideMenu() {
