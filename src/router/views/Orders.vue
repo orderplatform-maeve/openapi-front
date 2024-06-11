@@ -546,6 +546,7 @@ export default {
         params.append('store_code', this.auth.store.store_code);
 
         const res = await this.$store.dispatch('setStoreInit', params);
+
         window.UUID.writeFile(JSON.stringify(res.data.data), '/torder/json/config.json');
         // if (!this.isTorderTwo) {
         //   // 안드로이드 인터페이스 config 전송 (API 1.0)
@@ -569,8 +570,6 @@ export default {
 
         //   window.UUID?.initStoreInfo(data);
         // }
-
-
       } catch (error) {
         console.log('안드로이드에서 실행하지 않아서 발생', error);
       }
