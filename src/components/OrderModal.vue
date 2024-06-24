@@ -49,7 +49,7 @@
           p.phone-number {{getUserPhoneNumber}}
       .wrap-last-order-history(v-else-if="!order.paidOrder && order.viewType !== 6")
         p.last-order-history-text 이전 주문내역
-        .last-order-history-list(v-if="order.paidOrder==false")
+        .last-order-history-list(v-if="order.paidOrder === false")
           .last-order-history(v-for="c_product in order.total_orders")
             .last-product-info
               .last-order-product-name {{getBeforeProductDisplayName(c_product)}}
@@ -122,6 +122,8 @@ export default {
   },
   mounted() {
     clearInterval(this.interval);
+
+    console.log(this.order);
 
     this.interval = setInterval(() => {
       this.seconds -= 1;

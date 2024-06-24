@@ -41,9 +41,7 @@ export default {
     getFirstOptionSymbol() {
       if(!this.isFirstOption) return 'ㄴ';
       return '';
-    }
-  },
-  computed: {
+    },
     hasOptionChildren() {
       const { options } = this.optionList;
       return options && options.length > 0;
