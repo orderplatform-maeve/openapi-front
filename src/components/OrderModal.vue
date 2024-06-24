@@ -27,14 +27,12 @@
                     span {{ getItemPrice(product) }}
                     span(v-if="!standardPriceFrontPosition") {{standardPriceUnit}}
               .product-option-list(v-if="isProductOpt(product)")
-                .product-option(v-for="option in product.option")
-                  p.option-name {{getOptionDisplayName(option)}}
-                  .wrap-product-option-price
-                    p.option-quantity {{getOptionGoodQty(option)}}개
-                    p.option-price
-                      span(v-if="standardPriceFrontPosition") {{standardPriceUnit}}
-                      span {{getOptionPrice(option)}}
-                      span(v-if="!standardPriceFrontPosition") {{standardPriceUnit}}
+                .div(v-for="option in product.option")
+                  product-option-item(
+                    :option-list="option"
+                    :standard-price-unit="standardPriceUnit"
+                    :standard-price-front-position="standardPriceFrontPosition"
+                    )
             .wrap-product-all-price
               p.product-all-price-title
                 | 상품 수량
@@ -88,9 +86,11 @@ import StarRating from 'vue-star-rating';
 
 import utils from '@utils/orders.utils';
 import { won } from '@utils/regularExpressions';
+import ProductOptionItem from "@components/ProductOptionItem.vue";
 
 export default {
   components: {
+    'product-option-item': ProductOptionItem,
     'star-rating': StarRating,
   },
   data() {
@@ -102,7 +102,6 @@ export default {
   },
   computed: {
     order() {
-      console.log(this.$store.state.order, '확인');
       // console.log(this.$store.state.order.rating_type);
       return this.$store.state.order;
     },
@@ -194,9 +193,20 @@ export default {
         return 0;
       }
     },
-    getOptionPrice(option) {
-      if (!option) return 0;
-      return won(option.good_price);
+    getOptionItemTotalPrice(totalPrice, option) {
+      const {
+        good_price,
+        good_qty,
+        options
+      } = option;
+
+      const calculatedPrice = totalPrice + (good_price * good_qty);
+      const optionPrice = options.reduce((acc, cur) => {
+        if(options.length > 0) return acc + this.getOptionItemTotalPrice(0, cur);
+        return acc;
+      }, 0);
+
+      return calculatedPrice + optionPrice;
     },
     getItemUnitTotalPrice(order) {
       const {
@@ -205,11 +215,9 @@ export default {
         option = [],
       } = order;
 
-      let totalPrice = 0;
-      totalPrice += (Number(good_price) * Number(good_qty));
-      option.forEach((item) => {
-        totalPrice += (Number(item.good_price) * Number(item.good_qty) *  Number(good_qty));
-      });
+      const optionPrice = option.reduce((acc, cur) => acc + this.getOptionItemTotalPrice(0, cur), 0);
+
+      const totalPrice = (Number(good_price) * Number(good_qty)) + optionPrice;
 
       return won(totalPrice);
     },
@@ -729,36 +737,6 @@ export default {
                 font-size: 2.5vw;
                 color: #eee;
                 letter-spacing: -0.025em;
-
-                .product-option {
-                  display: flex;
-                  justify-content: space-between;
-                  align-items: center;
-
-                  .option-name {
-                    text-indent: 1em;
-                    flex: 1;
-                  }
-
-                  .wrap-product-option-price {
-                    width: 21.25vw;
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    gap: 1.171875vw;
-
-                    .option-quantity {
-                      width: 7.96875vw;
-                      text-align: right;
-                    }
-
-                    .option-price {
-                      width: 12.109375vw;
-                      font-size: 1.5625vw;
-                      text-align: right;
-                    }
-                  }
-                }
               }
             }
 
