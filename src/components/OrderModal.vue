@@ -84,7 +84,6 @@
 
 <script>
 import StarRating from 'vue-star-rating';
-
 import utils from '@utils/orders.utils';
 import { won } from '@utils/regularExpressions';
 import ProductOptionItem from "@components/ProductOptionItem.vue";

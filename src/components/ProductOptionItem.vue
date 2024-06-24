@@ -1,7 +1,7 @@
 <template lang="pug">
 div.product-option-list
   div.product-option
-    p.option-name {{getFirstOptionSymbol()}}{{getOptionDisplayName(optionList)}}
+    p.option-name {{getSecondOptionSymbol()}}{{getOptionDisplayName(optionList)}}
     .wrap-product-option-price
       p.option-quantity {{getOptionGoodQty(optionList)}}개
       p.option-price
@@ -9,7 +9,12 @@ div.product-option-list
         span {{ getOptionPrice(optionList) }}
         span(v-if="!standardPriceFrontPosition") {{ standardPriceUnit }}
   div(v-if="hasOptionChildren")
-    product-option-item(v-for="childOptionList in optionList.options" :option-list="childOptionList")
+    product-option-item(
+      v-for="childOptionList in optionList.options"
+      :option-list="childOptionList"
+      :standard-price-unit="standardPriceUnit"
+      :standard-price-front-position="standardPriceFrontPosition"
+    )
 </template>
 
 <script>
@@ -21,6 +26,7 @@ export default {
   props: {
     optionList: {
       type: Object,
+      required: true,
     },
     standardPriceUnit: {
       type: String,
@@ -38,7 +44,7 @@ export default {
       if (!option) return 0;
       return won(option.good_price);
     },
-    getFirstOptionSymbol() {
+    getSecondOptionSymbol() {
       if(!this.isFirstOption) return 'ㄴ';
       return '';
     },
