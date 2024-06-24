@@ -1,7 +1,7 @@
 <template lang="pug">
 div.product-option-list
   div.product-option
-    p.option-name {{getOptionDisplayName(optionList)}}
+    p.option-name {{getFirstOptionSymbol()}}{{getOptionDisplayName(optionList)}}
     .wrap-product-option-price
       p.option-quantity {{getOptionGoodQty(optionList)}}개
       p.option-price
@@ -27,6 +27,9 @@ export default {
     },
     standardPriceFrontPosition: {
       type: Boolean,
+    },
+    isFirstOption: {
+      type: Boolean,
     }
   },
   methods: {
@@ -35,6 +38,10 @@ export default {
       if (!option) return 0;
       return won(option.good_price);
     },
+    getFirstOptionSymbol() {
+      if(!this.isFirstOption) return 'ㄴ';
+      return '';
+    }
   },
   computed: {
     hasOptionChildren() {

@@ -32,6 +32,7 @@
                     :option-list="option"
                     :standard-price-unit="standardPriceUnit"
                     :standard-price-front-position="standardPriceFrontPosition"
+                    :is-first-option="true"
                     )
             .wrap-product-all-price
               p.product-all-price-title
@@ -96,7 +97,7 @@ export default {
   data() {
     return {
       interval: undefined,
-      seconds: 10,
+      seconds: 100000000,
       isConfirm: false,
     };
   },
