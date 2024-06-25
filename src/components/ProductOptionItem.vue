@@ -1,6 +1,6 @@
 <template lang="pug">
-div.product-option-list
-  div.product-option
+.product-option-list
+  .product-option
     p.option-name {{getSecondOptionSymbol()}}{{getOptionDisplayName(optionInfo)}}
     .wrap-product-option-price
       p.option-quantity {{getOptionGoodQty(optionInfo)}}개
