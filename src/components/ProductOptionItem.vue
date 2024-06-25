@@ -1,17 +1,18 @@
 <template lang="pug">
 div.product-option-list
   div.product-option
-    p.option-name {{getSecondOptionSymbol()}}{{getOptionDisplayName(optionList)}}
+    p.option-name {{getSecondOptionSymbol()}}{{getOptionDisplayName(optionInfo)}}
     .wrap-product-option-price
-      p.option-quantity {{getOptionGoodQty(optionList)}}개
+      p.option-quantity {{getOptionGoodQty(optionInfo)}}개
       p.option-price
         span(v-if="standardPriceFrontPosition") {{ standardPriceUnit }}
-        span {{ getOptionPrice(optionList) }}
+        span {{ getOptionPrice(optionInfo) }}
         span(v-if="!standardPriceFrontPosition") {{ standardPriceUnit }}
   div(v-if="hasOptionChildren")
     product-option-item(
-      v-for="childOptionList in optionList.options"
-      :option-list="childOptionList"
+      v-for="(childOptionList, index) in optionInfo.options"
+      :key="getOptionItemKey(childOptionList, index)"
+      :option-info="childOptionList"
       :standard-price-unit="standardPriceUnit"
       :standard-price-front-position="standardPriceFrontPosition"
     )
@@ -24,7 +25,7 @@ import { won } from "@utils/regularExpressions";
 export default {
   name: 'ProductOptionItem',
   props: {
-    optionList: {
+    optionInfo: {
       type: Object,
       required: true,
     },
@@ -36,6 +37,10 @@ export default {
     },
     isFirstOption: {
       type: Boolean,
+    },
+    getOptionItemKey: {
+      type: Function,
+      default: () => {}
     }
   },
   methods: {
@@ -49,7 +54,7 @@ export default {
       return '';
     },
     hasOptionChildren() {
-      const { options } = this.optionList;
+      const { options } = this.optionInfo;
       return options && options.length > 0;
     },
   },

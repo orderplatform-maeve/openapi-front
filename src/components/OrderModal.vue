@@ -27,13 +27,15 @@
                     span {{ getItemPrice(product) }}
                     span(v-if="!standardPriceFrontPosition") {{standardPriceUnit}}
               .product-option-list(v-if="isProductOpt(product)")
-                .div(v-for="option in product.option")
-                  product-option-item(
-                    :option-list="option"
-                    :standard-price-unit="standardPriceUnit"
-                    :standard-price-front-position="standardPriceFrontPosition"
-                    :is-first-option="true"
-                    )
+                product-option-item(
+                  v-for="(option, index) in product.option"
+                  :key="getOptionItemKey(option, index)"
+                  :option-info="option"
+                  :standard-price-unit="standardPriceUnit"
+                  :standard-price-front-position="standardPriceFrontPosition"
+                  :is-first-option="true"
+                  :get-option-item-key="getOptionItemKey"
+                )
             .wrap-product-all-price
               p.product-all-price-title
                 | 상품 수량
@@ -55,9 +57,12 @@
               .last-order-product-name {{getBeforeProductDisplayName(c_product)}}
               .last-order-product-quantity {{getBeforeProductOrderQty(c_product)}}개
             .last-order-product-option-list(v-if="isBeforeProductOtp(c_product)")
-              .last-order-product-option(v-for="option in c_product.option")
-                p.last-option-name {{getBeforeProductOptionDisplayName(option)}}
-                p.last-option-quantity {{getBeforeProductOptionOrderQty(option)}}개
+              previous-order-option-item(
+                v-for="(option, index) in c_product.option"
+                :key="getPreviousOptionItemKey(option, index)"
+                :option-info="option"
+                :get-previous-option-item-key="getPreviousOptionItemKey"
+              )
       .wrap-last-order-history(v-else-if="order.paidOrder && order.viewType !== 6")
         p.last-order-history-text.credit-history 결제내역
         .last-order-history-list
@@ -87,16 +92,18 @@ import StarRating from 'vue-star-rating';
 import utils from '@utils/orders.utils';
 import { won } from '@utils/regularExpressions';
 import ProductOptionItem from "@components/ProductOptionItem.vue";
+import PreviousOrderOptionItem from "@components/PreviousOrderOptionItem.vue";
 
 export default {
   components: {
     'product-option-item': ProductOptionItem,
+    'previous-order-option-item': PreviousOrderOptionItem,
     'star-rating': StarRating,
   },
   data() {
     return {
       interval: undefined,
-      seconds: 100000000,
+      seconds: 10,
       isConfirm: false,
     };
   },
@@ -290,6 +297,14 @@ export default {
     },
     electronicAccessCount() {
       return this.order.visitPeopleCnt;
+    },
+    getOptionItemKey(option, index) {
+      if(option) return `${option.pos_code}-${index}`;
+      return `option-item-${index}`;
+    },
+    getPreviousOptionItemKey(option, index) {
+      if(option) return `previous-${option.pos_code}-${index}`;
+      return `previous-option-item-${index}`;
     }
   },
 };
@@ -832,25 +847,6 @@ export default {
                 font-size: 1.09375vw;
                 letter-spacing: -0.02734375vw;
                 color: #fff;
-              }
-            }
-
-            .last-order-product-option {
-              font-family: 'Spoqa Han Sans Neo', 'sans-serif';
-              font-size: 1.015625vw;
-              color: #aaa;
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
-              text-indent: 1em;
-
-              .last-option-name {
-                flex: 1;
-              }
-
-              .last-option-quantity {
-                width: 3.125vw;
-                text-align: right;
               }
             }
           }
