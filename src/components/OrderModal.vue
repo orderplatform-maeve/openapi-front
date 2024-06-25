@@ -227,7 +227,7 @@ export default {
         option = [],
       } = order;
 
-      const productPrice = (Number(good_price) * Number(good_qty));
+      const productPrice = Number(good_price) * Number(good_qty);
 
       if(option) {
         const optionPrice = option.reduce((acc, cur) => acc + this.getOptionItemTotalPrice(0, cur), 0);
