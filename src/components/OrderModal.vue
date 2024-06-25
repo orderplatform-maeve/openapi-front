@@ -129,6 +129,8 @@ export default {
   mounted() {
     clearInterval(this.interval);
 
+    console.log(this.order);
+
     this.interval = setInterval(() => {
       this.seconds -= 1;
 
@@ -208,12 +210,17 @@ export default {
       } = option;
 
       const calculatedPrice = totalPrice + (good_price * good_qty);
-      const optionPrice = options.reduce((acc, cur) => {
-        if(options.length > 0) return acc + this.getOptionItemTotalPrice(0, cur);
-        return acc;
-      }, 0);
 
-      return calculatedPrice + optionPrice;
+      if(options) {
+        const optionPrice = options.reduce((acc, cur) => {
+          if(options.length > 0) return acc + this.getOptionItemTotalPrice(0, cur);
+          return acc;
+        }, 0);
+
+        return calculatedPrice + optionPrice;
+      }
+
+      return calculatedPrice;
     },
     getItemUnitTotalPrice(order) {
       const {
@@ -222,11 +229,15 @@ export default {
         option = [],
       } = order;
 
-      const optionPrice = option.reduce((acc, cur) => acc + this.getOptionItemTotalPrice(0, cur), 0);
+      const productPrice = (Number(good_price) * Number(good_qty));
 
-      const totalPrice = (Number(good_price) * Number(good_qty)) + optionPrice;
+      if(option) {
+        const optionPrice = option.reduce((acc, cur) => acc + this.getOptionItemTotalPrice(0, cur), 0);
 
-      return won(totalPrice);
+        return won(productPrice + optionPrice);
+      }
+
+      return won(productPrice);
     },
     async commitOrder(order) {
       const auth = this.$store.state.auth;
