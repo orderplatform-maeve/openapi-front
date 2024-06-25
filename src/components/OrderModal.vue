@@ -129,8 +129,6 @@ export default {
   mounted() {
     clearInterval(this.interval);
 
-    console.log(this.order);
-
     this.interval = setInterval(() => {
       this.seconds -= 1;
 
