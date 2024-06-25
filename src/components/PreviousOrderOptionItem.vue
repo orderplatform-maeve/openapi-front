@@ -43,11 +43,11 @@ export default {
     font-family: 'Spoqa Han Sans Neo', 'sans-serif';
     font-size: 1.015625vw;
     color: #aaa;
-    text-indent: 1em;
 
   .previous-order-option-item {
     display: flex;
     justify-content: space-between;
+    align-items: center;
 
     .last-option-name {
       flex: 1;

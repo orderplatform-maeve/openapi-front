@@ -73,8 +73,8 @@ export default {
     align-items: center;
 
     .option-name {
-      text-indent: 1em;
       flex: 1;
+      word-break: break-all;
     }
 
     .wrap-product-option-price {

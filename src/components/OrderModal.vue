@@ -103,7 +103,7 @@ export default {
   data() {
     return {
       interval: undefined,
-      seconds: 10,
+      seconds: 100000,
       isConfirm: false,
     };
   },
@@ -761,6 +761,7 @@ export default {
                 font-size: 2.5vw;
                 color: #eee;
                 letter-spacing: -0.025em;
+                padding-left: 1.25vw !important;
               }
             }
 
@@ -855,6 +856,10 @@ export default {
                 letter-spacing: -0.02734375vw;
                 color: #fff;
               }
+            }
+
+            .last-order-product-option-list {
+              padding-left: 1.25vw !important;
             }
           }
         }
