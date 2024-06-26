@@ -211,7 +211,7 @@ export default {
 
       if(options) {
         const optionPrice = options.reduce((acc, cur) => {
-          if(options.length > 0) return acc + this.getOptionItemTotalPrice(0, cur);
+          if(options.length > 0) return this.getOptionItemTotalPrice(acc, cur);
           return acc;
         }, 0);
 
