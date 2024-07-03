@@ -10,7 +10,7 @@
         span(v-if="!standardPriceFrontPosition") {{ standardPriceUnit }}
   div(v-if="hasOptionChildren")
     product-option-item(
-      v-for="(childOptionList, index) in optionInfo.options"
+      v-for="(childOptionList, index) in optionInfo.option"
       :key="getOptionItemKey(childOptionList, index)"
       :option-info="childOptionList"
       :standard-price-unit="standardPriceUnit"
@@ -55,7 +55,7 @@ export default {
     },
     hasOptionChildren() {
       const { options } = this.optionInfo;
-      return options && options.length > 0;
+      return options && options?.length > 0;
     },
   },
 };

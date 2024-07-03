@@ -27,7 +27,7 @@
                     span {{ getItemPrice(product) }}
                     span(v-if="!standardPriceFrontPosition") {{standardPriceUnit}}
               .product-option-list(v-if="isProductOpt(product)")
-                product-option-item(
+                productOptionItem(
                   v-for="(option, index) in product.option"
                   :key="getOptionItemKey(option, index)"
                   :option-info="option"
@@ -57,7 +57,7 @@
               .last-order-product-name {{getBeforeProductDisplayName(c_product)}}
               .last-order-product-quantity {{getBeforeProductOrderQty(c_product)}}개
             .last-order-product-option-list(v-if="isBeforeProductOtp(c_product)")
-              previous-order-option-item(
+              previousOrderOptionItem(
                 v-for="(option, index) in c_product.option"
                 :key="getPreviousOptionItemKey(option, index)"
                 :option-info="option"
@@ -96,14 +96,14 @@ import PreviousOrderOptionItem from "@components/PreviousOrderOptionItem.vue";
 
 export default {
   components: {
-    'product-option-item': ProductOptionItem,
-    'previous-order-option-item': PreviousOrderOptionItem,
+    ProductOptionItem,
+    PreviousOrderOptionItem,
     'star-rating': StarRating,
   },
   data() {
     return {
       interval: undefined,
-      seconds: 10,
+      seconds: 10000000,
       isConfirm: false,
     };
   },
@@ -128,6 +128,8 @@ export default {
   },
   mounted() {
     clearInterval(this.interval);
+
+    console.log(this.order);
 
     this.interval = setInterval(() => {
       this.seconds -= 1;
@@ -200,7 +202,7 @@ export default {
         return 0;
       }
     },
-    getOptionItemTotalPrice(totalPrice, option) {
+    getOptionItemTotalPrice(totalPrice = 0, option) {
       const {
         good_price,
         good_qty,

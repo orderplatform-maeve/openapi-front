@@ -4,7 +4,7 @@
     p.last-option-name {{getBeforeProductOptionDisplayName(optionInfo)}}
     p.last-option-quantity {{getBeforeProductOptionOrderQty(optionInfo)}}개
   div(v-if="hasOptionChildren")
-    previous-order-option-item(
+    PreviousOrderOptionItem(
       v-for="(childOptionList, index) in optionInfo.option"
       :key="getPreviousOptionItemKey(childOptionList, index)"
       :option-info="childOptionList"
@@ -30,7 +30,7 @@ export default {
     ...utils,
     hasOptionChildren() {
       const { options } = this.optionInfo;
-      return options && options.length > 0;
+      return options && options?.length > 0;
     },
   },
 };
