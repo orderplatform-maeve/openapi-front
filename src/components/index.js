@@ -44,3 +44,5 @@ export { default as CashCheckOrCancelModal } from './CashCheckOrCancelModal';
 export { default as CashPaymentCancelModal } from './CashPaymentCancelModal';
 export { default as AlertModalTwoButton } from './AlertModalTwoButton';
 export { default as CashPaymentRequestModal } from './CashPaymentRequestModal';
+export { default as ProductOptionItem } from './ProductOptionItem.vue';
+export { default as PreviousOrderOptionItem } from './PreviousOrderOptionItem.vue';
