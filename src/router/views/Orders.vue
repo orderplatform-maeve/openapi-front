@@ -933,6 +933,8 @@ export default {
 
           .order-information-goods-name {
             font-size: 2.734375vw;
+            max-width: 34.2578125vw;
+            word-break: break-all;
           }
 
           .order-information-unpaid-money {

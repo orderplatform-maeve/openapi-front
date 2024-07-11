@@ -47,7 +47,8 @@ export default {
     ...utils,
     getOptionPrice(option) {
       if (!option) return 0;
-      return won(option.good_price);
+      const optionQty = option.good_qty ? option.good_qty : option.order_qty;
+      return won(Number(option.good_price) * Number(optionQty));
     },
     getSecondOptionSymbol() {
       if(!this.isFirstOption) return 'ㄴ';

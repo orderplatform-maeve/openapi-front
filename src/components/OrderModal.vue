@@ -40,7 +40,7 @@
               p.product-all-price-title
                 | 상품 수량
               .wrap-product-unit-total-price
-                p.product-unit-total-quantity {{getProductQty(product)}}개
+                p.product-unit-total-quantity {{getOptionGoodQty(product)}}개
                 p.product-unit-total-price
                   span(v-if="standardPriceFrontPosition") {{standardPriceUnit}}
                   span {{getItemUnitTotalPrice(product)}}
@@ -103,7 +103,7 @@ export default {
   data() {
     return {
       interval: undefined,
-      seconds: 10,
+      seconds: 100000,
       isConfirm: false,
     };
   },
@@ -202,18 +202,21 @@ export default {
         return 0;
       }
     },
-    getOptionItemTotalPrice(totalPrice = 0, option) {
+    getOptionItemTotalPrice(totalPrice, option) {
       const {
         good_price,
         good_qty,
-        options
+        order_qty,
+        option: depthOption
       } = option;
 
-      const calculatedPrice = totalPrice + (good_price * good_qty);
+      const productQty = good_qty ? good_qty : order_qty;
 
-      if(options) {
-        const optionPrice = options.reduce((acc, cur) => {
-          if(options.length > 0) return this.getOptionItemTotalPrice(acc, cur);
+      const calculatedPrice = totalPrice + (Number(good_price) * Number(productQty));
+
+      if(depthOption) {
+        const optionPrice = depthOption.reduce((acc, cur) => {
+          if(depthOption.length > 0) return this.getOptionItemTotalPrice(acc, cur);
           return acc;
         }, 0);
 
@@ -226,13 +229,19 @@ export default {
       const {
         good_price,
         good_qty,
+        order_qty,
         option = [],
       } = order;
 
-      const productPrice = Number(good_price) * Number(good_qty);
+      const productQty = good_qty ? good_qty : order_qty;
+
+      const productPrice = Number(good_price) * Number(productQty);
 
       if(option) {
-        const optionPrice = option.reduce((acc, cur) => acc + this.getOptionItemTotalPrice(0, cur), 0);
+        const optionPrice = option.reduce((acc, cur) => {
+
+          return acc + this.getOptionItemTotalPrice(0, cur);
+        }, 0);
 
         return won(productPrice + optionPrice);
       }
