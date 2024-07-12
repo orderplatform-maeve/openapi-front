@@ -1,5 +1,11 @@
 <template lang="pug">
 .option-sold-out-modal-container
+  SoldOutAlertModal(
+    v-if="soldOutAlertModalState"
+    :product-name="alertProductName"
+    :update-sold-out-status="changedOptionSaveAndCheck"
+    :close-alert-modal="closeSoldOutAlertModal"
+  )
   option-save-check-modal(
     v-if="optionSaveCheckModalFlag"
     :changedOptionSaveConfirmAndSubmit="changedOptionSaveConfirmAndSubmit"
@@ -20,13 +26,16 @@
         div.require-wrap(v-if="option.require_flag")
           div.require-badge 필수옵션
           div.require-text 최소 {{option.limit_select}}개 이상 판매 해야 주문이 가능합니다!
-        div.option-group-name {{option.name}}
+        div.option-group-name-wrap
+          div(:class="getOptionGroupNameColor(option)") {{option.name}}
+          div(v-if="isDepthOptionItem(option)") >
+          div.option-depth-option-name(v-if="isDepthOptionItem(option)") {{`${option.depthOptionItemName}`}}
         div.option-item-wrap
           div.option-item-box(
             v-for="(item, itemIndex) in option.option_items"
             :key="`option-item-${item.code}-${itemIndex}`"
             )
-            span.option-item-name {{item.name}}
+            div.option-item-name {{item.name}}
             div.sales-box
               button(
                 :class="getSalesBtStyle(item.isSale)"
@@ -44,6 +53,7 @@
 import { CloseIcon } from '@svg';
 import _ from 'lodash';
 import { goods } from '@apis';
+import SoldOutAlertModal from "@components/SoldOutAlertModal.vue";
 
 const { postOptionSaleOffCheck, postOptionSaleOffSubmit } = goods;
 
@@ -53,6 +63,7 @@ export default {
     return {
       deepCopyOptions: [],
       optionSaveCheckModalFlag: false,
+      alertProductName: '',
     };
   },
   props: {
@@ -74,10 +85,14 @@ export default {
   },
   components: {
     CloseIcon,
+    SoldOutAlertModal,
   },
   computed: {
     getStoreCode() {
       return this.$store.state.auth.store.store_code;
+    },
+    soldOutAlertModalState() {
+      return this.$store.state.soldOutAlertModal;
     },
   },
   methods: {
@@ -116,7 +131,13 @@ export default {
         this.deepCopyOptions[optionIndex].option_items[itemIndex].isSale = 0;
       }
     },
-
+    // 필수 상품이 모두 품절일 경우 주문 불가 안내 알럿창 열기
+    openSoldOutAlertModal() {
+      this.$store.commit('updateSoldOutAlertModal', true);
+    },
+    closeSoldOutAlertModal() {
+      this.$store.commit('updateSoldOutAlertModal', false);
+    },
     // 체크 후 진짜 저장하기
     async changedOptionSaveConfirmAndSubmit() {
       try {
@@ -133,6 +154,7 @@ export default {
           this.$store.commit('pushFlashMessage', '옵션 상태를 변경했습니다.');
           this.optionSaveCheckModalFlag = false;
           this.closeOptionSoldOutModal();
+          this.closeSoldOutAlertModal();
           this.initialize();
         }
       } catch (error) {
@@ -142,12 +164,21 @@ export default {
 
     // 저장 클릭 시 필수 옵션 limit 체크
     async changedOptionSaveAndCheck() {
+      // 필수 옵션 그룹인데 모든 옵션 아이템이 품절일 경우 주문이 안될 수 있다는 안내 문구 노출
+      const essentialOptionSoldOutItem = this.checkEssentialOptionSoldOut();
+      if(!this.soldOutAlertModalState && essentialOptionSoldOutItem) {
+        this.alertProductName = essentialOptionSoldOutItem.name;
+        this.openSoldOutAlertModal();
+        return;
+      }
+
       try {
         const config = {
           storeCode: this.getStoreCode,
           goodCode: this.goodsCode,
           options: this.deepCopyOptions,
         };
+
         const res = await postOptionSaleOffCheck(config);
 
         if (res.data.result) {
@@ -166,6 +197,21 @@ export default {
     // 실제로 저장할건지 묻는 모달 닫기
     changedOptionSaveCancel() {
       this.optionSaveCheckModalFlag = false;
+    },
+    isDepthOptionItem(option) {
+      const { depthOptionItemName } = option;
+
+      return depthOptionItemName && depthOptionItemName !== '';
+    },
+    getOptionGroupNameColor(option) {
+      return {
+        'option-group-name': true,
+        'depth-option': this.isDepthOptionItem(option)
+      };
+    },
+    // 필수 옵션인데 모든 상품이 품절인지 확인하는 로직
+    checkEssentialOptionSoldOut() {
+      return this.deepCopyOptions.find((option) => option.require === 1 && option.option_items.every((item) => item.isSale === 0));
     },
   },
   mounted() {
@@ -234,17 +280,34 @@ export default {
       margin-bottom: 2.3438vw !important;
       display: flex;
       flex-direction: column;
-      gap: 0.3906vw;
+      gap: 1.5625vw;
 
       .option-group-box {
         padding: 1.5625vw !important;
         border-radius: 0.7813vw;
         border: none;
 
-        .option-group-name {
+        .option-group-name-wrap {
+          display: flex;
+          align-items: center;
           font-size: 1.5625vw;
-          letter-spacing: -0.0781vw;
-          margin-bottom: 0.7813vw !important;
+          font-weight: 400;
+          line-height: normal;
+          letter-spacing: -0.078125vw;
+          margin-bottom: 0.78125vw !important;
+          gap: 0.3125vw;
+
+          .option-group-name {
+            color: #fff;
+
+            &.depth-option {
+              color: #999;
+            }
+          }
+
+          .option-depth-option-name {
+            color: #fff;
+          }
         }
 
         .option-item-wrap {
@@ -269,6 +332,12 @@ export default {
               font-size: 1.5625vw;
               font-weight: 500;
               letter-spacing: -0.0391vw;
+              word-break: break-all;
+              text-align: center;
+              flex: 1;
+              vertical-align: middle;
+              display: flex;
+              align-items: center;
             }
 
             .sales-box {
