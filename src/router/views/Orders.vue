@@ -742,7 +742,6 @@ export default {
       overflow: auto;
       .order-information-lists {
         .order-information-list {
-          height: 4.55vw;
           padding: 0 0.78125vw !important;
           display: grid;
           grid-template-columns: 11.71875vw 8vw 9.375vw 9.375vw 9.375vw 3.75vw 10.3125vw 8.90625vw 4.375vw;
@@ -761,6 +760,11 @@ export default {
 
           .order-information-table-number {
             font-size: 2.1875vw;
+            font-weight: bold;
+            word-break: break-all;
+            text-align: center;
+            margin: 0.78125vw 0 !important;
+            padding: 0.3125vw 0.46875vw !important;
           }
 
           .order-information-order-time {
@@ -929,6 +933,9 @@ export default {
           .order-information-table-number {
             font-size: 3.75vw;
             font-weight: bold;
+            word-break: break-all;
+            text-align: center;
+            margin: 0.78125vw 0 !important;
           }
 
           .order-information-goods-name {
