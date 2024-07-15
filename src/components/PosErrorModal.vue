@@ -81,7 +81,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.pos-error-modal-container {
+.sold-out-alert-modal-container {
   position: fixed;
   top: 0;
   left: 0;
@@ -93,7 +93,7 @@ export default {
   justify-content: center;
   align-items: center;
 
-  .wrap-pos-error-modal {
+  .sold-out-alert-modal-wrap {
     width: 80%;
     padding: 0 1.875vw !important;
     box-sizing: border-box;
@@ -101,7 +101,7 @@ export default {
     flex-direction: column;
     gap: 3.125vw;
 
-    .pos-error-modal-title {
+    .sold-out-alert-modal-title {
       text-align: center;
       font-family: 'Spoqa Han Sans Neo', 'sans-serif';
       font-size: 1.875vw;
@@ -113,7 +113,7 @@ export default {
       border-radius: 1.875vw;
     }
 
-    .pos-error-modal-body {
+    .sold-out-alert-modal-body {
       font-family: 'Spoqa Han Sans Neo', 'sans-serif';
       color: #fff;
       display: flex;
@@ -126,7 +126,7 @@ export default {
       border-radius: 1.875vw;
       background-color: rgb(255, 0, 0, 0.8);
 
-      .pos-error-modal-body-title {
+      .sold-out-alert-modal-body-title {
         font-size: 5vw;
         font-weight: bold;
         word-break: keep-all;
@@ -145,7 +145,7 @@ export default {
       }
     }
 
-    .pos-error-modal-footer {
+    .sold-out-alert-modal-footer {
       display: flex;
       justify-content: center;
       align-items: center;
@@ -165,12 +165,12 @@ export default {
         box-shadow: 0 0 8px -4px #000000;
       }
 
-      .pos-error-modal-button-commit {
+      .sold-out-alert-modal-button-commit {
         background-color: #ff0000;
         color: #fff;
       }
 
-      .pos-error-modal-button-close {
+      .sold-out-alert-modal-button-close {
         background-color: #ffffff;
         color: #202020;
       }

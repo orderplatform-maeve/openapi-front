@@ -4,8 +4,7 @@ const REST_URL = IS_DEV_TEAM ? 'http://development.rest.torder.co.kr' : 'http://
 const ORDER_URL = IS_DEV_TEAM ? 'http://development.order.torder.co.kr' : 'http://rest.torder.co.kr';
 const GET_CART_LIST_URL = IS_DEV_TEAM ? 'http://development.cart.torder.co.kr' : 'http://rest.torder.co.kr';
 const ADMIN_URL = IS_DEV_TEAM ? 'http://development.rest.torder.co.kr' : 'http://admin.torder.co.kr';
-// http://development.cache.torder.co.kr 는 QA 진행중으로 임시로 http://development-e.cache.torder.co.kr 사용
-const API_URL = IS_DEV_TEAM ? 'http://development-e.cache.torder.co.kr' : 'http://api.torder.co.kr';
+const API_URL = IS_DEV_TEAM ? 'http://development.cache.torder.co.kr' : 'http://api.torder.co.kr';
 const NOTICE_URL = IS_DEV_TEAM ? 'https://dev-apigw.torder.co.kr/v2' : 'https://apigw.torder.co.kr/v2';
 const TORDER_V2 = IS_DEV_TEAM ? 'https://dev-apigw.torder.co.kr/v2' : 'https://apigw.torder.co.kr/v2';
 const TABLE_GAME_URL = IS_DEV_TEAM ? 'https://dev-apigw.torder.co.kr' : 'https://apigw.torder.co.kr';

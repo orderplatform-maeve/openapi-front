@@ -2,9 +2,9 @@
 .option-sold-out-modal-container
   SoldOutAlertModal(
     v-if="soldOutAlertModalState"
-    :product-name="alertProductName"
-    :update-sold-out-status="changedOptionSaveAndCheck"
-    :close-alert-modal="closeSoldOutAlertModal"
+    :productName="alertProductName"
+    :updateSoldOutStatus="changedOptionSaveAndCheck"
+    :closeAlertModal="closeSoldOutAlertModal"
   )
   option-save-check-modal(
     v-if="optionSaveCheckModalFlag"
