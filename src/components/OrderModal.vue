@@ -103,7 +103,7 @@ export default {
   data() {
     return {
       interval: undefined,
-      seconds: 100000,
+      seconds: 10,
       isConfirm: false,
     };
   },
@@ -202,21 +202,21 @@ export default {
         return 0;
       }
     },
-    getOptionItemTotalPrice(totalPrice, option) {
+    getOptionItemTotalPrice(totalPrice, optionItem) {
       const {
         good_price,
         good_qty,
         order_qty,
-        option: depthOption
-      } = option;
+        option
+      } = optionItem;
 
       const productQty = good_qty ? good_qty : order_qty;
 
       const calculatedPrice = totalPrice + (Number(good_price) * Number(productQty));
 
-      if(depthOption) {
-        const optionPrice = depthOption.reduce((acc, cur) => {
-          if(depthOption.length > 0) return this.getOptionItemTotalPrice(acc, cur);
+      if(option) {
+        const optionPrice = option.reduce((acc, cur) => {
+          if(option.length > 0) return this.getOptionItemTotalPrice(acc, cur);
           return acc;
         }, 0);
 
