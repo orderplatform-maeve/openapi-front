@@ -7,7 +7,7 @@
       p.sold-out-alert-modal-body-title {{ productName }} 주문을 받을 수 없습니다.
     .sold-out-alert-modal-footer
       button.sold-out-alert-modal-button-commit(@click="updateSoldOutStatus()") 확인
-      button.sold-out-alert-modal-button-close(@click="closeAlertModal()") 닫기
+      button.sold-out-alert-modal-button-close(@click="closeAlertModal()") 취소
 </template>
 
 <script>
