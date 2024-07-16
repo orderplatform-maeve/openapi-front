@@ -1,19 +1,19 @@
 import { IS_DEV_TEAM } from '@utils/constants';
 
-const REST_URL = IS_DEV_TEAM ? 'http://development.rest.torder.co.kr' : 'http://rest.torder.co.kr';
-const ORDER_URL = IS_DEV_TEAM ? 'http://development.order.torder.co.kr' : 'http://rest.torder.co.kr';
-const GET_CART_LIST_URL = IS_DEV_TEAM ? 'http://development.cart.torder.co.kr' : 'http://rest.torder.co.kr';
-const ADMIN_URL = IS_DEV_TEAM ? 'http://development.rest.torder.co.kr' : 'http://admin.torder.co.kr';
-const API_URL = IS_DEV_TEAM ? 'http://development.cache.torder.co.kr' : 'http://api.torder.co.kr';
-const NOTICE_URL = IS_DEV_TEAM ? 'https://dev-apigw.torder.co.kr/v2' : 'https://apigw.torder.co.kr/v2';
-const TORDER_V2 = IS_DEV_TEAM ? 'https://dev-apigw.torder.co.kr/v2' : 'https://apigw.torder.co.kr/v2';
-const TABLE_GAME_URL = IS_DEV_TEAM ? 'https://dev-apigw.torder.co.kr' : 'https://apigw.torder.co.kr';
+const REST_URL = IS_DEV_TEAM ? 'http://kr.platform.rest-api.share.torder.com' : 'http://rest.torder.co.kr';
+const ORDER_URL = IS_DEV_TEAM ? 'http://kr.platform.rest-api.share.torder.com' : 'http://rest.torder.co.kr';
+const GET_CART_LIST_URL = IS_DEV_TEAM ? 'http://kr.platform.rest-api.share.torder.com' : 'http://rest.torder.co.kr';
+const ADMIN_URL = IS_DEV_TEAM ? 'http://kr.platform.rest-api.share.torder.com' : 'http://admin.torder.co.kr';
+const API_URL = IS_DEV_TEAM ? 'http://kr.platform.init-api.share.torder.com' : 'http://api.torder.co.kr';
+const NOTICE_URL = IS_DEV_TEAM ? 'https://kr.platform.tcloud-gateway.share.torder.com/v2' : 'https://apigw.torder.co.kr/v2';
+const TORDER_V2 = IS_DEV_TEAM ? 'https://kr.platform.tcloud-gateway.share.torder.com/v2' : 'https://apigw.torder.co.kr/v2';
+const TABLE_GAME_URL = IS_DEV_TEAM ? 'https://kr.platform.tcloud-gateway.share.torder.com' : 'https://apigw.torder.co.kr';
 const ROBOT_TEXT = IS_DEV_TEAM ? 'http://dev.robot.torder.co.kr' : 'http://robot.torder.co.kr:8888/v2/order';
-const DEMO_URL = IS_DEV_TEAM ? 'http://development.rest.torder.co.kr' : 'http://demo.api.torder.co.kr';
+const DEMO_URL = IS_DEV_TEAM ? 'http://kr.platform.rest-api.share.torder.com' : 'http://demo.api.torder.co.kr';
 const PAYMENT_URL = IS_DEV_TEAM ? 'https://dev-sgw.torder.co.kr' : 'https://sgw.torder.co.kr';
 
 // const HAPPY_TALK = 'https://happytalk.torder.co.kr';
-const HAPPY_TALK = IS_DEV_TEAM ? 'http://development.rest.torder.co.kr' : 'https://rest.torder.co.kr';
+const HAPPY_TALK = IS_DEV_TEAM ? 'http://kr.platform.rest-api.share.torder.com' : 'https://rest.torder.co.kr';
 
 const endpoints = {
   authentication: {
