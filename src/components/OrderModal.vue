@@ -1,5 +1,5 @@
 <template lang="pug">
-.order-modal-container
+.order-modal-container(ref="orderModalRef")
   .wrap-order-modal
     .order-modal-header
       .wrap-order-history-text
@@ -15,7 +15,7 @@
     .wrap-order-history-all
       .wrap-current-order-history
         p.current-order-history-text {{ getByTypeText('sub') }}
-        .current-order-history-list
+        .current-order-history-list(ref="orderListScrollRef")
           .current-order-history(v-for="product in order.order_info")
             .wrap-product-info
               .current-product-info
@@ -47,11 +47,14 @@
                   span(v-if="!standardPriceFrontPosition") {{standardPriceUnit}}
       .wrap-last-order-history(v-if="getUserPhoneNumber")
         p.last-order-history-text 휴대폰 번호
-        .last-order-history-list
+        .last-order-history-list(ref="historyListScrollRef")
           p.phone-number {{getUserPhoneNumber}}
       .wrap-last-order-history(v-else-if="!order.paidOrder && order.viewType !== 6")
         p.last-order-history-text 이전 주문내역
-        .last-order-history-list(v-if="order.paidOrder === false")
+        .last-order-history-list(
+            v-if="order.paidOrder === false"
+            ref="historyListScrollRef"
+          )
           .last-order-history(v-for="c_product in order.total_orders")
             .last-product-info
               .last-order-product-name {{getBeforeProductDisplayName(c_product)}}
@@ -103,7 +106,7 @@ export default {
   data() {
     return {
       interval: undefined,
-      seconds: 10000,
+      seconds: 10,
       isConfirm: false,
     };
   },
@@ -127,19 +130,51 @@ export default {
     }
   },
   mounted() {
+    const modalElement = this.$refs.orderModalRef;
+    const orderListElement = this.$refs.orderListScrollRef;
+    const historyListElement = this.$refs.historyListScrollRef;
+
+    modalElement.addEventListener('touchstart', () => {
+      this.resetTimer();
+    });
+
+    modalElement.addEventListener('touchend', () => {
+      this.resetTimer();
+    });
+
+    orderListElement.addEventListener('scroll', () => {
+      this.resetTimer();
+    });
+
+    historyListElement.addEventListener('scroll', () => {
+      this.resetTimer();
+    });
+
     clearInterval(this.interval);
-
-    console.log(this.order);
-
-    this.interval = setInterval(() => {
-      this.seconds -= 1;
-
-      if (this.seconds < 1) {
-        this.closeOrder();
-      }
-    }, 1000);
+    this.setIntervalTimer();
   },
   beforeDestroy() {
+    const modalElement = this.$refs.orderModalRef;
+    const orderListElement = this.$refs.orderListScrollRef;
+    const historyListElement = this.$refs.historyListScrollRef;
+
+    modalElement.removeEventListener('touchstart', () => {
+      this.resetTimer();
+    });
+
+    modalElement.removeEventListener('touchend', () => {
+      this.resetTimer();
+    });
+
+    orderListElement.removeEventListener('scroll', () => {
+      this.resetTimer();
+    });
+
+    historyListElement.removeEventListener('scroll', () => {
+      this.resetTimer();
+    });
+
+    clearInterval(this.interval);
     this.closeOrder();
   },
   sockets: {
@@ -323,6 +358,21 @@ export default {
     getPreviousOptionItemKey(option, index) {
       if(option) return `previous-${option.pos_code}-${index}`;
       return `previous-option-item-${index}`;
+    },
+    setIntervalTimer() {
+      this.interval = setInterval(() => {
+
+        this.seconds -= 1;
+
+        if (this.seconds < 1) {
+          this.closeOrder();
+        }
+      }, 1000);
+    },
+    resetTimer() {
+      clearInterval(this.interval);
+      this.seconds = 10;
+      this.setIntervalTimer();
     }
   },
 };
