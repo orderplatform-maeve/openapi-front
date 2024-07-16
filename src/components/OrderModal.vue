@@ -103,7 +103,7 @@ export default {
   data() {
     return {
       interval: undefined,
-      seconds: 10,
+      seconds: 10000,
       isConfirm: false,
     };
   },
@@ -699,7 +699,7 @@ export default {
       gap: 2.34375vw;
 
       .wrap-current-order-history {
-        width: 54.6875vw;
+        width: 52.34375vw;
 
         .current-order-history-text {
           font-family: "notosans";
@@ -741,10 +741,11 @@ export default {
                 gap: 0.390625vw;
 
                 .product-name {
-                  flex: 1;
+                  width: 52.34375vw;
                   font-size: 3.75vw;
                   font-weight: bold;
                   letter-spacing: -0.025em;
+                  word-break: break-all;
                 }
 
                 .wrap-product-price {
@@ -811,7 +812,7 @@ export default {
       }
 
       .wrap-last-order-history {
-        flex: 1;
+        width: 20.9vw;
 
         .last-order-history-text {
           font-family: "notosans";
