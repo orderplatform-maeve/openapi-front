@@ -213,7 +213,6 @@ export default {
     },
   },
   mounted() {
-    console.log(this.options);
     // 깊은 복사
     this.deepCopyOptions = _.cloneDeep(this.options);
   },
