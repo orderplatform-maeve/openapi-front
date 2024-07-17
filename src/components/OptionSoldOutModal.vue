@@ -27,9 +27,12 @@
           div.require-badge 필수옵션
           div.require-text 최소 {{option.limit_qty}}개 이상 판매 해야 주문이 가능합니다!
         div.option-group-name-wrap
-          div(:class="getOptionGroupNameColor(option)") {{option.name}}
+          div(
+            v-if="isDepthOptionItem(option)"
+            :class="getOptionGroupNameColor(option)"
+          ) {{ option.depthOptionItemName }}
           div(v-if="isDepthOptionItem(option)") >
-          div.option-depth-option-name(v-if="isDepthOptionItem(option)") {{`${option.depthOptionItemName}`}}
+          div.option-depth-option-name {{ option.name }}
         div.option-item-wrap
           div.option-item-box(
             v-for="(item, itemIndex) in option.option_items"
