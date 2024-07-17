@@ -909,6 +909,7 @@ export default {
                 font-size: 1.25vw;
                 color: #fff;
                 letter-spacing: -0.03125vw;
+                word-break: break-all;
               }
 
               .last-order-product-quantity {
