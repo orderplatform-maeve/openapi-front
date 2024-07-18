@@ -212,7 +212,13 @@ export default {
     },
     // 필수 옵션인데 모든 상품이 품절인지 확인하는 로직
     checkEssentialOptionSoldOut() {
-      return this.deepCopyOptions.find((option) => option.require === 1 && option.option_items.every((item) => item.isSale === 0));
+
+      return this.deepCopyOptions.find((option) => {
+        const { limit_qty } = option;
+        const saleItemCount = option.option_items?.filter((item) => item.isSale === 1)?.length ?? 0;
+
+        return option.require === 1 && limit_qty > saleItemCount;
+      });
     },
   },
   mounted() {
