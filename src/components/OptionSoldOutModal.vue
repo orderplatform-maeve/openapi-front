@@ -214,10 +214,11 @@ export default {
     checkEssentialOptionSoldOut() {
 
       return this.deepCopyOptions.find((option) => {
+        if(option.require !== 1) return false;
         const { limit_qty } = option;
         const saleItemCount = option.option_items?.filter((item) => item.isSale === 1)?.length ?? 0;
 
-        return option.require === 1 && limit_qty > saleItemCount;
+        return limit_qty > saleItemCount;
       });
     },
   },
