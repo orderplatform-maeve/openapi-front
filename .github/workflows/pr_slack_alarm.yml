@@ -5,12 +5,13 @@ on:
     types:
       - opened
       - closed
+  issue_comment:
+    types:
+      - created
+      - edited
   pull_request_review:
     types:
       - submitted
-  pull_request_review_comment:
-    types:
-      - created
 
 jobs:
   notify_pr_created:
@@ -33,8 +34,7 @@ jobs:
                       "type": "header",
                       "text": {
                         "type": "plain_text",
-                        "text": ":urgent: Pull Request Opened :urgent:",
-                        "emoji": true
+                        "text": "${{ github.event.pull_request.title }}"
                       }
                     },
                     {
@@ -45,39 +45,46 @@ jobs:
                       "fields": [
                         {
                           "type": "mrkdwn",
-                          "text": "*프로덕트 :*\n마스터1"
-                        },
-                        {
-                          "type": "mrkdwn",
-                          "text": "*제목 :*\n${{ github.event.pull_request.title }}"
-                        },
-                        {
-                          "type": "mrkdwn",
-                          "text": "*생성자 :*\n${{ github.event.pull_request.user.login }}"
-                        },
-                        {
-                          "type": "mrkdwn",
-                          "text": "*브랜치 :*\n${{ github.event.pull_request.head.ref }}"
-                        },
-                        {
-                          "type": "mrkdwn",
-                          "text": "*병합대상 :*\n${{ github.event.pull_request.base.ref }}"
+                          "text": "*프로덕트*\n<${{  github.event.repository.html_url }}|${{ github.event.repository.name }}>"
                         }
                       ]
                     },
                     {
-                      "type": "actions",
-                      "elements": [
+                      "type": "section",
+                      "fields": [
                         {
-                          "type": "button",
-                          "text": {
-                            "type": "plain_text",
-                            "text": "PR 이동",
-                            "emoji": true
-                          },
-                          "url": "${{ github.event.pull_request.html_url }}"
+                          "type": "mrkdwn",
+                          "text": "*상태*\n요청 :rotating_light:"
                         }
                       ]
+                    },
+                    {
+                      "type": "section",
+                      "fields": [
+                        {
+                          "type": "mrkdwn",
+                          "text": "*요청자*\n${{ github.event.pull_request.user.login }}"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "divider"
+                    },
+                    {
+                      "type": "section",
+                      "text": {
+                        "type": "mrkdwn",
+                        "text": "해당 PR로 이동하기"
+                      },
+                      "accessory": {
+                        "type": "button",
+                        "text": {
+                          "type": "plain_text",
+                          "text": ":github:",
+                          "emoji": true
+                        },
+                        "url": "${{ github.event.pull_request.html_url }}"
+                      }
                     }
                   ]
                 }
@@ -88,7 +95,7 @@ jobs:
 
   notify_pr_approved:
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request_review' && github.event.review.state != 'commented'
+    if: github.event.review.state == 'APPROVED'
     steps:
       - name: Notify PR Review
         uses: 8398a7/action-slack@v3.14.0
@@ -106,8 +113,7 @@ jobs:
                       "type": "header",
                       "text": {
                         "type": "plain_text",
-                        "text": ":white_check_mark: ${{ github.event.pull_request.title }} 리뷰 승인 ",
-                        "emoji": true
+                        "text": "${{ github.event.pull_request.title }}"
                       }
                     },
                     {
@@ -118,35 +124,228 @@ jobs:
                       "fields": [
                         {
                           "type": "mrkdwn",
-                          "text": "*프로덕트 :*\n마스터1"
+                          "text": "*프로덕트*\n<${{  github.event.repository.html_url }}|${{ github.event.repository.name }}>"
                         },
                         {
                           "type": "mrkdwn",
-                          "text": "*리뷰어 :*\n${{ github.event.review.user.login }}"
-                        },
-                        {
-                          "type": "mrkdwn",
-                          "text": "*브랜치 :*\n${{ github.event.pull_request.head.ref }}"
-                        },
-                        {
-                          "type": "mrkdwn",
-                          "text": "*병합대상 :*\n${{ github.event.pull_request.base.ref }}"
+                          "text": "*상태*\n승인 :+1:"
                         }
                       ]
                     },
                     {
-                      "type": "actions",
-                      "elements": [
+                      "type": "section",
+                      "fields": [
                         {
-                          "type": "button",
-                          "text": {
-                            "type": "plain_text",
-                            "text": "PR 이동",
-                            "emoji": true
-                          },
-                          "url": "${{ github.event.pull_request.html_url }}"
+                          "type": "mrkdwn",
+                          "text": "*요청자*\n${{ github.event.pull_request.user.login }}"
+                        },
+                        {
+                          "type": "mrkdwn",
+                          "text": "*리뷰어*\n${{ github.event.review.user.login }}"
                         }
                       ]
+                    },
+                    {
+                      "type": "section",
+                      "fields": [
+                        {
+                          "type": "mrkdwn",
+                          "text": "*코멘트*\n${{ github.event.review.body }}"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "divider"
+                    },
+                    {
+                      "type": "section",
+                      "text": {
+                        "type": "mrkdwn",
+                        "text": "해당 PR로 이동하기"
+                      },
+                      "accessory": {
+                        "type": "button",
+                        "text": {
+                          "type": "plain_text",
+                          "text": ":github:",
+                          "emoji": true
+                        },
+                        "url": "${{ github.event.pull_request.html_url }}"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.RACCOON_SLACK_WEBHOOK_URL }}
+
+  notify_pr_files_changed_comment:
+    runs-on: ubuntu-latest
+    if: github.event.review.state == 'COMMENTED'
+    steps:
+      - name: Notify PR Files Changed Comment
+        uses: 8398a7/action-slack@v3.14.0
+        with:
+          status: custom
+          fields: workflow, job, commit, repo, ref, author, took, pullRequest, message
+          mention: "channel"
+          if_mention: always
+          custom_payload: |
+            {
+              "attachments": [
+                {
+                  "blocks": [
+                    {
+                      "type": "header",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "${{ github.event.pull_request.title }}"
+                      }
+                    },
+                    {
+                      "type": "divider"
+                    },
+                    {
+                      "type": "section",
+                      "fields": [
+                        {
+                          "type": "mrkdwn",
+                          "text": "*프로덕트*\n<${{  github.event.repository.html_url }}|${{ github.event.repository.name }}>"
+                        },
+                        {
+                          "type": "mrkdwn",
+                          "text": "*상태*\n코멘트 :speech_balloon:"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "section",
+                      "fields": [
+                        {
+                          "type": "mrkdwn",
+                          "text": "*요청자*\n${{ github.event.pull_request.user.login }}"
+                        },
+                        {
+                          "type": "mrkdwn",
+                          "text": "*리뷰어*\n${{ github.event.review.user.login }}"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "section",
+                      "fields": [
+                        {
+                          "type": "mrkdwn",
+                          "text": "*코멘트*\n${{ github.event.review.body }}"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "divider"
+                    },
+                    {
+                      "type": "section",
+                      "text": {
+                        "type": "mrkdwn",
+                        "text": "해당 PR로 이동하기"
+                      },
+                      "accessory": {
+                        "type": "button",
+                        "text": {
+                          "type": "plain_text",
+                          "text": ":github:",
+                          "emoji": true
+                        },
+                        "url": "${{ github.event.pull_request.html_url }}"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.RACCOON_SLACK_WEBHOOK_URL }}
+
+  notify_pr_comment:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.issue.pull_request }}
+    steps:
+      - name: Notify PR Comment
+        uses: 8398a7/action-slack@v3.14.0
+        with:
+          status: custom
+          fields: workflow, job, commit, repo, ref, author, took, pullRequest, message
+          mention: "channel"
+          if_mention: always
+          custom_payload: |
+            {
+              "attachments": [
+                {
+                  "blocks": [
+                    {
+                      "type": "header",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "${{ github.event.pull_request.title }}"
+                      }
+                    },
+                    {
+                      "type": "divider"
+                    },
+                    {
+                      "type": "section",
+                      "fields": [
+                        {
+                          "type": "mrkdwn",
+                          "text": "*프로덕트*\n<${{  github.event.repository.html_url }}|${{ github.event.repository.name }}>"
+                        },
+                        {
+                          "type": "mrkdwn",
+                          "text": "*상태*\n코멘트 :speech_balloon:"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "section",
+                      "fields": [
+                        {
+                          "type": "mrkdwn",
+                          "text": "*요청자*\n${{ github.event.pull_request.user.login }}"
+                        },
+                        {
+                          "type": "mrkdwn",
+                          "text": "*리뷰어*\n${{ github.event.review.user.login }}"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "section",
+                      "fields": [
+                        {
+                          "type": "mrkdwn",
+                          "text": "*코멘트*\n${{ github.event.review.body }}"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "divider"
+                    },
+                    {
+                      "type": "section",
+                      "text": {
+                        "type": "mrkdwn",
+                        "text": "해당 PR로 이동하기"
+                      },
+                      "accessory": {
+                        "type": "button",
+                        "text": {
+                          "type": "plain_text",
+                          "text": ":github:",
+                          "emoji": true
+                        },
+                        "url": "${{ github.event.pull_request.html_url }}"
+                      }
                     }
                   ]
                 }
@@ -175,8 +374,7 @@ jobs:
                       "type": "header",
                       "text": {
                         "type": "plain_text",
-                        "text": "${{ github.event.pull_request.base.ref }} 내 병합 완료",
-                        "emoji": true
+                        "text": "${{ github.event.pull_request.title }}"
                       }
                     },
                     {
@@ -187,35 +385,45 @@ jobs:
                       "fields": [
                         {
                           "type": "mrkdwn",
-                          "text": "*제목 :*\n${{ github.event.pull_request.title }}"
+                          "text": "*프로덕트*\n<${{  github.event.repository.html_url }}|${{ github.event.repository.name }}>"
                         },
                         {
                           "type": "mrkdwn",
-                          "text": "*생성자 :*\n${{ github.event.pull_request.user.login }}"
-                        },
-                        {
-                          "type": "mrkdwn",
-                          "text": "*브랜치 :*\n${{ github.event.pull_request.head.ref }}"
-                        },
-                        {
-                          "type": "mrkdwn",
-                          "text": "*병합대상 :*\n${{ github.event.pull_request.base.ref }}"
+                          "text": "*상태*\n병합 :white_check_mark:"
                         }
                       ]
                     },
                     {
-                      "type": "actions",
-                      "elements": [
+                      "type": "section",
+                      "fields": [
                         {
-                          "type": "button",
-                          "text": {
-                            "type": "plain_text",
-                            "text": "PR 이동",
-                            "emoji": true
-                          },
-                          "url": "${{ github.event.pull_request.html_url }}"
+                          "type": "mrkdwn",
+                          "text": "*작업자*\n${{ github.event.pull_request.user.login }}"
+                        },
+                        {
+                          "type": "mrkdwn",
+                          "text": "*병합 대상*\n${{ github.event.pull_request.base.ref }}"
                         }
                       ]
+                    },
+                    {
+                      "type": "divider"
+                    },
+                    {
+                      "type": "section",
+                      "text": {
+                        "type": "mrkdwn",
+                        "text": "해당 PR로 이동하기"
+                      },
+                      "accessory": {
+                        "type": "button",
+                        "text": {
+                          "type": "plain_text",
+                          "text": ":github:",
+                          "emoji": true
+                        },
+                        "url": "${{ github.event.pull_request.html_url }}"
+                      }
                     }
                   ]
                 }
