@@ -167,8 +167,7 @@ export default {
     // 저장 클릭 시 필수 옵션 limit 체크
     async changedOptionSaveAndCheck() {
       // 필수 옵션 그룹인데 모든 옵션 아이템이 품절일 경우 주문이 안될 수 있다는 안내 문구 노출
-      const essentialOptionSoldOutItem = this.checkEssentialOptionSoldOut();
-      if(!this.soldOutAlertModalState && essentialOptionSoldOutItem) {
+      if(!this.soldOutAlertModalState && this.checkEssentialOptionSoldOut()) {
         this.openSoldOutAlertModal();
         return;
       }
@@ -212,8 +211,7 @@ export default {
     },
     // 필수 옵션인데 모든 상품이 품절인지 확인하는 로직
     checkEssentialOptionSoldOut() {
-
-      return this.deepCopyOptions.find((option) => {
+      return this.deepCopyOptions.some((option) => {
         if(option.require !== 1) return false;
         const { limit_qty } = option;
         const saleItemCount = option.option_items?.filter((item) => item.isSale === 1)?.length ?? 0;
