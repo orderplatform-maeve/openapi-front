@@ -31,7 +31,7 @@ const DEMO_URL = IS_DEV_TEAM
   ? "https://kr.platform.rest-api.share.torder.com"
   : "http://demo.api.torder.co.kr";
 const PAYMENT_URL = IS_DEV_TEAM
-  ? "https://dev-sgw.torder.co.kr"
+  ? "https://kr.platform.tcloud-gateway.share.torder.com"
   : "https://sgw.torder.co.kr";
 
 // const HAPPY_TALK = 'https://happytalk.torder.co.kr';
