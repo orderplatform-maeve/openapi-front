@@ -354,7 +354,6 @@ export default {
     },
     torder(message) {
       if (message?.type === "force_update") {
-        console.log("force_update");
         if (message.apkInfo) {
           const { fileName, fileSize, option: options, url } = message.apkInfo;
 
