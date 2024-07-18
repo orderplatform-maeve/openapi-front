@@ -287,7 +287,7 @@ jobs:
                       "type": "header",
                       "text": {
                         "type": "plain_text",
-                        "text": "${{ github.event.pull_request.title }}"
+                        "text": "${{ github.event.issue.title }}"
                       }
                     },
                     {
@@ -311,11 +311,11 @@ jobs:
                       "fields": [
                         {
                           "type": "mrkdwn",
-                          "text": "*요청자*\n${{ github.event.pull_request.user.login }}"
+                          "text": "*요청자*\n${{ github.event.issue.assignee.login }}"
                         },
                         {
                           "type": "mrkdwn",
-                          "text": "*리뷰어*\n${{ github.event.review.user.login }}"
+                          "text": "*리뷰어*\n${{ github.event.comment.user.login }}"
                         }
                       ]
                     },
@@ -324,7 +324,7 @@ jobs:
                       "fields": [
                         {
                           "type": "mrkdwn",
-                          "text": "*코멘트*\n${{ github.event.review.body }}"
+                          "text": "*코멘트*\n${{ github.event.comment.body }}"
                         }
                       ]
                     },
@@ -335,7 +335,7 @@ jobs:
                       "type": "section",
                       "text": {
                         "type": "mrkdwn",
-                        "text": "해당 PR로 이동하기"
+                        "text": "해당 코멘트로 이동하기"
                       },
                       "accessory": {
                         "type": "button",
@@ -344,7 +344,7 @@ jobs:
                           "text": ":github:",
                           "emoji": true
                         },
-                        "url": "${{ github.event.pull_request.html_url }}"
+                        "url": "${{ github.event.comment.html_url }}"
                       }
                     }
                   ]
