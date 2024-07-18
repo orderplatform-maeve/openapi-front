@@ -2,7 +2,7 @@
 .option-sold-out-modal-container
   SoldOutAlertModal(
     v-if="soldOutAlertModalState"
-    :productName="alertProductName"
+    :productName="goodsName"
     :updateSoldOutStatus="changedOptionSaveAndCheck"
     :closeAlertModal="closeSoldOutAlertModal"
   )
@@ -25,11 +25,14 @@
         )
         div.require-wrap(v-if="option.require_flag")
           div.require-badge 필수옵션
-          div.require-text 최소 {{option.limit_select}}개 이상 판매 해야 주문이 가능합니다!
+          div.require-text 최소 {{option.limit_qty}}개 이상 판매 해야 주문이 가능합니다!
         div.option-group-name-wrap
-          div(:class="getOptionGroupNameColor(option)") {{option.name}}
+          div(
+            v-if="isDepthOptionItem(option)"
+            :class="getOptionGroupNameColor(option)"
+          ) {{ option.depthOptionItemName }}
           div(v-if="isDepthOptionItem(option)") >
-          div.option-depth-option-name(v-if="isDepthOptionItem(option)") {{`${option.depthOptionItemName}`}}
+          div.option-depth-option-name {{ option.name }}
         div.option-item-wrap
           div.option-item-box(
             v-for="(item, itemIndex) in option.option_items"
@@ -63,7 +66,6 @@ export default {
     return {
       deepCopyOptions: [],
       optionSaveCheckModalFlag: false,
-      alertProductName: '',
     };
   },
   props: {
@@ -167,7 +169,6 @@ export default {
       // 필수 옵션 그룹인데 모든 옵션 아이템이 품절일 경우 주문이 안될 수 있다는 안내 문구 노출
       const essentialOptionSoldOutItem = this.checkEssentialOptionSoldOut();
       if(!this.soldOutAlertModalState && essentialOptionSoldOutItem) {
-        this.alertProductName = essentialOptionSoldOutItem.name;
         this.openSoldOutAlertModal();
         return;
       }
