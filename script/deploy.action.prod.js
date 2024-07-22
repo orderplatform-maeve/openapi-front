@@ -6,7 +6,6 @@ const fs = require('fs');
 const S3 = require('aws-sdk/clients/s3');
 const path = require('path');
 const mime = require('mime');
-const { Client } = require("@notionhq/client");
 
 const {
   AWS_ACCESS_KEY_ID,
@@ -14,7 +13,6 @@ const {
   SIGNATURE_VERSION,
   BUCKET_NAME,
   GITHUB_TOKEN,
-  NOTION_TOKEN,
 } = process.env;
 
 const s3 = new S3({ AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, SIGNATURE_VERSION });
@@ -245,60 +243,6 @@ async function createTag(tag) {
   }
 }
 
-const writeNotionRow = async (hotfixNum, comment) => {
-  try {
-    const notion = new Client({
-      auth: NOTION_TOKEN,
-    });
-
-    const myPage = await notion.pages.create({
-      parent: {
-        database_id: 'c69bda09fcbd4652a8858a36d92c5adc',
-      },
-      properties: {
-        'Major Version': {
-          number: majorVersion,
-        },
-        'Minor Version': {
-          number: minorVersion,
-        },
-        'Hotfix Version': {
-          number: hotfixNum,
-        },
-        status: {
-          select: {
-            name: '배포'
-          },
-        },
-        Comment: {
-          rich_text: [
-            {
-              type: 'text',
-              text: {
-                content: comment
-              }
-            }
-          ]
-        },
-        '관련자': {
-          people: [
-            {
-              object: 'user',
-              id: '815ac529-2d8e-4337-ad30-c2b8ac9625be'
-            }
-          ]
-        },
-      },
-    });
-
-    console.log(myPage);
-    return true;
-  } catch (error) {
-    core.setFailed(error);
-    return false;
-  }
-};
-
 async function run() {
   try {
     const s3BucketKey = await getCurrentBucketKey();
@@ -311,12 +255,11 @@ async function run() {
     if (!isBuild) { throw '빌드 실패 하였습니다.'; }
 
     const isS3UploadOk = await uploadDistFilesAtS3(s3BucketKey.key);
-    if (!isS3UploadOk) { throw 's3 업로드 에러 발생 조재훈 팀장에게 안내바람'; }
+    if (!isS3UploadOk) { throw 's3 업로드 에러 발생'; }
 
     const githubMessage = await createTag(s3BucketKey.key);
     if (!githubMessage) { throw '깃 허브 태그 push 실패'; }
 
-    writeNotionRow(s3BucketKey.hotfixVersion, githubMessage);
   } catch (error) {
     core.setFailed(error);
   }

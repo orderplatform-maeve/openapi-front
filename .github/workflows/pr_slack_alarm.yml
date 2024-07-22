@@ -46,12 +46,7 @@ jobs:
                         {
                           "type": "mrkdwn",
                           "text": "*프로덕트*\n<${{  github.event.repository.html_url }}|${{ github.event.repository.name }}>"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "section",
-                      "fields": [
+                        },
                         {
                           "type": "mrkdwn",
                           "text": "*상태*\n요청 :rotating_light:"
