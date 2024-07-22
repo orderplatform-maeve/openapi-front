@@ -17,7 +17,7 @@ const {
 
 const s3 = new S3({ AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, SIGNATURE_VERSION });
 
-const majorVersion = 3;
+const majorVersion = 4;
 const minorVersion = 0;
 
 const getCurrentHotfixVersionAtS3 = async (prefix) => {
