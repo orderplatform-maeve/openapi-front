@@ -134,21 +134,28 @@ export default {
     const orderListElement = this.$refs.orderListScrollRef;
     const historyListElement = this.$refs.historyListScrollRef;
 
-    modalElement.addEventListener('touchstart', () => {
-      this.resetTimer();
-    });
 
-    modalElement.addEventListener('touchend', () => {
-      this.resetTimer();
-    });
+    if(modalElement) {
+      modalElement.addEventListener('touchstart', () => {
+        this.resetTimer();
+      });
 
-    orderListElement.addEventListener('scroll', () => {
-      this.resetTimer();
-    });
+      modalElement.addEventListener('touchend', () => {
+        this.resetTimer();
+      });
+    }
 
-    historyListElement.addEventListener('scroll', () => {
-      this.resetTimer();
-    });
+    if(orderListElement) {
+      orderListElement.addEventListener('scroll', () => {
+        this.resetTimer();
+      });
+    }
+
+    if(historyListElement) {
+      historyListElement.addEventListener('scroll', () => {
+        this.resetTimer();
+      });
+    }
 
     clearInterval(this.interval);
     this.setIntervalTimer();
@@ -158,21 +165,27 @@ export default {
     const orderListElement = this.$refs.orderListScrollRef;
     const historyListElement = this.$refs.historyListScrollRef;
 
-    modalElement.removeEventListener('touchstart', () => {
-      this.resetTimer();
-    });
+    if(modalElement) {
+      modalElement.removeEventListener('touchstart', () => {
+        this.resetTimer();
+      });
 
-    modalElement.removeEventListener('touchend', () => {
-      this.resetTimer();
-    });
+      modalElement.removeEventListener('touchend', () => {
+        this.resetTimer();
+      });
+    }
 
-    orderListElement.removeEventListener('scroll', () => {
-      this.resetTimer();
-    });
+    if(orderListElement) {
+      orderListElement.removeEventListener('scroll', () => {
+        this.resetTimer();
+      });
+    }
 
-    historyListElement.removeEventListener('scroll', () => {
-      this.resetTimer();
-    });
+    if(historyListElement) {
+      historyListElement.removeEventListener('scroll', () => {
+        this.resetTimer();
+      });
+    }
 
     clearInterval(this.interval);
     this.closeOrder();
@@ -361,7 +374,6 @@ export default {
     },
     setIntervalTimer() {
       this.interval = setInterval(() => {
-
         this.seconds -= 1;
 
         if (this.seconds < 1) {
