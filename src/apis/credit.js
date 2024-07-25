@@ -1,4 +1,4 @@
-import { getRequestApi, postRequestApi } from '@utils/axiosUtils';
+import { customAxios } from "@utils/customAxios";
 import endpoints from '@apis/endpoints';
 
 const requestPayDetails = (config) => {
@@ -10,7 +10,7 @@ const requestPayDetails = (config) => {
     }
   };
 
-  const res = getRequestApi(url, auth);
+  const res = customAxios().get(url, auth);
 
   return res;
 };
@@ -28,7 +28,7 @@ const requestCashAllCommit = (orderKey) => {
     orderKey,
   };
 
-  const res = postRequestApi(url, config, auth);
+  const res = customAxios().post(url, config, auth);
 
   return res;
 };
@@ -42,7 +42,7 @@ const requestCashCommit = (config) => {
     }
   };
 
-  const res = postRequestApi(url, config, auth);
+  const res = customAxios().post(url, config, auth);
   return res;
 };
 
@@ -55,7 +55,7 @@ const requestCashCancelCommit = (config) => {
     }
   };
 
-  const res = postRequestApi(url, config, auth);
+  const res = customAxios().post(url, config, auth);
   return res;
 };
 
@@ -69,7 +69,7 @@ const requestPaymentPend = (config) => {
     }
   };
 
-  const res = postRequestApi(url, config, auth);
+  const res = customAxios().post(url, config, auth);
   return res;
 };
 
@@ -82,7 +82,7 @@ const requestTabletStatus = (config) => {
     }
   };
 
-  const res = getRequestApi(url, auth);
+  const res = customAxios().get(url, auth);
   return res;
 };
 
@@ -95,7 +95,7 @@ const requestPendingList = (config) => {
       password: 'xldhejtjsrufwp123!',
     }
   };
-  const res = getRequestApi(url, auth);
+  const res = customAxios().get(url, auth);
 
   return res;
 };
@@ -109,7 +109,7 @@ const requestCreditWebLogs = (payload) => {
     }
   };
 
-  const res = postRequestApi(url, payload, auth);
+  const res = customAxios().post(url, payload, auth);
   return res;
 };
 

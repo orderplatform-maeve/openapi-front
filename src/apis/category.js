@@ -1,11 +1,11 @@
-import { postRequestApi } from '@utils/axiosUtils';
+import { customAxios } from "@utils/customAxios";
 import endpoints from '@apis/endpoints';
 
 // 노출 상태 -> 제한 노출로 변경
 export const postCategoryUpdateCategoryScheduleOff = async (config) => {
   const url = endpoints.category.updateCategoryScheduleOff;
 
-  const res = await postRequestApi(url, config.body);
+  const res = await customAxios().post(url, config.body);
   return res;
 };
 
@@ -13,7 +13,7 @@ export const postCategoryUpdateCategoryScheduleOff = async (config) => {
 export const postCategoryUpdateCategoryScheduleOn = async (config) => {
   const url = endpoints.category.updateCategoryScheduleOn;
 
-  const res = await postRequestApi(url, config.body);
+  const res = await customAxios().post(url, config.body);
   return res;
 };
 
@@ -21,7 +21,7 @@ export const postCategoryUpdateCategoryScheduleOn = async (config) => {
 export const postCategoryUpdateCategoryTime =  async (config) => {
   const url = endpoints.category.updateCategoryTime;
 
-  const res = await postRequestApi(url, config.body);
+  const res = await customAxios().post(url, config.body);
   return res;
 };
 
@@ -29,7 +29,7 @@ export const postCategoryUpdateCategoryTime =  async (config) => {
 export const postCategoryUpdateCategoryScheduleDateArray =  async (config) => {
   const url = endpoints.category.updateCategoryScheduleDateArray;
 
-  const res = await postRequestApi(url, config.body);
+  const res = await customAxios().post(url, config.body);
   return res;
 };
 
@@ -37,7 +37,7 @@ export const postCategoryUpdateCategoryScheduleDateArray =  async (config) => {
 export const postCategoryUpdateCategoryHide =  async (config) => {
   const url = endpoints.category.updateCategoryHide;
 
-  const res = await postRequestApi(url, config.body);
+  const res = await customAxios().post(url, config.body);
   return res;
 };
 
@@ -45,7 +45,7 @@ export const postCategoryUpdateCategoryHide =  async (config) => {
 export const postCategoryUpdateCategoryShow =  async (config) => {
   const url = endpoints.category.updateCategoryShow;
 
-  const res = await postRequestApi(url, config.body);
+  const res = await customAxios().post(url, config.body);
   return res;
 };
 

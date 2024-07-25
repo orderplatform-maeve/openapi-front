@@ -1,4 +1,4 @@
-import { IS_DEV_TEAM, IS_LG_FLAG } from "@utils/constants";
+import { IS_DEV_TEAM, IS_LG } from "@utils/constants";
 
 let REST_URL = "http://rest.torder.co.kr";
 let ORDER_URL = "http://rest.torder.co.kr";
@@ -28,7 +28,7 @@ if (IS_DEV_TEAM) {
   HAPPY_TALK = "http://development.rest.torder.co.kr";
 }
 
-if (IS_LG_FLAG) {
+if (IS_LG) {
   REST_URL = "https://kr.dev.rest-api.share.torder.com";
   ORDER_URL = "https://kr.dev.rest-api.share.torder.com";
   GET_CART_LIST_URL = "https://kr.dev.rest-api.share.torder.com";

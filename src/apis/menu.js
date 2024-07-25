@@ -1,38 +1,38 @@
 import endpoints from "@apis/endpoints";
-import { postRequestApi } from "@utils/axiosUtils";
+import { customAxios } from "@utils/customAxios";
 
 export const postCategoryList = (params) => {
   const url = endpoints.menu.categories;
 
-  const res = postRequestApi(url, params);
+  const res = customAxios().post(url, params);
   return res;
 };
 
 export const postGetGoodsList = (params) => {
   const url = endpoints.menu.getGoodsList;
 
-  const res = postRequestApi(url, params);
+  const res = customAxios().post(url, params);
   return res;
 };
 
 export const postCategoryOpen = (params) => {
   const url = endpoints.menu.updateCategoryOpen;
 
-  const res = postRequestApi(url, params);
+  const res = customAxios().post(url, params);
   return res;
 };
 
 export const postCategoryClose = (params) => {
   const url = endpoints.menu.updateCategoryClose;
 
-  const res = postRequestApi(url, params);
+  const res = customAxios().post(url, params);
   return res;
 };
 
 export const postAllCategories = (params) => {
   const url = endpoints.menu.getAllCategories;
 
-  const res = postRequestApi(url, params);
+  const res = customAxios().post(url, params);
   return res;
 };
 
@@ -42,7 +42,7 @@ export const postGetMenuConfig = (params) => {
     headers: { 'Content-Type': 'multipart/form-data' },
   };
 
-  const res = postRequestApi(url, params, config);
+  const res = customAxios().post(url, params, config);
   return res;
 };
 

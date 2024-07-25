@@ -1,23 +1,23 @@
 import endpoints from "@apis/endpoints";
-import { postRequestApi } from "@utils/axiosUtils";
+import { customAxios } from "@utils/customAxios";
 
 export const postTabletAllRefresh = async (data) => {
   const url = endpoints.tablet.allRefresh;
-  const res = await postRequestApi(url, data);
+  const res = await customAxios().post(url, data);
 
   return res;
 };
 
 export const postTabletRefresh = async (data) => {
   const url = endpoints.tablet.refresh;
-  const res = await postRequestApi(url, data);
+  const res = await customAxios().post(url, data);
 
   return res;
 };
 
 export const postTabletResetOrder = async (data) => {
   const url = endpoints.tablet.resetOrder;
-  const res = await postRequestApi(url, data);
+  const res = await customAxios().post(url, data);
 
   return res;
 };

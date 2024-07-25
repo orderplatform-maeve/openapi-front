@@ -1,4 +1,4 @@
-import { postRequestApi } from '@utils/axiosUtils';
+import { customAxios } from "@utils/customAxios";
 import endpoints from '@apis/endpoints';
 
 export const postMessage = (storeCode, phoneNumber) => {
@@ -7,7 +7,7 @@ export const postMessage = (storeCode, phoneNumber) => {
 
   fd.append('phone', phoneNumber);
 
-  const res = postRequestApi(url, fd);
+  const res = customAxios().post(url, fd);
   return res;
 };
 
