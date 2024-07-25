@@ -80,7 +80,7 @@ const endpoints = {
   },
   shop: {
     config: `${REST_URL}/shop/config`,
-    getList: `${REST_URL}/store/store_list`
+    storeList: `${REST_URL}/store/store_list`
   },
   goods: {
     updateGoodStatus: `${REST_URL}/goods/update_goods`,

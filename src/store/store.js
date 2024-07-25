@@ -1,7 +1,5 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import axios from 'axios';
-import querystring from 'querystring';
 import router from '@router';
 
 import {
@@ -10,9 +8,13 @@ import {
   getNewCategories,
 } from './store.helper';
 import { isEmpty } from '@utils/CheckedType';
-import endpoints from '@apis/endpoints';
 import {
-  postOrderConfirm
+  postOrderConfirm,
+  getTodayRedisData,
+  postCommitOrderViewData,
+  postOrdersOrder,
+  postControlLastOrder,
+  postDeleteLastOrder
 } from '@apis/orders';
 
 import {
@@ -20,6 +22,38 @@ import {
   noticePopup,
   valet,
 } from './modules';
+import {
+  postCategoryList,
+  postGetGoodsList,
+  postCategoryOpen,
+  postCategoryClose,
+  postAllCategories,
+  postGetMenuConfig
+} from "@apis/menu";
+import {
+  postTabletAllRefresh,
+  postTabletRefresh,
+  postTabletResetOrder
+} from "@apis/tablet";
+import {
+  requestCartList,
+  requestOrder,
+  requestTableList
+} from "@apis/table";
+import { postAuthenticationLogin } from "@apis/authentication";
+import {
+  postDeviceShopOpen,
+  postDeviceShopClose,
+  postDeviceShopOpenOrder,
+  postDeviceShopCloseOrder,
+  postDeviceShowRecentOrder,
+  postDeviceHideRecentOrder,
+  postDeviceShowKitchenOrder,
+  postDeviceHideKitchenOrder
+} from "@apis/device";
+import {requestShopConfigData, requestShopStoreList} from "@apis/shop";
+import {getUpdateGoodStatus} from "@apis/goods";
+import {getPaymentCreditDataList, getPaymentCreditList} from "@apis/payments";
 
 Vue.use(Vuex);
 
@@ -478,8 +512,7 @@ const authentication = {
   actions: {
     async login ({ commit }, params) {
       try {
-        const url = endpoints.authentication.login;
-        const res = await axios.post(url, params);
+        const res = await postAuthenticationLogin(params);
         // console.log('res', res);
 
         if (!res) {
@@ -631,14 +664,7 @@ const order = {
   },
   actions: {
     async commitOrder(context, payload) {
-      const url = endpoints.orders.commitOrderViewData;
-
-      const fd = new FormData();
-      fd.append('shop_code', payload.auth.store.store_code);
-      fd.append('key', payload.order.order_view_key);
-      fd.append('commit', !payload.order.commit ? 1 : 0);
-
-      const res = await axios.post(url, fd, { timeout: 5000 });
+      const res = await postCommitOrderViewData(payload, { timeout: 5000 });
       return res;
     },
     setOrder: (context, order) => {
@@ -648,8 +674,7 @@ const order = {
       context.commit('PUSH_ORDER', order);
     },
     async setOrders({ commit }, params) {
-      const url = endpoints.orders.todayRedisData;
-      const response = await axios.post(url, params);
+      const response = getTodayRedisData(params);
 
       if (response.status === 200) {
         // const orders = [];
@@ -680,8 +705,7 @@ const order = {
       return response;
     },
     async requestOrder(context, params) {
-      const url = endpoints.orders.order;
-      const response = await axios.post(url, params);
+      const response = await postOrdersOrder(params);
 
       if (response.data) {
         return response.data;
@@ -689,8 +713,7 @@ const order = {
       return false;
     },
     async requestLastOrder(context, params) {
-      const url = endpoints.orders.controlLastOrder;
-      const response = await axios.post(url,params);
+      const response = await postControlLastOrder(params);
 
       if (response.data) {
         return response.data;
@@ -698,8 +721,7 @@ const order = {
       return false;
     },
     async requestDeleteLastOrder(context, params) {
-      const url = endpoints.orders.deleteLastOrder;
-      const response = await axios.post(url,params);
+      const response = await postDeleteLastOrder(params);
 
       if (response.data) {
         return response.data;
@@ -740,12 +762,9 @@ const shop = {
     },
     async setStoreInit({ commit }, params) {
       try {
-        const url = endpoints.shop.config;
-        const response = await axios.post(url, params);
-        // // console.log(response);
+        const response = await requestShopConfigData(params);
 
         const target = response.data.data;
-        // console.log('target', target);
 
         const device = {
           serviceStatus: !!target.T_order_store_close,
@@ -766,11 +785,7 @@ const shop = {
     },
     async requestStoreList(context, params) {
       try {
-        const fd = new FormData();
-        fd.append('member_id', params.member.code);
-
-        const url = endpoints.shop.getList;
-        const res = await axios.post(url, fd);
+        const res = await requestShopStoreList(params);
 
         return res.data.shop_data;
       } catch (error) {
@@ -801,8 +816,7 @@ const device = {
   actions: {
     async setOpenTablet(context, params) {
       try {
-        const url = endpoints.device.shopOpen;
-        const response = await axios.post(url, params);
+        const response = await postDeviceShopOpen(params);
 
         if (response) {
           return true;
@@ -816,8 +830,7 @@ const device = {
     },
     async setCloseTablet(context, params) {
       try {
-        const url = endpoints.device.shopClose;
-        const response = await axios.post(url, params);
+        const response = await postDeviceShopClose(params);
 
         if (response) {
           return true;
@@ -831,8 +844,7 @@ const device = {
     },
     async setAgreeOrder(context, params) {
       try {
-        const url = endpoints.device.shopOpenOrder;
-        const response = await axios.post(url, params);
+        const response = await postDeviceShopOpenOrder(params);
 
         if (response) {
           return true;
@@ -846,8 +858,7 @@ const device = {
     },
     async setRejectOrder(context, params) {
       try {
-        const url = endpoints.device.shopCloseOrder;
-        const response = await axios.post(url, params);
+        const response = await postDeviceShopCloseOrder(params);
 
         if (response) {
           return true;
@@ -861,8 +872,7 @@ const device = {
     },
     async setShowRecentOrder(context, params) {
       try {
-        const url = endpoints.device.showRecentOrder;
-        const response = await axios.post(url, params);
+        const response = await postDeviceShowRecentOrder(params);
 
         if (response) {
           return true;
@@ -876,8 +886,7 @@ const device = {
     },
     async setCloseRecentOrder(context, params) {
       try {
-        const url = endpoints.device.hideRecentOrder;
-        const response = await axios.post(url, params);
+        const response = await postDeviceHideRecentOrder(params);
 
         if (response) {
           return true;
@@ -891,8 +900,7 @@ const device = {
     },
     async setShowKitchenOrder(context, params) {
       try {
-        const url = endpoints.device.showKitchenOrder;
-        const response = await axios.post(url, params);
+        const response = await postDeviceShowKitchenOrder(params);
 
         if (response) {
           return true;
@@ -906,8 +914,7 @@ const device = {
     },
     async setCloseKitchenOrder(context, params) {
       try {
-        const url = endpoints.device.hideKitchenOrder;
-        const response = await axios.post(url, params);
+        const response = await postDeviceHideKitchenOrder(params);
 
         if (response) {
           return true;
@@ -932,11 +939,7 @@ const table = {
   },
   actions: {
     async setTables({ commit }, payload) {
-      const str = querystring.stringify(payload);
-      const query = `?${str}`;
-      const url = `${endpoints.table.getTableList}${query}`;
-
-      const response = await axios.get(url);
+      const response = await requestTableList(payload);
 
       if (response.data && response.data.data) {
         const results = response.data.data.map((item) => ({ ...item, ordering: false, orderStatus: true, }));
@@ -947,8 +950,7 @@ const table = {
       return [];
     },
     async setTableCartList({ commit }, params) {
-      const url = endpoints.table.getCartList;
-      const response = await axios.post(url, params);
+      const response = await requestCartList(params);
 
       if (response.data && response.data.order_info) {
         commit('SET_TABLE_CART_LIST', response.data.order_info);
@@ -958,8 +960,7 @@ const table = {
     },
     async yesOrder(context, payload) {
       try {
-        const res = await axios.post(endpoints.table.order, payload.params, payload.config);
-        // console.log(res);
+        const res = await requestOrder(payload.params, payload.config);
 
         if (res.status === 200) {
           return res;
@@ -972,10 +973,8 @@ const table = {
     },
     async tabletReload(context, params) {
       try {
-        const url = endpoints.tablet.refresh;
 
-        const res = await axios.post(url, params);
-        // // console.log(res);
+        const res = await postTabletRefresh(params);
         return res;
       } catch (error) {
         return false;
@@ -983,11 +982,7 @@ const table = {
     },
     async allTabletReload(context, params) {
       try {
-        const url = endpoints.tablet.allRefresh;
-
-        await axios.post(url, params);
-        // const res = await axios.post(url, params);
-        // console.log(res);
+        await postTabletAllRefresh(params);
       } catch (error) {
         return false;
       }
@@ -1009,8 +1004,7 @@ const menu = {
   },
   actions: {
     async setCategories({ commit }, params) {
-      const url = endpoints.menu.categories;
-      const response = await axios.post(url, params);
+      const response = await postCategoryList(params);
 
       if (response.data && response.data.data) {
         commit('SET_CATEGORIES', response.data.data);
@@ -1019,8 +1013,7 @@ const menu = {
       return false;
     },
     async setGoods({ commit }, params) {
-      const url = endpoints.menu.getGoodsList;
-      const response = await axios.post(url, params);
+      const response = await postGetGoodsList(params);
 
       if (response.data && response.data.data) {
 
@@ -1032,20 +1025,17 @@ const menu = {
       return false;
     },
     async updateCategoryOpen(context, params) {
-      const url = endpoints.menu.updateCategoryOpen;
-      const response = await axios.post(url, params);
+      const response = await postCategoryOpen(params);
 
       return response;
     },
     async updateCategoryClose(context, params) {
-      const url = endpoints.menu.updateCategoryClose;
-      const response = await axios.post(url, params);
+      const response = await postCategoryClose(params);
 
       return response;
     },
     async setAllCategories({ commit }, params) {
-      const url = endpoints.menu.getAllCategories;
-      const response = await axios.post(url, params);
+      const response = await postAllCategories(params);
 
       if (response && response.data) {
         commit('SET_ALL_CATEGORIES', response.data);
@@ -1054,11 +1044,7 @@ const menu = {
       return false;
     },
     async setMenuConfig({ commit }, params) {
-      const config = {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      };
-      const url = endpoints.menu.getMenuConfig;
-      const response = await axios.post(url, params, config);
+      const response = await postGetMenuConfig(params);
 
       if (response?.data?.result) {
         const { data } = response;
@@ -1274,8 +1260,7 @@ const monitoring = {
 const goods = {
   actions: {
     async updateGoodStatusType(context, payload) {
-      const url = endpoints.goods.updateGoodStatus;
-      const res = await axios.get(url, payload);
+      const res = await getUpdateGoodStatus(payload);
       // console.log('update goods type response', res);
 
       return res;
@@ -1333,9 +1318,7 @@ const tablet = {
   },
   actions: {
     async resetOrder(context, params) {
-      const url = endpoints.tablet.resetOrder;
-
-      const res = await axios.post(url, params);
+      const res = await postTabletResetOrder(params);
 
       return res;
     },
@@ -1462,16 +1445,12 @@ const payment = {
   },
   actions : {
     async updatePaymentList(context, params) {
-
-      const url = endpoints.payment.creditDataList;
-      const res = await axios.get(url, {params});
+      const res = await getPaymentCreditDataList(params);
 
       context.commit('updatePaymentList', res.data);
     },
     async updateOldPaymentList(context, params) {
-
-      const url = endpoints.payment.creditList;
-      const res = await axios.get(url, {params});
+      const res = await getPaymentCreditList(params);
 
       context.commit('updatePaymentList', res.data);
     }

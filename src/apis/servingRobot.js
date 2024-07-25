@@ -1,9 +1,9 @@
-import requestApi from '@utils/axiosUtils';
+import { getRequestApi, postRequestApi } from '@utils/axiosUtils';
 import endpoints from './endpoints';
 
 export const requestRobotStatus = async (storeCode) => {
   const url = `${endpoints.servingRobot.servingRobotStatus}?storeCode=${storeCode}`;
-  const res = await requestApi.get(url);
+  const res = await getRequestApi(url);
   return res;
 };
 
@@ -13,7 +13,7 @@ export const requestRobotOrder = async (config) => {
   fd.append('robotid', config.id);
   fd.append('tableName', config.tableName);
   fd.append('storeCode', config.storeCode);
-  const res = await requestApi.post(url, fd);
+  const res = await postRequestApi(url, fd);
 
   return res;
 };
@@ -34,7 +34,7 @@ export const requestBackRobot = async (config) => {
   };
 
   const url = `${endpoints.servingRobot.backRobot}`;
-  const res = await requestApi.post(url, data);
+  const res = await postRequestApi(url, data);
 
   return res;
 };
@@ -45,7 +45,7 @@ export const requestRobotMoving = async (config) => {
   fd.append('robotid', config.id);
   fd.append('tableName', config.tableName);
   fd.append('storeCode', config.storeCode);
-  const res = await requestApi.post(url, fd);
+  const res = await postRequestApi(url, fd);
 
   return res;
 };

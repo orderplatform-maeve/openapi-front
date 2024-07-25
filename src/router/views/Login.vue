@@ -14,7 +14,6 @@
 
 <script>
 import paths from '@router/paths';
-import {setCookie} from "@utils/cookieUtils";
 
 export default {
   data() {
@@ -42,7 +41,7 @@ export default {
         if (res.result) {
           // await this.$store.dispatch('noticePopup/updateNoticePopupData');
           const token = res.token;
-          setCookie('jwt', token, 24 * 60);
+          localStorage.setItem('jwt', token);
           this.$router.push(paths.store);
         }
       }

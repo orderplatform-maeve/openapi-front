@@ -1,29 +1,47 @@
 import axios from 'axios';
-import { getCookie } from "@utils/cookieUtils";
-import { IS_LG_FLAG } from "@utils/constants";
+// import { IS_LG_FLAG } from "@utils/constants";
 
-const config = (url) =>  {
-  return {
-    baseURL: url,
-    withCredentials: true,
-  };
+export const getRequestApi = (url, config) => {
+  const token = localStorage.getItem('jwt');
+
+  return axios.get(
+    url,
+    {
+      headers: {
+        Authorization: token
+      },
+      config
+    }
+  );
 };
 
-const requestApi = axios.create(config);
+export const postRequestApi = (url, params, config) => {
+  const token = localStorage.getItem('jwt');
 
-if(IS_LG_FLAG) {
-  console.log('실행돰');
-  requestApi.interceptors.request.use((configOrigin) => {
-    const cfg = configOrigin;
-    const token = getCookie('jwt');
+  return axios.post(
+    url,
+    params,
+    {
+      headers: {
+        Authorization: token
+      },
+      config
+    }
+  );
+};
 
-    console.log(token);
+export const putRequestApi = (url, params, config) => {
+  const token = localStorage.getItem('jwt');
 
-    cfg.headers.Authorization = `Bearer ${token}`;
-    cfg.validateStatus = (status) => status === 200;
-    return cfg;
-  });
-}
-
-export default requestApi;
+  return axios.put(
+    url,
+    params,
+    {
+      headers: {
+        Authorization: token
+      },
+      config
+    }
+  );
+};
 

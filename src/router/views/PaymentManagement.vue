@@ -126,8 +126,10 @@
 <script>
 //import paths from '@router/paths';
 import { STOP_REDIRECT } from '@utils/constants';
-import axios from 'axios';
-import endpoints from '@apis/endpoints';
+import {
+  postPaymentCashCancelCommit,
+  postPaymentCashCommit
+} from "@apis/payments";
 
 export default {
   components: {
@@ -451,26 +453,8 @@ export default {
       this.searchOptions.datetime.start = this.$moment({ hour:0, minute:0 });
       this.searchOptions.datetime.end = this.$moment({ hour:23, minute:59 });
     },
-    async commit(item, url) {
-      let data = new FormData();
-      data.append('key', item.key);
-      data.append('id', item.id);
-      data.append('stat', item.creditStat);
-      data.append('type',  item.creditType);
-      data.append('storeCode', item.storeCode);
-      data.append('tabletNumber', item.tabletnumber);
-      data.append('tablename', item.tableName);
-      data.append('orderKey', item.orderkey);
-      return  await axios({
-        method: 'post',
-        url,
-        data: data,
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-    },
     async cashCommit(item) {
-      const url = endpoints.payment.cashCommit;
-      const res = await this.commit(item, url);
+      const res = await postPaymentCashCommit(item);
       const newItem = res.data.rowData;
       console.log('newItem', res);
       this.$store.commit('replacePaymentListItem', newItem);
@@ -480,8 +464,7 @@ export default {
       this.closeItemModal();
     },
     async cashCancelCommit(item) {
-      const url = endpoints.payment.cashCancelCommit;
-      const res = await this.commit(item, url);
+      const res = await postPaymentCashCancelCommit(item);
       const newItem = res.data.rowData;
       this.$store.commit('replacePaymentListItem', newItem);
       this.closeItemModal();

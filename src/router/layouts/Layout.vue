@@ -91,11 +91,11 @@ import {
 import { payments, happyTalk as happyTalkAction, shop } from "@apis";
 import { HappyTalk } from "@svg";
 
-const { requestCardCancelCommit } = payments;
+const { postCardCancelCommit } = payments;
 
 const { postMessage } = happyTalkAction;
 
-const { postShopConfigData } = shop;
+const { requestShopConfigData } = shop;
 
 export default {
   components: {
@@ -321,7 +321,7 @@ export default {
           const params = new FormData();
           params.append("store_code", store_code);
 
-          const res = await postShopConfigData(params);
+          const res = await requestShopConfigData(params);
 
           const redirectionUrl = res.data.data.T_order_store_orderView_version;
 
@@ -478,7 +478,7 @@ export default {
                   );
                 }
 
-                const res = await requestCardCancelCommit(vanData);
+                const res = await postCardCancelCommit(vanData);
                 if (res.status === 200) {
                   this.showAlert(
                     "승인 요청했습니다. 조회하여 새로고침 해주세요."
@@ -598,19 +598,19 @@ export default {
         /**
          * TODO: 해당 로직에 대해서 히스토리를 물어봐야함.
          */
-        // const params = { shop_code: this.$store.state.auth.store.store_code };
-        // const tables = await this.$store.dispatch("setTables", params);
-        // tables.forEach(table => {
-        //   this.$socket.emit("event", {
-        //     store: {
-        //       code: this.$store.state.auth.store.store_code
-        //     },
-        //     table: {
-        //       code: table.Ta_id
-        //     },
-        //     type: "getSuspendSale"
-        //   });
-        // });
+        const params = { shop_code: this.$store.state.auth.store.store_code };
+        const tables = await this.$store.dispatch("setTables", params);
+        tables.forEach(table => {
+          this.$socket.emit("event", {
+            store: {
+              code: this.$store.state.auth.store.store_code
+            },
+            table: {
+              code: table.Ta_id
+            },
+            type: "getSuspendSale"
+          });
+        });
       } catch (error) {
         console.log(error);
       }
