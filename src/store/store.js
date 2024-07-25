@@ -522,7 +522,7 @@ const authentication = {
 
         localStorage.auth = JSON.stringify(auth);
 
-        return res.data.result;
+        return res.data;
       } catch (error) {
         commit('pushFlashMessage', error);
         return false;
