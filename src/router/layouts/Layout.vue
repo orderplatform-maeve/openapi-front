@@ -595,9 +595,6 @@ export default {
     },
     async initialized() {
       try {
-        /**
-         * TODO: 해당 로직에 대해서 히스토리를 물어봐야함.
-         */
         const params = { shop_code: this.$store.state.auth.store.store_code };
         const tables = await this.$store.dispatch("setTables", params);
         tables.forEach(table => {
