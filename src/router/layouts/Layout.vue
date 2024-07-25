@@ -595,22 +595,24 @@ export default {
     },
     async initialized() {
       try {
-        const params = { shop_code: this.$store.state.auth.store.store_code };
-        const tables = await this.$store.dispatch("setTables", params);
-        tables.forEach(table => {
-          this.$socket.emit("event", {
-            store: {
-              code: this.$store.state.auth.store.store_code
-            },
-            table: {
-              code: table.Ta_id
-            },
-            type: "getSuspendSale"
-          });
-        });
+        /**
+         * TODO: 해당 로직에 대해서 히스토리를 물어봐야함.
+         */
+        // const params = { shop_code: this.$store.state.auth.store.store_code };
+        // const tables = await this.$store.dispatch("setTables", params);
+        // tables.forEach(table => {
+        //   this.$socket.emit("event", {
+        //     store: {
+        //       code: this.$store.state.auth.store.store_code
+        //     },
+        //     table: {
+        //       code: table.Ta_id
+        //     },
+        //     type: "getSuspendSale"
+        //   });
+        // });
       } catch (error) {
-        console.log("여긴가?");
-        // console.log(error);
+        console.log(error);
       }
     },
     async tagetVersionRedirect() {

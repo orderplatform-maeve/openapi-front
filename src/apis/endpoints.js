@@ -1,43 +1,47 @@
-import { IS_DEV_TEAM } from "@utils/constants";
+import { IS_DEV_TEAM, IS_LG_FLAG } from "@utils/constants";
 
-const REST_URL = IS_DEV_TEAM
-  ? "https://kr.dev.rest-api.share.torder.com" // http://development.rest.torder.co.kr
-  : "http://rest.torder.co.kr";
-const ORDER_URL = IS_DEV_TEAM
-  ? "https://kr.dev.rest-api.share.torder.com" // 'http://development.order.torder.co.kr'
-  : "http://rest.torder.co.kr";
-const GET_CART_LIST_URL = IS_DEV_TEAM
-  ? "https://kr.dev.rest-api.share.torder.com" // 'http://development.cart.torder.co.kr'
-  : "http://rest.torder.co.kr";
-const ADMIN_URL = IS_DEV_TEAM
-  ? "https://kr.dev.rest-api.share.torder.com" // 'http://development.rest.torder.co.kr'
-  : "http://admin.torder.co.kr";
-const API_URL = IS_DEV_TEAM
-  ? "https://kr.dev.init-api.share.torder.com" // 'http://development.cache.torder.co.kr'
-  : "http://api.torder.co.kr";
-const NOTICE_URL = IS_DEV_TEAM
-  ? "https://dev-apigw.torder.co.kr/v2"
-  : "https://apigw.torder.co.kr/v2";
-const TORDER_V2 = IS_DEV_TEAM
-  ? "https://kr.dev.tcloud-gateway.share.torder.com/v2" // 'https://dev-apigw.torder.co.kr/v2'
-  : "https://apigw.torder.co.kr/v2";
-const TABLE_GAME_URL = IS_DEV_TEAM
-  ? "https://dev-apigw.torder.co.kr"
-  : "https://apigw.torder.co.kr";
-const ROBOT_TEXT = IS_DEV_TEAM
-  ? "http://dev.robot.torder.co.kr"
-  : "http://robot.torder.co.kr:8888/v2/order";
-const DEMO_URL = IS_DEV_TEAM
-  ? "https://kr.dev.rest-api.share.torder.com" // 'http://development.rest.torder.co.kr'
-  : "http://demo.api.torder.co.kr";
-const PAYMENT_URL = IS_DEV_TEAM
-  ? "https://kr.dev.tcloud-gateway.share.torder.com" // 'https://dev-sgw.torder.co.kr'
-  : "https://sgw.torder.co.kr";
+let REST_URL = "http://rest.torder.co.kr";
+let ORDER_URL = "http://rest.torder.co.kr";
+let GET_CART_LIST_URL = "http://rest.torder.co.kr";
+let ADMIN_URL = "http://admin.torder.co.kr";
+let API_URL = "http://api.torder.co.kr";
+let NOTICE_URL = "https://apigw.torder.co.kr/v2";
+let TORDER_V2 = "https://apigw.torder.co.kr/v2";
+let TABLE_GAME_URL = "https://apigw.torder.co.kr";
+let ROBOT_TEXT = "http://robot.torder.co.kr:8888/v2/order";
+let DEMO_URL = "http://demo.api.torder.co.kr";
+let PAYMENT_URL = "https://sgw.torder.co.kr";
+let HAPPY_TALK = "https://rest.torder.co.kr";
 
-// const HAPPY_TALK = 'https://happytalk.torder.co.kr';
-const HAPPY_TALK = IS_DEV_TEAM
-  ? "http://kr.dev.rest-api.share.torder.com" // 'http://development.rest.torder.co.kr'
-  : "https://rest.torder.co.kr";
+if (IS_DEV_TEAM) {
+  REST_URL = "http://development.rest.torder.co.kr";
+  ORDER_URL = "http://development.order.torder.co.kr";
+  GET_CART_LIST_URL = "http://development.cart.torder.co.kr";
+  ADMIN_URL = "http://development.rest.torder.co.kr";
+  API_URL = "http://development.cache.torder.co.kr";
+  NOTICE_URL = "https://dev-apigw.torder.co.kr/v2";
+  TORDER_V2 = "https://dev-apigw.torder.co.kr/v2";
+  TABLE_GAME_URL = "https://dev-apigw.torder.co.kr";
+  ROBOT_TEXT = "http://dev.robot.torder.co.kr";
+  DEMO_URL = "http://development.rest.torder.co.kr";
+  PAYMENT_URL = "https://dev-sgw.torder.co.kr";
+  HAPPY_TALK = "http://development.rest.torder.co.kr";
+}
+
+if (IS_LG_FLAG) {
+  REST_URL = "https://kr.dev.rest-api.share.torder.com";
+  ORDER_URL = "https://kr.dev.rest-api.share.torder.com";
+  GET_CART_LIST_URL = "https://kr.dev.rest-api.share.torder.com";
+  ADMIN_URL = "https://kr.dev.rest-api.share.torder.com";
+  API_URL = "https://kr.dev.init-api.share.torder.com";
+  NOTICE_URL = "https://dev-apigw.torder.co.kr/v2";
+  TORDER_V2 = "https://kr.dev.tcloud-gateway.share.torder.com/v2";
+  TABLE_GAME_URL = "https://dev-apigw.torder.co.kr";
+  ROBOT_TEXT = "http://dev.robot.torder.co.kr";
+  DEMO_URL = "https://kr.dev.rest-api.share.torder.com";
+  PAYMENT_URL = "https://kr.dev.tcloud-gateway.share.torder.com";
+  HAPPY_TALK = "http://kr.dev.rest-api.share.torder.com";
+}
 
 const endpoints = {
   authentication: {
