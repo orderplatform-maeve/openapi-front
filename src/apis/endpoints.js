@@ -9,7 +9,7 @@ let NOTICE_URL = "https://apigw.torder.co.kr/v2";
 let TORDER_V2 = "https://apigw.torder.co.kr/v2";
 let TABLE_GAME_URL = "https://apigw.torder.co.kr";
 let ROBOT_TEXT = "http://robot.torder.co.kr:8888/v2/order";
-let DEMO_URL = "http://demo.api.torder.co.kr";
+let DEMO_URL = "https://rest.torder.co.kr";
 let PAYMENT_URL = "https://sgw.torder.co.kr";
 let HAPPY_TALK = "https://rest.torder.co.kr";
 
