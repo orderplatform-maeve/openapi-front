@@ -12,6 +12,7 @@ let ROBOT_TEXT = "http://robot.torder.co.kr:8888/v2/order";
 let DEMO_URL = "https://rest.torder.co.kr";
 let PAYMENT_URL = "https://sgw.torder.co.kr";
 let HAPPY_TALK = "https://rest.torder.co.kr";
+let SOCKET_URL = "http://socketio.torder.co.kr";
 
 if (IS_DEV_TEAM) {
   REST_URL = "http://development.rest.torder.co.kr";
@@ -26,6 +27,7 @@ if (IS_DEV_TEAM) {
   DEMO_URL = "http://development.rest.torder.co.kr";
   PAYMENT_URL = "https://dev-sgw.torder.co.kr";
   HAPPY_TALK = "http://development.rest.torder.co.kr";
+  SOCKET_URL = "http://development.socket.torder.co.kr:80";
 }
 
 if (IS_LG) {
@@ -41,6 +43,7 @@ if (IS_LG) {
   DEMO_URL = "https://kr.dev.rest-api.share.torder.com";
   PAYMENT_URL = "https://kr.dev.tcloud-gateway.share.torder.com";
   HAPPY_TALK = "http://kr.dev.rest-api.share.torder.com";
+  SOCKET_URL = "https://kr.dev.socketio.share.torder.com";
 }
 
 const endpoints = {
@@ -151,7 +154,8 @@ const endpoints = {
     },
     pends: `${PAYMENT_URL}/credit/v2/pays/pends`,
     webLogs: `${PAYMENT_URL}/credit/v2/web-logs`
-  }
+  },
+  socket: SOCKET_URL
 };
 
 export default endpoints;
