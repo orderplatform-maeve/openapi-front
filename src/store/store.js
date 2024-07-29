@@ -774,7 +774,12 @@ const shop = {
 
         commit('setDeviceStatus', device);
         commit('updateStandardPriceUnit', target.standardPriceUnit);
-        commit('updateIsTorderTwo', target.T_order_store_tablet_version.includes('order2'));
+        /**
+         * TODO shop/config 에 api에 대한 정보가 없어서 도메인으로 판별해야함. 따라서 도메인이 변경되면 수정 필요.
+         * order2: 티오더2 운영망
+         * share: LG U+
+         */
+        commit('updateIsTorderTwo', target.T_order_store_tablet_version.includes('order2') || target.T_order_store_tablet_version.includes('share'));
         commit('updateIsRemakePaid', target.T_order_store_tablet_version.includes('remake'));
         commit('updateStoreTheme', target.T_order_store_Theme);
         return response;
