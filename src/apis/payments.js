@@ -66,6 +66,18 @@ export const postPaymentCashCancelCommit = async (params) => {
   return res;
 };
 
+export const postPaymentDeleteCartList = async (params, storeCode) => {
+  const url = endpoints.payment.deleteCartList;
+
+  const fd = new FormData();
+  fd.append('store_shop_code', storeCode);
+  fd.append('tablet_number', params.Ta_id);
+
+  const res = await customAxios().post(url, fd);
+
+  return res;
+};
+
 export const postPaymentMisuCommit = async (orderKey) => {
   const url = endpoints.payment.misuCommit;
   const fd = new FormData();
@@ -101,10 +113,13 @@ export const getCreditOrderKeyList = async (storeCode, orderKey) => {
 };
 
 
+
+
 export default {
   postPaymentCashCommit,
   getPaymentCreditList,
   postCardCancelCommit,
+  postPaymentDeleteCartList,
   postPaymentMisuCommit,
   getTableCreditStatList,
   getTableCreditInfo,
