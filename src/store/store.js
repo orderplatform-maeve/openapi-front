@@ -779,7 +779,7 @@ const shop = {
          * order2: 티오더2 운영망
          * share: LG U+
          */
-        commit('updateIsTorderTwo', target.T_order_store_tablet_version.includes('order2') || target.T_order_store_tablet_version.includes('share'));
+        commit('updateIsTorderTwo', target.T_order_store_tablet_version.includes('order2') || target.T_order_store_tablet_version.includes('uplus'));
         commit('updateIsRemakePaid', target.T_order_store_tablet_version.includes('remake'));
         commit('updateStoreTheme', target.T_order_store_Theme);
         return response;
