@@ -38,15 +38,18 @@
             v-for="(item, itemIndex) in option.option_items"
             :key="`option-item-${item.code}-${itemIndex}`"
             )
-            div.option-item-name {{item.name}}
+            div.option-item-name-wrap
+              div.option-preset-item-label(v-if="item.preset_yn === 'Y'")
+                span.option-preset-item-text 기본구성
+              div.option-item-name {{item.name}}
             div.sales-box
               button(
-                :class="getSalesBtStyle(item.isSale)"
-                @click="onClickSalesBt(optionIndex, itemIndex)"
+                :class="getSalesBtStyle(item)"
+                @click="onClickSalesBt(optionIndex, itemIndex, item)"
                 ) 판매
               button(
-                :class="getSoldOutBtStyle(item.isSale)"
-                @click="onClickSoldOutBt(optionIndex, itemIndex)"
+                :class="getSoldOutBtStyle(item)"
+                @click="onClickSoldOutBt(optionIndex, itemIndex, item)"
                 ) 품절
     div.save-bt-wrap
       button.option-setting-save-bt(@click="changedOptionSaveAndCheck") 저장
@@ -106,28 +109,36 @@ export default {
       };
     },
     // 판매 버튼 동적 스타일
-    getSalesBtStyle(isSale) {
+    getSalesBtStyle(item) {
       return {
         'deactivate-bt': true,
-        'sales-active': isSale,
+        'sales-active': item.isSale,
+        'disabled': item.preset_yn === 'Y'
       };
     },
     // 품절 버튼 동적 스타일
-    getSoldOutBtStyle(isSale) {
+    getSoldOutBtStyle(item) {
       return {
         'deactivate-bt': true,
-        'sold-out-active': !isSale,
+        'sold-out-active': !item.isSale,
+        'disabled': item.preset_yn === 'Y'
       };
     },
     // 판매 클릭
-    onClickSalesBt(optionIndex, itemIndex) {
+    onClickSalesBt(optionIndex, itemIndex, item) {
+      // 프리셋 상품일 경우 disabled 처리
+      if(item.preset_yn === 'Y') return;
+
       const thisIsSale = this.deepCopyOptions[optionIndex].option_items[itemIndex].isSale;
       if (!thisIsSale) {
         this.deepCopyOptions[optionIndex].option_items[itemIndex].isSale = 1;
       }
     },
     // 품절 클릭
-    onClickSoldOutBt(optionIndex, itemIndex) {
+    onClickSoldOutBt(optionIndex, itemIndex, item) {
+      // 프리셋 상품일 경우 disabled 처리
+      if(item.preset_yn === 'Y') return;
+
       const thisIsSale = this.deepCopyOptions[optionIndex].option_items[itemIndex].isSale;
       if (thisIsSale) {
         this.deepCopyOptions[optionIndex].option_items[itemIndex].isSale = 0;
@@ -331,19 +342,46 @@ export default {
             border-radius: 0.7813vw;
             background-color: #292929;
             box-sizing: border-box;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
 
-            .option-item-name {
-              font-size: 1.5625vw;
-              font-weight: 500;
-              letter-spacing: -0.0391vw;
-              word-break: break-all;
-              text-align: center;
-              flex: 1;
-              vertical-align: middle;
+            .option-item-name-wrap {
               display: flex;
-              align-items: center;
+              flex-direction: column;
+              gap: 0.625vw;
+              flex: 1;
+
+              .option-preset-item-label {
+                display: flex;
+                padding: 0.46875vw 0.78125vw !important;
+                justify-content: center;
+                align-items: center;
+                border-radius: 78.046875vw;
+                background-color: rgba(36, 111, 244, 0.60);
+
+                .option-preset-item-text {
+                  color: #E4ECFC;
+                  text-align: center;
+                  font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+                  font-size: 1.09375vw;
+                  font-weight: 700;
+                  line-height: normal;
+                  letter-spacing: -0.0273437vw;
+                }
+              }
+
+              .option-item-name {
+                font-size: 1.5625vw;
+                font-weight: 500;
+                letter-spacing: -0.0391vw;
+                word-break: break-all;
+                text-align: center;
+                vertical-align: middle;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                height: 100%;
+              }
             }
 
             .sales-box {
@@ -370,6 +408,10 @@ export default {
                 background-color: #000;
                 color: #fc0000;
                 font-weight: bold;
+              }
+
+              .disabled {
+                opacity: 0.5;
               }
             }
           }
