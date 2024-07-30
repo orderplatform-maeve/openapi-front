@@ -350,8 +350,10 @@ export default {
               flex-direction: column;
               gap: 0.625vw;
               flex: 1;
+              align-items: center;
 
               .option-preset-item-label {
+                width: fit-content;
                 display: flex;
                 padding: 0.46875vw 0.78125vw !important;
                 justify-content: center;
