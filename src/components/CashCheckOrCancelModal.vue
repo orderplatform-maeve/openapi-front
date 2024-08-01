@@ -11,8 +11,8 @@
         .table-head {{ currentPage === 'orders' ? '총 현금 결제금액' : '현금 결제금액' }}
         .table-body {{ getAmount(detailPayData.amount) }}
       .table-wrap
-        .table-head 주문 일시
-        .table-body {{ detailPayData.approvalDatetime }}
+        .table-head 주문 시간
+        .table-body {{ currentPage === 'orders' ? detailPayData.approvalDatetime : detailPayData.orderTime }}
     span.confirm-text 해당 테이블에서 현금을 받으셨습니까?
     .modal-footer-wrap
       button(@click="closePayCheckModal()") 취소
@@ -31,8 +31,8 @@
         .table-head 결제 일시
         .table-body {{ detailPayData.approvalDatetime }}
       .table-wrap
-        .table-head 주문 일시
-        .table-body {{ detailPayData.orderDatetime }}
+        .table-head 주문 시간
+        .table-body {{ detailPayData.orderTime }}
     span.confirm-text 해당 테이블에 환불처리 하셨습니까?
     .modal-footer-wrap
       button(@click="closePayCheckModal()") 취소
