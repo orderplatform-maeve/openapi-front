@@ -1,5 +1,5 @@
 <template lang="pug">
-.order-modal-container
+.order-modal-container(ref="orderModalRef")
   .wrap-order-modal
     .order-modal-header
       .wrap-order-history-text
@@ -15,7 +15,7 @@
     .wrap-order-history-all
       .wrap-current-order-history
         p.current-order-history-text {{ getByTypeText('sub') }}
-        .current-order-history-list
+        .current-order-history-list(ref="orderListScrollRef")
           .current-order-history(v-for="product in order.order_info")
             .wrap-product-info
               .current-product-info
@@ -27,38 +27,45 @@
                     span {{ getItemPrice(product) }}
                     span(v-if="!standardPriceFrontPosition") {{standardPriceUnit}}
               .product-option-list(v-if="isProductOpt(product)")
-                .product-option(v-for="option in product.option")
-                  p.option-name {{getOptionDisplayName(option)}}
-                  .wrap-product-option-price
-                    p.option-quantity {{getOptionGoodQty(option)}}개
-                    p.option-price
-                      span(v-if="standardPriceFrontPosition") {{standardPriceUnit}}
-                      span {{getOptionPrice(option)}}
-                      span(v-if="!standardPriceFrontPosition") {{standardPriceUnit}}
+                productOptionItem(
+                  v-for="(option, index) in product.option"
+                  :key="getOptionItemKey(option, index)"
+                  :option-info="option"
+                  :standard-price-unit="standardPriceUnit"
+                  :standard-price-front-position="standardPriceFrontPosition"
+                  :is-first-option="true"
+                  :get-option-item-key="getOptionItemKey"
+                )
             .wrap-product-all-price
               p.product-all-price-title
                 | 상품 수량
               .wrap-product-unit-total-price
-                p.product-unit-total-quantity {{getProductQty(product)}}개
+                p.product-unit-total-quantity {{getOptionGoodQty(product)}}개
                 p.product-unit-total-price
                   span(v-if="standardPriceFrontPosition") {{standardPriceUnit}}
                   span {{getItemUnitTotalPrice(product)}}
                   span(v-if="!standardPriceFrontPosition") {{standardPriceUnit}}
       .wrap-last-order-history(v-if="getUserPhoneNumber")
         p.last-order-history-text 휴대폰 번호
-        .last-order-history-list
+        .last-order-history-list(ref="historyListScrollRef")
           p.phone-number {{getUserPhoneNumber}}
       .wrap-last-order-history(v-else-if="!order.paidOrder && order.viewType !== 6")
         p.last-order-history-text 이전 주문내역
-        .last-order-history-list(v-if="order.paidOrder==false")
+        .last-order-history-list(
+            v-if="order.paidOrder === false"
+            ref="historyListScrollRef"
+          )
           .last-order-history(v-for="c_product in order.total_orders")
             .last-product-info
               .last-order-product-name {{getBeforeProductDisplayName(c_product)}}
               .last-order-product-quantity {{getBeforeProductOrderQty(c_product)}}개
             .last-order-product-option-list(v-if="isBeforeProductOtp(c_product)")
-              .last-order-product-option(v-for="option in c_product.option")
-                p.last-option-name {{getBeforeProductOptionDisplayName(option)}}
-                p.last-option-quantity {{getBeforeProductOptionOrderQty(option)}}개
+              previousOrderOptionItem(
+                v-for="(option, index) in c_product.option"
+                :key="getPreviousOptionItemKey(option, index)"
+                :option-info="option"
+                :get-previous-option-item-key="getPreviousOptionItemKey"
+              )
       .wrap-last-order-history(v-else-if="order.paidOrder && order.viewType !== 6")
         p.last-order-history-text.credit-history 결제내역
         .last-order-history-list
@@ -85,12 +92,15 @@
 
 <script>
 import StarRating from 'vue-star-rating';
-
 import utils from '@utils/orders.utils';
 import { won } from '@utils/regularExpressions';
+import ProductOptionItem from "@components/ProductOptionItem.vue";
+import PreviousOrderOptionItem from "@components/PreviousOrderOptionItem.vue";
 
 export default {
   components: {
+    ProductOptionItem,
+    PreviousOrderOptionItem,
     'star-rating': StarRating,
   },
   data() {
@@ -102,7 +112,6 @@ export default {
   },
   computed: {
     order() {
-      console.log(this.$store.state.order, '확인');
       // console.log(this.$store.state.order.rating_type);
       return this.$store.state.order;
     },
@@ -121,17 +130,64 @@ export default {
     }
   },
   mounted() {
+    const modalElement = this.$refs.orderModalRef;
+    const orderListElement = this.$refs.orderListScrollRef;
+    const historyListElement = this.$refs.historyListScrollRef;
+
+
+    if(modalElement) {
+      modalElement.addEventListener('touchstart', () => {
+        this.resetTimer();
+      });
+
+      modalElement.addEventListener('touchend', () => {
+        this.resetTimer();
+      });
+    }
+
+    if(orderListElement) {
+      orderListElement.addEventListener('scroll', () => {
+        this.resetTimer();
+      });
+    }
+
+    if(historyListElement) {
+      historyListElement.addEventListener('scroll', () => {
+        this.resetTimer();
+      });
+    }
+
     clearInterval(this.interval);
-
-    this.interval = setInterval(() => {
-      this.seconds -= 1;
-
-      if (this.seconds < 1) {
-        this.closeOrder();
-      }
-    }, 1000);
+    this.setIntervalTimer();
   },
   beforeDestroy() {
+    const modalElement = this.$refs.orderModalRef;
+    const orderListElement = this.$refs.orderListScrollRef;
+    const historyListElement = this.$refs.historyListScrollRef;
+
+    if(modalElement) {
+      modalElement.removeEventListener('touchstart', () => {
+        this.resetTimer();
+      });
+
+      modalElement.removeEventListener('touchend', () => {
+        this.resetTimer();
+      });
+    }
+
+    if(orderListElement) {
+      orderListElement.removeEventListener('scroll', () => {
+        this.resetTimer();
+      });
+    }
+
+    if(historyListElement) {
+      historyListElement.removeEventListener('scroll', () => {
+        this.resetTimer();
+      });
+    }
+
+    clearInterval(this.interval);
     this.closeOrder();
   },
   sockets: {
@@ -194,24 +250,51 @@ export default {
         return 0;
       }
     },
-    getOptionPrice(option) {
-      if (!option) return 0;
-      return won(option.good_price);
+    getOptionItemTotalPrice(totalPrice, optionItem) {
+      const {
+        good_price,
+        good_qty,
+        order_qty,
+        option
+      } = optionItem;
+
+      const productQty = good_qty ? good_qty : order_qty;
+
+      const calculatedPrice = totalPrice + (Number(good_price) * Number(productQty));
+
+      if(option) {
+        const optionPrice = option.reduce((acc, cur) => {
+          if(option.length > 0) return this.getOptionItemTotalPrice(acc, cur);
+          return acc;
+        }, 0);
+
+        return calculatedPrice + optionPrice;
+      }
+
+      return calculatedPrice;
     },
     getItemUnitTotalPrice(order) {
       const {
         good_price,
         good_qty,
+        order_qty,
         option = [],
       } = order;
 
-      let totalPrice = 0;
-      totalPrice += (Number(good_price) * Number(good_qty));
-      option.forEach((item) => {
-        totalPrice += (Number(item.good_price) * Number(item.good_qty) *  Number(good_qty));
-      });
+      const productQty = good_qty ? good_qty : order_qty;
 
-      return won(totalPrice);
+      const productPrice = Number(good_price) * Number(productQty);
+
+      if(option) {
+        const optionPrice = option.reduce((acc, cur) => {
+
+          return acc + this.getOptionItemTotalPrice(0, cur);
+        }, 0);
+
+        return won(productPrice + optionPrice);
+      }
+
+      return won(productPrice);
     },
     async commitOrder(order) {
       const auth = this.$store.state.auth;
@@ -280,6 +363,28 @@ export default {
     },
     electronicAccessCount() {
       return this.order.visitPeopleCnt;
+    },
+    getOptionItemKey(option, index) {
+      if(option) return `${option.pos_code}-${index}`;
+      return `option-item-${index}`;
+    },
+    getPreviousOptionItemKey(option, index) {
+      if(option) return `previous-${option.pos_code}-${index}`;
+      return `previous-option-item-${index}`;
+    },
+    setIntervalTimer() {
+      this.interval = setInterval(() => {
+        this.seconds -= 1;
+
+        if (this.seconds < 1) {
+          this.closeOrder();
+        }
+      }, 1000);
+    },
+    resetTimer() {
+      clearInterval(this.interval);
+      this.seconds = 10;
+      this.setIntervalTimer();
     }
   },
 };
@@ -656,7 +761,7 @@ export default {
       gap: 2.34375vw;
 
       .wrap-current-order-history {
-        width: 54.6875vw;
+        width: 52.34375vw;
 
         .current-order-history-text {
           font-family: "notosans";
@@ -698,10 +803,11 @@ export default {
                 gap: 0.390625vw;
 
                 .product-name {
-                  flex: 1;
+                  width: 52.34375vw;
                   font-size: 3.75vw;
                   font-weight: bold;
                   letter-spacing: -0.025em;
+                  word-break: break-all;
                 }
 
                 .wrap-product-price {
@@ -729,36 +835,7 @@ export default {
                 font-size: 2.5vw;
                 color: #eee;
                 letter-spacing: -0.025em;
-
-                .product-option {
-                  display: flex;
-                  justify-content: space-between;
-                  align-items: center;
-
-                  .option-name {
-                    text-indent: 1em;
-                    flex: 1;
-                  }
-
-                  .wrap-product-option-price {
-                    width: 21.25vw;
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    gap: 1.171875vw;
-
-                    .option-quantity {
-                      width: 7.96875vw;
-                      text-align: right;
-                    }
-
-                    .option-price {
-                      width: 12.109375vw;
-                      font-size: 1.5625vw;
-                      text-align: right;
-                    }
-                  }
-                }
+                padding-left: 1.25vw !important;
               }
             }
 
@@ -797,7 +874,7 @@ export default {
       }
 
       .wrap-last-order-history {
-        flex: 1;
+        width: 20.9vw;
 
         .last-order-history-text {
           font-family: "notosans";
@@ -844,6 +921,7 @@ export default {
                 font-size: 1.25vw;
                 color: #fff;
                 letter-spacing: -0.03125vw;
+                word-break: break-all;
               }
 
               .last-order-product-quantity {
@@ -855,23 +933,8 @@ export default {
               }
             }
 
-            .last-order-product-option {
-              font-family: 'Spoqa Han Sans Neo', 'sans-serif';
-              font-size: 1.015625vw;
-              color: #aaa;
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
-              text-indent: 1em;
-
-              .last-option-name {
-                flex: 1;
-              }
-
-              .last-option-quantity {
-                width: 3.125vw;
-                text-align: right;
-              }
+            .last-order-product-option-list {
+              padding-left: 1.25vw !important;
             }
           }
         }

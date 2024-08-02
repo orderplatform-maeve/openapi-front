@@ -1,80 +1,28 @@
 <template lang="pug">
-.pos-error-modal-container
-  .wrap-pos-error-modal
-    p.pos-error-modal-title 오류 발생
-    .pos-error-modal-body
-      p.pos-error-modal-body-title {{ getTableName() }} 테이블
-      p.pos-error-modal-body-message 주문이 정상적으로 접수되지 못하였습니다.
-    .pos-error-modal-footer
-      button.pos-error-modal-button-commit(@click="goErrorOrderList()") 주문 내역 오류 보기
-      button.pos-error-modal-button-close(@click="closeOrder()") 닫기
+.sold-out-alert-modal-container
+  .sold-out-alert-modal-wrap
+    p.sold-out-alert-modal-title 조심해요!!
+    .sold-out-alert-modal-body
+      p.sold-out-alert-modal-body-title 필수 옵션에서 선택할 수 있는 옵션이 없으면
+      p.sold-out-alert-modal-body-title {{ productName }} 주문을 받을 수 없습니다.
+    .sold-out-alert-modal-footer
+      button.sold-out-alert-modal-button-commit(@click="updateSoldOutStatus()") 확인
+      button.sold-out-alert-modal-button-close(@click="closeAlertModal()") 취소
 </template>
 
 <script>
 export default {
   props: {
-    tableNumber: {
+    productName: {
       type: String,
       default: '',
     },
-  },
-  data() {
-    return {
-      interval: undefined,
-      seconds: 10,
-      tableList: [],
-    };
-  },
-  methods: {
-    goErrorOrderList() {
-      this.$router.push('/ordersIP');
-      this.closeOrder();
+    updateSoldOutStatus: {
+      type: Function,
     },
-    getTableName() {
-      try {
-        const matchingTableId = (table) => {
-          if (table.Ta_id === this.tableNumber) {
-            return true;
-          }
-        };
-
-        const tableName = this.tableList.find(matchingTableId);
-        return tableName.Tablet_name;
-
-      } catch (error) {
-        return '';
-      }
-    },
-    orderKey(order) {
-      try {
-        return order.orderKey;
-      } catch (error) {
-        return '';
-      }
-    },
-    closeOrder() {
-      clearInterval(this.interval);
-      this.$store.commit('closePosResponseModal', false);
-    },
-    async getTableList() {
-      const params = { shop_code: this.$store.state.auth.store.store_code };
-      this.tableList = await this.$store.dispatch('setTables', params);
+    closeAlertModal: {
+      type: Function,
     }
-  },
-  mounted() {
-    clearInterval(this.interval);
-    this.interval = setInterval(() => {
-      this.seconds -= 1;
-
-      if (this.seconds < 1) {
-        this.closeOrder();
-      }
-    }, 1000);
-
-    this.getTableList();
-  },
-  beforeDestroy() {
-    this.closeOrder();
   },
 };
 
@@ -120,16 +68,17 @@ export default {
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      gap: 1.5625vw;
       padding: 1.875vw !important;
       box-sizing: border-box;
       border-radius: 1.875vw;
       background-color: rgb(255, 0, 0, 0.8);
 
       .sold-out-alert-modal-body-title {
-        font-size: 5vw;
-        font-weight: bold;
-        word-break: keep-all;
+        font-size: 3.125vw;
+        font-weight: 700;
+        line-height: normal;
+        letter-spacing: -0.078125vw;
+        text-align: center;
       }
 
       .pos-error-modal-body-message {
@@ -162,7 +111,7 @@ export default {
         font-size: 1.875vw;
         border-radius: 7.8125vw;
         border: none;
-        box-shadow: 0 0 8px -4px #000000;
+        box-shadow: 0 0 0.625vw -0.3125vw #000000;
       }
 
       .sold-out-alert-modal-button-commit {

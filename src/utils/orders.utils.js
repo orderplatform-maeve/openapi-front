@@ -157,7 +157,8 @@ const productMethods = {
   },
   getOptionGoodQty(option) {
     if (!option) return 0;
-    return option.good_qty;
+    if(option.good_qty) return option.good_qty;
+    return option.order_qty;
   },
   getOptionGoodPrice(option) {
     if (!option) return 0;

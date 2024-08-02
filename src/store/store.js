@@ -630,6 +630,9 @@ const order = {
     updateCashPaymentConfirmModal(state, payload) {
       state.cashPaymentConfirmModal = payload;
     },
+    updateSoldOutAlertModal(state, payload) {
+      state.soldOutAlertModal = payload;
+    },
   },
   actions: {
     async commitOrder(context, payload) {
@@ -1061,7 +1064,6 @@ const menu = {
       };
       const url = endpoints.menu.getMenuConfig;
       const response = await axios.post(url, params, config);
-      console.log('set', response, response?.data?.result);
 
       if (response?.data?.result) {
         const { data } = response;
@@ -1554,6 +1556,7 @@ const state = {
   cashPaymentConfirmModal: false,
   alertTwoBtMessage: '',
   isAlertTwoBtModal: false,
+  soldOutAlertModal: false,
 };
 
 const mutations = {

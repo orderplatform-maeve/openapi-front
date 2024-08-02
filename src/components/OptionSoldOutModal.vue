@@ -1,5 +1,11 @@
 <template lang="pug">
 .option-sold-out-modal-container
+  SoldOutAlertModal(
+    v-if="soldOutAlertModalState"
+    :productName="goodsName"
+    :updateSoldOutStatus="changedOptionSaveAndCheck"
+    :closeAlertModal="closeSoldOutAlertModal"
+  )
   option-save-check-modal(
     v-if="optionSaveCheckModalFlag"
     :changedOptionSaveConfirmAndSubmit="changedOptionSaveConfirmAndSubmit"
@@ -19,22 +25,31 @@
         )
         div.require-wrap(v-if="option.require_flag")
           div.require-badge 필수옵션
-          div.require-text 최소 {{option.limit_select}}개 이상 판매 해야 주문이 가능합니다!
-        div.option-group-name {{option.name}}
+          div.require-text 최소 {{option.limit_qty}}개 이상 판매 해야 주문이 가능합니다!
+        div.option-group-name-wrap
+          div(
+            v-if="isDepthOptionItem(option)"
+            :class="getOptionGroupNameColor(option)"
+          ) {{ option.depthOptionItemName }}
+          div(v-if="isDepthOptionItem(option)") >
+          div.option-depth-option-name {{ option.name }}
         div.option-item-wrap
           div.option-item-box(
             v-for="(item, itemIndex) in option.option_items"
             :key="`option-item-${item.code}-${itemIndex}`"
             )
-            span.option-item-name {{item.name}}
+            div.option-item-name-wrap
+              div.option-preset-item-label(v-if="item.preset_yn === 'Y'")
+                span.option-preset-item-text 기본구성
+              div.option-item-name {{item.name}}
             div.sales-box
               button(
-                :class="getSalesBtStyle(item.isSale)"
-                @click="onClickSalesBt(optionIndex, itemIndex)"
+                :class="getSalesBtStyle(item)"
+                @click="onClickSalesBt(optionIndex, itemIndex, item)"
                 ) 판매
               button(
-                :class="getSoldOutBtStyle(item.isSale)"
-                @click="onClickSoldOutBt(optionIndex, itemIndex)"
+                :class="getSoldOutBtStyle(item)"
+                @click="onClickSoldOutBt(optionIndex, itemIndex, item)"
                 ) 품절
     div.save-bt-wrap
       button.option-setting-save-bt(@click="changedOptionSaveAndCheck") 저장
@@ -44,6 +59,7 @@
 import { CloseIcon } from '@svg';
 import _ from 'lodash';
 import { goods } from '@apis';
+import SoldOutAlertModal from "@components/SoldOutAlertModal.vue";
 
 const { postOptionSaleOffCheck, postOptionSaleOffSubmit } = goods;
 
@@ -74,10 +90,14 @@ export default {
   },
   components: {
     CloseIcon,
+    SoldOutAlertModal,
   },
   computed: {
     getStoreCode() {
       return this.$store.state.auth.store.store_code;
+    },
+    soldOutAlertModalState() {
+      return this.$store.state.soldOutAlertModal;
     },
   },
   methods: {
@@ -89,34 +109,48 @@ export default {
       };
     },
     // 판매 버튼 동적 스타일
-    getSalesBtStyle(isSale) {
+    getSalesBtStyle(item) {
       return {
         'deactivate-bt': true,
-        'sales-active': isSale,
+        'sales-active': item.isSale,
+        'disabled': item.preset_yn === 'Y'
       };
     },
     // 품절 버튼 동적 스타일
-    getSoldOutBtStyle(isSale) {
+    getSoldOutBtStyle(item) {
       return {
         'deactivate-bt': true,
-        'sold-out-active': !isSale,
+        'sold-out-active': !item.isSale,
+        'disabled': item.preset_yn === 'Y'
       };
     },
     // 판매 클릭
-    onClickSalesBt(optionIndex, itemIndex) {
+    onClickSalesBt(optionIndex, itemIndex, item) {
+      // 프리셋 상품일 경우 disabled 처리
+      if(item.preset_yn === 'Y') return;
+
       const thisIsSale = this.deepCopyOptions[optionIndex].option_items[itemIndex].isSale;
       if (!thisIsSale) {
         this.deepCopyOptions[optionIndex].option_items[itemIndex].isSale = 1;
       }
     },
     // 품절 클릭
-    onClickSoldOutBt(optionIndex, itemIndex) {
+    onClickSoldOutBt(optionIndex, itemIndex, item) {
+      // 프리셋 상품일 경우 disabled 처리
+      if(item.preset_yn === 'Y') return;
+
       const thisIsSale = this.deepCopyOptions[optionIndex].option_items[itemIndex].isSale;
       if (thisIsSale) {
         this.deepCopyOptions[optionIndex].option_items[itemIndex].isSale = 0;
       }
     },
-
+    // 필수 상품이 모두 품절일 경우 주문 불가 안내 알럿창 열기
+    openSoldOutAlertModal() {
+      this.$store.commit('updateSoldOutAlertModal', true);
+    },
+    closeSoldOutAlertModal() {
+      this.$store.commit('updateSoldOutAlertModal', false);
+    },
     // 체크 후 진짜 저장하기
     async changedOptionSaveConfirmAndSubmit() {
       try {
@@ -133,6 +167,7 @@ export default {
           this.$store.commit('pushFlashMessage', '옵션 상태를 변경했습니다.');
           this.optionSaveCheckModalFlag = false;
           this.closeOptionSoldOutModal();
+          this.closeSoldOutAlertModal();
           this.initialize();
         }
       } catch (error) {
@@ -142,12 +177,19 @@ export default {
 
     // 저장 클릭 시 필수 옵션 limit 체크
     async changedOptionSaveAndCheck() {
+      // 필수 옵션 그룹인데 모든 옵션 아이템이 품절일 경우 주문이 안될 수 있다는 안내 문구 노출
+      if(!this.soldOutAlertModalState && this.checkEssentialOptionSoldOut()) {
+        this.openSoldOutAlertModal();
+        return;
+      }
+
       try {
         const config = {
           storeCode: this.getStoreCode,
           goodCode: this.goodsCode,
           options: this.deepCopyOptions,
         };
+
         const res = await postOptionSaleOffCheck(config);
 
         if (res.data.result) {
@@ -166,6 +208,27 @@ export default {
     // 실제로 저장할건지 묻는 모달 닫기
     changedOptionSaveCancel() {
       this.optionSaveCheckModalFlag = false;
+    },
+    isDepthOptionItem(option) {
+      const { depthOptionItemName } = option;
+
+      return depthOptionItemName && depthOptionItemName !== '';
+    },
+    getOptionGroupNameColor(option) {
+      return {
+        'option-group-name': true,
+        'depth-option': this.isDepthOptionItem(option)
+      };
+    },
+    // 필수 옵션인데 모든 상품이 품절인지 확인하는 로직
+    checkEssentialOptionSoldOut() {
+      return this.deepCopyOptions.some((option) => {
+        if(option.require !== 1) return false;
+        const { limit_qty } = option;
+        const saleItemCount = option.option_items?.filter((item) => item.isSale === 1)?.length ?? 0;
+
+        return limit_qty > saleItemCount;
+      });
     },
   },
   mounted() {
@@ -234,17 +297,34 @@ export default {
       margin-bottom: 2.3438vw !important;
       display: flex;
       flex-direction: column;
-      gap: 0.3906vw;
+      gap: 1.5625vw;
 
       .option-group-box {
         padding: 1.5625vw !important;
         border-radius: 0.7813vw;
         border: none;
 
-        .option-group-name {
+        .option-group-name-wrap {
+          display: flex;
+          align-items: center;
           font-size: 1.5625vw;
-          letter-spacing: -0.0781vw;
-          margin-bottom: 0.7813vw !important;
+          font-weight: 400;
+          line-height: normal;
+          letter-spacing: -0.078125vw;
+          margin-bottom: 0.78125vw !important;
+          gap: 0.3125vw;
+
+          .option-group-name {
+            color: #fff;
+
+            &.depth-option {
+              color: #999;
+            }
+          }
+
+          .option-depth-option-name {
+            color: #fff;
+          }
         }
 
         .option-item-wrap {
@@ -262,13 +342,48 @@ export default {
             border-radius: 0.7813vw;
             background-color: #292929;
             box-sizing: border-box;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
 
-            .option-item-name {
-              font-size: 1.5625vw;
-              font-weight: 500;
-              letter-spacing: -0.0391vw;
+            .option-item-name-wrap {
+              display: flex;
+              flex-direction: column;
+              gap: 0.625vw;
+              flex: 1;
+              align-items: center;
+
+              .option-preset-item-label {
+                width: fit-content;
+                display: flex;
+                padding: 0.46875vw 0.78125vw !important;
+                justify-content: center;
+                align-items: center;
+                border-radius: 78.046875vw;
+                background-color: rgba(36, 111, 244, 0.60);
+
+                .option-preset-item-text {
+                  color: #E4ECFC;
+                  text-align: center;
+                  font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+                  font-size: 1.09375vw;
+                  font-weight: 700;
+                  line-height: normal;
+                  letter-spacing: -0.0273437vw;
+                }
+              }
+
+              .option-item-name {
+                font-size: 1.5625vw;
+                font-weight: 500;
+                letter-spacing: -0.0391vw;
+                word-break: break-all;
+                text-align: center;
+                vertical-align: middle;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                height: 100%;
+              }
             }
 
             .sales-box {
@@ -295,6 +410,10 @@ export default {
                 background-color: #000;
                 color: #fc0000;
                 font-weight: bold;
+              }
+
+              .disabled {
+                opacity: 0.5;
               }
             }
           }
