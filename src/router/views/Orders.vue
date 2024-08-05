@@ -146,7 +146,9 @@ export default {
     },
     sortedOrders() {
       const { orders } = this.$store.state;
-      return orders.sort((a, b) => b.timestamp - a.timestamp);
+      // return orders.sort((a, b) => b.timestamp - a.timestamp);
+      // timestamp 기준이 아닌 orderTime 기준으로 정렬 (서버에서 정렬해서 내려줌)
+      return orders;
     },
     lengthOrders() {
       const { orders } = this.$store.state;
