@@ -31,6 +31,8 @@ if (IS_DEV_TEAM) {
 }
 
 if (IS_LG) {
+
+  if(IS_DEV_TEAM) {
   REST_URL = "https://kr.dev.rest-api.share.torder.com";
   ORDER_URL = "https://kr.dev.rest-api.share.torder.com";
   GET_CART_LIST_URL = "https://kr.dev.rest-api.share.torder.com";
@@ -44,6 +46,22 @@ if (IS_LG) {
   PAYMENT_URL = "https://kr.dev.tcloud-gateway.share.torder.com";
   HAPPY_TALK = "http://kr.dev.rest-api.share.torder.com";
   SOCKET_URL = "https://kr.dev.socketio.share.torder.com";
+
+  } else {
+    REST_URL = "https://kr.prd.rest-api.saas.uplusorder.com";
+    ORDER_URL = "https://kr.prd.rest-api.saas.uplusorder.com";
+    GET_CART_LIST_URL = "https://kr.prd.rest-api.saas.uplusorder.com";
+    ADMIN_URL = "https://kr.prd.rest-api.saas.uplusorder.com";
+    API_URL = "http://kr.prd.init-api.uplusorder.com/";
+    NOTICE_URL = "https://apigw.torder.co.kr/v2";
+    TORDER_V2 = "https://kr.prd.credit-api.saas.uplusorder.com/v2";
+    TABLE_GAME_URL = "https://apigw.torder.co.kr/";
+    ROBOT_TEXT = "http://kr.prd.robot-api.saas.uplusorder.com";
+    DEMO_URL = "https://kr.prd.rest-api.saas.uplusorder.com";
+    PAYMENT_URL = "https://kr.dev.tcloud-gateway.share.torder.com";
+    HAPPY_TALK = "http://kr.dev.rest-api.share.torder.com";
+    SOCKET_URL = "https://kr.dev.socketio.share.torder.com";
+  }
 }
 
 const endpoints = {
