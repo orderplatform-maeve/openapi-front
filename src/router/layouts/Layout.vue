@@ -332,7 +332,7 @@ export default {
 
           const removedHashRouter = formatInitTabletVersion.replace("/#/", "/");
           const currentUrl = window.location.origin + window.location.pathname;
-
+          console.log(currentUrl, removedHashRouter);
           if (currentUrl !== removedHashRouter) {
             window.location.href = removedHashRouter;
           }
@@ -637,7 +637,7 @@ export default {
             );
             const currentUrl =
               window.location.origin + window.location.pathname;
-
+            console.log(currentUrl, removedHashRouter);
             if (currentUrl !== removedHashRouter) {
               window.location.href = removedHashRouter;
             }
