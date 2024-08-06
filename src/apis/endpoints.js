@@ -31,22 +31,20 @@ if (IS_DEV_TEAM) {
 }
 
 if (IS_LG) {
-
   if(IS_DEV_TEAM) {
-  REST_URL = "https://kr.dev.rest-api.share.torder.com";
-  ORDER_URL = "https://kr.dev.rest-api.share.torder.com";
-  GET_CART_LIST_URL = "https://kr.dev.rest-api.share.torder.com";
-  ADMIN_URL = "https://kr.dev.rest-api.share.torder.com";
-  API_URL = "https://kr.dev.init-api.share.torder.com";
-  NOTICE_URL = "https://dev-apigw.torder.co.kr/v2";
-  TORDER_V2 = "https://kr.dev.tcloud-gateway.share.torder.com/v2";
-  TABLE_GAME_URL = "https://dev-apigw.torder.co.kr";
-  ROBOT_TEXT = "http://dev.robot.torder.co.kr";
-  DEMO_URL = "https://kr.dev.rest-api.share.torder.com";
-  PAYMENT_URL = "https://kr.dev.tcloud-gateway.share.torder.com";
-  HAPPY_TALK = "http://kr.dev.rest-api.share.torder.com";
-  SOCKET_URL = "https://kr.dev.socketio.share.torder.com";
-
+    REST_URL = "https://kr.dev.rest-api.share.torder.com";
+    ORDER_URL = "https://kr.dev.rest-api.share.torder.com";
+    GET_CART_LIST_URL = "https://kr.dev.rest-api.share.torder.com";
+    ADMIN_URL = "https://kr.dev.rest-api.share.torder.com";
+    API_URL = "https://kr.dev.init-api.share.torder.com";
+    NOTICE_URL = "https://dev-apigw.torder.co.kr/v2";
+    TORDER_V2 = "https://kr.dev.tcloud-gateway.share.torder.com/v2";
+    TABLE_GAME_URL = "https://dev-apigw.torder.co.kr";
+    ROBOT_TEXT = "http://dev.robot.torder.co.kr";
+    DEMO_URL = "https://kr.dev.rest-api.share.torder.com";
+    PAYMENT_URL = "https://kr.dev.tcloud-gateway.share.torder.com";
+    HAPPY_TALK = "http://kr.dev.rest-api.share.torder.com";
+    SOCKET_URL = "https://kr.dev.socketio.share.torder.com";
   } else {
     REST_URL = "https://kr.prd.rest-api.saas.uplusorder.com";
     ORDER_URL = "https://kr.prd.rest-api.saas.uplusorder.com";
