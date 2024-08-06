@@ -69,11 +69,7 @@ const socket = {
   // },
   actions: {
     SOCKET_orderlog({ commit , state }, order) {
-      // console.log('SOCKET_orderlog', order);
       if (validShopCode(state, order)) {
-        // console.log('주문 커먼-order', order);
-        // console.log('주문 커먼-state', state);
-        // console.log('주문커먼-commit', commit);
         const receiptHandle = order?.receipt_handle;
 
         if (receiptHandle) {
@@ -551,7 +547,7 @@ const order = {
       Vue.set(state, 'order', undefined);
     },
     PUSH_ORDER: (state, order) => {
-      state.orders.push(order);
+      state.orders.unshift(order);
     },
     SET_ORDERS: (state, orders) => {
       // console.log('orders!!!!!!!', orders);
@@ -561,7 +557,6 @@ const order = {
       const { orders } = state;
       const idx = orders.findIndex((item) => item.order_id === order.order_id);
 
-      console.log(idx);
       if (idx > -1) {
         orders[idx].creditStat = value;
       }
