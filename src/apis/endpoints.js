@@ -50,15 +50,15 @@ if (IS_LG) {
     ORDER_URL = "https://kr.prd.rest-api.saas.uplusorder.com";
     GET_CART_LIST_URL = "https://kr.prd.rest-api.saas.uplusorder.com";
     ADMIN_URL = "https://kr.prd.rest-api.saas.uplusorder.com";
-    API_URL = "http://kr.prd.init-api.uplusorder.com/";
+    API_URL = "http://kr.prd.init-api.saas.uplusorder.com/";
     NOTICE_URL = "https://apigw.torder.co.kr/v2";
     TORDER_V2 = "https://kr.prd.credit-api.saas.uplusorder.com/v2";
     TABLE_GAME_URL = "https://apigw.torder.co.kr/";
     ROBOT_TEXT = "http://kr.prd.robot-api.saas.uplusorder.com";
     DEMO_URL = "https://kr.prd.rest-api.saas.uplusorder.com";
-    PAYMENT_URL = "https://kr.dev.tcloud-gateway.share.torder.com";
-    HAPPY_TALK = "http://kr.dev.rest-api.share.torder.com";
-    SOCKET_URL = "https://kr.dev.socketio.share.torder.com";
+    PAYMENT_URL = "https://kr.prd.credit-api.saas.uplusorder.com";
+    HAPPY_TALK = "https://kr.prd.rest-api.saas.uplusorder.com";
+    SOCKET_URL = "https://kr.prd.websocket.saas.uplusorder.com";
   }
 }
 
