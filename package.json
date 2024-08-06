@@ -22,7 +22,8 @@
     "deploy:tmp": "node ./script/deployTmp.js",
     "deploy:dev": "cross-env NODE_ENV=development SERVER_TYPE=rest STOP_REDIRECT=true vue-cli-service build && node ./script/s3Uploader.dev.js",
     "deploy:dev-team": "cross-env NODE_ENV=development SERVER_TYPE=rest STOP_REDIRECT=true IS_DEV_TEAM=true vue-cli-service build && node  ./script/s3Uploader.dev.team.js",
-    "deploy:lg": "cross-env NODE_ENV=development SERVER_TYPE=rest STOP_REDIRECT=true IS_LG=true vue-cli-service build && node  ./script/s3Uploader.lg.js",
+    "deploy:lg:dev-team": "cross-env NODE_ENV=development SERVER_TYPE=rest STOP_REDIRECT=true IS_LG=true vue-cli-service build && node  script/s3Uploader.lg.dev.js",
+    "deploy:lg": "cross-env NODE_ENV=development SERVER_TYPE=rest STOP_REDIRECT=true IS_LG=true vue-cli-service build && node  script/s3Uploader.lg.js",
     "deploy:dev:demo": "cross-env NODE_ENV=development SERVER_TYPE=demo STOP_REDIRECT=true vue-cli-service build && node ./script/s3Uploader.dev.js",
     "deploy:action:dev": "node ./script/deploy.action.dev.js",
     "deploy:action:prod": "node ./script/deploy.action.prod.js"
