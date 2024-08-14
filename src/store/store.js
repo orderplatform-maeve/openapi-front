@@ -4,12 +4,7 @@ import router from "@router";
 
 import { validShopCode, getCategories, getNewCategories } from "./store.helper";
 import { isEmpty } from "@utils/CheckedType";
-import {
-  postOrderConfirm,
-  postOrdersOrder,
-  postControlLastOrder,
-  postDeleteLastOrder
-} from "@apis/orders";
+import { postOrderConfirm } from "@apis/orders";
 
 import endpoints from "@apis/endpoints";
 import { customAxios } from "@utils/customAxios";
@@ -755,7 +750,8 @@ const order = {
       return response;
     },
     async requestOrder(context, params) {
-      const response = await postOrdersOrder(params);
+      const url = endpoints.orders.order;
+      const response = await customAxios().post(url, params);
 
       if (response.data) {
         return response.data;
@@ -763,7 +759,8 @@ const order = {
       return false;
     },
     async requestLastOrder(context, params) {
-      const response = await postControlLastOrder(params);
+      const url = endpoints.orders.controlLastOrder;
+      const response = await customAxios().post(url, params);
 
       if (response.data) {
         return response.data;
@@ -771,7 +768,8 @@ const order = {
       return false;
     },
     async requestDeleteLastOrder(context, params) {
-      const response = await postDeleteLastOrder(params);
+      const url = endpoints.orders.deleteLastOrder;
+      const response = await customAxios().post(url, params);
 
       if (response.data) {
         return response.data;
