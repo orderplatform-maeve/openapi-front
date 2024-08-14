@@ -6,7 +6,6 @@ import { validShopCode, getCategories, getNewCategories } from "./store.helper";
 import { isEmpty } from "@utils/CheckedType";
 import {
   postOrderConfirm,
-  postCommitOrderViewData,
   postOrdersOrder,
   postControlLastOrder,
   postDeleteLastOrder
@@ -704,7 +703,14 @@ const order = {
   },
   actions: {
     async commitOrder(context, payload) {
-      const res = await postCommitOrderViewData(payload, { timeout: 5000 });
+      const url = endpoints.orders.commitOrderViewData;
+
+      const fd = new FormData();
+      fd.append("shop_code", payload.auth.store.store_code);
+      fd.append("key", payload.order.order_view_key);
+      fd.append("commit", !payload.order.commit ? 1 : 0);
+
+      const res = await customAxios().post(url, fd, { timeout: 5000 });
       return res;
     },
     setOrder: (context, order) => {
