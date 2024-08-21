@@ -139,7 +139,7 @@ const productMethods = {
   },
   getProjectGoodName(product) {
     if (!product) return '';
-    return product.good_name;
+    return product.display_name;
   },
   isProductMemoShow(product) {
     if(!product) return false;
