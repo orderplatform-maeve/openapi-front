@@ -1,14 +1,13 @@
 <template lang="pug">
-  .cancel-payment-order-page-container
-    p.cancel-payment-order-page-title 결제 주문 강제 취소 (테스트)
-    .order-table-list
-      button.order-table-name(v-for="table in tables" :key="table.Ta_id" @click="openTableOrders(table)") 
-        p {{getTableName(table)}}
+.cancel-payment-order-page-container
+  p.cancel-payment-order-page-title 결제 주문 강제 취소 (테스트)
+  .order-table-list
+    button.order-table-name(v-for="table in tables" :key="table.Ta_id" @click="openTableOrders(table)")
+      p {{getTableName(table)}}
 </template>
 
 <script>
-import axios from 'axios';
-import endpoints from '@apis/endpoints';
+import {postPaymentDeleteCartList} from "@apis/payments";
 
 export default {
   computed: {
@@ -38,21 +37,10 @@ export default {
       return orderStatus ? 'connect': 'disconnected';
     },
     async openTableOrders(table) {
-      const {
-        payment: {
-          deleteCartList
-        }
-      } = endpoints;
+      const storeCode = this.$store.state.auth.store.store_code;
+      const res = await postPaymentDeleteCartList(table, storeCode);
 
-      console.log(table, deleteCartList, this.$store.state.auth.store.store_code);
-
-      const fd = new FormData();
-      fd.append('store_shop_code', this.$store.state.auth.store.store_code);
-      fd.append('tablet_number', table.Ta_id);
-
-      const r = await axios.post(deleteCartList, fd);
-
-      if (r?.data.code === 200) {
+      if (res?.data.code === 200) {
         return this.$store.commit('pushFlashMessage', `${table.Tablet_name} 결제 주문 삭제 완료 되었습니다.`);
       }
 

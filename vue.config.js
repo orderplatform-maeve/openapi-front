@@ -16,6 +16,7 @@ module.exports = {
         'process.env.UPLOAD_TYPE': JSON.stringify(process.env.UPLOAD_TYPE),
         'process.env.SERVER_TYPE': JSON.stringify(process.env.SERVER_TYPE),
         'process.env.IS_DEV_TEAM': JSON.stringify(process.env.IS_DEV_TEAM),
+        'process.env.IS_LG': JSON.stringify(process.env.IS_LG),
       };
       return args;
     });

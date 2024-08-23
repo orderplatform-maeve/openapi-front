@@ -36,11 +36,12 @@ export default {
         fd.append('member_id', id.toLowerCase());
         fd.append('member_pwd', pw);
 
-        const isLogin = await this.$store.dispatch('login', fd);
-        if (isLogin) {
+        const res = await this.$store.dispatch('login', fd);
+        console.log(res);
+        if (res.result) {
           // await this.$store.dispatch('noticePopup/updateNoticePopupData');
-          // // console.log(this.$router.push, paths.store);
-
+          const token = res.token;
+          localStorage.setItem('jwt', token);
           this.$router.push(paths.store);
         }
       }

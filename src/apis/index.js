@@ -8,3 +8,5 @@ export { default as happyTalk } from './happyTalk';
 export { default as goods } from './goods';
 export { default as credit } from './credit';
 export { default as shop } from './shop';
+export { default as menu } from './menu';
+export { default as tablet } from './tablet';
