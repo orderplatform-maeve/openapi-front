@@ -186,10 +186,10 @@ export default {
       };
     },
     getUseStatusText(noUse) {
-      return noUse ? '메뉴 재개' : '메뉴 중지';
+      return noUse ? '상품 재개' : '상품 중지';
     },
     getSoldoutStatusText(soldout) {
-      return soldout ? '메뉴 품절 취소' : '메뉴 품절';
+      return soldout ? '상품 품절 취소' : '상품 품절';
     },
     getBestStatusText(best) {
       return best ? '베스트 취소' : '베스트 적용';
