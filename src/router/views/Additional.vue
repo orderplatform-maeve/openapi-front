@@ -9,9 +9,10 @@
     router-link.button-added(:to="paths.updateGames")
       span 게임 관리
       img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
-    router-link.button-added(v-if="visibleOrderButton" :to="paths.tables")
-      span 테이블 주문
-      img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
+    // v/4/0/1/ 버전 기준 숨김(미사용) 처리 (24.09.04)
+    //router-link.button-added(v-if="visibleOrderButton" :to="paths.tables")
+    //  span 테이블 주문
+    //  img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
     router-link.button-added(v-if="visibleOrderButton" :to="paths.pickUpTables")
       span 픽업 요청
       img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
@@ -133,7 +134,6 @@ export default {
   }
 
   .wrap-button-added {
-    flex: 1;
     display: grid;
     grid-template-columns: repeat(auto-fill, 19.53125vw);
     gap: 1.09375vw;
