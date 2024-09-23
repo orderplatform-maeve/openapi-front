@@ -1,11 +1,24 @@
-import axios from 'axios';
+import { customAxios } from "@utils/customAxios";
 import endpoints from '@apis/endpoints';
 
-export const postShopConfigData = async (param) => {
+export const requestShopConfigData = async (param) => {
   const url = endpoints.shop.config;
-  return await axios.post(url, param);
+  const res =  await customAxios().post(url, param);
+
+  return res;
+};
+
+export const requestShopStoreList = async (param) => {
+  const url = endpoints.shop.storeList;
+
+  const fd = new FormData();
+  fd.append('member_id', param.member.code);
+
+  const res =  await customAxios().post(url, param);
+
+  return res;
 };
 
 export default {
-  postShopConfigData
+  requestShopConfigData
 };

@@ -108,22 +108,22 @@
 </template>
 
 <script>
-import utils from '@utils/orders.utils';
-import { won } from '@utils/regularExpressions';
-import { credit } from '@apis';
-import { version } from '@utils/constants';
-import { checkBoxActive, checkBoxDisable  } from '@svg';
-import { PosErrorModal } from '@components';
+import utils from "@utils/orders.utils";
+import { won } from "@utils/regularExpressions";
+import { credit } from "@apis";
+import { version } from "@utils/constants";
+import { checkBoxActive, checkBoxDisable } from "@svg";
+import { PosErrorModal } from "@components";
 
 const { requestCashAllCommit } = credit;
 export default {
-  data () {
+  data() {
     return {
-      viewMode: 'all',
+      viewMode: "all",
       isLoading: false,
       chooseOrder: {},
       version,
-      onlyEvent: false,
+      onlyEvent: false
     };
   },
   components: {
@@ -156,24 +156,24 @@ export default {
     },
     lengthCommitedOrders() {
       const { orders } = this.$store.state;
-      return orders.filter((order) => order.commit)?.length;
+      return orders.filter(order => order.commit)?.length;
     },
     unidentifiedOrders() {
       return this.lengthOrders - this.lengthCommitedOrders;
     },
     activeAllTabBtnClass(state) {
       return {
-        active: state.viewMode === 'a',
+        active: state.viewMode === "a"
       };
     },
     activeUnidentifiedTabBtnClass(state) {
       return {
-        active: state.viewMode === 'n',
+        active: state.viewMode === "n"
       };
     },
     activeCheckedTabBtnClass(state) {
       return {
-        active: state.viewMode === 'c',
+        active: state.viewMode === "c"
       };
     },
     storeName() {
@@ -191,7 +191,8 @@ export default {
       return standardPriceUnit;
     },
     standardPriceFrontPosition() {
-      const standardPriceFrontPosition = this.$store.state.standardPriceFrontPosition;
+      const standardPriceFrontPosition = this.$store.state
+        .standardPriceFrontPosition;
       return standardPriceFrontPosition;
     },
     isTorderTwo() {
@@ -205,13 +206,13 @@ export default {
     },
     businessType() {
       return this.$store.state.menuConfig?.init.business_type;
-    },
+    }
   },
   async mounted() {
     this.isLoading = true;
     const fd = new FormData();
-    fd.append('shop_code', this.$store.state.auth.store.store_code);
-    const res = await this.$store.dispatch('setOrders', fd);
+    fd.append("shop_code", this.$store.state.auth.store.store_code);
+    const res = await this.$store.dispatch("setOrders", fd);
     // console.log(res);
     if (res) {
       setTimeout(() => {
@@ -219,19 +220,19 @@ export default {
       }, 1000);
     }
 
-    const payloadStatus = localStorage.getItem('payloadStatus');
+    const payloadStatus = localStorage.getItem("payloadStatus");
 
     if (payloadStatus) {
-      this.$store.commit('setPayloadStatus', parseInt(payloadStatus));
+      this.$store.commit("setPayloadStatus", parseInt(payloadStatus));
     }
     this.AndroidPostData();
   },
   methods: {
     getOrderListStyle(order, index) {
       return {
-        'order-information-lists': true,
-        'confirm-status': order.commit,
-        'bg-black': index % 2 === 0,
+        "order-information-lists": true,
+        "confirm-status": order.commit,
+        "bg-black": index % 2 === 0
       };
     },
     getAmount(amount) {
@@ -242,35 +243,43 @@ export default {
         order_view_key: order.order_view_key,
         tabletNumber: order.T_order_order_tablet_number,
         amount: order.totalMisu,
-        approvalDatetime: order.order_time,
+        approvalDatetime: order.order_time
       };
-      this.$store.commit('updateCashPaymentConfirmModal', true);
+      this.$store.commit("updateCashPaymentConfirmModal", true);
     },
     closePayCheckModal() {
       this.chooseOrder = {};
-      this.$store.commit('updateCashPaymentConfirmModal', false);
+      this.$store.commit("updateCashPaymentConfirmModal", false);
     },
     async reqConfirmMisu(order) {
       if (order?.order_view_key) {
         const res = await requestCashAllCommit(order.order_view_key);
-        const displayNameTorder = this.businessType === 'torder';
-        const torderMessage = displayNameTorder ? '티오더로 문의 바랍니다.' : '';
+        const displayNameTorder = this.businessType === "torder";
+        const torderMessage = displayNameTorder
+          ? "티오더로 문의 바랍니다."
+          : "";
 
         if (res?.status === 200) {
           this.chooseOrder = {};
-          this.$store.commit('UPDATE_DONE_MISU_ORDERS', order);
-          this.$store.commit('updateAlertModalMessage', '현금 수납 처리 되었습니다.');
-          this.$store.commit('updateIsAlertModal', true);
+          this.$store.commit("UPDATE_DONE_MISU_ORDERS", order);
+          this.$store.commit(
+            "updateAlertModalMessage",
+            "현금 수납 처리 되었습니다."
+          );
+          this.$store.commit("updateIsAlertModal", true);
 
           // 현금 확인 요청 후 주문내역 갱신
           if (!this.isCashPaymentConfirmModal) return;
 
           this.closePayCheckModal();
           const fd = new FormData();
-          fd.append('shop_code', this.$store.state.auth.store.store_code);
-          await this.$store.dispatch('setOrders', fd);
+          fd.append("shop_code", this.$store.state.auth.store.store_code);
+          await this.$store.dispatch("setOrders", fd);
         } else {
-          this.$store.commit('pushFlashMessage', `현금 수납 확인에 실패했습니다. ${torderMessage}`);
+          this.$store.commit(
+            "pushFlashMessage",
+            `현금 수납 확인에 실패했습니다. ${torderMessage}`
+          );
         }
       }
     },
@@ -282,7 +291,7 @@ export default {
     },
     getMisuBtnActive(order) {
       return {
-        active: order.totalMisu > 0,
+        active: order.totalMisu > 0
       };
     },
     openMisuModal(order) {
@@ -295,13 +304,14 @@ export default {
     },
     getMisu(order) {
       try {
-        const isNotTotalMisu = order.totalMisu === 0 || order.totalMisu === undefined;
+        const isNotTotalMisu =
+          order.totalMisu === 0 || order.totalMisu === undefined;
         if (isNotTotalMisu) {
-          return '미수금없음';
+          return "미수금없음";
         }
         return won(order.totalMisu);
       } catch (error) {
-        return '미수금없음';
+        return "미수금없음";
       }
     },
     getOrderTypeColor(order) {
@@ -311,11 +321,11 @@ export default {
           bg_blue: order.viewType === 2,
           bg_green: order.viewType === 3,
           bg_yellow: order.viewType === 4,
-          'overflow-hidden': true,
+          "overflow-hidden": true
         };
         return result;
       } catch (error) {
-        return '';
+        return "";
       }
     },
     getOrderPrice(order) {
@@ -347,12 +357,12 @@ export default {
       this.viewMode = value;
     },
     openView(order) {
-      this.$store.dispatch('setOrder', order);
+      this.$store.dispatch("setOrder", order);
       if (order.viewType === 5) {
-        this.$store.commit('auctionFlag', true);
+        this.$store.commit("auctionFlag", true);
       } else {
-        this.$store.commit('auctionFlag', false);
-        this.$store.commit('orderModalFlag', true);
+        this.$store.commit("auctionFlag", false);
+        this.$store.commit("orderModalFlag", true);
       }
     },
     visibleOrderItem(order) {
@@ -361,139 +371,155 @@ export default {
     },
     validViewMode(commit) {
       const { viewMode } = this;
-      const isAll = viewMode === 'all';
-      const isUndientified = viewMode === 'notConfirm' && !commit;
-      const isChecked = viewMode === 'confirm' && commit;
+      const isAll = viewMode === "all";
+      const isUndientified = viewMode === "notConfirm" && !commit;
+      const isChecked = viewMode === "confirm" && commit;
       const isOk = isAll || isUndientified || isChecked;
       return isOk;
     },
     getOrderItemClass(order) {
       return {
-        on: this.checkedCommit(order),
+        on: this.checkedCommit(order)
       };
     },
     orderTypeCheck(order) {
       const viewType = order.viewType;
       if (order.is_cancel_order) {
-        return '주문취소';
+        return "주문취소";
       }
 
       if (viewType === 0) {
-        return '첫주문';
+        return "첫주문";
       }
 
       if (viewType === 1) {
-        return '주문';
+        return "주문";
       }
 
       if (viewType === 2) {
-        return '호출';
+        return "호출";
       }
 
       if (viewType === 3) {
-        return '세팅완료';
+        return "세팅완료";
       }
 
       if (viewType === 4) {
-        return '평가';
+        return "평가";
       }
       if (viewType === 5) {
-        return '경매';
+        return "경매";
       }
       if (viewType === 6) {
-        return '게임';
+        return "게임";
       }
     },
     orderStyleCheck(order) {
       const orderType = this.orderTypeCheck(order);
 
       return {
-        'text-through': this.getIsCancelOrder(order),
-        'orderColorRed': orderType === '첫주문' || orderType === '주문',
-        'orderColorBlue': orderType === '호출',
-        'orderColorOrange': orderType === '세팅완료',
-        'orderColorYellow': orderType === '평가',
-        'orderColorGreen': orderType === '경매' || orderType === '게임',
+        "text-through": this.getIsCancelOrder(order),
+        orderColorRed: orderType === "첫주문" || orderType === "주문",
+        orderColorBlue: orderType === "호출",
+        orderColorOrange: orderType === "세팅완료",
+        orderColorYellow: orderType === "평가",
+        orderColorGreen: orderType === "경매" || orderType === "게임"
       };
     },
     getOrderTypeStyle(order) {
       const orderType = this.orderTypeCheck(order);
 
       return {
-        'orderFontColorBlue': orderType === '호출',
-        'orderFontColorOrange': orderType === '세팅완료',
-        'orderFontColorYellow': orderType === '평가',
-        'orderFontColorGreen': orderType === '경매' || orderType === '게임'
+        orderFontColorBlue: orderType === "호출",
+        orderFontColorOrange: orderType === "세팅완료",
+        orderFontColorYellow: orderType === "평가",
+        orderFontColorGreen: orderType === "경매" || orderType === "게임"
       };
     },
     getTextThroughStyle(order) {
       return {
-        'text-through': this.getIsCancelOrder(order),
+        "text-through": this.getIsCancelOrder(order)
       };
     },
     paidTypeCheck(order) {
       if (order.paidOrder) {
-        return '선불';
+        return "선불";
       }
 
-      return '후불';
+      return "후불";
     },
     creditTypeCheck(order) {
       const creditType = order.creditType;
 
-      if (creditType === 'cash') {
-        return '현금';
+      if (creditType === "cash") {
+        return "현금";
       }
 
-      if (creditType === 'cart') {
-        return '카드';
+      if (creditType === "cart") {
+        return "카드";
       }
 
-      if (creditType === 'card') {
-        return '카드';
+      if (creditType === "card") {
+        return "카드";
       }
 
-      if (creditType === 'complex') {
-        return '카드+현금';
+      if (creditType === "complex") {
+        return "카드+현금";
       }
 
       // remake 선결제(성빈님 스펙)
-      if (creditType === 'V2_CARD') {
-        return '카드';
+      if (creditType === "V2_CARD") {
+        return "카드";
       }
 
-      if (creditType === 'V2_CASH') {
-        return '현금';
+      if (creditType === "V2_CASH") {
+        return "현금";
       }
 
-      if (creditType === 'V2_BY_PRICE') {
-        return '더치페이';
+      if (creditType === "V2_BY_PRICE") {
+        return "더치페이";
       }
 
-      if (creditType === 'V2_BY_MENU') {
-        return '메뉴별결제';
+      if (creditType === "V2_BY_MENU") {
+        return "메뉴별결제";
       }
     },
     showCashCheckConfirmButton(order) {
-      const cardCreditTypes = ['cart', 'card', 'V2_CARD'];
-      const isCardPaymentCreditTypes = cardCreditTypes.includes(order.creditType);
+      const cardCreditTypes = ["cart", "card", "V2_CARD"];
+      const isCardPaymentCreditTypes = cardCreditTypes.includes(
+        order.creditType
+      );
 
       // 주문 취소일 경우 || 현금결제 미포함일 경우 || 후불 결제일 경우 || 결제방식이 카드일 경우
-      if (order.is_cancel_order || !order.is_show_cash_reception || !order.paidOrder || isCardPaymentCreditTypes || order.is_pend) return false;
+      if (
+        order.is_cancel_order ||
+        !order.is_show_cash_reception ||
+        !order.paidOrder ||
+        isCardPaymentCreditTypes ||
+        order.is_pend
+      )
+        return false;
 
       // 토탈 미수금 존재할 경우만 true
       const isExistTotalMisu = order.totalMisu !== 0;
 
-      return  isExistTotalMisu;
+      return isExistTotalMisu;
     },
     preCreditCheck(order) {
-      const cardCreditTypes = ['cart', 'card', 'V2_CARD'];
-      const isCardPaymentCreditTypes = cardCreditTypes.includes(order.creditType);
+      const cardCreditTypes = ["cart", "card", "V2_CARD"];
+      const isCardPaymentCreditTypes = cardCreditTypes.includes(
+        order.creditType
+      );
       const isZeroTotalMisu = order.totalMisu === 0;
       // 현금 결제가 포함되어 있을 경우 - 더치페이, 메뉴별결제에서 필요한 조건
       const isIncludedCashPayment = order.is_show_cash_reception;
 
-      return order.paidOrder && !isCardPaymentCreditTypes && isZeroTotalMisu && isIncludedCashPayment ? '확인 완료' : '-';
+      return order.paidOrder &&
+        !isCardPaymentCreditTypes &&
+        isZeroTotalMisu &&
+        isIncludedCashPayment
+        ? "확인 완료"
+        : "-";
     },
     getIsCancelOrder(order) {
       return order.is_cancel_order ? order.is_cancel_order : false;
@@ -504,18 +530,22 @@ export default {
     ...utils,
 
     payloadInfoChange(number) {
-      this.$store.commit('setPayloadStatus', number);
-      localStorage.setItem('payloadStatus', number);
+      this.$store.commit("setPayloadStatus", number);
+      localStorage.setItem("payloadStatus", number);
     },
     totalVisitPeopleDeepDepth(order) {
       const visitPeopleGroup = order?.visitGroups?.groupInfo;
 
       if (visitPeopleGroup) {
-        let text = '';
+        let text = "";
 
         try {
-          text += `${Object.keys(visitPeopleGroup)[0]} ${visitPeopleGroup[Object.keys(visitPeopleGroup)[0]]}명, `;
-          text += `${Object.keys(visitPeopleGroup)[1]} ${visitPeopleGroup[Object.keys(visitPeopleGroup)[1]]}명`;
+          text += `${Object.keys(visitPeopleGroup)[0]} ${
+            visitPeopleGroup[Object.keys(visitPeopleGroup)[0]]
+          }명, `;
+          text += `${Object.keys(visitPeopleGroup)[1]} ${
+            visitPeopleGroup[Object.keys(visitPeopleGroup)[1]]
+          }명`;
 
           return text;
         } catch {
@@ -530,26 +560,28 @@ export default {
     filterEventDisable() {
       this.onlyEvent = false;
       const fd = new FormData();
-      fd.append('shop_code', this.$store.state.auth.store.store_code);
-      this.$store.dispatch('setOrders', fd);
+      fd.append("shop_code", this.$store.state.auth.store.store_code);
+      this.$store.dispatch("setOrders", fd);
     },
     filterEventActive() {
       this.onlyEvent = true;
       const { orders } = this.$store.state;
       // viewType 5: 경매, 6: 게임
-      let eventList = orders.filter( order => order.viewType >= 5);
-      this.$store.commit('filterEvent', eventList);
+      let eventList = orders.filter(order => order.viewType >= 5);
+      this.$store.commit("filterEvent", eventList);
     },
     // 안드로이드로 init data 전송
     async AndroidPostData() {
       try {
-
         const params = new FormData();
-        params.append('store_code', this.auth.store.store_code);
+        params.append("store_code", this.auth.store.store_code);
 
-        const res = await this.$store.dispatch('setStoreInit', params);
+        const res = await this.$store.dispatch("setStoreInit", params);
 
-        window.UUID.writeFile(JSON.stringify(res.data.data), '/torder/json/config.json');
+        window.UUID.writeFile(
+          JSON.stringify(res.data.data),
+          "/torder/json/config.json"
+        );
         // if (!this.isTorderTwo) {
         //   // 안드로이드 인터페이스 config 전송 (API 1.0)
         //   window.UUID.writeFile(JSON.stringify(res.data.data), '/torder/json/config.json');
@@ -573,7 +605,7 @@ export default {
         //   window.UUID?.initStoreInfo(data);
         // }
       } catch (error) {
-        console.log('안드로이드에서 실행하지 않아서 발생', error);
+        console.log("안드로이드에서 실행하지 않아서 발생", error);
       }
     },
     getGoodsName(order) {
@@ -583,7 +615,7 @@ export default {
       const isUndefinedName = firstGoodsName === undefined;
 
       if (isUndefinedName) {
-        return '';
+        return "";
       }
 
       if (isOverOneGoodsList) {
@@ -597,22 +629,22 @@ export default {
     },
     getOrderTitleListStyle() {
       return {
-        'order-title-list': true,
-        'remake-paid': this.isTorderTwo || this.isRemakePaid
+        "order-title-list": true,
+        "remake-paid": this.isTorderTwo || this.isRemakePaid
       };
     },
     getOrderInformationListStyle() {
       return {
-        'order-information-list': true,
-        'remake-paid': this.isTorderTwo || this.isRemakePaid
+        "order-information-list": true,
+        "remake-paid": this.isTorderTwo || this.isRemakePaid
       };
-    },
-  },
+    }
+  }
 };
 </script>
 <style lang="scss" scoped>
 .orders-container {
-  font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+  font-family: "Spoqa Han Sans Neo", "sans-serif";
   display: flex;
   flex-direction: column;
 
@@ -667,7 +699,7 @@ export default {
   .wrap-payload-info-status-select {
     height: 3.90625vw;
     display: flex;
-    justify-content : space-between;
+    justify-content: space-between;
     align-items: center;
     background-color: #111;
     padding: 1.5625vw 1.5625vw 0 !important;
@@ -679,12 +711,12 @@ export default {
       .payload-info {
         width: 17.1875vw;
         height: 3.90625vw;
-        background-color: #404144;;
+        background-color: #404144;
         border-radius: 0.78125vw;
         display: flex;
         justify-content: center;
         align-items: center;
-        font-family: 'Spoqa Han Sans Neo', 'sans-serif';
+        font-family: "Spoqa Han Sans Neo", "sans-serif";
         font-size: 1.5625vw;
         letter-spacing: -0.0390625vw;
         color: #ddd;
@@ -711,7 +743,7 @@ export default {
   }
 
   .wrap-order-list {
-    flex:1;
+    flex: 1;
     width: 84.53125vw;
     background-color: #111;
     padding: 0 1.5625vw !important;
@@ -725,7 +757,6 @@ export default {
       border-bottom: solid 0.078125vw #333333;
       box-sizing: border-box;
       justify-content: center;
-
 
       .order-title {
         font-size: 1.09375vw;
@@ -788,7 +819,7 @@ export default {
             background-color: #e5a11a;
           }
           .orderColorOrange {
-            background-color: #FF7A00;
+            background-color: #ff7a00;
           }
 
           .orderFontColorBlue {
@@ -801,7 +832,7 @@ export default {
             color: #e5a11a;
           }
           .orderFontColorOrange {
-            color: #FF7A00;
+            color: #ff7a00;
           }
 
           .order-information-table-number {
@@ -929,7 +960,7 @@ export default {
             background-color: #e5a11a;
           }
           .orderColorOrange {
-            background-color: #FF7A00;
+            background-color: #ff7a00;
           }
 
           .order-information-table-number {
@@ -1032,7 +1063,6 @@ export default {
             color: #000;
           }
 
-
           .order-information-order-time {
             background-color: #000;
             color: #fff;
@@ -1058,7 +1088,7 @@ export default {
   align-items: center;
   font-size: 1.5625vw;
   color: #000;
-  border: .0781vw solid #000;
+  border: 0.0781vw solid #000;
   font-weight: bold;
 }
 </style>

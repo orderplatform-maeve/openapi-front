@@ -33,12 +33,7 @@ import paths from '@router/paths';
 import { version } from '@utils/constants';
 import { Torder } from '@svg';
 import { AlertModal } from '@components';
-
-import { payments } from '@apis';
-
-const {
-  requestCardCancelCommit,
-} = payments;
+import { postCardCancelCommit } from "@apis/payments";
 
 export default {
   components: {
@@ -276,7 +271,7 @@ export default {
                   return this.showAlert(`orderkey 값이 없습니다. 에러메세지: ${requestCreditItem?.orderkey}`);
                 }
 
-                const res = await requestCardCancelCommit(vanData);
+                const res = await postCardCancelCommit(vanData);
 
                 if (res.status === 200) {
                   const newItem = res?.data?.rowData;

@@ -1,23 +1,70 @@
-import { IS_DEV_TEAM } from '@utils/constants';
+import { IS_DEV_TEAM, IS_UPLUS } from "@utils/constants";
 
-const REST_URL = IS_DEV_TEAM ? 'http://development.rest.torder.co.kr' : 'http://rest.torder.co.kr';
-const ORDER_URL = IS_DEV_TEAM ? 'http://development.order.torder.co.kr' : 'http://rest.torder.co.kr';
-const GET_CART_LIST_URL = IS_DEV_TEAM ? 'http://development.cart.torder.co.kr' : 'http://rest.torder.co.kr';
-const ADMIN_URL = IS_DEV_TEAM ? 'http://development.rest.torder.co.kr' : 'http://admin.torder.co.kr';
-const API_URL = IS_DEV_TEAM ? 'http://development.cache.torder.co.kr' : 'http://api.torder.co.kr';
-const NOTICE_URL = IS_DEV_TEAM ? 'https://dev-apigw.torder.co.kr/v2' : 'https://apigw.torder.co.kr/v2';
-const TORDER_V2 = IS_DEV_TEAM ? 'https://dev-apigw.torder.co.kr/v2' : 'https://apigw.torder.co.kr/v2';
-const TABLE_GAME_URL = IS_DEV_TEAM ? 'https://dev-apigw.torder.co.kr' : 'https://apigw.torder.co.kr';
-const ROBOT_TEXT = IS_DEV_TEAM ? 'http://dev.robot.torder.co.kr' : 'http://robot.torder.co.kr:8888/v2/order';
-const DEMO_URL = IS_DEV_TEAM ? 'http://development.rest.torder.co.kr' : 'http://demo.api.torder.co.kr';
-const PAYMENT_URL = IS_DEV_TEAM ? 'https://dev-sgw.torder.co.kr' : 'https://sgw.torder.co.kr';
+let REST_URL = "http://rest.torder.co.kr";
+let ORDER_URL = "http://rest.torder.co.kr";
+let GET_CART_LIST_URL = "http://rest.torder.co.kr";
+let ADMIN_URL = "http://admin.torder.co.kr";
+let API_URL = "http://api.torder.co.kr";
+let NOTICE_URL = "https://apigw.torder.co.kr/v2";
+let TORDER_V2 = "https://apigw.torder.co.kr/v2";
+let TABLE_GAME_URL = "https://apigw.torder.co.kr";
+let ROBOT_TEXT = "http://robot.torder.co.kr:8888/v2/order";
+let DEMO_URL = "https://rest.torder.co.kr";
+let PAYMENT_URL = "https://sgw.torder.co.kr";
+let HAPPY_TALK = "https://rest.torder.co.kr";
+let SOCKET_URL = "http://socketio.torder.co.kr";
 
-// const HAPPY_TALK = 'https://happytalk.torder.co.kr';
-const HAPPY_TALK = IS_DEV_TEAM ? 'http://development.rest.torder.co.kr' : 'https://rest.torder.co.kr';
+if (IS_DEV_TEAM) {
+  REST_URL = "http://development.rest.torder.co.kr";
+  ORDER_URL = "http://development.order.torder.co.kr";
+  GET_CART_LIST_URL = "http://development.cart.torder.co.kr";
+  ADMIN_URL = "http://development.rest.torder.co.kr";
+  API_URL = "http://development.cache.torder.co.kr";
+  NOTICE_URL = "https://dev-apigw.torder.co.kr/v2";
+  TORDER_V2 = "https://dev-apigw.torder.co.kr/v2";
+  TABLE_GAME_URL = "https://dev-apigw.torder.co.kr";
+  ROBOT_TEXT = "http://dev.robot.torder.co.kr";
+  DEMO_URL = "http://development.rest.torder.co.kr";
+  PAYMENT_URL = "https://dev-sgw.torder.co.kr";
+  HAPPY_TALK = "http://development.rest.torder.co.kr";
+  SOCKET_URL = "http://development.socket.torder.co.kr:80";
+}
+
+if (IS_UPLUS) {
+  if(IS_DEV_TEAM) {
+    REST_URL = "https://kr.dev.rest-api.share.torder.com";
+    ORDER_URL = "https://kr.dev.rest-api.share.torder.com";
+    GET_CART_LIST_URL = "https://kr.dev.rest-api.share.torder.com";
+    ADMIN_URL = "https://kr.dev.rest-api.share.torder.com";
+    API_URL = "https://kr.dev.init-api.share.torder.com";
+    NOTICE_URL = "https://dev-apigw.torder.co.kr/v2";
+    TORDER_V2 = "https://kr.dev.tcloud-gateway.share.torder.com/v2";
+    TABLE_GAME_URL = "https://dev-apigw.torder.co.kr";
+    ROBOT_TEXT = "https://kr.dev.robot.share.torder.com";
+    DEMO_URL = "https://kr.dev.rest-api.share.torder.com";
+    PAYMENT_URL = "https://kr.dev.tcloud-gateway.share.torder.com";
+    HAPPY_TALK = "https://kr.dev.rest-api.share.torder.com";
+    SOCKET_URL = "https://kr.dev.socketio.share.torder.com";
+  } else {
+    REST_URL = "https://kr.prd.rest-api.saas.uplusorder.com";
+    ORDER_URL = "https://kr.prd.rest-api.saas.uplusorder.com";
+    GET_CART_LIST_URL = "https://kr.prd.rest-api.saas.uplusorder.com";
+    ADMIN_URL = "https://kr.prd.rest-api.saas.uplusorder.com";
+    API_URL = "https://kr.prd.init-api.saas.uplusorder.com";
+    NOTICE_URL = "https://apigw.torder.co.kr/v2";
+    TORDER_V2 = "https://kr.prd.credit-api.saas.uplusorder.com/v2";
+    TABLE_GAME_URL = "https://apigw.torder.co.kr";
+    ROBOT_TEXT = "https://kr.prd.robot-api.saas.uplusorder.com";
+    DEMO_URL = "https://kr.prd.rest-api.saas.uplusorder.com";
+    PAYMENT_URL = "https://kr.prd.credit-api.saas.uplusorder.com";
+    HAPPY_TALK = "https://kr.prd.rest-api.saas.uplusorder.com";
+    SOCKET_URL = "https://kr.prd.websocket.saas.uplusorder.com";
+  }
+}
 
 const endpoints = {
   authentication: {
-    login: `${REST_URL}/login/member_login`,
+    login: `${REST_URL}/login/member_login`
   },
   orders: {
     todayRedisData: `${REST_URL}/logs/Today_redis_data`,
@@ -25,7 +72,7 @@ const endpoints = {
     order: `${REST_URL}/shop/order`,
     controlLastOrder: `${REST_URL}/message/_Post_message`,
     deleteLastOrder: `${REST_URL}/message/_deleteMessage`,
-    orderReceive: `${TORDER_V2}/receive/order/confirm`,
+    orderReceive: `${TORDER_V2}/receive/order/confirm`
   },
   device: {
     shopOpen: `${REST_URL}/store/shop_open`,
@@ -35,12 +82,12 @@ const endpoints = {
     showRecentOrder: `${REST_URL}/store/shop_open_recent_order`,
     hideRecentOrder: `${REST_URL}/store/shop_close_recent_order`,
     showKitchenOrder: `${REST_URL}/store/shop_open_kitchen_order`,
-    hideKitchenOrder: `${REST_URL}/store/shop_close_kitchen_order`,
+    hideKitchenOrder: `${REST_URL}/store/shop_close_kitchen_order`
   },
   table: {
     getTableList: `${REST_URL}/shop/get_table_list`,
     getCartList: `${GET_CART_LIST_URL}/tablet_order/get_cart_list`,
-    order: `${ORDER_URL}/tablet_order/order`,
+    order: `${ORDER_URL}/tablet_order/order`
   },
   menu: {
     categories: `${REST_URL}/shop/categorys`,
@@ -48,21 +95,21 @@ const endpoints = {
     updateCategoryOpen: `${ADMIN_URL}/category/update_categroty_open`,
     updateCategoryClose: `${ADMIN_URL}/category/update_categroty_close`,
     getAllCategories: `${ADMIN_URL}/category/get_all_categorys`,
-    getMenuConfig: `${API_URL}/tablet_data/init`,
+    getMenuConfig: `${API_URL}/tablet_data/init`
   },
   shop: {
     config: `${REST_URL}/shop/config`,
-    getList: `${REST_URL}/store/store_list`,
+    storeList: `${REST_URL}/store/store_list`
   },
   goods: {
     updateGoodStatus: `${REST_URL}/goods/update_goods`,
     optionSaleOffCheck: `${REST_URL}/goods/optionSaleOffCheck`,
-    optionSaleOffSubmit: `${REST_URL}/goods/optionSaleOffSubmit`,
+    optionSaleOffSubmit: `${REST_URL}/goods/optionSaleOffSubmit`
   },
   tablet: {
     allRefresh: `${ADMIN_URL}/tablet/tablet_all_update`,
     refresh: `${ADMIN_URL}/tablet/tablet_refresh`,
-    resetOrder: `${ADMIN_URL}/tablet/tablet_order_trash`,
+    resetOrder: `${ADMIN_URL}/tablet/tablet_order_trash`
   },
   payment: {
     cardCancelCommit: `${REST_URL}/credit/cardCancelCommit`,
@@ -74,7 +121,7 @@ const endpoints = {
     misuCommit: `${REST_URL}/credit/misuCommit`,
     tableCreditStatList: `${DEMO_URL}/credit/getTabletCreditStatList`,
     tableCreditInfo: `${DEMO_URL}/credit/getTableCreditInfo`,
-    creditOrderKeyList: `${DEMO_URL}/credit/creditOrderKeyList`,
+    creditOrderKeyList: `${DEMO_URL}/credit/creditOrderKeyList`
   },
   servingRobot: {
     servingRobotStatus: `${DEMO_URL}/message/_storeRobotList`,
@@ -85,32 +132,32 @@ const endpoints = {
   notice: {
     info: `${NOTICE_URL}/notice/info`,
     popup: `${NOTICE_URL}/notice/popup`,
-    message: `${NOTICE_URL}/notice/message`,
+    message: `${NOTICE_URL}/notice/message`
   },
   tableGame: {
     admin: {
       master: {
         room: `${TABLE_GAME_URL}/table-game/admin/master/room`,
-        quick: `${TABLE_GAME_URL}/table-game/admin/master/quick`,
+        quick: `${TABLE_GAME_URL}/table-game/admin/master/quick`
       },
       store: `${TABLE_GAME_URL}/table-game/admin/store`,
-      icon:  `${TABLE_GAME_URL}/table-game/admin/store/icon`,
-      game: `${TABLE_GAME_URL}/table-game/admin/game`,
+      icon: `${TABLE_GAME_URL}/table-game/admin/store/icon`,
+      game: `${TABLE_GAME_URL}/table-game/admin/game`
     },
     entertainment: {
-      games: `${TABLE_GAME_URL}/entertainment/admin/stores/games`,
-    },
+      games: `${TABLE_GAME_URL}/entertainment/admin/stores/games`
+    }
   },
-  category : {
-    updateCategoryScheduleOff : `${ADMIN_URL}/category/updateCategoryScheduleOff`,
-    updateCategoryScheduleOn : `${ADMIN_URL}/category/updateCategoryScheduleOn`,
-    updateCategoryTime : `${ADMIN_URL}/category/updateCategoryTime`,
-    updateCategoryScheduleDateArray  : `${ADMIN_URL}/category/updateCategoryScheduleDateArray`,
-    updateCategoryHide : `${ADMIN_URL}/category/updateCategoryHide`,
-    updateCategoryShow : `${ADMIN_URL}/category/updateCategoryShow`
+  category: {
+    updateCategoryScheduleOff: `${ADMIN_URL}/category/updateCategoryScheduleOff`,
+    updateCategoryScheduleOn: `${ADMIN_URL}/category/updateCategoryScheduleOn`,
+    updateCategoryTime: `${ADMIN_URL}/category/updateCategoryTime`,
+    updateCategoryScheduleDateArray: `${ADMIN_URL}/category/updateCategoryScheduleDateArray`,
+    updateCategoryHide: `${ADMIN_URL}/category/updateCategoryHide`,
+    updateCategoryShow: `${ADMIN_URL}/category/updateCategoryShow`
   },
   happyTalk: {
-    postMessage: `${HAPPY_TALK}/event/happytalk`,
+    postMessage: `${HAPPY_TALK}/event/happytalk`
   },
   credit: {
     payDetails: `${PAYMENT_URL}/credit/v2/pay-details`,
@@ -119,11 +166,12 @@ const endpoints = {
     cashCancelCommit: `${PAYMENT_URL}/credit/v2/cash-cancel-commit`,
     pend: `${PAYMENT_URL}/credit/v2/pays/pend`,
     tablet: {
-      status: `${PAYMENT_URL}/credit/v2/tablet/status`,
+      status: `${PAYMENT_URL}/credit/v2/tablet/status`
     },
     pends: `${PAYMENT_URL}/credit/v2/pays/pends`,
-    webLogs: `${PAYMENT_URL}/credit/v2/web-logs`,
+    webLogs: `${PAYMENT_URL}/credit/v2/web-logs`
   },
+  socket: SOCKET_URL
 };
 
 export default endpoints;

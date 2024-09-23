@@ -9,9 +9,10 @@
     router-link.button-added(:to="paths.updateGames")
       span 게임 관리
       img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
-    router-link.button-added(v-if="visibleOrderButton" :to="paths.tables")
-      span 테이블 주문
-      img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
+    // v/4/0/1/ 버전 기준 숨김(미사용) 처리 (24.09.04)
+    //router-link.button-added(v-if="visibleOrderButton" :to="paths.tables")
+    //  span 테이블 주문
+    //  img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
     router-link.button-added(v-if="visibleOrderButton" :to="paths.pickUpTables")
       span 픽업 요청
       img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
@@ -30,24 +31,25 @@
     router-link.button-added(v-if="visibleOrderButton" :to="paths.newPaymentManagement")
       span 신 결제내역<br>
       img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
-    router-link.button-added(v-if="visibleOrderButton && businessType ==='torder'" :to="paths.servingRobotManagement")
+    router-link.button-added(v-if="visibleOrderButton && !isUplus" :to="paths.servingRobotManagement")
       span 로봇 관리
       img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
-    router-link.button-added(v-if="visibleOrderButton && !isDevTeam && businessType ==='torder'" :to="paths.auctionManager")
+    router-link.button-added(v-if="visibleOrderButton && !isUplus" :to="paths.auctionManager")
       span 경매 관리
       img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
     //- router-link.button-added(v-if="useGame" :to="paths.gameManagement")
     //-   span 게임 관리
     //-   img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
-    router-link.button-added(v-if="visibleOrderButton && businessType ==='torder'" :to="paths.valetTableList")
+    router-link.button-added(v-if="visibleOrderButton && !isUplus" :to="paths.valetTableList")
       span 발렛 파킹
       img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
     router-link.button-added(v-if="visibleOrderButton" :to="paths.ordersIP")
       span 주문 오류 내역
       img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
-    router-link.button-added(v-if="visibleOrderButton && stopRedirect" :to="paths.orderStatusCheck")
-      span 주문상태확인
-      img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
+    // 기존 개발용도로 만들어진 것(isDevTeam)으로 사용되어지지 않아 주석 처리 (24.09.23)
+    //router-link.button-added(v-if="visibleOrderButton" :to="paths.orderStatusCheck")
+    //  span 주문상태확인
+    //  img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
     router-link.button-added(v-if="visibleOrderButton && (isTorderTwo || isRemakePaid)" :to="paths.holdPaymentOrder")
       span 결제 보류 처리
       img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
@@ -55,10 +57,7 @@
 
 <script>
 import paths from '@router/paths';
-import {
-  STOP_REDIRECT,
-  IS_DEV_TEAM,
-} from '@utils/constants';
+import { IS_UPLUS } from '@utils/constants';
 import { tableGame } from '@apis';
 
 const {
@@ -68,8 +67,7 @@ const {
 export default {
   data: () => ({
     paths,
-    stopRedirect: STOP_REDIRECT,
-    isDevTeam: IS_DEV_TEAM,
+    isUplus: IS_UPLUS,
     useGame : false,
   }),
   computed: {
@@ -78,9 +76,6 @@ export default {
     },
     isRemakePaid() {
       return this.$store.state.isRemakePaid;
-    },
-    businessType() {
-      return this.$store.state.menuConfig?.init.business_type;
     },
   },
   methods: {
@@ -133,7 +128,6 @@ export default {
   }
 
   .wrap-button-added {
-    flex: 1;
     display: grid;
     grid-template-columns: repeat(auto-fill, 19.53125vw);
     gap: 1.09375vw;

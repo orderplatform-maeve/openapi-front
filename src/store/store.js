@@ -1,25 +1,43 @@
-import Vue from 'vue';
-import Vuex from 'vuex';
-import axios from 'axios';
-import querystring from 'querystring';
-import router from '@router';
+import Vue from "vue";
+import Vuex from "vuex";
+import router from "@router";
 
-import {
-  validShopCode,
-  getCategories,
-  getNewCategories,
-} from './store.helper';
-import { isEmpty } from '@utils/CheckedType';
-import endpoints from '@apis/endpoints';
-import {
-  postOrderConfirm
-} from '@apis/orders';
+import { validShopCode, getCategories, getNewCategories } from "./store.helper";
+import { isEmpty } from "@utils/CheckedType";
+import { postOrderConfirm } from "@apis/orders";
 
+import endpoints from "@apis/endpoints";
+import { customAxios } from "@utils/customAxios";
+
+import { robot, noticePopup, valet } from "./modules";
 import {
-  robot,
-  noticePopup,
-  valet,
-} from './modules';
+  postCategoryList,
+  postGetGoodsList,
+  postCategoryOpen,
+  postCategoryClose,
+  postAllCategories,
+  postGetMenuConfig
+} from "@apis/menu";
+import {
+  postTabletAllRefresh,
+  postTabletRefresh,
+  postTabletResetOrder
+} from "@apis/tablet";
+import { requestCartList, requestOrder, requestTableList } from "@apis/table";
+import { postAuthenticationLogin } from "@apis/authentication";
+import {
+  postDeviceShopOpen,
+  postDeviceShopClose,
+  postDeviceShopOpenOrder,
+  postDeviceShopCloseOrder,
+  postDeviceShowRecentOrder,
+  postDeviceHideRecentOrder,
+  postDeviceShowKitchenOrder,
+  postDeviceHideKitchenOrder
+} from "@apis/device";
+import { requestShopConfigData, requestShopStoreList } from "@apis/shop";
+import { getUpdateGoodStatus } from "@apis/goods";
+import { getPaymentCreditDataList, getPaymentCreditList } from "@apis/payments";
 
 Vue.use(Vuex);
 
@@ -29,13 +47,13 @@ function imagePreload(url) {
 }
 
 /**
-* TODO:
-* - 추후 소켓 부분 모듈화 예정
-* - socket, rest, authentication 으웃 모듈 분류 예정
-* - 의존성 없이 모듈 분리가 불가능.
-* ISSUE:
-* - vue-socket.io 내 emitter.js에서 분리된 vuex 모듈 config 코드가 없음 커스텀 작업 필요
-*/
+ * TODO:
+ * - 추후 소켓 부분 모듈화 예정
+ * - socket, rest, authentication 으웃 모듈 분류 예정
+ * - 의존성 없이 모듈 분리가 불가능.
+ * ISSUE:
+ * - vue-socket.io 내 emitter.js에서 분리된 vuex 모듈 config 코드가 없음 커스텀 작업 필요
+ */
 const socket = {
   // mutations: {
   //   SOCKET_orderlog(state, order) {
@@ -68,16 +86,16 @@ const socket = {
   //   },
   // },
   actions: {
-    SOCKET_orderlog({ commit , state }, order) {
+    SOCKET_orderlog({ commit, state }, order) {
       if (validShopCode(state, order)) {
         const receiptHandle = order?.receipt_handle;
 
         if (receiptHandle) {
           const config = {
-            'storeCode': order?.shop_code,
-            'tabletId': order?.T_order_order_tablet_number,
-            'orderKey': order?.order_view_key,
-            receiptHandle,
+            storeCode: order?.shop_code,
+            tabletId: order?.T_order_order_tablet_number,
+            orderKey: order?.order_view_key,
+            receiptHandle
           };
           postOrderConfirm(config);
         }
@@ -92,20 +110,22 @@ const socket = {
         //   }
         // }
 
-        if (order.type !== 'posResponseMessage' && !state.orderKeys.has(order.order_view_key)) {
+        if (
+          order.type !== "posResponseMessage" &&
+          !state.orderKeys.has(order.order_view_key)
+        ) {
           state.orderKeys.set(order.order_view_key, true);
           if (state.posResponseModal.isOn) {
             state.posResponseModal.isOn = false;
-            state.posResponseModal.tableNumber = '';
+            state.posResponseModal.tableNumber = "";
           }
-          commit('SET_ORDER', order);
+          commit("SET_ORDER", order);
           state.orderModal = true;
-
 
           if (window?.UUID?.playOrderBell) {
             window.UUID.playOrderBell();
           }
-          commit('PUSH_ORDER', order);
+          commit("PUSH_ORDER", order);
           state.orderKeys.set(order.order_view_key, true);
         }
 
@@ -126,7 +146,7 @@ const socket = {
       //console.log('out SOCKET_orderview', payload);
 
       // pos error 메세지는 orders list에 추가되면 안되므로 주문키 if문 외부에 작성
-      if (payload?.type === 'posResponseMessage') {
+      if (payload?.type === "posResponseMessage") {
         if (payload.tableNumber && payload.errorMsg?.length > 0) {
           // mutations에서 pos message에 대한 order가 set 되지 않을 경우 방지
           state.orderKeys.set(payload.order_view_key, true);
@@ -137,29 +157,29 @@ const socket = {
         }
       }
 
-      if (payload?.type_msg === 'commit') {
+      if (payload?.type_msg === "commit") {
         const targetOrder = {
           commit: payload.commit,
-          order_view_key: payload.key,
+          order_view_key: payload.key
         };
 
         // const target = state.orders.find((o) => o.order_view_key === payload.key);
         // console.log('targetOrder', targetOrder);
         // console.log('SOCKET_orderview', payload, target);
 
-        commit('UPDATE_ORDERS', targetOrder);
+        commit("UPDATE_ORDERS", targetOrder);
         // commit('pushFlashMessage', `${target.T_order_order_tablet_number} 테이블 주문이(${target.order_time}) ${targetOrder.commit ? '확인' : '미확인'} 상태로 변경 되었습니다.`);
-        return commit('UNSET_ORDER');
+        return commit("UNSET_ORDER");
       }
 
       // 주문 강제취소에 대한 소켓메세지 & 보류 처리건에 대한 소켓메세지 - 서버측 추후 하나로 통합 예정
-      if (payload?.type === 'cancelOrder' || payload?.type === 'pendOrder') {
+      if (payload?.type === "cancelOrder" || payload?.type === "pendOrder") {
         const fd = new FormData();
-        fd.append('shop_code', state.auth.store.store_code);
-        dispatch('setOrders', fd);
+        fd.append("shop_code", state.auth.store.store_code);
+        dispatch("setOrders", fd);
       }
 
-      if (payload?.type === 'reload') {
+      if (payload?.type === "reload") {
         // // console.log('reload', payload);
 
         const validUCode = payload.uCode === localStorage?.uCode;
@@ -170,16 +190,12 @@ const socket = {
         try {
           if (isRedirection) {
             const params = new FormData();
-            params.append('store_code', state.auth.store.store_code);
-            const res = await dispatch('setStoreInit', params);
+            params.append("store_code", state.auth.store.store_code);
+            const res = await dispatch("setStoreInit", params);
 
             let nextUrl = res.data.data.T_order_store_orderView_version;
             if (nextUrl) {
-              const {
-                protocol,
-                hostname,
-                pathname,
-              } = location;
+              const { protocol, hostname, pathname } = location;
 
               const nowPath = `${protocol}//${hostname}${pathname}#/`;
               // console.log('location', nowPath);
@@ -189,15 +205,15 @@ const socket = {
 
                 if (state.visibleAllRefreshModal) {
                   // commit('CLOSE_ALL_REFRESH_MODAL');
-                  Vue.$socket.emit('orderview', {
+                  Vue.$socket.emit("orderview", {
                     store: {
-                      code: store_code,
+                      code: store_code
                     },
-                    type: '@close/allRefreshModal',
+                    type: "@close/allRefreshModal"
                   });
                 }
 
-                if (nextUrl.includes('torder.io')) {
+                if (nextUrl.includes("torder.io")) {
                   nextUrl = `${nextUrl}#/login?store_code=${store_code}`;
                 }
 
@@ -205,7 +221,7 @@ const socket = {
                 if (nowPath !== nextUrl) {
                   return location.replace(nextUrl);
                 }
-                return location.replace('/');
+                return location.replace("/");
               }
             }
           }
@@ -214,57 +230,70 @@ const socket = {
         }
       }
 
-      if (payload?.type === '@put/product/status') {
+      if (payload?.type === "@put/product/status") {
         if (payload?.good?.code) {
           // // console.log('sync product data', payload.data);
           const arr = JSON.parse(JSON.stringify(state.goods));
-          const findIdx = arr.findIndex((o) => o.T_order_store_good_code === payload.good.code);
+          const findIdx = arr.findIndex(
+            o => o.T_order_store_good_code === payload.good.code
+          );
 
           if (payload?.data) {
             arr[findIdx] = payload.data;
-            commit('pushFlashMessage', `"${payload.good.displayName}" 정보가 수정되었습니다.`);
-            commit('SET_GOODS', arr);
+            commit(
+              "pushFlashMessage",
+              `"${payload.good.displayName}" 정보가 수정되었습니다.`
+            );
+            commit("SET_GOODS", arr);
           }
         }
       }
 
-      if (payload?.type === '@reset/orders') {
-        commit('SET_TABLE_CART_LIST', []);
-        commit('pushFlashMessage', '주문 삭제 되었습니다.');
+      if (payload?.type === "@reset/orders") {
+        commit("SET_TABLE_CART_LIST", []);
+        commit("pushFlashMessage", "주문 삭제 되었습니다.");
       }
 
-      if (payload?.type === '@create/orders') {
+      if (payload?.type === "@create/orders") {
         if (payload?.order) {
-          commit('SET_ORDER', payload.order);
+          commit("SET_ORDER", payload.order);
         }
 
         if (payload?.orders) {
-          commit('SET_TABLE_CART_LIST', payload?.orders);
+          commit("SET_TABLE_CART_LIST", payload?.orders);
         }
 
         if (payload.cartList?.length === 1) {
-          commit('pushFlashMessage', `${payload.cartList[0].display_name}가 주문 되었습니다.`);
+          commit(
+            "pushFlashMessage",
+            `${payload.cartList[0].display_name}가 주문 되었습니다.`
+          );
         }
 
         if (payload.cartList.length > 1) {
           const anotherCount = payload.cartList.length - 1;
-          commit('pushFlashMessage', `${payload.cartList[0].display_name} 외 ${anotherCount}개 주문 되었습니다.`);
+          commit(
+            "pushFlashMessage",
+            `${payload.cartList[0].display_name} 외 ${anotherCount}개 주문 되었습니다.`
+          );
         }
       }
 
-      if (payload?.type === '@show/allRefreshModal') {
+      if (payload?.type === "@show/allRefreshModal") {
         // // console.log('@show/allRefreshModal', payload.allRefreshList);
-        commit('SHOW_ALL_REFRESH_MODAL');
-        commit('SET_ALL_REFRESH_LIST', payload.allRefreshList);
+        commit("SHOW_ALL_REFRESH_MODAL");
+        commit("SET_ALL_REFRESH_LIST", payload.allRefreshList);
       }
 
-      if (payload?.type === '@close/allRefreshModal') {
-        commit('CLOSE_ALL_REFRESH_MODAL');
+      if (payload?.type === "@close/allRefreshModal") {
+        commit("CLOSE_ALL_REFRESH_MODAL");
       }
 
-      if (payload?.type === '@request/ordering/location/table') {
+      if (payload?.type === "@request/ordering/location/table") {
         // // console.log('object', state.tables);
-        const findTargetIdx = state.tables.findIndex((o) => o.Ta_id === payload.tableId);
+        const findTargetIdx = state.tables.findIndex(
+          o => o.Ta_id === payload.tableId
+        );
 
         // console.log('findTargetIdx', payload.tableId, findTargetIdx, state.tables);
 
@@ -278,56 +307,87 @@ const socket = {
 
         deepCopyArr[findTargetIdx] = {
           ...deepCopyArr[findTargetIdx],
-          ordering: payload.ordering,
+          ordering: payload.ordering
         };
 
         // commit('SET_TABLES', deepCopyArr);
       }
 
-      if (payload?.type === '@update/categories/useStatus') {
-        commit('SET_MENU_USE', payload.target);
-        commit('pushFlashMessage', `${payload.target.name} ${payload.target.depthStr} 카테고리 상태가 ${payload.target?.T_order_store_menu_use === 'Y' ? '개방' : '닫힘'}으로 변경이 되었습니다.`);
+      if (payload?.type === "@update/categories/useStatus") {
+        commit("SET_MENU_USE", payload.target);
+        commit(
+          "pushFlashMessage",
+          `${payload.target.name} ${payload.target.depthStr} 카테고리 상태가 ${
+            payload.target?.T_order_store_menu_use === "Y" ? "개방" : "닫힘"
+          }으로 변경이 되었습니다.`
+        );
       }
 
-      if (payload?.type === '@update/device/serviceStatus') {
-        commit('setDeviceServiceStatus', payload.value);
+      if (payload?.type === "@update/device/serviceStatus") {
+        commit("setDeviceServiceStatus", payload.value);
         if (payload.value) {
-          commit('pushFlashMessage', '태블릿 화면 닫기 상태로 변경 되었습니다.');
+          commit(
+            "pushFlashMessage",
+            "태블릿 화면 닫기 상태로 변경 되었습니다."
+          );
         } else {
-          commit('pushFlashMessage', '태블릿 화면 열기 상태로 변경 되었습니다.');
+          commit(
+            "pushFlashMessage",
+            "태블릿 화면 열기 상태로 변경 되었습니다."
+          );
         }
       }
 
-      if (payload?.type === '@update/device/agreeOrder') {
-        commit('setDeviceOrderStatus', payload.value);
+      if (payload?.type === "@update/device/agreeOrder") {
+        commit("setDeviceOrderStatus", payload.value);
         if (payload.value) {
-          commit('pushFlashMessage', '태블릿 주문 중단 상태로 변경 되었습니다.');
+          commit(
+            "pushFlashMessage",
+            "태블릿 주문 중단 상태로 변경 되었습니다."
+          );
         } else {
-          commit('pushFlashMessage', '태블릿 주문 받기 상태로 변경 되었습니다.');
+          commit(
+            "pushFlashMessage",
+            "태블릿 주문 받기 상태로 변경 되었습니다."
+          );
         }
       }
 
-      if (payload?.type === '@update/device/recentOrder') {
-        commit('setDeviceRecentOrderStatus', payload.value);
+      if (payload?.type === "@update/device/recentOrder") {
+        commit("setDeviceRecentOrderStatus", payload.value);
         if (payload.value) {
-          commit('pushFlashMessage', '태블릿 주문 내역 숨김 상태로 변경 되었습니다.');
+          commit(
+            "pushFlashMessage",
+            "태블릿 주문 내역 숨김 상태로 변경 되었습니다."
+          );
         } else {
-          commit('pushFlashMessage', '태블릿 주문 내역 표시 상태로 변경 되었습니다.');
+          commit(
+            "pushFlashMessage",
+            "태블릿 주문 내역 표시 상태로 변경 되었습니다."
+          );
         }
       }
 
-      if (payload?.type === '@update/device/kitchenOrder') {
-        commit('setDeviceKitchenOrderStatus', payload.value);
+      if (payload?.type === "@update/device/kitchenOrder") {
+        commit("setDeviceKitchenOrderStatus", payload.value);
         if (payload.value) {
-          commit('pushFlashMessage', '태블릿 주문 내역 숨김 상태로 변경 되었습니다.');
+          commit(
+            "pushFlashMessage",
+            "태블릿 주문 내역 숨김 상태로 변경 되었습니다."
+          );
         } else {
-          commit('pushFlashMessage', '태블릿 주문 내역 표시 상태로 변경 되었습니다.');
+          commit(
+            "pushFlashMessage",
+            "태블릿 주문 내역 표시 상태로 변경 되었습니다."
+          );
         }
       }
 
-      if (payload?.type === 'suspendSale') {
+      if (payload?.type === "suspendSale") {
         // console.log('suspendSale', payload);
-        const findTargetIdx = state.tables.findIndex((o) => o.Ta_id === payload.table.code);
+        const findTargetIdx = state.tables.findIndex(
+          o => o.Ta_id === payload.table.code
+        );
         const { suspendSale } = payload;
         const orderStatus = !suspendSale;
 
@@ -338,36 +398,42 @@ const socket = {
         if (orderStatus !== beforeOrderStatus) {
           deepCopyArr[findTargetIdx] = {
             ...deepCopyArr[findTargetIdx],
-            orderStatus,
+            orderStatus
           };
 
-          commit('SET_TABLES', deepCopyArr);
+          commit("SET_TABLES", deepCopyArr);
         }
       }
 
       // 공지사항 팝업 관련
-      if (payload?.type === 'notice') {
+      if (payload?.type === "notice") {
         const data = [payload.data];
-        this.commit('noticePopup/updateNoticeEmergency', true);
-        this.commit('noticePopup/updateNoticePopupData', data);
-        this.commit('noticePopup/updatePopupVisible', true);
+        this.commit("noticePopup/updateNoticeEmergency", true);
+        this.commit("noticePopup/updateNoticePopupData", data);
+        this.commit("noticePopup/updatePopupVisible", true);
       }
 
-      const isRobot = payload.type === 'Ready' || payload.type === 'OnTheWay' || payload.type === 'Arrived' || payload.type === 'Unknown' || payload.type === 'Returning' || payload.type === 'Charge';
+      const isRobot =
+        payload.type === "Ready" ||
+        payload.type === "OnTheWay" ||
+        payload.type === "Arrived" ||
+        payload.type === "Unknown" ||
+        payload.type === "Returning" ||
+        payload.type === "Charge";
 
-      if (payload?.type === 'Error') {
-        this.commit('robot/updateErrorModalStatus', true);
-        this.commit('robot/updateErrorRobotStatus', {
+      if (payload?.type === "Error") {
+        this.commit("robot/updateErrorModalStatus", true);
+        this.commit("robot/updateErrorRobotStatus", {
           name: payload.robotInfo.name,
-          message: payload.robotInfo.message,
+          message: payload.robotInfo.message
         });
       }
 
       // 새로운 공지사항 유입시 갯수 갱신
-      if (payload?.type === 'countUpdate') {
+      if (payload?.type === "countUpdate") {
         const newNoticeCount = payload?.count;
-        console.log('newNoticeCount', newNoticeCount);
-        this.commit('noticePopup/updateNoticeQuantity', newNoticeCount);
+        console.log("newNoticeCount", newNoticeCount);
+        this.commit("noticePopup/updateNoticeQuantity", newNoticeCount);
       }
 
       if (isRobot) {
@@ -376,12 +442,12 @@ const socket = {
             robotId: payload.robotInfo.robot_id,
             robotInfo: payload.robotInfo,
             status: payload.ment,
-            ReverseDestination: payload.table.name,
+            ReverseDestination: payload.table.name
           };
 
           config.robotInfo.reveseStatus = payload.ment;
-          this.commit('robot/updateRobotStatus', config);
-        } catch(error) {
+          this.commit("robot/updateRobotStatus", config);
+        } catch (error) {
           console.log(error);
         }
       }
@@ -390,47 +456,46 @@ const socket = {
         state.auth.store.store_code === payload?.store?.code &&
         payload?.type === "valetParking"
       ) {
-
         if (window?.UUID?.playOrderBell) {
           window.UUID.playOrderBell();
         }
 
-        commit('valet/updateCarNumber', payload?.info?.carNumber);
+        commit("valet/updateCarNumber", payload?.info?.carNumber);
 
         if (router?.history?.current?.path !== "/valetParkingConfirm") {
           router.push({
-            name: 'valetParkingConfirm',
+            name: "valetParkingConfirm"
           });
         }
       }
 
       // 선결제 - 현금 취소 요청 알림
-      if (payload?.type === 'requestCancelCash') {
-        commit('updateCashPaymentCancelModal', true);
-        commit('updateCashPaymentCancelInfo', payload);
+      if (payload?.type === "requestCancelCash") {
+        commit("updateCashPaymentCancelModal", true);
+        commit("updateCashPaymentCancelInfo", payload);
       }
 
       // 선결제 - 현금 결제 요청 알림
-      if (payload?.type === 'requestReceiptCash') {
+      if (payload?.type === "requestReceiptCash") {
         if (window?.UUID?.playOrderBell) {
           window.UUID.playOrderBell();
         }
 
-        commit('setRequestCashItem', payload.data);
+        commit("setRequestCashItem", payload.data);
 
         const cashPaymentInfo = {
           tableName: payload.table.name,
-          amount: payload.amount,
+          amount: payload.amount
         };
-        commit('updateCashPaymentRequestInfo', cashPaymentInfo);
-        commit('updateCashPaymentRequestModal', true);
+        commit("updateCashPaymentRequestInfo", cashPaymentInfo);
+        commit("updateCashPaymentRequestModal", true);
       }
     },
     SOCKET_disconnect({ commit }) {
       const now = new Date(Date.now());
       const log = `disconnected socket ${now}`;
 
-      if (process.env.NODE_ENV === 'development') {
+      if (process.env.NODE_ENV === "development") {
         if (!localStorage.networkLog) {
           localStorage.networkLog = JSON.stringify([log]);
         } else {
@@ -441,16 +506,16 @@ const socket = {
 
       const payload = {
         visible: true,
-        message: '소켓 서버 연결 요청 중 입니다. 잠시만 대기 해주십시요.',
+        message: "소켓 서버 연결 요청 중 입니다. 잠시만 대기 해주십시요."
       };
 
-      commit('setSignBoardStatus', payload);
+      commit("setSignBoardStatus", payload);
     },
     SOCKET_connect({ commit }) {
       const now = new Date(Date.now());
       const log = `connected socket ${now}`;
 
-      if (process.env.NODE_ENV === 'development') {
+      if (process.env.NODE_ENV === "development") {
         if (!localStorage.networkLog) {
           localStorage.networkLog = JSON.stringify([log]);
         } else {
@@ -462,127 +527,129 @@ const socket = {
 
       const payload = {
         visible: false,
-        message: '',
+        message: ""
       };
 
-      commit('setSignBoardStatus', payload);
-    },
-  },
+      commit("setSignBoardStatus", payload);
+    }
+  }
 };
 
 const authentication = {
   mutations: {
-    SET_AUTH: (state, auth) => Vue.set(state, 'auth', auth),
-    RESET_AUTH: (state) => Vue.set(state, 'auth', authProto),
+    SET_AUTH: (state, auth) => Vue.set(state, "auth", auth),
+    RESET_AUTH: state => Vue.set(state, "auth", authProto)
   },
   actions: {
-    async login ({ commit }, params) {
+    async login({ commit }, params) {
       try {
-        const url = endpoints.authentication.login;
-        const res = await axios.post(url, params);
+        const res = await postAuthenticationLogin(params);
         // console.log('res', res);
 
         if (!res) {
-          throw 'response 값이 없습니다.';
+          throw "response 값이 없습니다.";
         }
 
         if (!res.data) {
-          throw 'response data 값이 없습니다.';
+          throw "response data 값이 없습니다.";
         }
 
         if (!res.data.result) {
-          throw '존재하지 않는 아이디 이거나 비밀번호가 잘못 되었습니다.';
+          throw "존재하지 않는 아이디 이거나 비밀번호가 잘못 되었습니다.";
         }
 
         if (!res.data.member_data || isEmpty(res.data.member_data)) {
-          throw '멤버 정보 데이터가 없습니다.';
+          throw "멤버 정보 데이터가 없습니다.";
         }
 
         if (!res.data.shop_data) {
-          throw '가게 정보 리스트 데이터가 없습니다.';
+          throw "가게 정보 리스트 데이터가 없습니다.";
         }
 
         if (res.data.shop_data.length === 0) {
-          throw '로그인 정보가 없습니다.';
+          throw "로그인 정보가 없습니다.";
         }
 
         const member = {
           // member_code: res.data.member_data.member_code,
           code: res.data.member_data.member_id,
-          name: res.data.member_data.member_name,
+          name: res.data.member_data.member_name
         };
 
         const auth = {
           member,
-          store: authProto.store,
+          store: authProto.store
         };
 
-        commit('SET_STORES', res.data.shop_data);
-        commit('SET_AUTH', auth);
+        commit("SET_STORES", res.data.shop_data);
+        commit("SET_AUTH", auth);
 
         localStorage.auth = JSON.stringify(auth);
 
-        return res.data.result;
+        return res.data;
       } catch (error) {
-        commit('pushFlashMessage', error);
+        commit("pushFlashMessage", error);
         return false;
       }
     },
     updateAuth({ commit }, auth) {
-      commit('SET_AUTH', auth);
+      commit("SET_AUTH", auth);
     },
     logout({ commit }) {
-      commit('RESET_AUTH');
-      commit('SET_STORES', []);
-    },
-  },
+      commit("RESET_AUTH");
+      commit("SET_STORES", []);
+    }
+  }
 };
 
 const order = {
   mutations: {
     SET_ORDER: (state, order) => {
-      Vue.set(state, 'order', order);
+      Vue.set(state, "order", order);
     },
-    UNSET_ORDER: (state) => {
-      Vue.set(state, 'order', undefined);
+    UNSET_ORDER: state => {
+      Vue.set(state, "order", undefined);
     },
     PUSH_ORDER: (state, order) => {
       state.orders.unshift(order);
     },
     SET_ORDERS: (state, orders) => {
       // console.log('orders!!!!!!!', orders);
-      Vue.set(state, 'orders', orders);
+      Vue.set(state, "orders", orders);
     },
     UPDATE_ORDER_CREDIT: (state, order, value) => {
       const { orders } = state;
-      const idx = orders.findIndex((item) => item.order_id === order.order_id);
+      const idx = orders.findIndex(item => item.order_id === order.order_id);
 
       if (idx > -1) {
         orders[idx].creditStat = value;
       }
-
     },
     UPDATE_ORDERS: (state, order) => {
       const { orders } = state;
-      const idx = orders.findIndex((item) => item.order_view_key === order.order_view_key);
+      const idx = orders.findIndex(
+        item => item.order_view_key === order.order_view_key
+      );
 
       // console.log('UPDATE_ORDERS', idx);
 
       if (idx > -1) {
         orders[idx].commit = order.commit;
-        Vue.set(state, 'orders', orders);
+        Vue.set(state, "orders", orders);
       }
     },
     UPDATE_DONE_MISU_ORDERS: (state, order) => {
       const { orders } = state;
-      const idx = orders.findIndex((item) => item.order_view_key === order.order_view_key);
+      const idx = orders.findIndex(
+        item => item.order_view_key === order.order_view_key
+      );
 
       // console.log('UPDATE_ORDERS', idx);
 
       if (idx > -1) {
         orders[idx].totalAmount = order.totalMisu;
         orders[idx].totalMisu = 0;
-        Vue.set(state, 'orders', orders);
+        Vue.set(state, "orders", orders);
       }
     },
     setPayloadStatus(state, payload) {
@@ -596,7 +663,7 @@ const order = {
     },
     closePosResponseModal(state) {
       state.posResponseModal.isOn = false;
-      state.posResponseModal.tableNumber = '';
+      state.posResponseModal.tableNumber = "";
     },
     optionSoldOutModalFlag(state, payload) {
       state.optionSoldOutModal = payload;
@@ -627,29 +694,32 @@ const order = {
     },
     updateSoldOutAlertModal(state, payload) {
       state.soldOutAlertModal = payload;
-    },
+    }
   },
   actions: {
     async commitOrder(context, payload) {
       const url = endpoints.orders.commitOrderViewData;
 
       const fd = new FormData();
-      fd.append('shop_code', payload.auth.store.store_code);
-      fd.append('key', payload.order.order_view_key);
-      fd.append('commit', !payload.order.commit ? 1 : 0);
+      fd.append("shop_code", payload.auth.store.store_code);
+      fd.append("key", payload.order.order_view_key);
+      fd.append("commit", !payload.order.commit ? 1 : 0);
 
-      const res = await axios.post(url, fd, { timeout: 5000 });
+      const res = await customAxios().post(url, fd, { timeout: 5000 });
       return res;
     },
     setOrder: (context, order) => {
-      context.commit('SET_ORDER', order);
+      context.commit("SET_ORDER", order);
     },
     pushOrder: (context, order) => {
-      context.commit('PUSH_ORDER', order);
+      context.commit("PUSH_ORDER", order);
     },
     async setOrders({ commit }, params) {
+      // const response = getTodayRedisData(params);
+
       const url = endpoints.orders.todayRedisData;
-      const response = await axios.post(url, params);
+      const response = await customAxios().post(url, params);
+      console.log("response", response);
 
       if (response.status === 200) {
         // const orders = [];
@@ -673,15 +743,15 @@ const order = {
           return list;
         }, []);
 
-        commit('updateOrderKeys', keys);
-        commit('SET_ORDERS', orders);
+        commit("updateOrderKeys", keys);
+        commit("SET_ORDERS", orders);
       }
 
       return response;
     },
     async requestOrder(context, params) {
       const url = endpoints.orders.order;
-      const response = await axios.post(url, params);
+      const response = await customAxios().post(url, params);
 
       if (response.data) {
         return response.data;
@@ -690,7 +760,7 @@ const order = {
     },
     async requestLastOrder(context, params) {
       const url = endpoints.orders.controlLastOrder;
-      const response = await axios.post(url,params);
+      const response = await customAxios().post(url, params);
 
       if (response.data) {
         return response.data;
@@ -699,24 +769,24 @@ const order = {
     },
     async requestDeleteLastOrder(context, params) {
       const url = endpoints.orders.deleteLastOrder;
-      const response = await axios.post(url,params);
+      const response = await customAxios().post(url, params);
 
       if (response.data) {
         return response.data;
       }
       return false;
-    },
-  },
+    }
+  }
 };
 
 const shop = {
   mutations: {
     SET_STORES: (state, stores) => {
-      Vue.set(state, 'stores', stores);
+      Vue.set(state, "stores", stores);
     },
     updateStandardPriceUnit(state, payload) {
       state.standardPriceUnit = payload;
-      if (payload === '원') {
+      if (payload === "원") {
         // 화폐단위가 '원'이면 가격 뒤에 표시
         state.standardPriceFrontPosition = false;
       } else {
@@ -732,32 +802,41 @@ const shop = {
     },
     updateIsRemakePaid(state, payload) {
       state.isRemakePaid = payload;
-    },
+    }
   },
   actions: {
     setStores: ({ commit }, stores) => {
-      commit('SET_STORES', stores);
+      commit("SET_STORES", stores);
     },
     async setStoreInit({ commit }, params) {
       try {
-        const url = endpoints.shop.config;
-        const response = await axios.post(url, params);
-        // // console.log(response);
+        const response = await requestShopConfigData(params);
 
         const target = response.data.data;
-        // console.log('target', target);
 
         const device = {
           serviceStatus: !!target.T_order_store_close,
           orderStatus: !!target.T_order_store_close_order,
-          recentOrderStatus: !!target.T_order_recent_order_hide,
+          recentOrderStatus: !!target.T_order_recent_order_hide
         };
 
-        commit('setDeviceStatus', device);
-        commit('updateStandardPriceUnit', target.standardPriceUnit);
-        commit('updateIsTorderTwo', target.T_order_store_tablet_version.includes('order2'));
-        commit('updateIsRemakePaid', target.T_order_store_tablet_version.includes('remake'));
-        commit('updateStoreTheme', target.T_order_store_Theme);
+        commit("setDeviceStatus", device);
+        commit("updateStandardPriceUnit", target.standardPriceUnit);
+        /**
+         * TODO shop/config 에 api에 대한 정보가 없어서 도메인으로 판별해야함. 따라서 도메인이 변경되면 수정 필요.
+         * order2: 티오더2 운영망
+         * uplus: LG 유플러스오더
+         */
+        commit(
+          "updateIsTorderTwo",
+          target.T_order_store_tablet_version.includes("order2") ||
+            target.T_order_store_tablet_version.includes("uplus")
+        );
+        commit(
+          "updateIsRemakePaid",
+          target.T_order_store_tablet_version.includes("remake")
+        );
+        commit("updateStoreTheme", target.T_order_store_Theme);
         return response;
       } catch (error) {
         console.error(error);
@@ -766,24 +845,20 @@ const shop = {
     },
     async requestStoreList(context, params) {
       try {
-        const fd = new FormData();
-        fd.append('member_id', params.member.code);
-
-        const url = endpoints.shop.getList;
-        const res = await axios.post(url, fd);
+        const res = await requestShopStoreList(params);
 
         return res.data.shop_data;
       } catch (error) {
         return false;
       }
-    },
-  },
+    }
+  }
 };
 
 const device = {
   mutations: {
     setDeviceStatus(state, device) {
-      Vue.set(state, 'device', device);
+      Vue.set(state, "device", device);
     },
     setDeviceOrderStatus(state, orderStatus) {
       state.device.orderStatus = Boolean(orderStatus);
@@ -796,13 +871,12 @@ const device = {
     },
     setDeviceKitchenOrderStatus(state, kitchenOrderStatus) {
       state.device.kitchenOrderStatus = Boolean(kitchenOrderStatus);
-    },
+    }
   },
   actions: {
     async setOpenTablet(context, params) {
       try {
-        const url = endpoints.device.shopOpen;
-        const response = await axios.post(url, params);
+        const response = await postDeviceShopOpen(params);
 
         if (response) {
           return true;
@@ -816,8 +890,7 @@ const device = {
     },
     async setCloseTablet(context, params) {
       try {
-        const url = endpoints.device.shopClose;
-        const response = await axios.post(url, params);
+        const response = await postDeviceShopClose(params);
 
         if (response) {
           return true;
@@ -831,8 +904,7 @@ const device = {
     },
     async setAgreeOrder(context, params) {
       try {
-        const url = endpoints.device.shopOpenOrder;
-        const response = await axios.post(url, params);
+        const response = await postDeviceShopOpenOrder(params);
 
         if (response) {
           return true;
@@ -846,8 +918,7 @@ const device = {
     },
     async setRejectOrder(context, params) {
       try {
-        const url = endpoints.device.shopCloseOrder;
-        const response = await axios.post(url, params);
+        const response = await postDeviceShopCloseOrder(params);
 
         if (response) {
           return true;
@@ -861,8 +932,7 @@ const device = {
     },
     async setShowRecentOrder(context, params) {
       try {
-        const url = endpoints.device.showRecentOrder;
-        const response = await axios.post(url, params);
+        const response = await postDeviceShowRecentOrder(params);
 
         if (response) {
           return true;
@@ -876,8 +946,7 @@ const device = {
     },
     async setCloseRecentOrder(context, params) {
       try {
-        const url = endpoints.device.hideRecentOrder;
-        const response = await axios.post(url, params);
+        const response = await postDeviceHideRecentOrder(params);
 
         if (response) {
           return true;
@@ -891,8 +960,7 @@ const device = {
     },
     async setShowKitchenOrder(context, params) {
       try {
-        const url = endpoints.device.showKitchenOrder;
-        const response = await axios.post(url, params);
+        const response = await postDeviceShowKitchenOrder(params);
 
         if (response) {
           return true;
@@ -906,8 +974,7 @@ const device = {
     },
     async setCloseKitchenOrder(context, params) {
       try {
-        const url = endpoints.device.hideKitchenOrder;
-        const response = await axios.post(url, params);
+        const response = await postDeviceHideKitchenOrder(params);
 
         if (response) {
           return true;
@@ -918,48 +985,50 @@ const device = {
         // console.log(error);
         return false;
       }
-    },
-  },
+    }
+  }
 };
 
 const table = {
   mutations: {
-    SET_TABLES: (state, tables) => Vue.set(state, 'tables', tables),
-    SET_TABLE_CART_LIST: (state, cartList) => Vue.set(state, 'cartList', cartList),
-    SHOW_ALL_REFRESH_MODAL: (state) => Vue.set(state, 'visibleAllRefreshModal', true),
-    CLOSE_ALL_REFRESH_MODAL: (state) => Vue.set(state, 'visibleAllRefreshModal', false),
-    SET_ALL_REFRESH_LIST: (state, allRefreshList) => Vue.set(state, 'allRefreshList', allRefreshList),
+    SET_TABLES: (state, tables) => Vue.set(state, "tables", tables),
+    SET_TABLE_CART_LIST: (state, cartList) =>
+      Vue.set(state, "cartList", cartList),
+    SHOW_ALL_REFRESH_MODAL: state =>
+      Vue.set(state, "visibleAllRefreshModal", true),
+    CLOSE_ALL_REFRESH_MODAL: state =>
+      Vue.set(state, "visibleAllRefreshModal", false),
+    SET_ALL_REFRESH_LIST: (state, allRefreshList) =>
+      Vue.set(state, "allRefreshList", allRefreshList)
   },
   actions: {
     async setTables({ commit }, payload) {
-      const str = querystring.stringify(payload);
-      const query = `?${str}`;
-      const url = `${endpoints.table.getTableList}${query}`;
-
-      const response = await axios.get(url);
+      const response = await requestTableList(payload);
 
       if (response.data && response.data.data) {
-        const results = response.data.data.map((item) => ({ ...item, ordering: false, orderStatus: true, }));
-        commit('SET_TABLES', results);
+        const results = response.data.data.map(item => ({
+          ...item,
+          ordering: false,
+          orderStatus: true
+        }));
+        commit("SET_TABLES", results);
         return results;
       }
 
       return [];
     },
     async setTableCartList({ commit }, params) {
-      const url = endpoints.table.getCartList;
-      const response = await axios.post(url, params);
+      const response = await requestCartList(params);
 
       if (response.data && response.data.order_info) {
-        commit('SET_TABLE_CART_LIST', response.data.order_info);
+        commit("SET_TABLE_CART_LIST", response.data.order_info);
         return response.data;
       }
       return false;
     },
     async yesOrder(context, payload) {
       try {
-        const res = await axios.post(endpoints.table.order, payload.params, payload.config);
-        // console.log(res);
+        const res = await requestOrder(payload.params, payload.config);
 
         if (res.status === 200) {
           return res;
@@ -972,10 +1041,7 @@ const table = {
     },
     async tabletReload(context, params) {
       try {
-        const url = endpoints.tablet.refresh;
-
-        const res = await axios.post(url, params);
-        // // console.log(res);
+        const res = await postTabletRefresh(params);
         return res;
       } catch (error) {
         return false;
@@ -983,141 +1049,140 @@ const table = {
     },
     async allTabletReload(context, params) {
       try {
-        const url = endpoints.tablet.allRefresh;
-
-        await axios.post(url, params);
-        // const res = await axios.post(url, params);
-        // console.log(res);
+        await postTabletAllRefresh(params);
       } catch (error) {
         return false;
       }
     }
-  },
+  }
 };
 
 const menu = {
   mutations: {
-    SET_CATEGORIES: (state, categories) => Vue.set(state, 'categories', categories),
-    SET_GOODS: (state, goods) => Vue.set(state, 'goods', goods),
-    SET_ALL_CATEGORIES: (state, categories) => Vue.set(state, 'allCategories', categories),
+    SET_CATEGORIES: (state, categories) =>
+      Vue.set(state, "categories", categories),
+    SET_GOODS: (state, goods) => Vue.set(state, "goods", goods),
+    SET_ALL_CATEGORIES: (state, categories) =>
+      Vue.set(state, "allCategories", categories),
     SET_MENU_USE: (state, targetCategory) => {
       if (state.allCategories[targetCategory.index]) {
-        state.allCategories[targetCategory.index].T_order_store_menu_use = targetCategory?.T_order_store_menu_use;
+        state.allCategories[targetCategory.index].T_order_store_menu_use =
+          targetCategory?.T_order_store_menu_use;
       }
     },
-    SET_MENU_CONFIG: (state, config) => Vue.set(state, 'menuConfig', config),
+    SET_MENU_CONFIG: (state, config) => Vue.set(state, "menuConfig", config)
   },
   actions: {
     async setCategories({ commit }, params) {
-      const url = endpoints.menu.categories;
-      const response = await axios.post(url, params);
+      const response = await postCategoryList(params);
 
       if (response.data && response.data.data) {
-        commit('SET_CATEGORIES', response.data.data);
+        commit("SET_CATEGORIES", response.data.data);
         return response.data.data;
       }
       return false;
     },
     async setGoods({ commit }, params) {
-      const url = endpoints.menu.getGoodsList;
-      const response = await axios.post(url, params);
+      const response = await postGetGoodsList(params);
 
       if (response.data && response.data.data) {
+        const data = response.data.data.filter(
+          o => o.T_order_store_good_posYN === 0
+        );
 
-        const data = response.data.data.filter(o => o.T_order_store_good_posYN === 0);
-
-        commit('SET_GOODS', data);
+        commit("SET_GOODS", data);
         return data;
       }
       return false;
     },
     async updateCategoryOpen(context, params) {
-      const url = endpoints.menu.updateCategoryOpen;
-      const response = await axios.post(url, params);
+      const response = await postCategoryOpen(params);
 
       return response;
     },
     async updateCategoryClose(context, params) {
-      const url = endpoints.menu.updateCategoryClose;
-      const response = await axios.post(url, params);
+      const response = await postCategoryClose(params);
 
       return response;
     },
     async setAllCategories({ commit }, params) {
-      const url = endpoints.menu.getAllCategories;
-      const response = await axios.post(url, params);
+      const response = await postAllCategories(params);
 
       if (response && response.data) {
-        commit('SET_ALL_CATEGORIES', response.data);
+        commit("SET_ALL_CATEGORIES", response.data);
         return response.data;
       }
       return false;
     },
     async setMenuConfig({ commit }, params) {
-      const config = {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      };
-      const url = endpoints.menu.getMenuConfig;
-      const response = await axios.post(url, params, config);
+      const response = await postGetMenuConfig(params);
 
       if (response?.data?.result) {
         const { data } = response;
-        commit('SET_MENU_CONFIG', data);
-        commit('SET_GOODS', data.goods);
+        commit("SET_MENU_CONFIG", data);
+        commit("SET_GOODS", data.goods);
         return data;
       }
       return false;
-    },
+    }
   },
   getters: {
     getCategories(state) {
       return getCategories(state.categories);
     },
     processGoods(state) {
-      return state.goods.map( p => {
-        let categories = p.T_order_store_good_category;
+      return state.goods
+        .map(p => {
+          let categories = p.T_order_store_good_category;
 
-        try {
-          if (typeof categories === "string") {
-            categories = JSON.parse(categories);
+          try {
+            if (typeof categories === "string") {
+              categories = JSON.parse(categories);
+            }
+          } catch (e) {
+            // console.log(e);
           }
-        } catch(e) {
-          // console.log(e);
-        }
 
-        if (p.T_order_store_good_image) {
-          imagePreload(p.T_order_store_good_image);
-        }
+          if (p.T_order_store_good_image) {
+            imagePreload(p.T_order_store_good_image);
+          }
 
-        return {
-          categories,
-          code: p.T_order_store_good_code,
-          price: p.T_order_store_good_defualt_price,
-          displayName: p.T_order_store_good_display_name,
-          displayNameOneLine: p.T_order_store_good_display_name?.replace(/\/\//gi, " "),
-          displayNameNewLine: p.T_order_store_good_display_name?.replace(/\/\//gi, "<br/>"),
-          image: p.T_order_store_good_image,
-          name: p.T_order_store_good_name,
-          names: p.T_order_store_good_name_array,
-          sortNo: p.T_order_store_good_sort_number,
-          updated_dt: p.T_order_store_good_update_date,
-          noUse: p.T_order_store_good_use,
-          keyword: p.T_order_store_keyword,
-          hideInCart: p.T_order_store_non_show_cart,
-          posCode: p.T_order_store_pos_code,
-          options: p.option_group,
-          description: p.T_order_store_good_html,
-          descriptionFlag: p.T_order_store_good_html_flag.toLowerCase(),
-          openDetail: p.T_order_store_good_detail_open,
-          reviews: p.menuRatingList,
-          soldout: p.T_order_store_good_soldout,
-          best: p.type_best,
-          hit: p.type_hit,
-          md: p.type_md,
-          sale: p.type_sale,
-          new: p.type_new,
-        };
-      }).sort((a, b) => a.sortNo - b.sortNo);
+          return {
+            categories,
+            code: p.T_order_store_good_code,
+            price: p.T_order_store_good_defualt_price,
+            displayName: p.T_order_store_good_display_name,
+            displayNameOneLine: p.T_order_store_good_display_name?.replace(
+              /\/\//gi,
+              " "
+            ),
+            displayNameNewLine: p.T_order_store_good_display_name?.replace(
+              /\/\//gi,
+              "<br/>"
+            ),
+            image: p.T_order_store_good_image,
+            name: p.T_order_store_good_name,
+            names: p.T_order_store_good_name_array,
+            sortNo: p.T_order_store_good_sort_number,
+            updated_dt: p.T_order_store_good_update_date,
+            noUse: p.T_order_store_good_use,
+            keyword: p.T_order_store_keyword,
+            hideInCart: p.T_order_store_non_show_cart,
+            posCode: p.T_order_store_pos_code,
+            options: p.option_group,
+            description: p.T_order_store_good_html,
+            descriptionFlag: p.T_order_store_good_html_flag.toLowerCase(),
+            openDetail: p.T_order_store_good_detail_open,
+            reviews: p.menuRatingList,
+            soldout: p.T_order_store_good_soldout,
+            best: p.type_best,
+            hit: p.type_hit,
+            md: p.type_md,
+            sale: p.type_sale,
+            new: p.type_new
+          };
+        })
+        .sort((a, b) => a.sortNo - b.sortNo);
     },
     getCategoriesGoods(state, getters) {
       const { processGoods, getCategories } = getters;
@@ -1131,24 +1196,25 @@ const menu = {
       };
 
       const getFilteredGoods = (products, subCategory) => {
-        return products.filter((good) => findGoods(good, subCategory));
+        return products.filter(good => findGoods(good, subCategory));
       };
 
       const getSubCategoryItem = (subCategoryItem, products) => {
         const goods = getFilteredGoods(products, subCategoryItem.code);
-        console.log(goods,' ss');
+        console.log(goods, " ss");
         return {
           ...subCategoryItem,
-          goods,
+          goods
         };
       };
 
-      const getCategoryItem = (categoryItem) => {
-        const getSubCategoryObj = (subCategoryItem) => getSubCategoryItem(subCategoryItem, processGoods);
+      const getCategoryItem = categoryItem => {
+        const getSubCategoryObj = subCategoryItem =>
+          getSubCategoryItem(subCategoryItem, processGoods);
         const subCategories = categoryItem.subCategories.map(getSubCategoryObj);
         return {
           ...categoryItem,
-          subCategories,
+          subCategories
         };
       };
 
@@ -1170,55 +1236,62 @@ const menu = {
     },
     processNewGoods(state) {
       try {
-        return state.goods.map( p => {
-          let categories = p.T_order_store_good_category;
-          if (!p.T_order_store_good_display_name) {
-            console.log(p, '확인');
-          }
-
-          try {
-            if (typeof categories === "string") {
-              categories = JSON.parse(categories);
+        return state.goods
+          .map(p => {
+            let categories = p.T_order_store_good_category;
+            if (!p.T_order_store_good_display_name) {
+              console.log(p, "확인");
             }
-          } catch(e) {
-            // console.log(e);
-          }
 
-          if (p.T_order_store_good_image) {
-            imagePreload(p.T_order_store_good_image);
-          }
+            try {
+              if (typeof categories === "string") {
+                categories = JSON.parse(categories);
+              }
+            } catch (e) {
+              // console.log(e);
+            }
 
-          return {
-            categories,
-            code: p.T_order_store_good_code,
-            price: p.T_order_store_good_defualt_price,
-            displayName: p.T_order_store_good_display_name,
-            displayNameOneLine: p.T_order_store_good_display_name?.replace(/\/\//gi, " "),
-            displayNameNewLine: p.T_order_store_good_display_name?.replace(/\/\//gi, "<br/>"),
-            image: p.T_order_store_good_image,
-            name: p.T_order_store_good_name,
-            names: p.T_order_store_good_name_array,
-            sortNo: p.T_order_store_good_sort_number,
-            updated_dt: p.T_order_store_good_update_date,
-            noUse: p.T_order_store_good_use,
-            keyword: p.T_order_store_keyword,
-            hideInCart: p.T_order_store_non_show_cart,
-            posCode: p.T_order_store_pos_code,
-            options: p.option_group,
-            description: p.T_order_store_good_html,
-            descriptionFlag: p.T_order_store_good_html_flag.toLowerCase(),
-            openDetail: p.T_order_store_good_detail_open,
-            reviews: p.menuRatingList,
-            soldout: p.T_order_store_good_soldout,
-            best: p.type_best,
-            hit: p.type_hit,
-            md: p.type_md,
-            sale: p.type_sale,
-            posDeleteStatus: p.T_order_store_good_posYN === "1",
-            new: p.type_new,
-          };
-        }).sort((a, b) => a.sortNo - b.sortNo);
+            if (p.T_order_store_good_image) {
+              imagePreload(p.T_order_store_good_image);
+            }
 
+            return {
+              categories,
+              code: p.T_order_store_good_code,
+              price: p.T_order_store_good_defualt_price,
+              displayName: p.T_order_store_good_display_name,
+              displayNameOneLine: p.T_order_store_good_display_name?.replace(
+                /\/\//gi,
+                " "
+              ),
+              displayNameNewLine: p.T_order_store_good_display_name?.replace(
+                /\/\//gi,
+                "<br/>"
+              ),
+              image: p.T_order_store_good_image,
+              name: p.T_order_store_good_name,
+              names: p.T_order_store_good_name_array,
+              sortNo: p.T_order_store_good_sort_number,
+              updated_dt: p.T_order_store_good_update_date,
+              noUse: p.T_order_store_good_use,
+              keyword: p.T_order_store_keyword,
+              hideInCart: p.T_order_store_non_show_cart,
+              posCode: p.T_order_store_pos_code,
+              options: p.option_group,
+              description: p.T_order_store_good_html,
+              descriptionFlag: p.T_order_store_good_html_flag.toLowerCase(),
+              openDetail: p.T_order_store_good_detail_open,
+              reviews: p.menuRatingList,
+              soldout: p.T_order_store_good_soldout,
+              best: p.type_best,
+              hit: p.type_hit,
+              md: p.type_md,
+              sale: p.type_sale,
+              posDeleteStatus: p.T_order_store_good_posYN === "1",
+              new: p.type_new
+            };
+          })
+          .sort((a, b) => a.sortNo - b.sortNo);
       } catch (error) {
         // console.log(error);
         return [];
@@ -1227,12 +1300,15 @@ const menu = {
     getNewCategoriesGoods(state, getters) {
       const { processNewGoods, getNewCategories } = getters;
 
-      const getSubCategoryItem = (subCategoryItem) => {
-        const defineItems = subCategoryItem.goods.map((o) => {
-          const product = processNewGoods.filter((item) => String(o.code) === String(item.code) && !item.posDeleteStatus)[0];
+      const getSubCategoryItem = subCategoryItem => {
+        const defineItems = subCategoryItem.goods.map(o => {
+          const product = processNewGoods.filter(
+            item =>
+              String(o.code) === String(item.code) && !item.posDeleteStatus
+          )[0];
           const defineProduct = {
             ...product,
-            sortNo: o.sort,
+            sortNo: o.sort
           };
           return defineProduct;
         });
@@ -1241,23 +1317,24 @@ const menu = {
 
         return {
           ...subCategoryItem,
-          goods,
+          goods
         };
       };
 
-      const getCategoryItem = (categoryItem) => {
-        const getSubCategoryObj = (subCategoryItem) => getSubCategoryItem(subCategoryItem);
+      const getCategoryItem = categoryItem => {
+        const getSubCategoryObj = subCategoryItem =>
+          getSubCategoryItem(subCategoryItem);
         const subCategories = categoryItem.subCategories.map(getSubCategoryObj);
         return {
           ...categoryItem,
-          subCategories,
+          subCategories
         };
       };
 
       const results = getNewCategories.map(getCategoryItem);
       return results;
-    },
-  },
+    }
+  }
 };
 
 const monitoring = {
@@ -1267,20 +1344,19 @@ const monitoring = {
     },
     updateUCode(state, payload) {
       state.uCode = payload;
-    },
-  },
+    }
+  }
 };
 
 const goods = {
   actions: {
     async updateGoodStatusType(context, payload) {
-      const url = endpoints.goods.updateGoodStatus;
-      const res = await axios.get(url, payload);
+      const res = await getUpdateGoodStatus(payload);
       // console.log('update goods type response', res);
 
       return res;
-    },
-  },
+    }
+  }
 };
 
 const popup = {
@@ -1293,7 +1369,7 @@ const popup = {
         index = parseInt(index);
         const message = state.flashMessages[index];
 
-        if (message.time + 3000 < time && indexLast < index ) {
+        if (message.time + 3000 < time && indexLast < index) {
           indexLast = index;
         }
       }
@@ -1305,7 +1381,7 @@ const popup = {
       let item = {
         key: this.state.flashMessageCount,
         message: message,
-        time: new Date().getTime(),
+        time: new Date().getTime()
       };
 
       this.state.flashMessageCount += 1;
@@ -1313,56 +1389,53 @@ const popup = {
       state.flashMessages.push(item);
     },
     setDisconnectModalVisible(state, isDisconnectModal) {
-      Vue.set(state, 'isDisconnectModal', isDisconnectModal);
+      Vue.set(state, "isDisconnectModal", isDisconnectModal);
     },
     closeConfirmModal(state) {
       state.confirmModal.show = false;
     },
     showConfirmModal(state, confirmModal) {
       state.confirmModal = confirmModal;
-    },
-  },
+    }
+  }
 };
 
 const tablet = {
   mutations: {
     setSignBoardStatus(state, status) {
-      Vue.set(state, 'isDisConnectNetwork', status.visible);
-      Vue.set(state, 'signboardMessage', status.message);
-    },
+      Vue.set(state, "isDisConnectNetwork", status.visible);
+      Vue.set(state, "signboardMessage", status.message);
+    }
   },
   actions: {
     async resetOrder(context, params) {
-      const url = endpoints.tablet.resetOrder;
-
-      const res = await axios.post(url, params);
+      const res = await postTabletResetOrder(params);
 
       return res;
-    },
-  },
+    }
+  }
 };
-
 
 const authProto = {
   member: {
-    code: '',
-    name: '',
+    code: "",
+    name: ""
   },
   store: {
-    store_code: '',
-    store_id: '',
-    store_name: '',
-    code: '',
-    name: '',
-  },
+    store_code: "",
+    store_id: "",
+    store_name: "",
+    code: "",
+    name: ""
+  }
 };
 
 const confirmModalProto = {
   show: false,
   close: () => {},
-  title: '',
-  message: '',
-  confirm: () => {},
+  title: "",
+  message: "",
+  confirm: () => {}
 };
 
 const payment = {
@@ -1397,18 +1470,18 @@ const payment = {
       let list = payload.list;
 
       const typeStrings = {
-        0: { name: "현금 미결제"},
-        1: { name: "현금 결제 완료"},
-        2: { name: "현금 환불"},
-        3: { name: "카드결제 완료"},
-        4: { name: "카드 환불"},
-        5: { name: "카드 취소"},
-        6: { name: "현금 영수증 요청 "},
-        7: { name: "현금 영수증 출력"},
-        8: { name: "현금 영수증 취소"},
+        0: { name: "현금 미결제" },
+        1: { name: "현금 결제 완료" },
+        2: { name: "현금 환불" },
+        3: { name: "카드결제 완료" },
+        4: { name: "카드 환불" },
+        5: { name: "카드 취소" },
+        6: { name: "현금 영수증 요청 " },
+        7: { name: "현금 영수증 출력" },
+        8: { name: "현금 영수증 취소" }
       };
 
-      list.map((i) => {
+      list.map(i => {
         const index = i.creditType;
         console.log(index);
         let name = "";
@@ -1419,36 +1492,35 @@ const payment = {
         i.creditTypeString = name;
       });
 
-      Vue.set(state, 'paymentList', list);
-      Vue.set(state, 'paymentListPage', {
+      Vue.set(state, "paymentList", list);
+      Vue.set(state, "paymentListPage", {
         currPage,
-        allPages,
+        allPages
       });
     },
     replacePaymentListItem(state, item) {
       const id = item.id;
-      const index = state.paymentList.findIndex((i) => {
+      const index = state.paymentList.findIndex(i => {
         return i.id == id;
       });
-      if ( index >- 1) {
-
+      if (index > -1) {
         const deepCopyArr = JSON.parse(JSON.stringify(state.paymentList));
 
         const typeStrings = {
-          0: { name: "현금 미결제"},
-          1: { name: "현금 결제 완료"},
-          2: { name: "현금 환불"},
-          3: { name: "카드결제 완료"},
-          4: { name: "카드 환불"},
-          5: { name: "카드 취소"},
-          6: { name: "현금 영수증 요청 "},
-          7: { name: "현금 영수증 출력"},
-          8: { name: "현금 영수증 취소"},
+          0: { name: "현금 미결제" },
+          1: { name: "현금 결제 완료" },
+          2: { name: "현금 환불" },
+          3: { name: "카드결제 완료" },
+          4: { name: "카드 환불" },
+          5: { name: "카드 취소" },
+          6: { name: "현금 영수증 요청 " },
+          7: { name: "현금 영수증 출력" },
+          8: { name: "현금 영수증 취소" }
         };
 
         const target = {
           ...item,
-          creditTypeString: typeStrings[item.creditType].name,
+          creditTypeString: typeStrings[item.creditType].name
         };
 
         deepCopyArr[index] = target;
@@ -1458,32 +1530,28 @@ const payment = {
     },
     updateItemModal(state, item) {
       state.itemModal = item;
-    },
-  },
-  actions : {
-    async updatePaymentList(context, params) {
-
-      const url = endpoints.payment.creditDataList;
-      const res = await axios.get(url, {params});
-
-      context.commit('updatePaymentList', res.data);
-    },
-    async updateOldPaymentList(context, params) {
-
-      const url = endpoints.payment.creditList;
-      const res = await axios.get(url, {params});
-
-      context.commit('updatePaymentList', res.data);
     }
   },
+  actions: {
+    async updatePaymentList(context, params) {
+      const res = await getPaymentCreditDataList(params);
+
+      context.commit("updatePaymentList", res.data);
+    },
+    async updateOldPaymentList(context, params) {
+      const res = await getPaymentCreditList(params);
+
+      context.commit("updatePaymentList", res.data);
+    }
+  }
 };
 
 const state = {
   order: undefined,
-  auction : false,
-  posResponseModal : {
+  auction: false,
+  posResponseModal: {
     isOn: false,
-    tableNumber: '',
+    tableNumber: ""
   },
   optionSoldOutModal: false,
   orderModal: false,
@@ -1493,7 +1561,7 @@ const state = {
     serviceStatus: false,
     orderStatus: false,
     recentOrderStatus: false,
-    kitchenOrderStatus: false,
+    kitchenOrderStatus: false
   },
   auth: authProto,
   stores: [],
@@ -1502,56 +1570,56 @@ const state = {
   categories: [],
   allCategories: [],
   goods: [],
-  MACAddr: '00:00:00:00:00:00',
-  uCode: '',
+  MACAddr: "00:00:00:00:00:00",
+  uCode: "",
   flashMessages: [],
   flashMessageCount: 0,
   visibleAllRefreshModal: false,
   allRefreshList: [],
   isDisConnectNetwork: false,
-  signboardMessage: '',
+  signboardMessage: "",
   confirmModal: confirmModalProto,
   requestCashItem: undefined,
   requestCreditItem: {},
   paymentList: [],
   paymentListPage: {
     currPage: 3,
-    allPages: 10,
+    allPages: 10
   },
   currentSearchModal: null,
   itemModal: {
     currName: null,
     index: null,
-    item: null,
+    item: null
   },
-  alertModalMessage: '에레 메세지 입력하세요 기본값 입니다.',
+  alertModalMessage: "에레 메세지 입력하세요 기본값 입니다.",
   isAlertModal: false,
   orderKeys: new Map(),
-  standardPriceUnit: '원',
+  standardPriceUnit: "원",
   // 시작 위치: true, 종료 위치: false
   standardPriceFrontPosition: false,
   isTorderTwo: false,
   isRemakePaid: false,
-  storeTheme: '',
+  storeTheme: "",
   cashPaymentCancelModal: false,
   cashPaymentCancelInfo: {
     table: {
-      name: ''
+      name: ""
     },
     paymentInfo: {
       count: 0,
-      amount: 0,
+      amount: 0
     }
   },
   cashPaymentRequestModal: false,
   cashPaymentRequestInfo: {
-    tableName: '',
-    amount: 0,
+    tableName: "",
+    amount: 0
   },
   cashPaymentConfirmModal: false,
-  alertTwoBtMessage: '',
+  alertTwoBtMessage: "",
   isAlertTwoBtModal: false,
-  soldOutAlertModal: false,
+  soldOutAlertModal: false
 };
 
 const mutations = {
@@ -1565,7 +1633,7 @@ const mutations = {
   ...device.mutations,
   ...popup.mutations,
   ...tablet.mutations,
-  ...payment.mutations,
+  ...payment.mutations
 };
 
 const actions = {
@@ -1578,17 +1646,17 @@ const actions = {
   ...menu.actions,
   ...goods.actions,
   ...tablet.actions,
-  ...payment.actions,
+  ...payment.actions
 };
 
 const getters = {
-  ...menu.getters,
+  ...menu.getters
 };
 
-const modules ={
+const modules = {
   robot,
   noticePopup,
-  valet,
+  valet
 };
 
 const plugins = [];

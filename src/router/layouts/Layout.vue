@@ -91,11 +91,11 @@ import {
 import { payments, happyTalk as happyTalkAction, shop } from "@apis";
 import { HappyTalk } from "@svg";
 
-const { requestCardCancelCommit } = payments;
+const { postCardCancelCommit } = payments;
 
 const { postMessage } = happyTalkAction;
 
-const { postShopConfigData } = shop;
+const { requestShopConfigData } = shop;
 
 export default {
   components: {
@@ -321,7 +321,7 @@ export default {
           const params = new FormData();
           params.append("store_code", store_code);
 
-          const res = await postShopConfigData(params);
+          const res = await requestShopConfigData(params);
 
           const redirectionUrl = res.data.data.T_order_store_orderView_version;
 
@@ -332,7 +332,7 @@ export default {
 
           const removedHashRouter = formatInitTabletVersion.replace("/#/", "/");
           const currentUrl = window.location.origin + window.location.pathname;
-
+          console.log(currentUrl, removedHashRouter);
           if (currentUrl !== removedHashRouter) {
             window.location.href = removedHashRouter;
           }
@@ -478,7 +478,7 @@ export default {
                   );
                 }
 
-                const res = await requestCardCancelCommit(vanData);
+                const res = await postCardCancelCommit(vanData);
                 if (res.status === 200) {
                   this.showAlert(
                     "승인 요청했습니다. 조회하여 새로고침 해주세요."
@@ -609,8 +609,7 @@ export default {
           });
         });
       } catch (error) {
-        console.log("여긴가?");
-        // console.log(error);
+        console.log(error);
       }
     },
     async tagetVersionRedirect() {
@@ -638,7 +637,7 @@ export default {
             );
             const currentUrl =
               window.location.origin + window.location.pathname;
-
+            console.log(currentUrl, removedHashRouter);
             if (currentUrl !== removedHashRouter) {
               window.location.href = removedHashRouter;
             }
