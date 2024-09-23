@@ -34,9 +34,10 @@
     router-link.button-added(v-if="visibleOrderButton && !isUplus" :to="paths.servingRobotManagement")
       span 로봇 관리
       img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
-    router-link.button-added(v-if="visibleOrderButton && !isDevTeam && !isUplus" :to="paths.auctionManager")
+    router-link.button-added(v-if="visibleOrderButton && !isUplus" :to="paths.auctionManager")
       span 경매 관리
       img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
+    // 기존 개발용도로 만들어진 것(isDevTeam)으로 사용되어지지 않아 주석 처리 (24.09.23)
     //- router-link.button-added(v-if="useGame" :to="paths.gameManagement")
     //-   span 게임 관리
     //-   img(src="https://s3.ap-northeast-2.amazonaws.com/images.orderhae.com/icons/beta_r.png")
@@ -56,10 +57,7 @@
 
 <script>
 import paths from '@router/paths';
-import {
-  IS_DEV_TEAM,
-  IS_UPLUS,
-} from '@utils/constants';
+import { IS_UPLUS } from '@utils/constants';
 import { tableGame } from '@apis';
 
 const {
@@ -69,7 +67,6 @@ const {
 export default {
   data: () => ({
     paths,
-    isDevTeam: IS_DEV_TEAM,
     isUplus: IS_UPLUS,
     useGame : false,
   }),
