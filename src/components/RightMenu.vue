@@ -49,11 +49,11 @@
               path(d='M10,9H8' transform='translate(0.571)' fill='none' stroke='#fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1')
           | 결제내역
     .view_setting
-      p 테블릿 화면
+      p 태블릿 화면
       label.switch(v-on:click.stop="toggleTabletScreen")
         input(type='checkbox' v-bind:checked="statusTabletScreen" disabled="disabled" )
         span.slider.round
-      p 테블릿 주문
+      p 태블릿 주문
       label.switch(v-on:click.stop="toggleOrder")
         input(type='checkbox' v-bind:checked="statusOrder" disabled="disabled")
         span.slider.round

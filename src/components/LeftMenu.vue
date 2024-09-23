@@ -30,12 +30,12 @@
   .wrap-bottom-button-area
     .on-off-button-list
       .wrap-on-off-button
-        p 테블릿 화면
+        p 태블릿 화면
         .wrap-on-off-switch
           .on-off-switch(v-on:click.stop="closeTabletScreen" :class="{activeSwitch: !statusTabletScreen}") OFF
           .on-off-switch(v-on:click.stop="openTabletScreen" :class="{activeSwitch: statusTabletScreen}") ON
       .wrap-on-off-button
-        p 테블릿 주문
+        p 태블릿 주문
         .wrap-on-off-switch
           .on-off-switch(v-on:click.stop="rejectOrder" :class="{activeSwitch: !statusOrder}") OFF
           .on-off-switch(v-on:click.stop="agreeOrder" :class="{activeSwitch: statusOrder}") ON
