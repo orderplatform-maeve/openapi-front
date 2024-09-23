@@ -825,7 +825,7 @@ const shop = {
         /**
          * TODO shop/config 에 api에 대한 정보가 없어서 도메인으로 판별해야함. 따라서 도메인이 변경되면 수정 필요.
          * order2: 티오더2 운영망
-         * share: LG U+
+         * uplus: LG 유플러스오더
          */
         commit(
           "updateIsTorderTwo",

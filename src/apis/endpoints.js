@@ -1,4 +1,4 @@
-import { IS_DEV_TEAM, IS_LG } from "@utils/constants";
+import { IS_DEV_TEAM, IS_UPLUS } from "@utils/constants";
 
 let REST_URL = "http://rest.torder.co.kr";
 let ORDER_URL = "http://rest.torder.co.kr";
@@ -30,7 +30,7 @@ if (IS_DEV_TEAM) {
   SOCKET_URL = "http://development.socket.torder.co.kr:80";
 }
 
-if (IS_LG) {
+if (IS_UPLUS) {
   if(IS_DEV_TEAM) {
     REST_URL = "https://kr.dev.rest-api.share.torder.com";
     ORDER_URL = "https://kr.dev.rest-api.share.torder.com";

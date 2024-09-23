@@ -51,7 +51,7 @@ import {
   IconExitBlack,
   XWhiteButton,
 } from '@svg';
-import {IS_LG} from "@utils/constants";
+import { IS_UPLUS } from "@utils/constants";
 
 Vue.config.devtools = true;
 
@@ -128,7 +128,7 @@ new Vue({
 // 동적 파비콘 적용
 const link = document.querySelector("link[rel~='icon']");
 if (link) {
-  if (IS_LG) {
+  if (IS_UPLUS) {
     link.href = 'https://static.torder.co.kr/admin/uplus_logo_image.svg';
   } else {
     link.href = 'https://static.torder.co.kr/admin/torder_logo_image.svg';
@@ -136,7 +136,7 @@ if (link) {
 }
 
 // 동적 타이틀 적용
-if(IS_LG) {
+if(IS_UPLUS) {
   document.title = "U+오더 Master";
 } else {
   document.title = "티오더 Master";
