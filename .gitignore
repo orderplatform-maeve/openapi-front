@@ -12,8 +12,6 @@ yarn-error.log
 *.sln
 *.sw*
 s3-credentials.json
-s3-credentials.lg.json
-s3-credentials.lg.dev.json
 s3-credentials.dev.json
 s3-credentials.dev.team.json
 backups

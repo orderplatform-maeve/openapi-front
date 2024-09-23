@@ -1,5 +1,4 @@
 import axios from 'axios';
-// import { IS_LG_FLAG } from "@utils/constants";
 
 export const getRequestApi = (url, config) => {
   const token = localStorage.getItem('jwt');

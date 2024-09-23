@@ -8,8 +8,8 @@
     :confirm="confirmModal.confirm"
   )
   .torder-logo
-    icon-uplus-logo(v-if='businessType === "uplus"')
-    icon-torder-logo(v-if='businessType === "torder"')
+    icon-uplus-logo(v-if='isUplus')
+    icon-torder-logo(v-else)
   .wrap-current-date(@click="onTouchSecretFunction")
     p.current-date {{getNowDate()}}
     p.current-time {{getNowTime()}}
@@ -55,11 +55,9 @@
 </template>
 
 <script>
-import { version } from '@utils/constants';
+import { version, IS_UPLUS } from '@utils/constants';
 import paths from '@router/paths';
-import {
-  notice
-} from '@apis';
+import { notice } from '@apis';
 
 const {
   getNoticeInfo,
@@ -91,6 +89,7 @@ export default {
         noticeNewCount: 0,
       },
       deviceUsage: {},
+      isUplus: IS_UPLUS,
     };
   },
   methods: {
