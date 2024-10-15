@@ -1,0 +1,14 @@
+# 제외가 필요한 파일/경로는 적절히 추가해주세요
+
+# default path
+.idea/
+.turbo/
+node_modules/
+/out
+/dist
+coverate/
+
+# not pnpm
+.pnp.*
+.yarn/*
+
