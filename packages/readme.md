@@ -12,3 +12,16 @@ package 이름은 @torder/* 를 사용합니다. <br/>
   }
 }
 ```
+
+## eslint-config
+- eslint 8.x 를 지원하기 위한 패키지 
+
+## eslint-config-9
+- eslint 9.x 를 지원하기 위한 패키지
+ 
+## shared-types
+- 공통의 타입정의를 위한 패키지
+  - @types/torder-shared-types
+
+## typescript-config
+- 공통의 타입스크립트 설정을 위한 패키지 
