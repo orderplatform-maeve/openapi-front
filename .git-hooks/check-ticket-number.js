@@ -7,8 +7,8 @@ const commitMessage = fs.readFileSync(commitMsgFile, 'utf-8').trim();
 const jiraTicketPattern = new RegExp(`\\[(${jiraProjects.join('|')})-\\d+\\]`);
 
 if (!jiraTicketPattern.test(commitMessage)) {
-    console.error(`🚫 Commit message is missing a valid JIRA ticket number: ${commitMessage}`);
-    process.exit(1);
+  console.error(`🚫 Commit message is missing a valid JIRA ticket number: ${commitMessage}`);
+  process.exit(1);
 }
 
 

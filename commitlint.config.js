@@ -10,8 +10,8 @@
  *    단, header 에 티켓번호 작성을 강제하는 옵션이 제공되지 않아 별도의 스크립트에서 검사
  */
 module.exports = {
-    extends: ['@commitlint/config-conventional'],
-    rules: {
-        "body-max-line-length": [0, "always", Number.MAX_SAFE_INTEGER]
-    },
+  extends: ['@commitlint/config-conventional'],
+  rules: {
+    "body-max-line-length": [0, "always", Number.MAX_SAFE_INTEGER]
+  },
 };
