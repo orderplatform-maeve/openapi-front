@@ -72,6 +72,11 @@
     "sass-loader": "^8.0.2",
     "vue-template-compiler": "^2.6.11"
   },
+  "packageManager": "yarn@1.22.19",
+  "engines": {
+    "yarn": "1.22.19",
+    "node": "12.x"
+  },
   "eslintConfig": {
     "root": true,
     "env": {
