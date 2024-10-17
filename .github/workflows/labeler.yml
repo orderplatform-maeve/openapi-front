@@ -6,11 +6,11 @@
 # https://github.com/actions/labeler
 
 name: PR Labeler
-on:  # workflow를 trigger할 event
-  pull_request: # main 브랜치에 pr이 open 되었을 때
-    types: [opened]
+on:
+  - pull_request_target
+
 jobs:
-  label: # jobs 이름
+  labeler: # jobs 이름
     runs-on: ubuntu-latest # set runner
     permissions: # 해당 workflow의 접근 권한
       contents: read # 레포 내용은 읽기만 하고
@@ -18,6 +18,4 @@ jobs:
 
     steps:
       - name: Check Labels
-        uses: actions/labeler@v4 # 우리가 사용한 action의 version
-        with:
-          repo-token: "${{ secrets.GITHUB_TOKEN }}" # 자동 생성되는 token
+        uses: actions/labeler@v5 # 우리가 사용한 action의 version

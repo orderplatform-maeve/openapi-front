@@ -1,0 +1,43 @@
+name: Apps PR CI Workflow
+
+# Trigger the workflow for pull requests
+on:
+  pull_request:
+# No 'branches' specified, applies to all branches
+    paths-ignore:
+        - 'archives/**' # turborepo 미사용 directory 는 별도의 ci 구성 필요
+
+# Define jobs
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 선택한 branch or tag 체크아웃
+      - name: check out branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      # pnpm 설치
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      # 노드 버전 세팅
+      - name: setup node version
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+          cache: 'pnpm'
+
+      # Install dependencies (npm example)
+      - name: Install dependencies
+        run: pnpm i --frozen-lockfile
+
+      # Run tests
+      - name: Run tests
+        run: pnpm test
+
+      # Optionally build the project (if needed)
+      - name: Build project
+        run:  pnpm build

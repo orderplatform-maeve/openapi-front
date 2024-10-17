@@ -88,19 +88,23 @@
 ### 일반적인 문제와 해결방법
 
 ### 자주 묻는 질문
+
 - commit 시 eslint 에서 오류가 발생합니다.
   <details>
     <summary>확인하기</summary>
-  
+
   - package.json 의 type 정의를 확인합니다.
-    - type 이 module 인 경우 
+
+    - type 이 module 인 경우
+
       - 프로젝트에서 설치된 라이브러리를 기본적으로 ESM 으로 취급합니다. `eslint@9` 및 `@torder/eslint-config-9` 를 이용하여 eslint 를 설정합니다.
+
       ```javascript
       // package.json
       {
         devDependencies: {
           "@torder/eslint-config-9": "workspace:*"
-        } 
+        }
       }
 
       // eslint.config.js
@@ -111,28 +115,29 @@
       ];
       ```
 
-    - type 이 정의되어 있지 않거나 commonjs 인 경우
-      - 프로젝트의 기본설정이 cjs 입니다. `eslint@8` 및 `@torder/eslint-config` 를 이용하여 eslint 를 설정합니다.
-      ```javascript
+    - type 이 정의되어 있지 않거나 commonjs 인 경우 - 프로젝트의 기본설정이 cjs 입니다. `eslint@8` 및 `@torder/eslint-config` 를 이용하여 eslint 를 설정합니다.
+
+      ````javascript
       // package.json
       {
-        devDependencies: {
-          "@torder/eslint-config": "workspace:*"
-        }
+      devDependencies: {
+      "@torder/eslint-config": "workspace:\*"
+      }
       }
 
-      // eslint.config.js
-      module.exports = {
-        root: true,
-        extends: ["@torder/eslint-config/react-internal.js"],
-        parser: "@typescript-eslint/parser",
-        parserOptions: {
-          project: true,
-        }
-      }
-      ```
-  </details>
-  
+          // eslint.config.js
+          module.exports = {
+            root: true,
+            extends: ["@torder/eslint-config/react-internal.js"],
+            parser: "@typescript-eslint/parser",
+            parserOptions: {
+              project: true,
+            }
+          }
+          ```
+
+      </details>
+      ````
 
 ## 리소스 및 문서
 

@@ -1,6 +1,5 @@
 mark down: # 해당 라벨을
   - '**/*.md' # 전체 레포에서 .md에 변화가 생기면 추가
 
-# 아래는 설정 예시
-# master-client-1.0:
-#  - 'apps/master-client-1.0/**/*'
+master-client-1.0:
+  - 'archives/master-client-1.0/**/*'
