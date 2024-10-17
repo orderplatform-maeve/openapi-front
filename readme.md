@@ -88,6 +88,51 @@
 ### 일반적인 문제와 해결방법
 
 ### 자주 묻는 질문
+- commit 시 eslint 에서 오류가 발생합니다.
+  <details>
+    <summary>확인하기</summary>
+  
+  - package.json 의 type 정의를 확인합니다.
+    - type 이 module 인 경우 
+      - 프로젝트에서 설치된 라이브러리를 기본적으로 ESM 으로 취급합니다. `eslint@9` 및 `@torder/eslint-config-9` 를 이용하여 eslint 를 설정합니다.
+      ```javascript
+      // package.json
+      {
+        devDependencies: {
+          "@torder/eslint-config-9": "workspace:*"
+        } 
+      }
+
+      // eslint.config.js
+      import reactEsLint from "@torder/eslint-config-9/react.eslint.config.js"
+
+      export default [
+        ...reactEsLint,
+      ];
+      ```
+
+    - type 이 정의되어 있지 않거나 commonjs 인 경우
+      - 프로젝트의 기본설정이 cjs 입니다. `eslint@8` 및 `@torder/eslint-config` 를 이용하여 eslint 를 설정합니다.
+      ```javascript
+      // package.json
+      {
+        devDependencies: {
+          "@torder/eslint-config": "workspace:*"
+        }
+      }
+
+      // eslint.config.js
+      module.exports = {
+        root: true,
+        extends: ["@torder/eslint-config/react-internal.js"],
+        parser: "@typescript-eslint/parser",
+        parserOptions: {
+          project: true,
+        }
+      }
+      ```
+  </details>
+  
 
 ## 리소스 및 문서
 
@@ -102,4 +147,4 @@
 1. 이 소프트웨어는 티오더의 직원 또는 허가받은 계약자에 한해 내부에서만 사용이 허가됩니다.
 2. 이 소프트웨어의 일부 또는 전체를 상업적 목적으로 사용하거나, 회사의 사전 서면 동의 없이 외부에 공개할 수 없습니다.
 3. 소프트웨어를 제3자에게 무단으로 배포, 수정, 또는 공개하는 것은 엄격히 금지됩니다.
-4. 이 소프트웨어는 "있는 그대로" 제공되며, 명시적이거나 묵시적인 어떠한 보증도 포함하지 않습니다. [회사명]은 이 소프트웨어 사용으로 인해 발생하는 손해에 대해 책임을 지지 않습니다.
+4. 이 소프트웨어는 "있는 그대로" 제공되며, 명시적이거나 묵시적인 어떠한 보증도 포함하지 않습니다. 티오더는 이 소프트웨어 사용으로 인해 발생하는 손해에 대해 책임을 지지 않습니다.

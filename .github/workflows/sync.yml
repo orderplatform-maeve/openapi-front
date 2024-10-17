@@ -12,6 +12,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # PERSONAL_ACCESS_TOKEN 이 설정되지 않았다면 더이상 진행하지 않음
+      - name: Check if PERSONAL_ACCESS_TOKEN is set
+        run: |
+          if [ -z "${{ secrets.PERSONAL_ACCESS_TOKEN }}" ]; then
+            echo "Error: PERSONAL_ACCESS_TOKEN is not set"
+            exit 1
+          fi
+        shell: bash
+
       # fork 된 리포지토리 체크아웃
       - name: Checkout forked repository
         uses: actions/checkout@v4
