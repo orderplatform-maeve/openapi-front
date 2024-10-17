@@ -49,6 +49,12 @@
 - /packages/ui
   - Design system
 
+### archives
+
+운영 되지만 모노레포로 관리할 수 없는 프로젝트입니다.
+
+- /archives/
+
 ## 필수조건
 
 ### 개발환경
