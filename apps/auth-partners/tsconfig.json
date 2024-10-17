@@ -1,0 +1,12 @@
+{
+  "extends": "@torder/typescript-config/react.json",
+"compilerOptions": {
+  "jsx": "react-jsx",
+  "types": ["react/jsx-runtime"]
+},
+  "include": [
+    "**/*.ts",
+    "**/*.tsx"
+  ],
+  "exclude": ["node_modules"],
+}
