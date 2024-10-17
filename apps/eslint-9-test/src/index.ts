@@ -15,10 +15,10 @@ type Animal = {
 type Life = Person & Animal;
 
 const someone: Prettify<Life> = {
-  name: "deer",
+  name: 'deer',
   age: 123,
-  address: "korea",
-  habitat: "forest",
+  address: 'korea',
+  habitat: 'forest',
 };
 
 console.log(`someone = ${JSON.stringify(someone)}`);
