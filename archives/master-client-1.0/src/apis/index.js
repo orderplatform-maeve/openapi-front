@@ -1,0 +1,12 @@
+export { default as payments } from './payments';
+export { default as servingRobot } from './servingRobot';
+export { default as notice } from './notice';
+export { default as tableGame } from './tableGame';
+export { default as category } from './category';
+export { default as orders } from './orders';
+export { default as happyTalk } from './happyTalk';
+export { default as goods } from './goods';
+export { default as credit } from './credit';
+export { default as shop } from './shop';
+export { default as menu } from './menu';
+export { default as tablet } from './tablet';
