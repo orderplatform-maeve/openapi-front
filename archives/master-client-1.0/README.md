@@ -126,3 +126,7 @@ deploy:dev:demo -> 내부 개발자용 배포 -> demo 서버로 연결됨 -> htt
 
 웹팩 세팅을 새롭게 적용해야 하지만, 현재에는 현실적으로 어려움이 있어 프로덕트로 배포 시 development를 바라보게 함으로 대처하였다.
 그러므로, 개발 서버 테스트를 할 경우 `isDev` 사용을 금하며, `STOP_REDIRECT`를 사용하여 테스트하도록 한다.
+
+### PR label
+
+모노레포(front-service) 에서 PR 생성시 `master-client-1.0` 라벨이 자동 추가 됩니다.

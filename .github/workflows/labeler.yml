@@ -17,5 +17,13 @@ jobs:
       pull-requests: write # PR에 write할 수 있음!(github bot이 존재하니까!)
 
     steps:
+      - name: check out branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
       - name: Check Labels
-        uses: actions/labeler@v5 # 우리가 사용한 action의 version
+        uses: actions/labeler@v4
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          sync-labels: true
