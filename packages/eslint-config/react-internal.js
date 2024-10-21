@@ -83,6 +83,7 @@ module.exports = {
     '@typescript-eslint/no-misused-promises': 'off',
     '@typescript-eslint/prefer-nullish-coalescing': 'off',
     '@typescript-eslint/consistent-type-definitions': 'off',
+    '@typescript-eslint/no-empty-object-type': 'off',
 
     /**
      * deprecated rules but cause of lint error

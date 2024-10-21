@@ -1,0 +1,5 @@
+@import '../../tailwind.css';
+
+.primary {
+    @apply text-3xl font-bold underline;
+}

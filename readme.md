@@ -88,6 +88,16 @@
 ### 일반적인 문제와 해결방법
 
 ### 자주 묻는 질문
+- 매일 자정 수행되는 동기화(Sync fork with upstream) 작업이 folk 된 레포지토리에서 실패해요.
+  <details>
+    <summary>확인하기</summary>
+
+  - 토큰 발급하기
+    - Github profile -> Settings -> Developer Settings -> Personal access token -> Tokens (classic) -> generate new token
+      
+  - 토큰 설정하기
+    - Github repository (fork 뜬 레포) -> Settings -> Secrets and variables -> Actions -> Secrets -> New repository secret -> PERSONAL_ACCESS_TOKEN 에 발급 받은 토큰 설정
+
 
 - commit 시 eslint 에서 오류가 발생합니다.
   <details>

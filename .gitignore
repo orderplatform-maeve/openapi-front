@@ -5,11 +5,12 @@
 .turbo/
 node_modules/
 /out
-dist
+dist/
 coverate/
-.env
 
 # not pnpm
 .pnp.*
 .yarn/*
 
+
+*storybook.log

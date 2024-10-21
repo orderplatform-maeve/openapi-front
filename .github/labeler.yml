@@ -3,3 +3,6 @@ mark down: # 해당 라벨을
 
 master-client-1.0:
   - 'archives/master-client-1.0/**/*'
+
+ui:
+  - 'packages/ui/**/*'

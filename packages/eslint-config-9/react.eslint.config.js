@@ -84,6 +84,7 @@ export default [
       "@typescript-eslint/lines-between-class-members": "off",
       "@typescript-eslint/no-throw-literal": "off",
       "@typescript-eslint/ban-types": "off",
+      "@typescript-eslint/no-empty-object-type": "off"
     }
   },
 ];

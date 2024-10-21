@@ -5,6 +5,7 @@
 
 # 라이브러리
 # /packages
+/packages/ui/ @orderplatform-soojin
 
 # 그외 나머지
 # /

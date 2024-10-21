@@ -17,7 +17,7 @@ jobs:
         run: |
           if [ -z "${{ secrets.PERSONAL_ACCESS_TOKEN }}" ]; then
             echo "Error: PERSONAL_ACCESS_TOKEN is not set"
-            exit 1
+            exit 0
           fi
         shell: bash
 
