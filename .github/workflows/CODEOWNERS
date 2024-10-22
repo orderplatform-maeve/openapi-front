@@ -2,10 +2,12 @@
 
 # 사이트별
 # /apps
+/apps/auth-partners @orderplatform-ronnie @orderplatform-daisy
 
 # 라이브러리
 # /packages
-/packages/ui/ @orderplatform-soojin
+/packages/ui/ @orderplatform-soojin @orderplatform-daisy
+/packages/utils @orderplatform-soojin @orderplatform-kangil
 
 # 그외 나머지
 # /

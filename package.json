@@ -10,7 +10,8 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "prepare": "simple-git-hooks",
     "check-branch-name": "node .git-hooks/check-branch-name.js",
-    "check-ticket-number": "node .git-hooks/check-ticket-number.js"
+    "check-ticket-number": "node .git-hooks/check-ticket-number.js",
+    "check-user-name": "node .git-hooks/check-user-name.js"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.5.0",
@@ -30,7 +31,7 @@
     "node": ">=18"
   },
   "simple-git-hooks": {
-    "pre-commit": "pnpm run check-branch-name && pnpm run format && pnpm run lint",
+    "pre-commit": "pnpm run check-user-name && pnpm run check-branch-name && pnpm run format && pnpm run lint",
     "commit-msg": "pnpm run check-ticket-number $1 && npx commitlint --edit $1"
   },
   "dependencies": {

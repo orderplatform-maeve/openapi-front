@@ -4,6 +4,9 @@ master-client-1.0:
 ui:
   - 'packages/ui/**/*'
 
+utils:
+  - 'packages/utils/**/*'
+
 packages:
   - 'packages/**/*'
 

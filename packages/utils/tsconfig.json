@@ -1,0 +1,10 @@
+{
+  "extends": "@torder/typescript-config/react.json",
+  "include": [
+    "**/*.ts",
+    "**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules",
+  ],
+}
