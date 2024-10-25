@@ -126,8 +126,7 @@
       ```
 
     - type 이 정의되어 있지 않거나 commonjs 인 경우 - 프로젝트의 기본설정이 cjs 입니다. `eslint@8` 및 `@torder/eslint-config` 를 이용하여 eslint 를 설정합니다.
-
-      ````javascript
+      ```javascript
       // package.json
       {
       devDependencies: {
@@ -147,7 +146,6 @@
           ```
 
       </details>
-      ````
 
 ## 리소스 및 문서
 
