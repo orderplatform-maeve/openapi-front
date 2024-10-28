@@ -1,0 +1,25 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 80%;
+  width: 80%;
+}
+
+.header {
+  display: flex;
+  justify-content: flex-end;
+  flex: 0 1 10rem;
+}
+
+.body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4rem;
+  flex: 1 1 auto;
+}
+
+.buttonText {
+  font-size: 2.6rem;
+  font-weight: 700;
+}

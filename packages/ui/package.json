@@ -20,6 +20,7 @@
     "@storybook/react-vite": "^8.3.5",
     "@storybook/react-webpack5": "^8.3.5",
     "@storybook/test": "^8.3.5",
+    "@tanstack/react-router": "^1.76.1",
     "@torder/eslint-config": "workspace:*",
     "@torder/typescript-config": "workspace:*",
     "@types/react": "18.3.11",
@@ -34,5 +35,8 @@
     "react": "18.3.1",
     "storybook": "8.3.5",
     "vite": "^5.4.9"
+  },
+  "peerDependencies": {
+    "@tanstack/react-router": "^1.76.1"
   }
 }
