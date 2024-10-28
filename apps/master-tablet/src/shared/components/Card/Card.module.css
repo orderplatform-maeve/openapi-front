@@ -1,0 +1,38 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  padding: 1rem 1.6rem ;
+  border-radius: 0.4rem;
+  box-shadow: 0 2px 1px -1px rgba(0, 0, 0, .2),0 1px 1px 0 rgba(0, 0, 0, .14),0 1px 3px 0 rgba(0, 0, 0, .12);
+}
+
+.title {
+  font-size: 2rem;
+  line-height: 3.2rem;
+  font-weight: 700;
+  color: rgba(0, 0, 0, 0.87);
+  text-align: left;
+}
+
+.sub {
+  font-size: 1.4rem;
+  line-height: 2rem;
+  text-align: left;
+  padding-bottom: 1rem;
+}
+
+.text {
+  font-size: 1.4rem;
+  text-align: left;
+  padding-top: 1rem;
+  padding-bottom: 1.6rem;
+}
+
+.action {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1rem;
+}
+
