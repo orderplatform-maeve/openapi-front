@@ -1,6 +1,6 @@
 import { createLazyFileRoute } from '@tanstack/react-router';
 import styles from './index.module.css';
-import { Tab, Tabs, TabWindow } from 'src/shared/components/Tabs';
+import { Tab, Tabs, TabWindow } from '@ui/Tabs';
 
 export const Route = createLazyFileRoute('/order/')({
   component: () => {
