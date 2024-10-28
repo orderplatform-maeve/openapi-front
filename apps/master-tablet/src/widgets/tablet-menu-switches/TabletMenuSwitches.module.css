@@ -1,22 +1,9 @@
 .container {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  padding: 3.7rem 1.5rem;
-  border-top: #000 solid 1px;
+  @apply flex flex-col gap-6 items-center justify-center w-full px-6 py-[3.7rem] border-t-[#000] border-t-[1px] border-solid;
 }
-
 .switch-item {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  font-size: 1.4rem;
+  @apply flex flex-col gap-4 text-[1.4rem];
 }
-
 .switch-buttons {
-  display: flex;
-  gap: 0.8rem;
+  @apply flex gap-[0.8rem];
 }

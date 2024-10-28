@@ -1,93 +1,61 @@
-@import '../../../../../../packages/ui/src/tailwind.css';
-
 .container {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    justify-content: center;
-    height: 4rem;
-    background-color: #12151d;
-    color: white;
-    width: 16.8rem;
-    font-size: 1.8rem;
+  @apply flex items-center gap-6 justify-center h-16 bg-[#12151d] text-[white] w-[16.8rem] text-[1.8rem];
 }
-
-.touch {}
-
 .rounded {
-    border-radius: 1.3rem;
+  @apply rounded-[1.3rem];
 }
 /**
  * TODO: custom style 지원여부
  */
 .ignore-bottom-rounded {
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
+  @apply rounded-br-none rounded-bl-none;
 }
 
 /**
  * size
  */
 .small {
-    width: 8rem;
-    height: 4rem;
+  @apply w-32 h-16;
 }
 .medium {
-    width: 16rem;
-    height: 5rem;
+  @apply w-64 h-20;
 }
 .large {
-    width: 32rem;
-    height: 6rem;
+  @apply w-[32rem] h-24;
 }
 
 /**
  * block: 최대 넓이 사용 여부
  */
 .block {
-    width: 100%;
+  @apply w-full;
 }
 
 /**
  * default color
  */
 .primary {
-    background-color: #fc0000;
-    font-weight: 700;
+  @apply bg-[#fc0000] font-bold;
 }
-.secondary {}
-.basic {}
 
 /**
  * variant
  */
-.filled {}
 .tonal {
-    background-color: #404144;
-    &.primary {
-        background-color: #fff;
-        color: #000;
-        font-weight: 700;
-    }
+  @apply bg-[#404144];
 }
-.outline {}
+.tonal.primary {
+  @apply bg-white text-black font-bold;
+}
 .text {
-    border: none;
-    background-color: transparent;
-    color: #12151d;
-    border-radius: 0.4rem;
-    &.primary {
-        background-color:  #fc0000;
-        color: #fff;
-        &:not(.touch) {
-            &:hover {
-                background-color: #D54646FF;
-            }
-        }
-    }
-    &:not(.touch) {
-        &:hover {
-            background-color: #f8f8f8;
-        }
-    }
+  @apply bg-transparent text-[#12151d] rounded-[0.4rem] border-[none];
+}
+.text.primary {
+  @apply bg-[#fc0000] text-white;
+}
+.text.primary:not(.touch):hover {
+  @apply bg-[#D54646FF];
+}
+.text:not(.touch):hover {
+  @apply bg-[#f8f8f8];
 }

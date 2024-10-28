@@ -1,25 +1,12 @@
 .container {
-  display: flex;
-  flex-direction: column;
-  height: 80%;
-  width: 80%;
+  @apply flex flex-col h-4/5 w-4/5;
 }
-
 .header {
-  display: flex;
-  justify-content: flex-end;
-  flex: 0 1 10rem;
+  @apply flex justify-end flex-[0_1_10rem];
 }
-
 .body {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 4rem;
-  flex: 1 1 auto;
+  @apply flex justify-center items-center gap-16 flex-auto;
 }
-
 .buttonText {
-  font-size: 2.6rem;
-  font-weight: 700;
+  @apply text-[2.6rem] font-bold;
 }

@@ -1,15 +1,3 @@
 .container {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  width: 19.8rem;
-  color: white;
-}
-
-.top-section {
-
-}
-
-.bottom-section {
-
+  @apply flex flex-col justify-between w-[19.8rem] text-[white];
 }

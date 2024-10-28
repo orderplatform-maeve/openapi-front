@@ -1,36 +1,18 @@
 .container {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
+  @apply flex flex-col h-full;
 }
-
 .tabs-container {
-  flex: 0 1 6rem;
-  padding-right: 1.2rem;
+  @apply flex-[0_1_6rem] pr-[1.2rem];
 }
-
 .tab-window-container {
-  flex: 1 1 auto;
-  background-color: #fff;
-  color: #000;
+  @apply flex-auto bg-white text-black;
 }
-
 .version {
-  flex: 0 1 4rem;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  font-size: 1.2rem;
-  height: 4rem;
-  color: white;
-  padding-right: 1.2rem;
+  @apply flex-[0_1_4rem] flex items-center justify-end text-[1.2rem] h-16 text-[white] pr-[1.2rem];
 }
-
 .tab-text {
-  font-size: 2rem;
+  @apply text-[2rem];
 }
-
 .current-tab {
-  background-color: #fff;
-  height: 100%;
+  @apply bg-white h-full;
 }

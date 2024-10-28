@@ -1,38 +1,15 @@
 .container {
-  display: flex;
-  flex-direction: column;
-  background-color: #fff;
-  padding: 1rem 1.6rem ;
-  border-radius: 0.4rem;
-  box-shadow: 0 2px 1px -1px rgba(0, 0, 0, .2),0 1px 1px 0 rgba(0, 0, 0, .14),0 1px 3px 0 rgba(0, 0, 0, .12);
+  @apply flex flex-col bg-white shadow-[0_2px_1px_-1px_rgba(0,0,0,0.2),0_1px_1px_0_rgba(0,0,0,0.14),0_1px_3px_0_rgba(0,0,0,0.12)] px-[1.6rem] py-4 rounded-[0.4rem];
 }
-
 .title {
-  font-size: 2rem;
-  line-height: 3.2rem;
-  font-weight: 700;
-  color: rgba(0, 0, 0, 0.87);
-  text-align: left;
+  @apply text-[2rem] leading-[3.2rem] font-bold text-[rgba(0,0,0,0.87)] text-left;
 }
-
 .sub {
-  font-size: 1.4rem;
-  line-height: 2rem;
-  text-align: left;
-  padding-bottom: 1rem;
+  @apply text-[1.4rem] leading-8 text-left pb-4;
 }
-
 .text {
-  font-size: 1.4rem;
-  text-align: left;
-  padding-top: 1rem;
-  padding-bottom: 1.6rem;
+  @apply text-[1.4rem] text-left pt-4 pb-[1.6rem];
 }
-
 .action {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 1rem;
+  @apply flex justify-end items-center gap-4;
 }
-
