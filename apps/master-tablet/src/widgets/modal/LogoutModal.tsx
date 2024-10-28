@@ -1,8 +1,8 @@
 import type { BaseHTMLAttributes } from 'react';
-import { Modal } from '@torder/ui/src/master-design-system/Modal';
-import { IconClose, IconLogout } from '@torder/ui/src/master-design-system/Icons';
-import { Card } from '@torder/ui/src/master-design-system/Card';
-import { Button } from '@torder/ui/src/master-design-system/Button';
+import { Modal } from '@ui/Modal';
+import { IconClose, IconLogout } from '@ui/Icons';
+import { Card } from '@ui/Card';
+import { Button } from '@ui/Button';
 
 interface LogoutModalProps extends BaseHTMLAttributes<HTMLBaseElement> {
   isOpen: boolean;

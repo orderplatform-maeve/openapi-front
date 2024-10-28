@@ -1,9 +1,9 @@
 import { useState, useEffect, useMemo } from 'react';
 import { overlay } from 'overlay-kit';
 import { DateTime } from '@torder/utils';
-import { SecretModal } from '../modal/SecretModal.tsx';
-import { LogoutModal } from '../modal/LogoutModal.tsx';
 import styles from './Clock.module.css';
+import { SecretModal } from '@widget/modal/SecretModal.tsx';
+import { LogoutModal } from '@widget/modal/LogoutModal.tsx';
 
 export const Clock = () => {
   const [time, setTime] = useState(new Date());

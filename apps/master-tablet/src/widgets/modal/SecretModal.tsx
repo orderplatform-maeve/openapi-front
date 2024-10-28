@@ -1,8 +1,8 @@
 import type { BaseHTMLAttributes } from 'react';
-import { Modal } from '@torder/ui/src/master-design-system/Modal';
-import { IconClose, IconLogout } from '@torder/ui/src/master-design-system/Icons';
-import { Button } from '@torder/ui/src/master-design-system/Button';
 import styles from './SecretModal.module.css';
+import { Modal } from 'src/shared/components/Modal';
+import { IconClose, IconLogout } from 'src/shared/components/Icons';
+import { Button } from 'src/shared/components/Button';
 
 interface SecretModalProps extends BaseHTMLAttributes<HTMLBaseElement> {
   isOpen: boolean;

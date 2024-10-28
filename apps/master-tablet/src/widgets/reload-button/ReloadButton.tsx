@@ -1,6 +1,6 @@
-import { IconReload } from '@torder/ui/src/master-design-system/Icons';
-import { RightIconButton } from '@torder/ui/src/master-design-system/Button';
 import styles from './ReloadButton.module.css';
+import { IconReload } from '@ui/Icons';
+import { RightIconButton } from '@ui/Button';
 
 export const ReloadButton = () => {
   return (

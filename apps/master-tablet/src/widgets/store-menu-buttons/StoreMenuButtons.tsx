@@ -1,7 +1,7 @@
-import { LinkButton } from '@torder/ui/src/master-design-system/Button';
 import { useRouterState } from '@tanstack/react-router';
 
 import styles from './StoreMenuButtons.module.css';
+import { LinkButton } from '@ui/Button';
 
 export const StoreMenuButtons = () => {
   const router = useRouterState();

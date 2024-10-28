@@ -3,6 +3,8 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
+      "@ui/*": ["src/shared/components/*"],
+      "@widget/*": ["src/widgets/*"],
       "@/*": ["src/*"],
     }
   },

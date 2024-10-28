@@ -1,6 +1,6 @@
-import { Tab, Tabs, TabWindow } from '@torder/ui/src/master-design-system/Tabs';
 import { createLazyFileRoute } from '@tanstack/react-router';
 import styles from './index.module.css';
+import { Tab, Tabs, TabWindow } from 'src/shared/components/Tabs';
 
 export const Route = createLazyFileRoute('/order/')({
   component: () => {

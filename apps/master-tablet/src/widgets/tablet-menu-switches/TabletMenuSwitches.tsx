@@ -1,5 +1,5 @@
-import { Button } from '@torder/ui/src/master-design-system/Button';
 import styles from './TabletMenuSwitches.module.css';
+import { Button } from '@ui/Button';
 
 export const TabletMenuSwitches = () => {
   return (
