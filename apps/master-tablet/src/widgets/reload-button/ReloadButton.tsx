@@ -1,13 +1,16 @@
 import styles from './ReloadButton.module.css';
 import { IconReload } from '@ui/Icons';
-import { RightIconButton } from '@ui/Button';
+import { Button } from '@ui/Button';
 
 export const ReloadButton = () => {
   return (
     <section className={styles.container}>
-      <RightIconButton className={styles.reload} icon={IconReload()} variant={'text'}>
-        새로고침
-      </RightIconButton>
+      <Button variant={'text'}>
+        <div className={styles.reload}>
+          새로고침
+          <IconReload />
+        </div>
+      </Button>
     </section>
   );
 };
