@@ -5,8 +5,9 @@
 
 # 라이브러리
 # /packages
-/packages/ui/ @orderplatform-soojin @orderplatform-daisy
-/packages/utils @orderplatform-soojin @orderplatform-kangil
+/packages/ui/ @orderplatform-soojin @orderplatform-daisy @orderplatform-jaegeun
+/packages/utils @orderplatform-soojin @orderplatform-kangil @orderplatform-jaegeun
+/packages/client-fetcher @orderplatform-soojin @orderplatform-daisy @orderplatform-jaegeun @orderplatform-kangil
 
 # 그외 나머지
 # /

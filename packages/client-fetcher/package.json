@@ -1,0 +1,29 @@
+{
+  "name": "@torder/client-fetcher",
+  "type": "module",
+  "version": "0.0.1",
+  "description": "torder 서비스의 api 통신 구현 부",
+  "main": "src/index.ts",
+  "scripts": {
+    "test": "vitest",
+    "lint": "eslint src"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@tanstack/react-query": "^4.36.1",
+    "@vitejs/plugin-react": "^4.3.3",
+    "axios": "^1.7.7"
+  },
+  "devDependencies": {
+    "@testing-library/react": "^16.0.1",
+    "@testing-library/react-hooks": "^8.0.1",
+    "@torder/typescript-config": "workspace:*",
+    "@types/react": "^18.3.12",
+    "eslint": "^9.13.0",
+    "jsdom": "^25.0.1",
+    "react": "^18.3.1",
+    "vitest": "^2.1.3"
+  }
+}
