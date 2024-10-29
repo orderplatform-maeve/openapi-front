@@ -39,7 +39,7 @@ export const Button = (props: ButtonProps) => {
     styles[size],
     styles[color],
     rounded ? styles.rounded : null,
-    ignoreBottomRounded ? styles['ignore-bottom-rounded'] : null,
+    ignoreBottomRounded ? styles.ignoreBottomRounded : null,
     block ? styles.block : null,
     loading ? styles.loading : null,
     disabled ? styles.disabled : null,
