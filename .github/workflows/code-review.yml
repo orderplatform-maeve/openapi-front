@@ -1,9 +1,5 @@
 name: Code Review
 
-permissions:
-  contents: read
-  pull-requests: write
-
 on:
   pull_request:
     types: [opened, reopened, synchronize] # PR 생성, 재생성, 동기화
@@ -13,6 +9,9 @@ jobs:
     # 만약 PR에 gpt review 라는 라벨이 붙어있을때만 실행하고 싶다면 아래와 같이 작성하면 된다.
     # if: ${{ contains(github.event.*.labels.*.name, 'gpt review') }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
       - uses: anc95/ChatGPT-CodeReview@main
         env:
