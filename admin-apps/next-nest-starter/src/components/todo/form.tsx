@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { QUERY_KEYS } from '@torder/client-fetcher';
 import { Admin } from '@torder/client-fetcher';
 import { useQueryClient } from '@tanstack/react-query';
-import { CreateTodoDto } from '@/api/todo/dto/todo.dto.ts';
+import { CreateTodoDto } from '@/api/todo/dto/todo.dto';
 
 const TodoForm = () => {
   const queryClient = useQueryClient();

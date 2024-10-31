@@ -1,7 +1,8 @@
 import { IAdminTodo } from '@torder/client-fetcher/src/admin/todo/model';
+import { ApiBody } from '@nestjs/swagger';
 import { Body, Controller, Get, Post } from '@nestjs/common';
-import { TodoService } from '@/api/todo/todo.service.ts';
-import { CreateTodoDto } from '@/api/todo/dto/todo.dto.ts';
+import { TodoService } from '@/api/todo/todo.service';
+import { CreateTodoDto, CreateTodoDtoData } from '@/api/todo/dto/todo.dto';
 
 @Controller('todo')
 export class TodoController {
@@ -12,6 +13,10 @@ export class TodoController {
     return this.todoService.findAll();
   }
 
+  @ApiBody({
+    description: '작업 추가',
+    type: CreateTodoDtoData,
+  })
   @Post()
   async create(@Body('data') creatTodoDto: CreateTodoDto): Promise<IAdminTodo[]> {
     return this.todoService.create(creatTodoDto);

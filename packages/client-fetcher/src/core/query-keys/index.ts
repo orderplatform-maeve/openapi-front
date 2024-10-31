@@ -15,6 +15,8 @@ const QUERY_KEYS = {
   },
   ADMIN: {
     TODO: ['todo'],
+    POKEMON: ['pokemon'],
+    POKEMON_DETAIL: (id: number) => ['pokemon', id],
   },
 };
 

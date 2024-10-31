@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { TodoService } from '@/api/todo/todo.service.ts';
+import { TodoService } from '@/api/todo/todo.service';
 import { TodoController } from '@/api/todo/todo.controller';
 
 @Module({
