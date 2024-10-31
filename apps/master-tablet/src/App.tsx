@@ -6,14 +6,17 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { routeTree } from './routeTree.gen';
 
 const queryClient = new QueryClient();
-const router = createRouter({ routeTree });
+const router = createRouter({
+  routeTree,
+  context: { queryClient },
+});
 
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <OverlayProvider />
       <RouterProvider router={router} />
-      <ReactQueryDevtools initialIsOpen={false} />
+      <OverlayProvider />
+      <ReactQueryDevtools />
     </QueryClientProvider>
   );
 }

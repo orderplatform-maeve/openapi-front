@@ -37,6 +37,9 @@
 .primary {
   @apply bg-[#fc0000] font-bold;
 }
+.secondary {
+  @apply text-black bg-white font-bold;
+}
 
 /**
  * variant

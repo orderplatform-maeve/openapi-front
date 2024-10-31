@@ -13,6 +13,10 @@ const QUERY_KEYS = {
     /* 가변 parameter 에 대한 쿼리 키 대응 */
     DETAILS: (id: string) => ['order', id],
   },
+  REST: {
+    LOGIN: ['login'],
+    STORE_LIST: (storeCode: string) => ['store_list', storeCode],
+  },
   ADMIN: {
     TODO: ['todo'],
     POKEMON: ['pokemon'],

@@ -1,0 +1,6 @@
+.container {
+  @apply flex grow w-full;
+}
+.container input {
+  @apply grow h-24 text-[2rem] text-black px-[1.6rem] py-0 rounded-[0.8rem] border-[solid] border-[#eaeaea];
+}

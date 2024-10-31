@@ -1,0 +1,9 @@
+.container {
+  @apply flex flex-col items-start gap-[1.6rem] text-[2.4rem] w-full p-8;
+}
+.store-list {
+  @apply w-full;
+}
+.store-list-item {
+  @apply flex items-center justify-between text-[2rem] font-black bg-[#272727] px-[2.4rem] py-[0.8rem] border-b-[#484848] border-b border-solid;
+}

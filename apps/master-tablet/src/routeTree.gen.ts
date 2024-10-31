@@ -19,9 +19,11 @@ import { Route as PaymentManagementIndexImport } from './routes/paymentManagemen
 // Create Virtual Routes
 
 const TodoIndexLazyImport = createFileRoute('/todo/')();
+const StoreIndexLazyImport = createFileRoute('/store/')();
 const PaymentIndexLazyImport = createFileRoute('/payment/')();
 const OrderIndexLazyImport = createFileRoute('/order/')();
 const NoticeIndexLazyImport = createFileRoute('/notice/')();
+const LoginIndexLazyImport = createFileRoute('/login/')();
 const AdditionalIndexLazyImport = createFileRoute('/additional/')();
 
 // Create/Update Routes
@@ -37,6 +39,12 @@ const TodoIndexLazyRoute = TodoIndexLazyImport.update({
   path: '/todo/',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/todo/index.lazy').then((d) => d.Route));
+
+const StoreIndexLazyRoute = StoreIndexLazyImport.update({
+  id: '/store/',
+  path: '/store/',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/store/index.lazy').then((d) => d.Route));
 
 const PaymentIndexLazyRoute = PaymentIndexLazyImport.update({
   id: '/payment/',
@@ -55,6 +63,12 @@ const NoticeIndexLazyRoute = NoticeIndexLazyImport.update({
   path: '/notice/',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/notice/index.lazy').then((d) => d.Route));
+
+const LoginIndexLazyRoute = LoginIndexLazyImport.update({
+  id: '/login/',
+  path: '/login/',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/login/index.lazy').then((d) => d.Route));
 
 const AdditionalIndexLazyRoute = AdditionalIndexLazyImport.update({
   id: '/additional/',
@@ -93,6 +107,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdditionalIndexLazyImport;
       parentRoute: typeof rootRoute;
     };
+    '/login/': {
+      id: '/login/';
+      path: '/login';
+      fullPath: '/login';
+      preLoaderRoute: typeof LoginIndexLazyImport;
+      parentRoute: typeof rootRoute;
+    };
     '/notice/': {
       id: '/notice/';
       path: '/notice';
@@ -114,6 +135,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PaymentIndexLazyImport;
       parentRoute: typeof rootRoute;
     };
+    '/store/': {
+      id: '/store/';
+      path: '/store';
+      fullPath: '/store';
+      preLoaderRoute: typeof StoreIndexLazyImport;
+      parentRoute: typeof rootRoute;
+    };
     '/todo/': {
       id: '/todo/';
       path: '/todo';
@@ -130,9 +158,11 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute;
   '/paymentManagement': typeof PaymentManagementIndexRoute;
   '/additional': typeof AdditionalIndexLazyRoute;
+  '/login': typeof LoginIndexLazyRoute;
   '/notice': typeof NoticeIndexLazyRoute;
   '/order': typeof OrderIndexLazyRoute;
   '/payment': typeof PaymentIndexLazyRoute;
+  '/store': typeof StoreIndexLazyRoute;
   '/todo': typeof TodoIndexLazyRoute;
 }
 
@@ -140,9 +170,11 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute;
   '/paymentManagement': typeof PaymentManagementIndexRoute;
   '/additional': typeof AdditionalIndexLazyRoute;
+  '/login': typeof LoginIndexLazyRoute;
   '/notice': typeof NoticeIndexLazyRoute;
   '/order': typeof OrderIndexLazyRoute;
   '/payment': typeof PaymentIndexLazyRoute;
+  '/store': typeof StoreIndexLazyRoute;
   '/todo': typeof TodoIndexLazyRoute;
 }
 
@@ -151,18 +183,39 @@ export interface FileRoutesById {
   '/': typeof IndexRoute;
   '/paymentManagement/': typeof PaymentManagementIndexRoute;
   '/additional/': typeof AdditionalIndexLazyRoute;
+  '/login/': typeof LoginIndexLazyRoute;
   '/notice/': typeof NoticeIndexLazyRoute;
   '/order/': typeof OrderIndexLazyRoute;
   '/payment/': typeof PaymentIndexLazyRoute;
+  '/store/': typeof StoreIndexLazyRoute;
   '/todo/': typeof TodoIndexLazyRoute;
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath;
-  fullPaths: '/' | '/paymentManagement' | '/additional' | '/notice' | '/order' | '/payment' | '/todo';
+  fullPaths:
+    | '/'
+    | '/paymentManagement'
+    | '/additional'
+    | '/login'
+    | '/notice'
+    | '/order'
+    | '/payment'
+    | '/store'
+    | '/todo';
   fileRoutesByTo: FileRoutesByTo;
-  to: '/' | '/paymentManagement' | '/additional' | '/notice' | '/order' | '/payment' | '/todo';
-  id: '__root__' | '/' | '/paymentManagement/' | '/additional/' | '/notice/' | '/order/' | '/payment/' | '/todo/';
+  to: '/' | '/paymentManagement' | '/additional' | '/login' | '/notice' | '/order' | '/payment' | '/store' | '/todo';
+  id:
+    | '__root__'
+    | '/'
+    | '/paymentManagement/'
+    | '/additional/'
+    | '/login/'
+    | '/notice/'
+    | '/order/'
+    | '/payment/'
+    | '/store/'
+    | '/todo/';
   fileRoutesById: FileRoutesById;
 }
 
@@ -170,9 +223,11 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute;
   PaymentManagementIndexRoute: typeof PaymentManagementIndexRoute;
   AdditionalIndexLazyRoute: typeof AdditionalIndexLazyRoute;
+  LoginIndexLazyRoute: typeof LoginIndexLazyRoute;
   NoticeIndexLazyRoute: typeof NoticeIndexLazyRoute;
   OrderIndexLazyRoute: typeof OrderIndexLazyRoute;
   PaymentIndexLazyRoute: typeof PaymentIndexLazyRoute;
+  StoreIndexLazyRoute: typeof StoreIndexLazyRoute;
   TodoIndexLazyRoute: typeof TodoIndexLazyRoute;
 }
 
@@ -180,9 +235,11 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   PaymentManagementIndexRoute: PaymentManagementIndexRoute,
   AdditionalIndexLazyRoute: AdditionalIndexLazyRoute,
+  LoginIndexLazyRoute: LoginIndexLazyRoute,
   NoticeIndexLazyRoute: NoticeIndexLazyRoute,
   OrderIndexLazyRoute: OrderIndexLazyRoute,
   PaymentIndexLazyRoute: PaymentIndexLazyRoute,
+  StoreIndexLazyRoute: StoreIndexLazyRoute,
   TodoIndexLazyRoute: TodoIndexLazyRoute,
 };
 
@@ -199,9 +256,11 @@ export const routeTree = rootRoute._addFileChildren(rootRouteChildren)._addFileT
         "/",
         "/paymentManagement/",
         "/additional/",
+        "/login/",
         "/notice/",
         "/order/",
         "/payment/",
+        "/store/",
         "/todo/"
       ]
     },
@@ -214,6 +273,9 @@ export const routeTree = rootRoute._addFileChildren(rootRouteChildren)._addFileT
     "/additional/": {
       "filePath": "additional/index.lazy.tsx"
     },
+    "/login/": {
+      "filePath": "login/index.lazy.tsx"
+    },
     "/notice/": {
       "filePath": "notice/index.lazy.tsx"
     },
@@ -222,6 +284,9 @@ export const routeTree = rootRoute._addFileChildren(rootRouteChildren)._addFileT
     },
     "/payment/": {
       "filePath": "payment/index.lazy.tsx"
+    },
+    "/store/": {
+      "filePath": "store/index.lazy.tsx"
     },
     "/todo/": {
       "filePath": "todo/index.lazy.tsx"
