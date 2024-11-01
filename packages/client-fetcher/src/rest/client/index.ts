@@ -2,6 +2,7 @@ import { AxiosResponse, AxiosResponseTransformer } from 'axios';
 import { BaseClient } from '../../core/client';
 
 export type StoreData = {
+  store_id: string;
   store_code: string;
   store_name: string;
 };

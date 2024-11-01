@@ -35,7 +35,7 @@ src/
 │   │   │   ├── LoginForm
 │   │   │   │   ├── LoginForm.module.css  # CSS 파일
 │   │   │   │   ├── LoginForm.test.tsx    # 테스트 파일
-│   │   │   │   ├── index.lazy.tsx  
+│   │   │   │   ├── index.tsx  
 │   │   └── contexts/      # 기능에서 사용하는 context 파일  
 │   │
 │   └── products/ 
@@ -48,7 +48,7 @@ src/
 │   │   ├── HomePage.styles.css  # CSS 파일
 │   │   ├── HomePage.test.tsx    # 테스트 파일
 │   │   ├── HomePage.stories.tsx # 스토리북 파일
-│   │   ├── index.lazy.tsx 
+│   │   ├── index.tsx 
 │   └── ...
 │
 ├── routes/           # 라우팅 설정들
@@ -90,4 +90,4 @@ src/
 
 ## 컨벤션 
 ### export/import
-{component}/index.lazy.tsx 에서는 가능한 default를 사용하지 않고 여러 요소를 export 합니다:
+{component}/index.tsx 에서는 가능한 default를 사용하지 않고 여러 요소를 export 합니다:
