@@ -1,5 +1,5 @@
 import { AxiosRequestTransformer, AxiosResponseTransformer } from 'axios';
-import { BaseClient } from '@/core/client';
+import { BaseClient } from '../../core/client';
 
 export type APIReturnValue = {
   answer: 'yes' | 'no';

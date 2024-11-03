@@ -13,6 +13,9 @@ const QUERY_KEYS = {
     /* 가변 parameter 에 대한 쿼리 키 대응 */
     DETAILS: (id: string) => ['order', id],
   },
+  ADMIN: {
+    TODO: ['todo'],
+  },
 };
 
 export { QUERY_KEYS };

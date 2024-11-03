@@ -21,6 +21,7 @@
     "@testing-library/react-hooks": "^8.0.1",
     "@torder/typescript-config": "workspace:*",
     "@types/react": "^18.3.12",
+    "@types/torder-shared-types": "workspace:*",
     "eslint": "^9.13.0",
     "jsdom": "^25.0.1",
     "react": "^18.3.1",

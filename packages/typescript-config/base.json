@@ -14,15 +14,6 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
-    "target": "ES2022",
-    "baseUrl": ".",
-    "paths": {
-      "@/*": [
-        "src/*",
-        "../../packages/client-fetcher/src/*",
-        "../../packages/ui/src/*",
-        "../../packages/utils/src/*"
-      ]
-    }
+    "target": "ES2022"
   }
 }

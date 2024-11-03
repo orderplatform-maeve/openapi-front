@@ -36,24 +36,24 @@ abstract class BaseClient {
     };
   };
 
-  get = <D>(path: string, axiosConfig?: AxiosRequestConfig<D>) => {
+  get = <T, D = unknown>(path: string, axiosConfig?: AxiosRequestConfig<D>) => {
     const apiEndpoint = this.getPath(path);
-    return axios.get<D, AxiosResponse<D>>(apiEndpoint, this.mergeConfig<D>(axiosConfig));
+    return axios.get<T, AxiosResponse<T>>(apiEndpoint, this.mergeConfig<D>(axiosConfig));
   };
 
-  post = <D>(path: string, axiosConfig?: AxiosRequestConfig<D>) => {
+  post = <T, D = unknown>(path: string, axiosConfig?: AxiosRequestConfig<D>) => {
     const apiEndpoint = this.getPath(path);
-    return axios.post<D, AxiosResponse<D>>(apiEndpoint, this.mergeConfig(axiosConfig));
+    return axios.post<T, AxiosResponse<T>>(apiEndpoint, this.mergeConfig<D>(axiosConfig));
   };
 
-  delete = <D>(path: string, axiosConfig?: AxiosRequestConfig<D>) => {
+  delete = <T, D = unknown>(path: string, axiosConfig?: AxiosRequestConfig<D>) => {
     const apiEndpoint = this.getPath(path);
-    return axios.delete<D, AxiosResponse<D>>(apiEndpoint, this.mergeConfig(axiosConfig));
+    return axios.delete<T, AxiosResponse<T>>(apiEndpoint, this.mergeConfig<D>(axiosConfig));
   };
 
-  put = <D>(path: string, axiosConfig?: AxiosRequestConfig<D>) => {
+  put = <T, D = unknown>(path: string, axiosConfig?: AxiosRequestConfig<D>) => {
     const apiEndpoint = this.getPath(path);
-    return axios.put<D, AxiosResponse<D>>(apiEndpoint, this.mergeConfig(axiosConfig));
+    return axios.put<T, AxiosResponse<T>>(apiEndpoint, this.mergeConfig<D>(axiosConfig));
   };
 
   /* 응답 정규화 */

@@ -3,6 +3,9 @@
 # 사이트별
 # /apps
 
+# 관리자 사이트
+/admin-apps @orderplatform-soojin @orderplatform-jaegeun @orderplatform-kangil @orderplatform-maeve @orderplatform-kyungjune @orderplatform-roy
+
 # 라이브러리
 # /packages
 /packages/ui/ @orderplatform-soojin @orderplatform-daisy @orderplatform-jaegeun

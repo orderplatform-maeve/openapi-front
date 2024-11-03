@@ -46,12 +46,12 @@ package 이름은 @torder/_ 를 사용합니다. <br/>
 ```json
     "paths": {
       "@/*": [
-        "src/*",
-        "../../packages/client-fetcher/src/*",
-        "../../packages/ui",
-        /* 각 apps 의 root 로 부터의 상대 경로를 적어야 함 */
-      ]
-    }
+          "src/*",
+          "../../packages/client-fetcher/src/*",
+          "../../packages/ui",
+          /* 각 apps 의 root 로 부터의 상대 경로를 적어야 함 */
+        ]
+      }
 ```
 - 이렇게 설정 후 apps/{my-app} 에서 빌드 시 `@` 경로의 우선순위에 따라 `src/*` 를 먼저 탐색하고 찾지 못하게 되면 다음 경로에서 탐색을 이어나간다.
   - 단, 빌드하는 프로젝트(apps/{my-app})의 tsconfig.json 에 `compilerOptions.baseUrl: "."`이 설정되어 있어야 한다.
