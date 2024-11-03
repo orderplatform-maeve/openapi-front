@@ -1,0 +1,22 @@
+{
+  "name": "@torder/react-i18n",
+  "version": "1.0.0",
+  "description": "react 프로젝트를 위한 국제화 모듈",
+  "main": "index.ts",
+  "keywords": [
+    "i18n",
+    "react",
+    "internationalization"
+  ],
+  "author": "torder",
+  "license": "ISC",
+  "peerDependencies": {
+    "react": ">=18",
+    "@types/react": ">=18"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3",
+    "@torder/typescript-config": "workspace:*",
+    "@torder/utils": "workspace:*"
+  }
+}

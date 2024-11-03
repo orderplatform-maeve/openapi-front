@@ -1,0 +1,18 @@
+{
+  "name": "i18n-js",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "keywords": [
+    "i18n",
+    "internationalization"
+  ],
+  "author": "torder",
+  "license": "ISC",
+  "dependencies": {
+    "i18next": "^23.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3",
+    "@torder/typescript-config": "workspace:*"
+  }
+}

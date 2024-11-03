@@ -1,0 +1,20 @@
+{
+  "name": "@torder/vue-i18n",
+  "version": "1.0.0",
+  "description": "vue 프로젝트를 위한 국제화 모듈",
+  "main": "index.ts",
+  "keywords": [
+    "i18n",
+    "vue",
+    "internationalization"
+  ],
+  "author": "torder",
+  "license": "ISC",
+  "peerDependencies": {
+    "vue": "3.3.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3",
+    "@torder/typescript-config": "workspace:*"
+  }
+}
