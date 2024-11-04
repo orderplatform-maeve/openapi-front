@@ -4,14 +4,14 @@
 # /apps
 
 # 관리자 사이트
-/admin-apps @orderplatform-soojin @orderplatform-jaegeun @orderplatform-kangil @orderplatform-maeve @orderplatform-kyungjune @orderplatform-roy
+/admin-apps/ @orderplatform-soojin @orderplatform-jaegeun @orderplatform-kangil @orderplatform-maeve @orderplatform-kyungjune @orderplatform-roy
 
 # 라이브러리
 # /packages
-/packages/admin-apps @orderplatform-soojin @orderplatform-jaegeun @orderplatform-kangil @orderplatform-maeve @orderplatform-kyungjune @orderplatform-roy
+/packages/admin-apps/ @orderplatform-soojin @orderplatform-jaegeun @orderplatform-kangil @orderplatform-maeve @orderplatform-kyungjune @orderplatform-roy
 /packages/ui/ @orderplatform-soojin @orderplatform-daisy @orderplatform-jaegeun
-/packages/utils @orderplatform-soojin @orderplatform-kangil @orderplatform-jaegeun
-/packages/client-fetcher @orderplatform-soojin @orderplatform-daisy @orderplatform-jaegeun @orderplatform-kangil
+/packages/utils/ @orderplatform-soojin @orderplatform-kangil @orderplatform-jaegeun
+/packages/client-fetcher/ @orderplatform-soojin @orderplatform-daisy @orderplatform-jaegeun @orderplatform-kangil
 
 # 그외 나머지
 # /
