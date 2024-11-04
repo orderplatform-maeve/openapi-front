@@ -1,6 +1,9 @@
 admin-apps:
   - 'admin-apps/**/*'
 
+admin-ui:
+  - 'packages/admin-ui/**/*'
+
 ui:
   - 'packages/ui/**/*'
 

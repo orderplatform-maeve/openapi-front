@@ -1,0 +1,7 @@
+.container {
+    @apply border border-gray-200 rounded-lg shadow-md p-2.5;
+}
+
+.primary {
+    @apply text-3xl font-bold underline;
+}

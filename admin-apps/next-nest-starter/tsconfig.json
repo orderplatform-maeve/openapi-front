@@ -16,12 +16,16 @@
   "include": [
     "next-env.d.ts",
     "**/*.ts",
-    "**/*.tsx"
+    "**/*.tsx",
+    "../../packages/ui/shims.d.ts"
   ],
   "exclude": [
     "node_modules"
   ],
   "references": [
+    {
+      "path": "../../packages/admin-ui"
+    },
     {
       "path": "../../packages/client-fetcher"
     },
