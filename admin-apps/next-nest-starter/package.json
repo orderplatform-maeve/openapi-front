@@ -7,7 +7,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "vitest",
+    "test:watch": "vitest --watch"
   },
   "dependencies": {
     "@nestjs/common": "^10.4.6",
@@ -29,6 +31,8 @@
   },
   "devDependencies": {
     "@tanstack/eslint-plugin-query": "4",
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/react": "^16.0.1",
     "@torder/eslint-config-9": "workspace:*",
     "@torder/typescript-config": "workspace:*",
     "@torder/utils": "workspace:*",
@@ -37,10 +41,13 @@
     "@types/react": "^18.3.10",
     "@types/react-dom": "^18.3.0",
     "@types/torder-shared-types": "workspace:*",
+    "@vitejs/plugin-react": "^4.3.3",
     "eslint-config-next": "15.0.1",
+    "jsdom": "^25.0.1",
     "next-transpile-modules": "^10.0.1",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^2.1.3"
   }
 }
