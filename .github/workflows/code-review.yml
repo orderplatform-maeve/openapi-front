@@ -20,7 +20,11 @@ jobs:
           # optional
           LANGUAGE: Korean # 한국어
           MODEL: gpt-4o-mini # gpt-4o-mini 가격 이슈로 4o-mini 모델을 PoC 로 사용
-          PROMPT: 다음 프론트엔드 프로젝트의 코드 수정사항에 대해 코드리뷰를 해줘. 버그 발생 가능성, 성능저하, 잘못된 사용, 타입 불일치 등 다방면의 검토가 필요해
+          PROMPT: 다음 프론트엔드 프로젝트의 코드 수정사항에 대해 코드리뷰를 해줘. |
+            검토할것 - 버그, 성능, 잘못된 사용, 타입 불일치 |
+            검토하지 말것 - 설정값, 알지 못하는 내용에 대한 코멘트 |
+            코멘트 최적화 - 의미없는 내용은 작성하지 말것
+
           max_tokens: 10000 # 15000 * 4(byte) / 3(byte) = 약 2만자의 순수 한글 피드백 가능 (1토큰 = 4byte)
           MAX_PATCH_LENGTH: 10000 # 이 임계점을 넘어가는 PR 은 리뷰하지 않음
           IGNORE_PATTERNS: /node_modules,.*\.(md|yml|svg|jpg|png)$,CODEOWNERS,.gitignore,eslint.config.js,package.json,postcss.config.mjs, # Regex pattern to ignore files, separated by comma
