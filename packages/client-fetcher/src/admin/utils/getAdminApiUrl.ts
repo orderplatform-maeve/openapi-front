@@ -3,7 +3,7 @@ const getAdminApiUrl = () => {
     return `${window.location.origin}`;
   }
 
-  return 'http://localhost:3000';
+  return process.env.SERVER_URL || 'http://localhost:3000';
 };
 
 export { getAdminApiUrl };
