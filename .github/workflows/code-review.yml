@@ -7,7 +7,7 @@ on:
 jobs:
   test:
     # 만약 PR에 gpt review 라는 라벨이 붙어있을때만 실행하고 싶다면 아래와 같이 작성하면 된다.
-    # if: ${{ contains(github.event.*.labels.*.name, 'gpt review') }}
+    if: ${{ !contains(github.event.pull_request.labels.*.name, 'no-review') }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
