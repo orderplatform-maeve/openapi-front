@@ -2,7 +2,7 @@ import type { Request } from 'express';
 import { AdminBFFBaseClient } from '@torder/client-fetcher/src/admin/AdminBFFBaseClient';
 import { REQUEST } from '@nestjs/core';
 import { Injectable, Scope, Inject } from '@nestjs/common';
-import conf from '@/api/conf';
+import conf from '@/conf';
 
 @Injectable({ scope: Scope.REQUEST })
 class OrderAdminAuthFetch {

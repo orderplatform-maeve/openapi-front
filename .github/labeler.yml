@@ -1,5 +1,5 @@
-admin-apps:
-  - 'admin-apps/**/*'
+torder-admin:
+  - 'apps/torder-admin/**/*'
 
 admin-ui:
   - 'packages/admin-ui/**/*'
