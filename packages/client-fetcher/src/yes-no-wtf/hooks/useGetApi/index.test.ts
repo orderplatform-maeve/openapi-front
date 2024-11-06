@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
+import { Providers } from '../../../core/for-test/Providers';
 import { useGetApi } from './index';
-import { Providers } from '@/core/for-test/Providers';
 
 describe('yesNoWtf', () => {
   test('useGetApi', async () => {

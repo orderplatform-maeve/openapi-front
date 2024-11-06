@@ -5,7 +5,7 @@ const nextConfig: NextConfig = withTM(['@torder/admin-ui', '@torder/client-fetch
   /* config options here */
   reactStrictMode: true,
   env: {
-    SERVER_URL: 'https://local.torder.com:4000',
+    SERVER_URL: 'http://local.torder.com:4000',
   },
 });
 

@@ -17,7 +17,7 @@ class Client extends BaseClient {
   };
 
   addTodo = async (body: IAdminTodo) => {
-    const result = await this.post<IAdminTodo[], IAdminTodo>(this.basePath, { data: body });
+    const result = await this.post<IAdminTodo[], { data: IAdminTodo }>(this.basePath, { data: body });
     return result.data;
   };
 

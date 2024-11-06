@@ -17,6 +17,7 @@ const QUERY_KEYS = {
     TODO: ['todo'],
     POKEMON: ['pokemon'],
     POKEMON_DETAIL: (id: number) => ['pokemon', id],
+    PRODUCT_IMAGE_MANAGE: ['PRODUCT_IMAGE_MANAGE'],
   },
 };
 

@@ -1,5 +1,6 @@
 import * as http from 'http';
 import { NextApiHandler } from 'next';
+import cookieParser from 'cookie-parser';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { NestFactory } from '@nestjs/core';
 import { INestApplication } from '@nestjs/common';
@@ -11,6 +12,7 @@ async function getApp() {
   if (!app) {
     app = await NestFactory.create(ApiModule, { bodyParser: false });
     app.setGlobalPrefix('api');
+    app.use(cookieParser());
 
     const config = new DocumentBuilder()
       .setTitle('티오더 관리자 - 국내')
