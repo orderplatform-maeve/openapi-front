@@ -2,8 +2,8 @@ import { Body, Head, Html, Meta, Scripts } from '@tanstack/start';
 import { TanStackRouterDevtools } from '@tanstack/router-devtools';
 import { createRootRoute } from '@tanstack/react-router';
 import styles from './__root.module.css';
-import { Menu } from '@widget/layout/Menu';
-import { MainContents } from '@widget/layout/MainContents';
+import { Menu } from '@/features/layout/Menu';
+import { MainContents } from '@/features/layout/MainContents';
 
 export const Route = createRootRoute({
   meta: () => [

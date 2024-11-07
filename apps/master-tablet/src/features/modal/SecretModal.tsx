@@ -1,8 +1,8 @@
 import type { BaseHTMLAttributes } from 'react';
 import styles from './SecretModal.module.css';
-import { Modal } from 'src/shared/components/Modal';
-import { IconClose, IconLogout } from 'src/shared/components/Icons';
-import { Button } from 'src/shared/components/Button';
+import { Modal } from '@ui/Modal';
+import { IconClose, IconLogout } from '@ui/Icons';
+import { Button } from '@ui/Button';
 
 interface SecretModalProps extends BaseHTMLAttributes<HTMLBaseElement> {
   isOpen: boolean;

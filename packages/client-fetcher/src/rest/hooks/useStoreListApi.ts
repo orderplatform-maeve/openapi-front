@@ -16,8 +16,7 @@ type RStoreList = UseQueryResult<StoreListResponse, unknown>;
 export const useStoreListApi = (storeCode: string, options?: TOptions): RStoreList => {
   return useClientQuery(
     QUERY_KEYS.REST.STORE_LIST(storeCode),
-    ({ queryKey }) => {
-      const storeCode = queryKey[1];
+    () => {
       if (!storeCode) {
         throw new Error('Unexpected usage error');
       }

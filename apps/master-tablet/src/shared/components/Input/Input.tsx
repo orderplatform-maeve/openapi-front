@@ -7,7 +7,7 @@ interface InputProps {
   value: string;
   name?: string;
   disabled?: boolean;
-  onChange?: (value: string) => void;
+  onChange: (value: string) => void;
 }
 
 export const Input = (props: InputProps) => {
@@ -19,7 +19,7 @@ export const Input = (props: InputProps) => {
         type={type}
         placeholder={placeholder}
         value={value}
-        onChange={(e) => onChange?.(e.target.value)}
+        onChange={(e) => onChange(e.target.value)}
         name={name}
         disabled={disabled}
       />

@@ -1,4 +1,4 @@
-import type { MouseEvent, CSSProperties, PropsWithChildren } from 'react';
+import { forwardRef, type FormEvent, type MouseEvent, type CSSProperties, type PropsWithChildren } from 'react';
 import styles from './Button.module.css';
 
 export interface ButtonProps extends PropsWithChildren {
@@ -13,9 +13,9 @@ export interface ButtonProps extends PropsWithChildren {
   loading?: boolean;
   stopPropagation?: boolean;
   preventDefault?: boolean;
-  onClick?: () => void;
+  onClick?: (e: MouseEvent<HTMLButtonElement> | FormEvent<HTMLButtonElement>) => void;
 }
-export const Button = (props: ButtonProps) => {
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
   const {
     children,
     color = 'basic',
@@ -26,8 +26,6 @@ export const Button = (props: ButtonProps) => {
     block = false,
     loading = false,
     disabled = false,
-    stopPropagation = false,
-    preventDefault = false,
     onClick,
   } = props;
   const touchSupport = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
@@ -47,22 +45,21 @@ export const Button = (props: ButtonProps) => {
 
   const customStyle: CSSProperties = {};
 
-  const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
-    if (preventDefault) {
-      e.preventDefault();
-    }
-    if (stopPropagation) {
-      e.stopPropagation();
-    }
-    if (onClick) {
-      onClick();
-    }
+  const handleClick = (e: MouseEvent<HTMLButtonElement> | FormEvent<HTMLButtonElement>) => {
+    onClick?.(e);
   };
 
   return (
-    <button className={containerStyle.join(' ').trim()} style={customStyle} onClick={handleClick}>
+    <button
+      ref={ref}
+      className={containerStyle.join(' ').trim()}
+      style={customStyle}
+      disabled={disabled}
+      onClick={handleClick}
+    >
       {loading && <div>Loading...</div>}
       {children}
     </button>
   );
-};
+});
+Button.displayName = 'Button';

@@ -1,1 +1,0 @@
-export { TabletMenuSwitches } from './TabletMenuSwitches';
