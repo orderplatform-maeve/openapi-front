@@ -2,6 +2,7 @@
  * @link https://torder.atlassian.net/wiki/x/zgKiIQ
  */
 export default {
+  ADMIN_URL: 'https://kr.order.admin.torder.com',
   ADMIN_API_URL: 'https://live-api-admin.torder.co.kr',
   MIDDLEWARE_API_URL: 'https://api.middleware.torder.com',
   MIDDLEWARE_AUTH_TOKEN:
@@ -10,4 +11,9 @@ export default {
   REST_API_URL: 'https://rest.torder.co.kr',
   PAYMENT_API_URL: 'https://sgw.torder.co.kr',
   WAITING_API_URL: 'https://wait.torder.com',
+  ADMIN_AUTH_API: {
+    URL: 'https://kr.api.acs-auth.share.torder.com',
+    CLIENT_ID: 'TBU',
+    CLIENT_SECRET_ID: 'TBU',
+  },
 };

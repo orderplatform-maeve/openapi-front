@@ -227,9 +227,15 @@ importers:
       express:
         specifier: ^4.21.1
         version: 4.21.1
+      js-base64:
+        specifier: ^3.7.7
+        version: 3.7.7
       next:
         specifier: ^15.0.2
-        version: 15.0.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 15.0.2(@babel/core@7.25.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      qs:
+        specifier: ^6.13.0
+        version: 6.13.0
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -264,6 +270,9 @@ importers:
       '@types/node':
         specifier: ^20
         version: 20.17.3
+      '@types/qs':
+        specifier: ^6.9.17
+        version: 6.9.17
       '@types/react':
         specifier: ^18.3.10
         version: 18.3.12
@@ -342,7 +351,7 @@ importers:
         version: 8.3.6(@storybook/test@8.4.1(storybook@8.3.5))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rollup@4.24.0)(storybook@8.3.5)(typescript@5.6.3)(vite@5.4.9(@types/node@22.7.6)(terser@5.36.0))(webpack-sources@3.2.3)
       '@storybook/react-webpack5':
         specifier: ^8.3.5
-        version: 8.3.6(@storybook/test@8.4.1(storybook@8.3.5))(esbuild@0.23.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(storybook@8.3.5)(typescript@5.6.3)
+        version: 8.3.6(@storybook/test@8.4.1(storybook@8.3.5))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(storybook@8.3.5)(typescript@5.6.3)
       '@storybook/test':
         specifier: ^8.3.5
         version: 8.4.1(storybook@8.3.5)
@@ -621,7 +630,7 @@ importers:
         version: 8.3.6(@storybook/test@8.3.6(storybook@8.3.5))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rollup@4.24.0)(storybook@8.3.5)(typescript@5.6.3)(vite@5.4.9(@types/node@22.7.6)(terser@5.36.0))(webpack-sources@3.2.3)
       '@storybook/react-webpack5':
         specifier: ^8.3.5
-        version: 8.3.6(@storybook/test@8.3.6(storybook@8.3.5))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(storybook@8.3.5)(typescript@5.6.3)
+        version: 8.3.6(@storybook/test@8.3.6(storybook@8.3.5))(esbuild@0.23.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(storybook@8.3.5)(typescript@5.6.3)
       '@storybook/test':
         specifier: ^8.3.5
         version: 8.3.6(storybook@8.3.5)
@@ -3024,6 +3033,9 @@ packages:
 
   '@types/qs@6.9.16':
     resolution: {integrity: sha512-7i+zxXdPD0T4cKDuxCUXJ4wHcsJLwENa6Z3dCu8cfCK743OGy5Nu1RmAGqDPsoTDINVEcdXKRvR/zre+P2Ku1A==}
+
+  '@types/qs@6.9.17':
+    resolution: {integrity: sha512-rX4/bPcfmvxHDv0XjfJELTTr+iB+tn032nPILqHm5wbthUUUuVtNGGqzhya9XUxjTP8Fpr0qYgSZZKxGY++svQ==}
 
   '@types/range-parser@1.2.7':
     resolution: {integrity: sha512-hKormJbkJqzQGhziax5PItDUTMAM9uE2XXQmM37dyd4hVM+5aVl7oVxMVUiVQn2oCQFN/LKCZdvSM0pFRqbSmQ==}
@@ -5585,6 +5597,9 @@ packages:
 
   jju@1.4.0:
     resolution: {integrity: sha512-8wb9Yw966OSxApiCt0K3yNJL8pnNeIv+OEq2YMidz4FKP6nonSRoOXc80iXY4JaN2FC11B9qsNmDsm+ZOfMROA==}
+
+  js-base64@3.7.7:
+    resolution: {integrity: sha512-7rCnleh0z2CkXhH67J8K1Ytz0b2Y+yxTPL+/KOJoa20hfnVQ/3/T6W/KflYI4bRHRagNeXeU2bkNGI3v1oS/lw==}
 
   js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
@@ -9750,38 +9765,10 @@ snapshots:
     dependencies:
       storybook: 8.3.5
 
-  '@storybook/preset-react-webpack@8.3.6(@storybook/test@8.3.6(storybook@8.3.5))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(storybook@8.3.5)(typescript@5.6.3)':
+  '@storybook/preset-react-webpack@8.3.6(@storybook/test@8.3.6(storybook@8.3.5))(esbuild@0.23.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(storybook@8.3.5)(typescript@5.6.3)':
     dependencies:
       '@storybook/core-webpack': 8.3.6(storybook@8.3.5)
       '@storybook/react': 8.3.6(@storybook/test@8.3.6(storybook@8.3.5))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(storybook@8.3.5)(typescript@5.6.3)
-      '@storybook/react-docgen-typescript-plugin': 1.0.6--canary.9.0c3f3b7.0(typescript@5.6.3)(webpack@5.95.0)
-      '@types/node': 22.7.6
-      '@types/semver': 7.5.8
-      find-up: 5.0.0
-      fs-extra: 11.2.0
-      magic-string: 0.30.12
-      react: 18.3.1
-      react-docgen: 7.1.0
-      react-dom: 18.3.1(react@18.3.1)
-      resolve: 1.22.8
-      semver: 7.6.3
-      storybook: 8.3.5
-      tsconfig-paths: 4.2.0
-      webpack: 5.95.0
-    optionalDependencies:
-      typescript: 5.6.3
-    transitivePeerDependencies:
-      - '@storybook/test'
-      - '@swc/core'
-      - esbuild
-      - supports-color
-      - uglify-js
-      - webpack-cli
-
-  '@storybook/preset-react-webpack@8.3.6(@storybook/test@8.4.1(storybook@8.3.5))(esbuild@0.23.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(storybook@8.3.5)(typescript@5.6.3)':
-    dependencies:
-      '@storybook/core-webpack': 8.3.6(storybook@8.3.5)
-      '@storybook/react': 8.3.6(@storybook/test@8.4.1(storybook@8.3.5))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(storybook@8.3.5)(typescript@5.6.3)
       '@storybook/react-docgen-typescript-plugin': 1.0.6--canary.9.0c3f3b7.0(typescript@5.6.3)(webpack@5.95.0(esbuild@0.23.1))
       '@types/node': 22.7.6
       '@types/semver': 7.5.8
@@ -9796,6 +9783,34 @@ snapshots:
       storybook: 8.3.5
       tsconfig-paths: 4.2.0
       webpack: 5.95.0(esbuild@0.23.1)
+    optionalDependencies:
+      typescript: 5.6.3
+    transitivePeerDependencies:
+      - '@storybook/test'
+      - '@swc/core'
+      - esbuild
+      - supports-color
+      - uglify-js
+      - webpack-cli
+
+  '@storybook/preset-react-webpack@8.3.6(@storybook/test@8.4.1(storybook@8.3.5))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(storybook@8.3.5)(typescript@5.6.3)':
+    dependencies:
+      '@storybook/core-webpack': 8.3.6(storybook@8.3.5)
+      '@storybook/react': 8.3.6(@storybook/test@8.4.1(storybook@8.3.5))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(storybook@8.3.5)(typescript@5.6.3)
+      '@storybook/react-docgen-typescript-plugin': 1.0.6--canary.9.0c3f3b7.0(typescript@5.6.3)(webpack@5.95.0)
+      '@types/node': 22.7.6
+      '@types/semver': 7.5.8
+      find-up: 5.0.0
+      fs-extra: 11.2.0
+      magic-string: 0.30.12
+      react: 18.3.1
+      react-docgen: 7.1.0
+      react-dom: 18.3.1(react@18.3.1)
+      resolve: 1.22.8
+      semver: 7.6.3
+      storybook: 8.3.5
+      tsconfig-paths: 4.2.0
+      webpack: 5.95.0
     optionalDependencies:
       typescript: 5.6.3
     transitivePeerDependencies:
@@ -9902,10 +9917,10 @@ snapshots:
       - vite-plugin-glimmerx
       - webpack-sources
 
-  '@storybook/react-webpack5@8.3.6(@storybook/test@8.3.6(storybook@8.3.5))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(storybook@8.3.5)(typescript@5.6.3)':
+  '@storybook/react-webpack5@8.3.6(@storybook/test@8.3.6(storybook@8.3.5))(esbuild@0.23.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(storybook@8.3.5)(typescript@5.6.3)':
     dependencies:
-      '@storybook/builder-webpack5': 8.3.6(storybook@8.3.5)(typescript@5.6.3)
-      '@storybook/preset-react-webpack': 8.3.6(@storybook/test@8.3.6(storybook@8.3.5))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(storybook@8.3.5)(typescript@5.6.3)
+      '@storybook/builder-webpack5': 8.3.6(esbuild@0.23.1)(storybook@8.3.5)(typescript@5.6.3)
+      '@storybook/preset-react-webpack': 8.3.6(@storybook/test@8.3.6(storybook@8.3.5))(esbuild@0.23.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(storybook@8.3.5)(typescript@5.6.3)
       '@storybook/react': 8.3.6(@storybook/test@8.3.6(storybook@8.3.5))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(storybook@8.3.5)(typescript@5.6.3)
       '@types/node': 22.7.6
       react: 18.3.1
@@ -9922,10 +9937,10 @@ snapshots:
       - uglify-js
       - webpack-cli
 
-  '@storybook/react-webpack5@8.3.6(@storybook/test@8.4.1(storybook@8.3.5))(esbuild@0.23.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(storybook@8.3.5)(typescript@5.6.3)':
+  '@storybook/react-webpack5@8.3.6(@storybook/test@8.4.1(storybook@8.3.5))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(storybook@8.3.5)(typescript@5.6.3)':
     dependencies:
-      '@storybook/builder-webpack5': 8.3.6(esbuild@0.23.1)(storybook@8.3.5)(typescript@5.6.3)
-      '@storybook/preset-react-webpack': 8.3.6(@storybook/test@8.4.1(storybook@8.3.5))(esbuild@0.23.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(storybook@8.3.5)(typescript@5.6.3)
+      '@storybook/builder-webpack5': 8.3.6(storybook@8.3.5)(typescript@5.6.3)
+      '@storybook/preset-react-webpack': 8.3.6(@storybook/test@8.4.1(storybook@8.3.5))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(storybook@8.3.5)(typescript@5.6.3)
       '@storybook/react': 8.3.6(@storybook/test@8.4.1(storybook@8.3.5))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(storybook@8.3.5)(typescript@5.6.3)
       '@types/node': 22.7.6
       react: 18.3.1
@@ -10383,7 +10398,7 @@ snapshots:
   '@types/express-serve-static-core@5.0.1':
     dependencies:
       '@types/node': 20.17.3
-      '@types/qs': 6.9.16
+      '@types/qs': 6.9.17
       '@types/range-parser': 1.2.7
       '@types/send': 0.17.4
 
@@ -10398,7 +10413,7 @@ snapshots:
     dependencies:
       '@types/body-parser': 1.19.5
       '@types/express-serve-static-core': 5.0.1
-      '@types/qs': 6.9.16
+      '@types/qs': 6.9.17
       '@types/serve-static': 1.15.7
 
   '@types/find-cache-dir@3.2.1': {}
@@ -10459,6 +10474,8 @@ snapshots:
   '@types/prop-types@15.7.13': {}
 
   '@types/qs@6.9.16': {}
+
+  '@types/qs@6.9.17': {}
 
   '@types/range-parser@1.2.7': {}
 
@@ -11100,7 +11117,7 @@ snapshots:
       sirv: 2.0.4
       tinyglobby: 0.2.9
       tinyrainbow: 1.2.0
-      vitest: 2.1.3(@types/node@22.7.6)(@vitest/ui@2.1.3)(jsdom@25.0.1)(msw@2.4.11(typescript@5.6.3))(terser@5.36.0)
+      vitest: 2.1.3(@types/node@20.17.3)(@vitest/ui@2.1.3)(jsdom@25.0.1)(msw@2.4.11(typescript@5.6.3))(terser@5.36.0)
 
   '@vitest/utils@2.0.5':
     dependencies:
@@ -13856,6 +13873,8 @@ snapshots:
 
   jju@1.4.0: {}
 
+  js-base64@3.7.7: {}
+
   js-tokens@4.0.0: {}
 
   js-tokens@9.0.0: {}
@@ -14215,7 +14234,7 @@ snapshots:
     dependencies:
       enhanced-resolve: 5.17.1
 
-  next@15.0.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+  next@15.0.2(@babel/core@7.25.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       '@next/env': 15.0.2
       '@swc/counter': 0.1.3
@@ -14225,7 +14244,7 @@ snapshots:
       postcss: 8.4.31
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
-      styled-jsx: 5.1.6(react@18.3.1)
+      styled-jsx: 5.1.6(@babel/core@7.25.8)(react@18.3.1)
     optionalDependencies:
       '@next/swc-darwin-arm64': 15.0.2
       '@next/swc-darwin-x64': 15.0.2
@@ -15574,10 +15593,12 @@ snapshots:
     dependencies:
       webpack: 5.95.0
 
-  styled-jsx@5.1.6(react@18.3.1):
+  styled-jsx@5.1.6(@babel/core@7.25.8)(react@18.3.1):
     dependencies:
       client-only: 0.0.1
       react: 18.3.1
+    optionalDependencies:
+      '@babel/core': 7.25.8
 
   sucrase@3.35.0:
     dependencies:

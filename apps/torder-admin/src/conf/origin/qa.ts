@@ -2,6 +2,7 @@
  * @link https://torder.atlassian.net/wiki/x/zgKiIQ
  */
 export default {
+  ADMIN_URL: 'https://kr.qa.order.admin.torder.com',
   ADMIN_API_URL: 'https://kr.dev.admin-api.share.torder.com',
   MIDDLEWARE_API_URL: 'https://api.qa.middleware.torder.tech',
   MIDDLEWARE_AUTH_TOKEN:
@@ -10,4 +11,9 @@ export default {
   REST_API_URL: 'https://kr.dev.rest-api.share.torder.com',
   PAYMENT_API_URL: 'https://kr.dev.tcloud-gateway.share.torder.com',
   WAITING_API_URL: 'https://dev-wait.torder.com',
+  ADMIN_AUTH_API: {
+    URL: 'https://kr.dev.api.acs-auth.share.torder.com',
+    CLIENT_ID: 'DCsSnelCjo',
+    CLIENT_SECRET_ID: 'lZpGje6Ou4JGBZatPFfmvYRLVUtTV1',
+  },
 };
