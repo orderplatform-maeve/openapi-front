@@ -1,7 +1,7 @@
 # 경로별 코드 관리자를 설정합니다.
 
 # 관리자 사이트
-/apps/torder-admin @orderplatform-soojin @orderplatform-jaegeun @orderplatform-kangil @orderplatform-maeve @orderplatform-kyungjune @orderplatform-roy
+/apps/torder-admin/ @orderplatform-soojin @orderplatform-jaegeun @orderplatform-kangil @orderplatform-maeve @orderplatform-kyungjune @orderplatform-roy
 
 # 사이트별
 # /apps

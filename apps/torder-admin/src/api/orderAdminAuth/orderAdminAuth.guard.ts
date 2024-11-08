@@ -2,6 +2,7 @@ import { Reflector } from '@nestjs/core';
 import { Injectable, CanActivate, ExecutionContext, Scope } from '@nestjs/common';
 import { TOrderAdminAuthPage } from '@/api/orderAdminAuth/orderAdminAuth.types';
 import OrderAdminAuthFetch from '@/api/orderAdminAuth/orderAdminAuth.fetch';
+import { hasOrderAdminApiResponseData } from '@/api/api.type';
 
 /**
  * (구) order admin 에서 관리하는 권한 체크
@@ -35,6 +36,24 @@ export class OrderAdminAuthGuard implements CanActivate {
     }
 
     const healthCheck = await this.orderAdminAuthFetch.healthCheck();
-    return healthCheck.result;
+    /**
+     * health check 응답이 정상이 아닌 경우
+     */
+    if (!hasOrderAdminApiResponseData(healthCheck)) {
+      return false;
+    }
+
+    const authInfo = await this.orderAdminAuthFetch.getAuthInfo(healthCheck.data.t_order_auth);
+    /**
+     * token info 조회 - 오류 발생한 경우
+     */
+    if (!hasOrderAdminApiResponseData(authInfo)) {
+      return false;
+    }
+
+    /**
+     * T_order_MGroup_page_auth 에 페이지 코드가 포함되어 있어야 접근 가능
+     */
+    return authInfo.data.T_order_MGroup_page_auth.includes(orderAdminAuthRole);
   }
 }
