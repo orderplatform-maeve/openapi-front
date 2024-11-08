@@ -73,6 +73,13 @@
 
 ## 패키지 관리
 
+### Package Manager
+- corepack 을 통해 패키지 매니저를 관리합니다.
+```shell
+corepack enable
+corepack install
+```
+
 ### 의존성 관리
 
 - 추가
