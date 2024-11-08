@@ -5,8 +5,8 @@ import { Client } from '../../rest';
 import { QUERY_KEYS } from '../../core/query-keys';
 import { useClientMutation } from '../../core/hooks/useClientMutation';
 
-type TOptions = UseMutationOptions<AxiosResponse<LoginResponse>, unknown, LoginVariables>;
-type RLogin = UseMutationResult<AxiosResponse<LoginResponse>, unknown, LoginVariables>;
+type TOptions = UseMutationOptions<AxiosResponse<LoginResponse>, Error, LoginVariables>;
+type RLogin = UseMutationResult<AxiosResponse<LoginResponse>, Error, LoginVariables>;
 
 export function useLoginApi(options?: TOptions): RLogin {
   return useClientMutation({

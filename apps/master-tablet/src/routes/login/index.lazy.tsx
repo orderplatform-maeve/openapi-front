@@ -1,6 +1,6 @@
 import { useState, useRef, type FormEvent } from 'react';
 import { overlay } from 'overlay-kit';
-import { useLoginApi, AxiosLoginResponse } from '@torder/client-fetcher/src/rest';
+import { useLoginApi, type AxiosLoginResponse, type LoginVariables } from '@torder/client-fetcher/src/rest';
 import { createLazyFileRoute, useRouter } from '@tanstack/react-router';
 import styles from './index.module.css';
 import { Input } from '@ui/Input';
@@ -14,26 +14,11 @@ export const Route = createLazyFileRoute('/login/')({
     const [alertOpen, setAlertOpen] = useState(false);
     const formRef = useRef<HTMLFormElement>(null);
     const router = useRouter();
-    const { mutate } = useLoginApi({ onSuccess: onLoginSuccess });
+    const { mutate } = useLoginApi({ onSuccess: onLoginSuccess, onError: onLoginError });
 
     function onLoginSuccess(response: AxiosLoginResponse) {
       if (!response.data.result) {
-        setAlertOpen(true);
-        overlay.open(({ isOpen, close }) => {
-          const onAlertDialogClose = () => {
-            setAlertOpen(false);
-            close();
-          };
-          return (
-            <AlertDialog
-              isOpen={isOpen}
-              title="로그인 실패"
-              text="태블릿 아이디와 비밀번호를 확인해주세요."
-              close={onAlertDialogClose}
-            />
-          );
-        });
-        return;
+        throw new Error('LoginFailed');
       }
 
       const { member_data, token } = response.data;
@@ -46,6 +31,22 @@ export const Route = createLazyFileRoute('/login/')({
         window.localStorage.setItem('token', token);
       }
       return router.navigate({ to: '/store' });
+    }
+
+    function onLoginError(error: Error, _variables: LoginVariables, _context: unknown) {
+      setAlertOpen(true);
+      const text =
+        error.message === 'LoginFailed'
+          ? '태블릿 아이디와 비밀번호를 확인해주세요'
+          : '로그인 요청 중 문제가 발생했습니다. 다시 시도해 주세요';
+
+      overlay.open(({ isOpen, close }) => {
+        const onAlertDialogClose = () => {
+          setAlertOpen(false);
+          close();
+        };
+        return <AlertDialog isOpen={isOpen} title="로그인 실패" text={text} close={onAlertDialogClose} />;
+      });
     }
 
     function onSubmit(e: FormEvent<HTMLFormElement>) {
