@@ -49,9 +49,11 @@ abstract class BaseClient {
     return this.instance.get<T, AxiosResponse<T>>(apiEndpoint, this.mergeConfig<D>(axiosConfig));
   };
 
-  post = <T, D = unknown>(path: string, data: D, axiosConfig?: AxiosRequestConfig<D>) => {
+  // post<T = any, R = axios.AxiosResponse<T>, D = any>(url: string, data?: D, config?: axios.AxiosRequestConfig<D>): Promise<R>;
+  post = <T, D = unknown>(path: string, data: D, axiosConfig?: AxiosRequestConfig<D>): Promise<AxiosResponse<T>> => {
     const apiEndpoint = this.getPath(path);
-    return this.instance.post<T, AxiosResponse<T>>(apiEndpoint, data, this.mergeConfig(axiosConfig));
+    // post<T = any, R = axios.AxiosResponse<T>, D = any>(url: string, data?: D, config?: axios.AxiosRequestConfig<D>): Promise<R>;
+    return this.instance.post<T, AxiosResponse<T>, D>(apiEndpoint, data, this.mergeConfig(axiosConfig));
   };
 
   delete = <T, D = unknown>(path: string, axiosConfig?: AxiosRequestConfig<D>) => {

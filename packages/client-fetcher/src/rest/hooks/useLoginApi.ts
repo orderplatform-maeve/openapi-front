@@ -9,9 +9,5 @@ type TOptions = UseMutationOptions<AxiosResponse<LoginResponse>, Error, LoginVar
 type RLogin = UseMutationResult<AxiosResponse<LoginResponse>, Error, LoginVariables>;
 
 export function useLoginApi(options?: TOptions): RLogin {
-  return useClientMutation({
-    ...options,
-    mutationKey: QUERY_KEYS.REST.LOGIN,
-    mutationFn: Client.memberLogin,
-  });
+  return useClientMutation(QUERY_KEYS.REST.LOGIN, Client.memberLogin, { ...options });
 }

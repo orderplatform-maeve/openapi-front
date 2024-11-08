@@ -37,7 +37,7 @@ class RestClient extends BaseClient {
     super(url);
   }
 
-  memberLogin = (data: LoginVariables) => {
+  memberLogin = (data: LoginVariables): Promise<AxiosResponse<LoginResponse>> => {
     const formData = new FormData();
     formData.append('member_id', data.member_id);
     formData.append('member_pwd', data.member_pwd);
@@ -47,7 +47,7 @@ class RestClient extends BaseClient {
         'Content-Type': 'multipart/form-data',
       },
     };
-    return this.post<LoginVariables, LoginResponse>('/login/member_login', data, config);
+    return this.post<LoginResponse, LoginVariables>('/login/member_login', data, config);
   };
 
   storeList = (data: StoreListVariables) => {
@@ -60,7 +60,7 @@ class RestClient extends BaseClient {
       },
     };
 
-    return this.post<StoreListVariables, StoreListResponse>('/store/store_list', data, config);
+    return this.post<StoreListResponse, StoreListVariables>('/store/store_list', data, config);
   };
 
   transformResponse?: AxiosResponseTransformer | undefined;
