@@ -1,9 +1,6 @@
 torder-admin:
   - 'apps/torder-admin/**/*'
 
-admin-ui:
-  - 'packages/admin-ui/**/*'
-
 ui:
   - 'packages/ui/**/*'
 
