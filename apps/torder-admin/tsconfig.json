@@ -21,19 +21,5 @@
   ],
   "exclude": [
     "node_modules"
-  ],
-  "references": [
-    {
-      "path": "../../packages/admin-ui"
-    },
-    {
-      "path": "../../packages/client-fetcher"
-    },
-    {
-      "path": "../../packages/ui"
-    },
-    {
-      "path": "../../packages/utils"
-    }
   ]
 }
