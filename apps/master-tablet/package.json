@@ -19,6 +19,7 @@
     "@tanstack/start": "^1.79.0",
     "@torder/ui": "workspace:*",
     "@torder/utils": "workspace:*",
+    "@torder/client-fetcher": "workspace:*",
     "@vitejs/plugin-react": "^4.3.3",
     "axios": "^1.7.7",
     "lodash-es": "^4.17.21",

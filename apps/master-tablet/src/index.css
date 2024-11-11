@@ -1,3 +1,25 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    :root {
+        --background: 0 0% 100%;
+        --foreground: 240 10% 3.9%;
+
+        /* Muted */
+        --muted: 240 4.8% 95.9%;
+        --muted-foreground: 240 3.8% 46.1%;
+
+        /* Background */
+        --background: 0 0% 100%;
+        --foreground: 240 10% 3.9%;
+
+        /* Ring */
+        --ring: 240 5% 64.9%;
+
+        /* 탭 커스텀 스타일 */
+        --tab-trigger-background: 240 5.9% 90%;
+        --tab-trigger-text: 240 10% 3.9%;
+    }
+}

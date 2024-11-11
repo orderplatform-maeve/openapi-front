@@ -1,10 +1,10 @@
 import { useState } from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@torder/ui';
 import { createLazyFileRoute } from '@tanstack/react-router';
 import styles from './index.module.css';
-import { Tab, Tabs, TabWindow } from '@ui/Tabs';
 import { Notice } from '@/features/notice/types/notice.ts';
 import { useNoticeData } from '@/features/notice/hooks/useNoticeData.ts';
-import { CATEGORY_INFO, TAB_CONFIG } from '@/features/notice/constants/categories.ts';
+import { TAB_CONFIG } from '@/features/notice/constants/categories.ts';
 import { NoticeTable } from '@/features/notice/components/NoticeTable';
 
 const MOCK_DATA: Notice[] = [
@@ -32,14 +32,14 @@ const MOCK_DATA: Notice[] = [
   },
 ];
 
-export type NoticeSearchParams = {
-  type: 'TITLE' | 'DESC';
-  query: string;
-};
+// export type NoticeSearchParams = {
+//   type: 'TITLE' | 'DESC';
+//   query: string;
+// };
 
 export const Route = createLazyFileRoute('/notice/')({
   component: () => {
-    const [activeTab, setActiveTab] = useState(TAB_CONFIG.ALL);
+    const [activeTab] = useState(TAB_CONFIG.ALL);
     // TODO: search input 구현시 활성화
     // const [searchParams, setSearchParams] = useState<NoticeSearchParams>({
     //   type: 'TITLE',
@@ -52,10 +52,6 @@ export const Route = createLazyFileRoute('/notice/')({
     //   category: getTabCategory(activeTab),
     //   searchParams,
     // });
-
-    const onChangeTabIndex = (index: number) => {
-      setActiveTab(index);
-    };
 
     const handleNoticeClick = () => {
       // navigate({ to: '/notice/$noticeId', params: { noticeId } });
@@ -70,21 +66,29 @@ export const Route = createLazyFileRoute('/notice/')({
     return (
       <section className={styles.container}>
         <div className={styles.version}>v/2/0/46</div>
-        <div className={styles.tabsContainer}>
-          <Tabs initialTabIndex={0} onChangeTabIndex={onChangeTabIndex}>
-            {Object.values(CATEGORY_INFO).map(({ label }) => (
-              <Tab key={label}>
-                <span className={styles.tabText}>{label}</span>
-              </Tab>
-            ))}
-          </Tabs>
-        </div>
-        <div className={styles.tabWindowContainer}>
-          <TabWindow>
-            <div className="bg-white w-full">
+        <div className={'w-full'}>
+          <Tabs className="w-full max-w-3xl mx-auto">
+            <TabsList className="grid w-full grid-cols-5">
+              <TabsTrigger value="ALL">전체</TabsTrigger>
+              <TabsTrigger value="NOTICE">공지사항</TabsTrigger>
+              <TabsTrigger value="UPDATE">업데이트</TabsTrigger>
+              <TabsTrigger value="EVENT">이벤트</TabsTrigger>
+              <TabsTrigger value="NEWS">뉴스</TabsTrigger>
+            </TabsList>
+            <TabsContent value="NOTICE" className="bg-white w-full">
+              <div className="p-4">공지사항</div>
               <NoticeTable data={filteredData} loading={false} onNoticeClick={handleNoticeClick} />
-            </div>
-          </TabWindow>
+            </TabsContent>
+            <TabsContent value="UPDATE" className="bg-white w-full">
+              <div className="p-4">업데이트</div>
+            </TabsContent>
+            <TabsContent value="EVENT" className="bg-white w-full">
+              <div className="p-4">이벤트</div>
+            </TabsContent>
+            <TabsContent value="NEWS" className="bg-white w-full">
+              <div className="p-4">뉴스</div>
+            </TabsContent>
+          </Tabs>
         </div>
       </section>
     );

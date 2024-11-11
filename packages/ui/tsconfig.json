@@ -6,10 +6,13 @@
       "@storybook/react",
       "@storybook/addon-actions",
       "@storybook/addon-links",
-    ]
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
   "include": [
-    "shims.d.ts",
     "**/*.ts",
     "**/*.tsx"
   ],
